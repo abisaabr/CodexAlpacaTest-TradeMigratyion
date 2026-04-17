@@ -1,0 +1,17 @@
+{
+  "runtime_bundle": "runtime/public_runtime_migration_20260417.zip",
+  "cleanroom_code_folder": "cleanroom/code/qqq_options_30d_cleanroom",
+  "cleanroom_summary_bundle": "cleanroom/qqq_options_30d_cleanroom_summaries_20260417.zip",
+  "safe_archives": [
+    "_alpaca_mcp_pkg.zip",
+    "_alpaca_mcp_pkg_archive_20260406.zip",
+    "alpaca_lab.zip",
+    "alpaca_paper_handoff_20260406_archive_20260406.zip",
+    "alpaca-strategy-research_20260415.zip",
+    "data.zip",
+    "downloads_trading_root_files.zip",
+    "reports.zip",
+    "reports_20260415.zip",
+    "scripts.zip"
+  ]
+}

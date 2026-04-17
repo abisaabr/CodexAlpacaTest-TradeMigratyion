@@ -1,0 +1,866 @@
+from __future__ import annotations
+
+import argparse
+import json
+import math
+from dataclasses import dataclass
+from datetime import date
+from pathlib import Path
+from statistics import NormalDist
+
+import pandas as pd
+
+from backtest_qqq_option_strategies import (
+    COMMISSION_PER_CONTRACT,
+    MINUTES_PER_RTH_SESSION,
+    STARTING_EQUITY,
+    SIGNAL_DISPATCH,
+    build_day_contexts,
+    buy_fill,
+    close_cashflow,
+    combo_entry_net_premium,
+    estimate_combo_bounds,
+    load_daily_universe,
+    load_wide_data,
+    open_cashflow,
+    resolve_dte,
+    sell_fill,
+)
+
+
+RISK_FREE_RATE = 0.04
+PORTFOLIO_MAX_OPEN_RISK_FRACTION = 0.25
+REGIME_THRESHOLD_PCT = 0.40
+RTH_START_MINUTE = 9 * 60 + 30
+RTH_END_MINUTE = 15 * 60 + 59
+NORM = NormalDist()
+
+
+@dataclass(frozen=True)
+class DeltaLegTemplate:
+    option_type: str
+    side: str
+    target_delta: float
+    min_abs_delta: float = 0.05
+    max_abs_delta: float = 0.95
+
+
+@dataclass(frozen=True)
+class DeltaStrategy:
+    name: str
+    family: str
+    description: str
+    dte_mode: str
+    legs: tuple[DeltaLegTemplate, ...]
+    signal_name: str
+    hard_exit_minute: int
+    risk_fraction: float
+    max_contracts: int
+    profit_target_multiple: float
+    stop_loss_multiple: float
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Second-pass QQQ options backtest with Greeks, delta-targeted entries, and a shared portfolio allocator.")
+    parser.add_argument("--output-dir", default="output")
+    parser.add_argument("--wide-name", default="qqq_option_1min_wide_backtest.parquet")
+    parser.add_argument("--dense-name", default="qqq_option_1min_dense.parquet")
+    parser.add_argument("--daily-universe-name", default="qqq_option_daily_universe.parquet")
+    parser.add_argument("--candidate-trades-name", default="qqq_delta_candidate_trades.csv")
+    parser.add_argument("--regime-summary-name", default="qqq_delta_regime_summary.csv")
+    parser.add_argument("--portfolio-trades-name", default="qqq_delta_portfolio_trades.csv")
+    parser.add_argument("--portfolio-equity-name", default="qqq_delta_portfolio_equity_curve.csv")
+    parser.add_argument("--portfolio-summary-name", default="qqq_delta_portfolio_summary.json")
+    parser.add_argument("--report-name", default="qqq_delta_portfolio_report.md")
+    return parser
+
+
+def build_delta_strategies() -> list[DeltaStrategy]:
+    return [
+        DeltaStrategy(
+            name="orb_long_call_same_day",
+            family="Single-leg long call",
+            description="Buy the same-day call closest to +0.50 delta on an opening range breakout.",
+            dte_mode="same_day",
+            legs=(DeltaLegTemplate(option_type="call", side="long", target_delta=0.50),),
+            signal_name="orb_call",
+            hard_exit_minute=375,
+            risk_fraction=0.05,
+            max_contracts=8,
+            profit_target_multiple=0.50,
+            stop_loss_multiple=0.35,
+        ),
+        DeltaStrategy(
+            name="orb_long_put_same_day",
+            family="Single-leg long put",
+            description="Buy the same-day put closest to -0.50 delta on an opening range breakdown.",
+            dte_mode="same_day",
+            legs=(DeltaLegTemplate(option_type="put", side="long", target_delta=-0.50),),
+            signal_name="orb_put",
+            hard_exit_minute=375,
+            risk_fraction=0.05,
+            max_contracts=8,
+            profit_target_multiple=0.50,
+            stop_loss_multiple=0.35,
+        ),
+        DeltaStrategy(
+            name="trend_long_call_next_expiry",
+            family="Single-leg long call",
+            description="Buy the next-expiry call closest to +0.60 delta on upside trend continuation.",
+            dte_mode="next_expiry",
+            legs=(DeltaLegTemplate(option_type="call", side="long", target_delta=0.60),),
+            signal_name="trend_call",
+            hard_exit_minute=360,
+            risk_fraction=0.05,
+            max_contracts=6,
+            profit_target_multiple=0.45,
+            stop_loss_multiple=0.30,
+        ),
+        DeltaStrategy(
+            name="trend_long_put_next_expiry",
+            family="Single-leg long put",
+            description="Buy the next-expiry put closest to -0.60 delta on downside trend continuation.",
+            dte_mode="next_expiry",
+            legs=(DeltaLegTemplate(option_type="put", side="long", target_delta=-0.60),),
+            signal_name="trend_put",
+            hard_exit_minute=360,
+            risk_fraction=0.05,
+            max_contracts=6,
+            profit_target_multiple=0.45,
+            stop_loss_multiple=0.30,
+        ),
+        DeltaStrategy(
+            name="bull_call_spread_next_expiry",
+            family="Debit call spread",
+            description="Buy a next-expiry bull call spread targeting +0.55 and +0.30 deltas.",
+            dte_mode="next_expiry",
+            legs=(
+                DeltaLegTemplate(option_type="call", side="long", target_delta=0.55),
+                DeltaLegTemplate(option_type="call", side="short", target_delta=0.30),
+            ),
+            signal_name="trend_call",
+            hard_exit_minute=360,
+            risk_fraction=0.06,
+            max_contracts=8,
+            profit_target_multiple=0.40,
+            stop_loss_multiple=0.28,
+        ),
+        DeltaStrategy(
+            name="bear_put_spread_next_expiry",
+            family="Debit put spread",
+            description="Buy a next-expiry bear put spread targeting -0.55 and -0.30 deltas.",
+            dte_mode="next_expiry",
+            legs=(
+                DeltaLegTemplate(option_type="put", side="long", target_delta=-0.55),
+                DeltaLegTemplate(option_type="put", side="short", target_delta=-0.30),
+            ),
+            signal_name="trend_put",
+            hard_exit_minute=360,
+            risk_fraction=0.06,
+            max_contracts=8,
+            profit_target_multiple=0.40,
+            stop_loss_multiple=0.28,
+        ),
+        DeltaStrategy(
+            name="bull_put_credit_spread_same_day",
+            family="Credit put spread",
+            description="Sell a same-day bull put spread targeting -0.35 and -0.15 deltas.",
+            dte_mode="same_day",
+            legs=(
+                DeltaLegTemplate(option_type="put", side="short", target_delta=-0.35),
+                DeltaLegTemplate(option_type="put", side="long", target_delta=-0.15),
+            ),
+            signal_name="credit_bull",
+            hard_exit_minute=380,
+            risk_fraction=0.05,
+            max_contracts=10,
+            profit_target_multiple=0.50,
+            stop_loss_multiple=1.00,
+        ),
+        DeltaStrategy(
+            name="bear_call_credit_spread_same_day",
+            family="Credit call spread",
+            description="Sell a same-day bear call spread targeting +0.35 and +0.15 deltas.",
+            dte_mode="same_day",
+            legs=(
+                DeltaLegTemplate(option_type="call", side="short", target_delta=0.35),
+                DeltaLegTemplate(option_type="call", side="long", target_delta=0.15),
+            ),
+            signal_name="credit_bear",
+            hard_exit_minute=380,
+            risk_fraction=0.05,
+            max_contracts=10,
+            profit_target_multiple=0.50,
+            stop_loss_multiple=1.00,
+        ),
+        DeltaStrategy(
+            name="long_straddle_same_day",
+            family="Long straddle",
+            description="Buy a same-day straddle targeting +0.50 and -0.50 deltas.",
+            dte_mode="same_day",
+            legs=(
+                DeltaLegTemplate(option_type="call", side="long", target_delta=0.50),
+                DeltaLegTemplate(option_type="put", side="long", target_delta=-0.50),
+            ),
+            signal_name="long_straddle",
+            hard_exit_minute=210,
+            risk_fraction=0.04,
+            max_contracts=5,
+            profit_target_multiple=0.35,
+            stop_loss_multiple=0.25,
+        ),
+        DeltaStrategy(
+            name="iron_condor_same_day",
+            family="Iron condor",
+            description="Sell a same-day iron condor targeting +/-0.25 shorts and +/-0.10 wings.",
+            dte_mode="same_day",
+            legs=(
+                DeltaLegTemplate(option_type="call", side="short", target_delta=0.25),
+                DeltaLegTemplate(option_type="call", side="long", target_delta=0.10),
+                DeltaLegTemplate(option_type="put", side="short", target_delta=-0.25),
+                DeltaLegTemplate(option_type="put", side="long", target_delta=-0.10),
+            ),
+            signal_name="iron_condor",
+            hard_exit_minute=375,
+            risk_fraction=0.04,
+            max_contracts=6,
+            profit_target_multiple=0.40,
+            stop_loss_multiple=1.25,
+        ),
+    ]
+
+
+def norm_pdf(value: float) -> float:
+    return math.exp(-0.5 * value * value) / math.sqrt(2.0 * math.pi)
+
+
+def bs_price(spot: float, strike: float, years: float, rate: float, sigma: float, option_type: str) -> float:
+    if years <= 0.0 or sigma <= 0.0:
+        return max(spot - strike, 0.0) if option_type == "call" else max(strike - spot, 0.0)
+    sqrt_t = math.sqrt(years)
+    d1 = (math.log(spot / strike) + (rate + 0.5 * sigma * sigma) * years) / (sigma * sqrt_t)
+    d2 = d1 - sigma * sqrt_t
+    if option_type == "call":
+        return spot * NORM.cdf(d1) - strike * math.exp(-rate * years) * NORM.cdf(d2)
+    return strike * math.exp(-rate * years) * NORM.cdf(-d2) - spot * NORM.cdf(-d1)
+
+
+def implied_volatility(spot: float, strike: float, years: float, rate: float, market_price: float, option_type: str) -> float | None:
+    intrinsic = max(spot - strike, 0.0) if option_type == "call" else max(strike - spot, 0.0)
+    target_price = max(market_price, intrinsic + 0.01)
+    if years <= 0.0 or spot <= 0.0 or strike <= 0.0:
+        return None
+
+    low = 0.01
+    high = 5.0
+    low_price = bs_price(spot=spot, strike=strike, years=years, rate=rate, sigma=low, option_type=option_type)
+    high_price = bs_price(spot=spot, strike=strike, years=years, rate=rate, sigma=high, option_type=option_type)
+    if target_price < low_price - 1e-6 or target_price > high_price + 1e-6:
+        return None
+
+    for _ in range(60):
+        mid = 0.5 * (low + high)
+        price = bs_price(spot=spot, strike=strike, years=years, rate=rate, sigma=mid, option_type=option_type)
+        if abs(price - target_price) <= 1e-4:
+            return mid
+        if price < target_price:
+            low = mid
+        else:
+            high = mid
+    return 0.5 * (low + high)
+
+
+def bs_greeks(spot: float, strike: float, years: float, rate: float, sigma: float, option_type: str) -> dict[str, float]:
+    if years <= 0.0 or sigma <= 0.0 or spot <= 0.0 or strike <= 0.0:
+        delta = 1.0 if option_type == "call" and spot > strike else 0.0
+        if option_type == "put":
+            delta = -1.0 if spot < strike else 0.0
+        return {"delta": delta, "gamma": 0.0, "theta": 0.0, "vega": 0.0}
+
+    sqrt_t = math.sqrt(years)
+    d1 = (math.log(spot / strike) + (rate + 0.5 * sigma * sigma) * years) / (sigma * sqrt_t)
+    d2 = d1 - sigma * sqrt_t
+    pdf_d1 = norm_pdf(d1)
+    if option_type == "call":
+        delta = NORM.cdf(d1)
+        theta = (
+            -(spot * pdf_d1 * sigma) / (2.0 * sqrt_t)
+            - rate * strike * math.exp(-rate * years) * NORM.cdf(d2)
+        ) / 365.0
+    else:
+        delta = NORM.cdf(d1) - 1.0
+        theta = (
+            -(spot * pdf_d1 * sigma) / (2.0 * sqrt_t)
+            + rate * strike * math.exp(-rate * years) * NORM.cdf(-d2)
+        ) / 365.0
+    gamma = pdf_d1 / (spot * sigma * sqrt_t)
+    vega = (spot * pdf_d1 * sqrt_t) / 100.0
+    return {"delta": delta, "gamma": gamma, "theta": theta, "vega": vega}
+
+
+def load_dense_data(path: Path, valid_trade_dates: set[date], wide: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    dense = pd.read_parquet(path).copy()
+    dense["timestamp_et"] = pd.to_datetime(dense["timestamp_et"])
+    dense["trade_date"] = pd.to_datetime(dense["trade_date"]).dt.date
+    dense["expiration_date"] = pd.to_datetime(dense["expiration_date"]).dt.date
+    minute_of_day = dense["timestamp_et"].dt.hour * 60 + dense["timestamp_et"].dt.minute
+    dense = dense[dense["trade_date"].isin(valid_trade_dates)].copy()
+    minute_of_day = dense["timestamp_et"].dt.hour * 60 + dense["timestamp_et"].dt.minute
+    dense = dense[(minute_of_day >= RTH_START_MINUTE) & (minute_of_day <= RTH_END_MINUTE)].copy()
+    dense["minute_index"] = minute_of_day.loc[dense.index] - RTH_START_MINUTE
+
+    underlying = wide[["trade_date", "minute_index", "qqq_close"]].rename(columns={"qqq_close": "spot_price"})
+    dense = dense.merge(underlying, on=["trade_date", "minute_index"], how="inner")
+    expiry_ts = pd.to_datetime(dense["expiration_date"].astype(str) + " 16:00:00").dt.tz_localize("America/New_York")
+    dense["years_to_expiry"] = ((expiry_ts - dense["timestamp_et"]).dt.total_seconds().clip(lower=60.0)) / (365.0 * 24.0 * 3600.0)
+    dense = dense.sort_values(["trade_date", "symbol", "minute_index"]).reset_index(drop=True)
+
+    chain_index = dense.set_index(["trade_date", "minute_index", "dte", "option_type"]).sort_index()
+    price_index = dense.set_index(["trade_date", "symbol", "minute_index"]).sort_index()
+    return chain_index, price_index
+
+
+def build_regime_map(wide: pd.DataFrame) -> dict[date, str]:
+    daily = (
+        wide.groupby("trade_date")
+        .agg(day_open=("qqq_open", "first"), day_close=("qqq_close", "last"))
+        .reset_index()
+    )
+    daily["day_ret_pct"] = (daily["day_close"] / daily["day_open"] - 1.0) * 100.0
+    regimes: dict[date, str] = {}
+    for row in daily.itertuples(index=False):
+        if row.day_ret_pct >= REGIME_THRESHOLD_PCT:
+            regimes[row.trade_date] = "bull"
+        elif row.day_ret_pct <= -REGIME_THRESHOLD_PCT:
+            regimes[row.trade_date] = "bear"
+        else:
+            regimes[row.trade_date] = "choppy"
+    return regimes
+
+
+def chain_slice(
+    chain_index: pd.DataFrame,
+    trade_date: date,
+    minute_index: int,
+    dte: int,
+    option_type: str,
+) -> pd.DataFrame:
+    try:
+        frame = chain_index.loc[(trade_date, minute_index, dte, option_type)].reset_index()
+    except KeyError:
+        return pd.DataFrame()
+    if isinstance(frame, pd.Series):
+        frame = frame.to_frame().T
+    return frame.copy()
+
+
+def enrich_chain_with_greeks(chain: pd.DataFrame) -> pd.DataFrame:
+    enriched_rows: list[dict[str, object]] = []
+    for row in chain.itertuples(index=False):
+        iv = implied_volatility(
+            spot=float(row.spot_price),
+            strike=float(row.strike_price),
+            years=float(row.years_to_expiry),
+            rate=RISK_FREE_RATE,
+            market_price=float(row.close),
+            option_type=str(row.option_type),
+        )
+        if iv is None:
+            continue
+        greeks = bs_greeks(
+            spot=float(row.spot_price),
+            strike=float(row.strike_price),
+            years=float(row.years_to_expiry),
+            rate=RISK_FREE_RATE,
+            sigma=iv,
+            option_type=str(row.option_type),
+        )
+        enriched_rows.append(
+            {
+                **row._asdict(),
+                "implied_vol": iv,
+                "delta": greeks["delta"],
+                "gamma": greeks["gamma"],
+                "theta": greeks["theta"],
+                "vega": greeks["vega"],
+            }
+        )
+    return pd.DataFrame(enriched_rows)
+
+
+def select_leg(
+    chain_index: pd.DataFrame,
+    trade_date: date,
+    minute_index: int,
+    dte: int,
+    leg: DeltaLegTemplate,
+    used_symbols: set[str],
+) -> dict[str, object] | None:
+    chain = chain_slice(
+        chain_index=chain_index,
+        trade_date=trade_date,
+        minute_index=minute_index,
+        dte=dte,
+        option_type=leg.option_type,
+    )
+    if chain.empty:
+        return None
+
+    chain = chain[(chain["has_trade_bar"] == True) & (chain["close"] > 0.0)].copy()
+    chain = chain[~chain["symbol"].isin(used_symbols)].copy()
+    if chain.empty:
+        return None
+
+    enriched = enrich_chain_with_greeks(chain=chain)
+    if enriched.empty:
+        return None
+
+    enriched = enriched[(enriched["delta"].abs() >= leg.min_abs_delta) & (enriched["delta"].abs() <= leg.max_abs_delta)].copy()
+    if enriched.empty:
+        return None
+
+    enriched["delta_distance"] = (enriched["delta"] - leg.target_delta).abs()
+    enriched = enriched.sort_values(["delta_distance", "trade_count", "volume"], ascending=[True, False, False]).reset_index(drop=True)
+    chosen = enriched.iloc[0]
+    fill_price = buy_fill(float(chosen["close"])) if leg.side == "long" else sell_fill(float(chosen["close"]))
+    return {
+        "symbol": str(chosen["symbol"]),
+        "option_type": leg.option_type,
+        "side": leg.side,
+        "target_delta": leg.target_delta,
+        "entry_price_raw": float(chosen["close"]),
+        "entry_price_fill": fill_price,
+        "strike_price": float(chosen["strike_price"]),
+        "spot_price": float(chosen["spot_price"]),
+        "implied_vol": float(chosen["implied_vol"]),
+        "delta": float(chosen["delta"]),
+        "gamma": float(chosen["gamma"]),
+        "theta": float(chosen["theta"]),
+        "vega": float(chosen["vega"]),
+    }
+
+
+def price_series(price_index: pd.DataFrame, trade_date: date, symbol: str) -> pd.Series | None:
+    try:
+        frame = price_index.loc[(trade_date, symbol)]
+    except KeyError:
+        return None
+    if isinstance(frame, pd.Series):
+        frame = frame.to_frame().T
+    return frame["close"]
+
+
+def generate_candidate_trades(
+    strategies: list[DeltaStrategy],
+    day_contexts: list,
+    chain_index: pd.DataFrame,
+    price_index: pd.DataFrame,
+    regime_map: dict[date, str],
+) -> pd.DataFrame:
+    trades: list[dict[str, object]] = []
+
+    for strategy in strategies:
+        for ctx in day_contexts:
+            dte = resolve_dte(available_dtes=ctx.available_dtes, mode=strategy.dte_mode)
+            if dte is None:
+                continue
+
+            entry_idx = SIGNAL_DISPATCH[strategy.signal_name](ctx)
+            if entry_idx is None:
+                continue
+            hard_exit_idx = min(strategy.hard_exit_minute, len(ctx.frame) - 1)
+            if entry_idx >= hard_exit_idx:
+                continue
+
+            used_symbols: set[str] = set()
+            legs: list[dict[str, object]] = []
+            for leg_template in strategy.legs:
+                selected = select_leg(
+                    chain_index=chain_index,
+                    trade_date=ctx.trade_date,
+                    minute_index=entry_idx,
+                    dte=dte,
+                    leg=leg_template,
+                    used_symbols=used_symbols,
+                )
+                if selected is None:
+                    legs = []
+                    break
+                used_symbols.add(str(selected["symbol"]))
+                legs.append(selected)
+            if not legs:
+                continue
+
+            entry_cash_per_combo = open_cashflow(legs=legs, quantity=1)
+            entry_commission_per_combo = COMMISSION_PER_CONTRACT * len(legs)
+            exit_commission_per_combo = COMMISSION_PER_CONTRACT * len(legs)
+            entry_net_premium = combo_entry_net_premium(legs)
+            max_loss_per_combo, max_profit_per_combo = estimate_combo_bounds(legs=legs, entry_net_premium=entry_net_premium)
+
+            symbol_paths: dict[str, pd.Series] = {}
+            for leg in legs:
+                series = price_series(price_index=price_index, trade_date=ctx.trade_date, symbol=str(leg["symbol"]))
+                if series is None:
+                    symbol_paths = {}
+                    break
+                symbol_paths[str(leg["symbol"])] = series
+            if not symbol_paths:
+                continue
+
+            target_dollars = abs(entry_net_premium) * 100.0 * strategy.profit_target_multiple
+            stop_dollars = abs(entry_net_premium) * 100.0 * strategy.stop_loss_multiple
+            mark_to_market: dict[int, float] = {}
+            exit_idx: int | None = None
+            exit_reason = "time_exit"
+            exit_cash_per_combo = 0.0
+            net_pnl_per_combo = 0.0
+
+            for idx in range(entry_idx + 1, hard_exit_idx + 1):
+                current_prices: list[float] = []
+                available = True
+                for leg in legs:
+                    raw_price = symbol_paths[str(leg["symbol"])].get(idx)
+                    if pd.isna(raw_price):
+                        available = False
+                        break
+                    current_prices.append(float(raw_price))
+                if not available:
+                    continue
+
+                current_exit_cash = close_cashflow(legs=legs, exit_prices_raw=current_prices, quantity=1)
+                current_net_pnl = entry_cash_per_combo + current_exit_cash - entry_commission_per_combo - exit_commission_per_combo
+                mark_to_market[idx] = current_exit_cash - exit_commission_per_combo
+
+                if current_net_pnl >= target_dollars:
+                    exit_idx = idx
+                    exit_reason = "profit_target"
+                    exit_cash_per_combo = current_exit_cash
+                    net_pnl_per_combo = current_net_pnl
+                    break
+                if current_net_pnl <= -stop_dollars:
+                    exit_idx = idx
+                    exit_reason = "stop_loss"
+                    exit_cash_per_combo = current_exit_cash
+                    net_pnl_per_combo = current_net_pnl
+                    break
+
+                exit_idx = idx
+                exit_cash_per_combo = current_exit_cash
+                net_pnl_per_combo = current_net_pnl
+
+            if exit_idx is None:
+                continue
+
+            entry_time = ctx.frame.loc[entry_idx, "timestamp_et"]
+            exit_time = ctx.frame.loc[exit_idx, "timestamp_et"]
+            trades.append(
+                {
+                    "strategy": strategy.name,
+                    "family": strategy.family,
+                    "description": strategy.description,
+                    "trade_date": ctx.trade_date.isoformat(),
+                    "regime": regime_map[ctx.trade_date],
+                    "dte": dte,
+                    "entry_minute": int(entry_idx),
+                    "exit_minute": int(exit_idx),
+                    "entry_time_et": entry_time.isoformat(),
+                    "exit_time_et": exit_time.isoformat(),
+                    "exit_reason": exit_reason,
+                    "entry_underlying": round(float(ctx.frame.loc[entry_idx, "qqq_close"]), 4),
+                    "exit_underlying": round(float(ctx.frame.loc[exit_idx, "qqq_close"]), 4),
+                    "entry_cash_per_combo": round(entry_cash_per_combo, 4),
+                    "exit_cash_per_combo": round(exit_cash_per_combo, 4),
+                    "entry_commission_per_combo": round(entry_commission_per_combo, 4),
+                    "exit_commission_per_combo": round(exit_commission_per_combo, 4),
+                    "net_pnl_per_combo": round(net_pnl_per_combo, 4),
+                    "max_loss_per_combo": round(max_loss_per_combo, 4),
+                    "max_profit_per_combo": round(max_profit_per_combo, 4),
+                    "return_on_risk_pct": round((net_pnl_per_combo / max_loss_per_combo) * 100.0, 4) if max_loss_per_combo > 0 else 0.0,
+                    "holding_minutes": int(exit_idx - entry_idx),
+                    "legs_json": json.dumps(legs, sort_keys=True),
+                    "mark_to_market_json": json.dumps(mark_to_market, sort_keys=True),
+                }
+            )
+
+    trades_df = pd.DataFrame(trades)
+    if not trades_df.empty:
+        trades_df = trades_df.sort_values(["trade_date", "entry_minute", "strategy"]).reset_index(drop=True)
+    return trades_df
+
+
+def summarize_regimes(trades_df: pd.DataFrame) -> pd.DataFrame:
+    if trades_df.empty:
+        return pd.DataFrame(
+            columns=[
+                "regime",
+                "strategy",
+                "family",
+                "trade_count",
+                "win_rate_pct",
+                "total_net_pnl_1x",
+                "avg_net_pnl_1x",
+                "avg_return_on_risk_pct",
+            ]
+        )
+
+    grouped = (
+        trades_df.groupby(["regime", "strategy", "family"], as_index=False)
+        .agg(
+            trade_count=("net_pnl_per_combo", "size"),
+            wins=("net_pnl_per_combo", lambda series: int((series > 0).sum())),
+            total_net_pnl_1x=("net_pnl_per_combo", "sum"),
+            avg_net_pnl_1x=("net_pnl_per_combo", "mean"),
+            avg_return_on_risk_pct=("return_on_risk_pct", "mean"),
+        )
+    )
+    grouped["win_rate_pct"] = (grouped["wins"] / grouped["trade_count"]) * 100.0
+    grouped = grouped.drop(columns=["wins"])
+    grouped = grouped.sort_values(["regime", "total_net_pnl_1x", "avg_return_on_risk_pct"], ascending=[True, False, False]).reset_index(drop=True)
+    return grouped
+
+
+def current_portfolio_equity(cash: float, open_positions: list[dict[str, object]], minute_index: int) -> float:
+    equity = cash
+    for position in open_positions:
+        mtm = position["mark_to_market"].get(minute_index)
+        if mtm is None:
+            continue
+        equity += float(mtm) * int(position["quantity"])
+    return equity
+
+
+def run_portfolio_allocator(
+    strategies: list[DeltaStrategy],
+    trades_df: pd.DataFrame,
+    portfolio_max_open_risk_fraction: float = PORTFOLIO_MAX_OPEN_RISK_FRACTION,
+    starting_equity: float = STARTING_EQUITY,
+) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, object]]:
+    strategy_map = {strategy.name: strategy for strategy in strategies}
+    cash = starting_equity
+    open_positions: list[dict[str, object]] = []
+    portfolio_trades: list[dict[str, object]] = []
+    equity_curve: list[dict[str, object]] = []
+
+    if trades_df.empty:
+        return pd.DataFrame(), pd.DataFrame([{"trade_date": None, "minute_index": None, "equity": starting_equity}]), {
+            "starting_equity": starting_equity,
+            "final_equity": starting_equity,
+            "total_return_pct": 0.0,
+            "trade_count": 0,
+            "win_rate_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "portfolio_max_open_risk_fraction": portfolio_max_open_risk_fraction,
+        }
+
+    trades_df = trades_df.copy()
+    trades_df["trade_date"] = pd.to_datetime(trades_df["trade_date"]).dt.date
+    trades_by_day_minute = {
+        key: frame.reset_index(drop=True)
+        for key, frame in trades_df.groupby(["trade_date", "entry_minute"], sort=True)
+    }
+    ordered_days = sorted(trades_df["trade_date"].unique())
+
+    for trade_date in ordered_days:
+        for minute_index in range(MINUTES_PER_RTH_SESSION):
+            remaining_positions: list[dict[str, object]] = []
+            for position in open_positions:
+                if position["exit_minute"] == minute_index:
+                    quantity = int(position["quantity"])
+                    cash += quantity * (
+                        float(position["exit_cash_per_combo"]) - float(position["exit_commission_per_combo"])
+                    )
+                    realized_net = quantity * float(position["net_pnl_per_combo"])
+                    portfolio_trades.append(
+                        {
+                            **position["trade"],
+                            "quantity": quantity,
+                            "portfolio_net_pnl": round(realized_net, 4),
+                            "equity_after_exit": round(cash, 4),
+                        }
+                    )
+                else:
+                    remaining_positions.append(position)
+            open_positions = remaining_positions
+
+            current_equity = current_portfolio_equity(cash=cash, open_positions=open_positions, minute_index=minute_index)
+            reserved_risk = sum(float(position["max_loss_per_combo"]) * int(position["quantity"]) for position in open_positions)
+            entries = trades_by_day_minute.get((trade_date, minute_index))
+            if entries is not None:
+                for row in entries.itertuples(index=False):
+                    strategy = strategy_map[str(row.strategy)]
+                    current_equity = current_portfolio_equity(cash=cash, open_positions=open_positions, minute_index=minute_index)
+                    reserved_risk = sum(float(position["max_loss_per_combo"]) * int(position["quantity"]) for position in open_positions)
+                    remaining_risk_capacity = max(0.0, current_equity * portfolio_max_open_risk_fraction - reserved_risk)
+                    per_trade_risk_budget = current_equity * strategy.risk_fraction
+                    allocatable_risk = min(per_trade_risk_budget, remaining_risk_capacity)
+
+                    max_loss_per_combo = float(row.max_loss_per_combo)
+                    if max_loss_per_combo <= 0.0:
+                        continue
+                    quantity_by_risk = math.floor(allocatable_risk / max_loss_per_combo)
+                    if quantity_by_risk < 1:
+                        continue
+
+                    entry_outflow_per_combo = max(0.0, -(float(row.entry_cash_per_combo) - float(row.entry_commission_per_combo)))
+                    if entry_outflow_per_combo > 0.0:
+                        quantity_by_cash = math.floor(max(0.0, cash) / entry_outflow_per_combo)
+                    else:
+                        quantity_by_cash = strategy.max_contracts
+
+                    quantity = min(strategy.max_contracts, quantity_by_risk, quantity_by_cash)
+                    if quantity < 1:
+                        continue
+
+                    cash += quantity * (float(row.entry_cash_per_combo) - float(row.entry_commission_per_combo))
+                    open_positions.append(
+                        {
+                            "trade": row._asdict(),
+                            "quantity": quantity,
+                            "exit_minute": int(row.exit_minute),
+                            "entry_cash_per_combo": float(row.entry_cash_per_combo),
+                            "exit_cash_per_combo": float(row.exit_cash_per_combo),
+                            "entry_commission_per_combo": float(row.entry_commission_per_combo),
+                            "exit_commission_per_combo": float(row.exit_commission_per_combo),
+                            "net_pnl_per_combo": float(row.net_pnl_per_combo),
+                            "max_loss_per_combo": max_loss_per_combo,
+                            "mark_to_market": {int(key): float(value) for key, value in json.loads(row.mark_to_market_json).items()},
+                        }
+                    )
+
+            current_equity = current_portfolio_equity(cash=cash, open_positions=open_positions, minute_index=minute_index)
+            equity_curve.append(
+                {
+                    "trade_date": trade_date.isoformat(),
+                    "minute_index": minute_index,
+                    "equity": round(current_equity, 4),
+                    "cash": round(cash, 4),
+                    "open_positions": len(open_positions),
+                    "reserved_risk": round(sum(float(position["max_loss_per_combo"]) * int(position["quantity"]) for position in open_positions), 4),
+                }
+            )
+
+        if open_positions:
+            raise RuntimeError(f"open positions remained after end of day {trade_date}")
+
+    portfolio_trades_df = pd.DataFrame(portfolio_trades)
+    equity_curve_df = pd.DataFrame(equity_curve)
+    if equity_curve_df.empty:
+        final_equity = starting_equity
+        max_drawdown_pct = 0.0
+    else:
+        final_equity = float(equity_curve_df["equity"].iloc[-1])
+        peak = equity_curve_df["equity"].cummax()
+        drawdown = (equity_curve_df["equity"] / peak) - 1.0
+        max_drawdown_pct = float(drawdown.min()) * 100.0
+
+    trade_count = int(len(portfolio_trades_df))
+    win_rate_pct = (
+        float((portfolio_trades_df["portfolio_net_pnl"] > 0).mean() * 100.0)
+        if trade_count > 0
+        else 0.0
+    )
+    summary = {
+        "starting_equity": starting_equity,
+        "final_equity": round(final_equity, 2),
+        "total_return_pct": round(((final_equity / starting_equity) - 1.0) * 100.0, 2),
+        "trade_count": trade_count,
+        "win_rate_pct": round(win_rate_pct, 2),
+        "max_drawdown_pct": round(max_drawdown_pct, 2),
+        "portfolio_max_open_risk_fraction": portfolio_max_open_risk_fraction,
+    }
+    if trade_count > 0:
+        contributions = (
+            portfolio_trades_df.groupby("strategy", as_index=False)["portfolio_net_pnl"]
+            .sum()
+            .sort_values("portfolio_net_pnl", ascending=False)
+        )
+        summary["strategy_contributions"] = contributions.to_dict(orient="records")
+    else:
+        summary["strategy_contributions"] = []
+    return portfolio_trades_df, equity_curve_df, summary
+
+
+def write_report(path: Path, regime_summary: pd.DataFrame, portfolio_summary: dict[str, object]) -> None:
+    lines: list[str] = []
+    lines.append("# QQQ Delta-Targeted Greeks Portfolio Backtest")
+    lines.append("")
+    lines.append(f"- Regime split: bull if daily RTH return >= +{REGIME_THRESHOLD_PCT:.2f}%, bear if <= -{REGIME_THRESHOLD_PCT:.2f}%, otherwise choppy.")
+    lines.append(f"- Shared starting equity: ${STARTING_EQUITY:,.0f}")
+    lines.append(f"- Max concurrent open risk: {PORTFOLIO_MAX_OPEN_RISK_FRACTION * 100:.0f}% of current portfolio equity")
+    lines.append(f"- Flat risk-free rate for Greeks: {RISK_FREE_RATE * 100:.2f}%")
+    lines.append("")
+    lines.append("## Top Strategies By Regime")
+    lines.append("")
+    for regime in ["bull", "bear", "choppy"]:
+        lines.append(f"### {regime.title()}")
+        subset = regime_summary[regime_summary["regime"] == regime].head(3)
+        if subset.empty:
+            lines.append("- No qualifying trades.")
+        else:
+            for row in subset.itertuples(index=False):
+                lines.append(
+                    f"- `{row.strategy}`: {row.trade_count} trades, ${row.total_net_pnl_1x:.2f} total 1x PnL, {row.win_rate_pct:.1f}% win rate."
+                )
+        lines.append("")
+    lines.append("## Portfolio Summary")
+    lines.append("")
+    lines.append(f"- Final equity: ${portfolio_summary['final_equity']:.2f}")
+    lines.append(f"- Total return: {portfolio_summary['total_return_pct']:.2f}%")
+    lines.append(f"- Trades executed: {portfolio_summary['trade_count']}")
+    lines.append(f"- Win rate: {portfolio_summary['win_rate_pct']:.2f}%")
+    lines.append(f"- Max drawdown: {portfolio_summary['max_drawdown_pct']:.2f}%")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def main() -> None:
+    args = build_parser().parse_args()
+    output_dir = Path(args.output_dir).resolve()
+
+    wide = load_wide_data(path=output_dir / args.wide_name)
+    _, _, available_dtes = load_daily_universe(path=output_dir / args.daily_universe_name)
+    day_contexts = build_day_contexts(wide=wide, available_dtes=available_dtes)
+    valid_trade_dates = {ctx.trade_date for ctx in day_contexts}
+    chain_index, price_index = load_dense_data(path=output_dir / args.dense_name, valid_trade_dates=valid_trade_dates, wide=wide)
+    regime_map = build_regime_map(wide=wide)
+    strategies = build_delta_strategies()
+
+    candidate_trades_df = generate_candidate_trades(
+        strategies=strategies,
+        day_contexts=day_contexts,
+        chain_index=chain_index,
+        price_index=price_index,
+        regime_map=regime_map,
+    )
+    regime_summary_df = summarize_regimes(candidate_trades_df)
+    portfolio_trades_df, portfolio_equity_df, portfolio_summary = run_portfolio_allocator(
+        strategies=strategies,
+        trades_df=candidate_trades_df,
+    )
+
+    candidate_trades_df.to_csv(output_dir / args.candidate_trades_name, index=False)
+    regime_summary_df.to_csv(output_dir / args.regime_summary_name, index=False)
+    portfolio_trades_df.to_csv(output_dir / args.portfolio_trades_name, index=False)
+    portfolio_equity_df.to_csv(output_dir / args.portfolio_equity_name, index=False)
+    (output_dir / args.portfolio_summary_name).write_text(json.dumps(portfolio_summary, indent=2), encoding="utf-8")
+    write_report(path=output_dir / args.report_name, regime_summary=regime_summary_df, portfolio_summary=portfolio_summary)
+
+    print(
+        json.dumps(
+            {
+                "candidate_trades_csv": str(output_dir / args.candidate_trades_name),
+                "regime_summary_csv": str(output_dir / args.regime_summary_name),
+                "portfolio_trades_csv": str(output_dir / args.portfolio_trades_name),
+                "portfolio_equity_curve_csv": str(output_dir / args.portfolio_equity_name),
+                "portfolio_summary_json": str(output_dir / args.portfolio_summary_name),
+                "report_md": str(output_dir / args.report_name),
+                "candidate_trade_count": int(len(candidate_trades_df)),
+                "portfolio_trade_count": int(len(portfolio_trades_df)),
+                "portfolio_final_equity": portfolio_summary["final_equity"],
+            },
+            indent=2,
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

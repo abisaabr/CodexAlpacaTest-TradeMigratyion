@@ -1,0 +1,28 @@
+{
+  "created_at_utc": "2026-04-17T14:45:56Z",
+  "bundle_name": "cleanroom_research_handoff_20260417_144540",
+  "workspace_name": "qqq_options_30d_cleanroom",
+  "source_workspace": "C:\\Users\\rabisaab\\Downloads\\qqq_options_30d_cleanroom",
+  "workspace_zip_name": "qqq_options_30d_cleanroom_snapshot.zip",
+  "sibling_repo_required": "codexalpaca_repo",
+  "included_file_count": 464,
+  "related_archives_detected": [
+    "alpaca-stock-strategy-research.zip",
+    "qqq_alpaca_atm_0_7dte_backfill.zip",
+    "qqq_alpaca_atm_0_7dte_backfill_sanitized_rebuild_source.zip",
+    "qqq_alpaca_atm_0_7dte_backfill_with_greeks_clean_rerun.zip",
+    "qqq_direct_greeks_oos_subset_20260415.zip",
+    "qqq_options_30d_cleanroom.zip",
+    "qqq_options_30d_cleanroom_raw_csv_part01_20260415.zip",
+    "qqq_options_30d_cleanroom_raw_csv_part02_20260415.zip",
+    "qqq_options_30d_cleanroom_remainder_20260415.zip",
+    "qqq_options_30d_cleanroom_with_greeks_raw_csv_20260415.zip",
+    "qqq_options_30d_cleanroom_with_greeks_remainder_20260415.zip"
+  ],
+  "notes": [
+    "Restore this workspace into the same parent folder as codexalpaca_repo.",
+    "Use the codexalpaca_repo virtualenv when running the cleanroom research scripts.",
+    "The current cleanroom research scripts assume qqq_options_30d_cleanroom and codexalpaca_repo are sibling folders.",
+    "Optional archive backups detected in the source archive folder. Copy them too if you want raw backup parity."
+  ]
+}
