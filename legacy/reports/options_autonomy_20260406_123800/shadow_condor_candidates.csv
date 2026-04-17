@@ -1,0 +1,2 @@
+symbol,timeframe,range_score,structure,expiration,short_call_symbol,long_call_symbol,short_put_symbol,long_put_symbol,short_call_strike,long_call_strike,short_put_strike,long_put_strike,net_credit_estimate,max_loss_estimate,reward_risk_ratio,breakeven_low,breakeven_high,average_spread_bps
+SPY,5min,4,iron_condor,2026-04-08,SPY260408C00659000,SPY260408C00660000,SPY260408P00657000,SPY260408P00656000,659.0,660.0,657.0,656.0,0.86,14.0,6.143,656.14,659.86,50.8

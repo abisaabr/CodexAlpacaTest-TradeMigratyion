@@ -1,0 +1,232 @@
+MASTER CODEX PROMPT: BROAD-PARTICIPATION-ONLY CONFIRMATION TEST FOR RS VS CSM VS DSE
+
+You are running on my Windows machine.
+
+This is the next falsification step after the ex-TSLA diagnostic.
+Do NOT rerun the giant tournament.
+Do NOT run options.
+Do NOT broaden scope to unrelated families.
+This task is only about testing whether the surviving upside branch has a real edge on broad-participation days, rather than on leader-dominant days.
+
+OPEN THESE EXACT FILES FIRST
+- C:\Users\rabisaab\Downloads\master_strategy_memo.txt
+- C:\Users\rabisaab\Downloads\tournament_master_report.md
+- C:\Users\rabisaab\Downloads\monday_paper_plan.md
+- C:\Users\rabisaab\Downloads\megacap_ex_nvda_branch_decision.md
+- C:\Users\rabisaab\Downloads\leader_vs_breadth_report.md
+- C:\Users\rabisaab\Downloads\megacap_ex_nvda_forensics_report.md
+- C:\Users\rabisaab\Downloads\megacap_ex_nvda_paper_watch_recheck.md
+- C:\Users\rabisaab\Downloads\ex_tsla_branch_redecision.md
+- C:\Users\rabisaab\Downloads\ex_tsla_leader_report.md
+- C:\Users\rabisaab\Downloads\ex_tsla_forensics_report.md
+- C:\Users\rabisaab\Downloads\ex_tsla_paper_watch_recheck.md
+- C:\Users\rabisaab\Downloads\next_post_ex_tsla_experiments.md
+- C:\Users\rabisaab\Downloads\best_day_autopsy_report.md
+- C:\Users\rabisaab\Downloads\non_extreme_day_edge_report.md
+- C:\Users\rabisaab\Downloads\canonical_edge_hypothesis.md
+- C:\Users\rabisaab\Downloads\ex_tsla_metrics.csv
+- C:\Users\rabisaab\Downloads\ex_tsla_leader_diagnostic.csv
+- C:\Users\rabisaab\Downloads\day_type_symbol_regime_map.csv
+- C:\Users\rabisaab\Downloads\day_level_pnl_decomposition.csv
+- C:\Users\rabisaab\Downloads\underlying_trade_ledger.csv
+- C:\Users\rabisaab\Downloads\underlying_tournament_metrics.csv
+- C:\Users\rabisaab\Downloads\trade_cluster_edge_map.csv
+
+If any are missing, say so explicitly and continue with what you can open.
+
+PRIMARY CONTEXT YOU MUST PRESERVE
+- The only active paper strategy remains:
+  - qqq_led_tqqq_sqqq_pair_opening_range_intraday_system
+- The trust anchor / control remains:
+  - down_streak_exhaustion
+- The current canonical upside research branch after ex-TSLA is:
+  - relative_strength_vs_benchmark :: rs_top3_native
+- The main challenger is:
+  - cross_sectional_momentum :: csm_native
+- The most honest current label for the upside branch is:
+  - narrowed momentum regime sleeve
+- The ex-TSLA diagnostic showed:
+  - RS retakes the crown narrowly
+  - both branches still survive
+  - neither branch is close to paper-watch
+  - both are still materially tail-shaped
+  - both still behave like leader-following sleeves rather than broad robust sleeves
+- The single best next experiment identified by the prior work is:
+  - broad-participation-only confirmation test
+
+MISSION
+Determine whether the canonical upside branch still has real edge on broad-participation days after stripping away leader-dominant behavior.
+
+You are trying to answer:
+1. If we keep only broad-participation days, does RS still deserve the crown?
+2. Does CSM become cleaner and stronger once leader-dominant days are excluded?
+3. Does any real edge remain once one-name leadership is screened out?
+4. Is the surviving edge broad enough to matter across the remaining mega-cap ex-NVDA ex-TSLA universe?
+5. Should RS remain canonical, should CSM take over, or should both be demoted as leader-following artifacts?
+6. Does DSE remain the correct trust benchmark after this test?
+
+DO NOT DO THESE THINGS
+- Do not invent new strategy logic
+- Do not optimize dozens of parameters
+- Do not broaden to unrelated families
+- Do not run options
+- Do not hide if the edge disappears once broad participation is required
+- Do not call weak residual edge robust just because it stays positive
+- Do not collapse RS and CSM into one family
+
+TARGETS
+1. relative_strength_vs_benchmark :: rs_top3_native
+2. cross_sectional_momentum :: csm_native
+3. down_streak_exhaustion as control only
+
+PRIMARY UNIVERSE FOR THIS TASK
+Use the same narrowed mega-cap ex-NVDA ex-TSLA universe from the prior diagnostic:
+- AAPL
+- AMZN
+- GOOG or GOOGL, whichever exists locally
+- META
+- NFLX
+
+Do not silently add or remove names.
+
+PHASE 0: INPUT DIGEST
+Create:
+1. broad_participation_input_digest.md
+
+Show:
+- which files opened
+- which exact implementations are being tested
+- exact symbol universe used
+- whether GOOG vs GOOGL affects the run
+- what local fields are available to define participation breadth honestly
+- remaining data limits
+
+PHASE 1: DEFINE BROAD-PARTICIPATION FILTERS
+Create:
+2. broad_participation_test_matrix.md
+
+Use only honest day-level filters derivable from local diagnostics, such as:
+- top-symbol share <= a clean threshold
+- at least 2 profitable symbols on the day
+- at least 3 participating symbols if available
+- multi-symbol participation above a clean threshold
+- leader-dominant days explicitly excluded
+- supportive-regime broad-participation days if regime tags are available
+
+Build a small, interpretable grid such as:
+A. ex-TSLA full slice baseline
+B. broad-participation-only slice
+C. broad-participation-only rising_market
+D. broad-participation-only strong_momentum_participation if derivable honestly
+E. broad-participation-only non-extreme days if reconstructable cleanly
+F. leader-dominant days only, as contrast
+G. mixed/unclear participation days only, if definable honestly
+
+Important:
+These are confirmation/falsification slices, not new strategies.
+If a slice cannot be defined honestly from local fields, say so explicitly.
+
+PHASE 2: RUN THE BROAD-PARTICIPATION RERUNS
+For each valid slice, compute:
+- final equity
+- total return pct
+- CAGR
+- max drawdown pct
+- Sharpe
+- profit factor
+- expectancy
+- win rate
+- average win
+- average loss
+- payoff ratio
+- trade count
+- percent profitable months
+- percent of total PnL from top symbol
+- percent of total PnL from top 10% of days
+- non-extreme-day expectancy if available
+- whether final equity exceeded $100,000 from $25,000
+
+Create:
+3. broad_participation_metrics.csv
+4. broad_participation_leaderboard.md
+
+PHASE 3: CONTRAST LEADER-DOMINANT VS BROAD-PARTICIPATION EDGE
+Create:
+5. leader_vs_broad_participation_contrast.csv
+6. leader_vs_broad_participation_report.md
+
+This report must answer:
+- how much of RS edge comes from leader-dominant days vs broad-participation days
+- how much of CSM edge comes from leader-dominant days vs broad-participation days
+- whether either branch has a clean broad-participation core
+- whether DSE remains structurally cleaner under this lens
+
+PHASE 4: BEST-DAY AND NON-EXTREME-DAY RECHECK INSIDE BROAD-PARTICIPATION DAYS
+For the best broad-participation slice of RS and the best broad-participation slice of CSM:
+- remove best 1% of days
+- remove best 2.5% of days
+- remove best 5% of days
+- remove both best and worst 2.5% of days
+
+Create:
+7. broad_participation_forensics.csv
+8. broad_participation_forensics_report.md
+
+This report must answer:
+- which branch survives best-day removal better inside broad-participation days
+- which branch has the cleaner non-extreme-day edge inside broad participation
+- whether any branch gets materially closer to paper-watch honesty
+- whether the remaining edge is still too tail-shaped
+
+PHASE 5: CANONICAL BRANCH REDECISION AFTER BROAD-PARTICIPATION TEST
+Create:
+9. broad_participation_branch_decision.md
+10. broad_participation_paper_watch_recheck.md
+11. next_after_broad_participation.md
+
+The branch decision must answer directly:
+1. Does RS remain the canonical upside research branch after broad-participation-only confirmation?
+2. Should CSM take over instead?
+3. Should both be demoted if the broad-participation edge is too weak?
+4. What is the most honest label now:
+   - narrowed momentum regime sleeve
+   - broad-participation sleeve
+   - leader-following research artifact
+   - narrow research artifact with weak broad core
+5. Does DSE remain the control benchmark?
+
+The paper-watch recheck must answer directly:
+1. Did either branch get materially closer to paper-watch?
+2. What exact deficiency still blocks paper-watch?
+3. Is the next step another falsification test, a narrower confirmation rerun, or a demotion?
+
+The next experiments file must give a short ranked list such as:
+- keep QQQ pair as only active paper strategy
+- preserve DSE as control
+- keep RS as canonical branch
+- switch to CSM as canonical branch
+- demote both upside branches if broad-participation edge is too weak
+- run one ex-AAPL or ex-META dependency test if a new dominant carrier emerges
+- stop any branch that only survives through leader-dominant days
+
+TERMINAL SUMMARY REQUIRED
+At the end print:
+- which files opened successfully
+- whether RS survives broad-participation-only confirmation
+- whether CSM survives broad-participation-only confirmation
+- which branch is cleaner on broad-participation days
+- whether RS remains canonical
+- whether CSM takes over
+- whether both should be demoted
+- whether DSE remains the control
+- whether either branch got closer to paper-watch
+- the single best next experiment
+- paths to all deliverables
+
+BOTTOM LINE
+You are trying to determine whether the current upside branches have any real edge once leader-dominant behavior is screened out.
+If the answer is no, say so plainly.
+If one branch still has a meaningful broad-participation core, say so plainly.
+
+START NOW.
+Open the exact files first, define the broad-participation filters, run the reruns, contrast leader-dominant vs broad-participation edge, do the forensics, and finish with the branch redecision.

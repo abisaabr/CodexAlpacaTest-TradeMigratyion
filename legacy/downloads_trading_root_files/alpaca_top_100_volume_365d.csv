@@ -1,0 +1,101 @@
+rank,symbol,total_volume,bar_count,exchange,name
+1,SOXS,63090114071,250,ARCA,Direxion Daily Semiconductor Bear 3X ETF
+2,NVDA,48449985314,250,NASDAQ,NVIDIA Corporation Common Stock
+3,OPEN,36454834779,250,NASDAQ,Opendoor Technologies Inc Common Stock
+4,HCTI,35199928203,250,NASDAQ,"Healthcare Triangle, Inc. Common Stock"
+5,TSLL,33629152091,250,NASDAQ,Direxion Shares ETF Trust Direxion Daily TSLA Bull 2X ETF
+6,SOXL,29274386281,250,ARCA,Direxion Daily Semiconductor Bull 3X ETF
+7,PLUG,25796049807,250,NASDAQ,"Plug Power, Inc. Common Stock"
+8,INTC,25254856018,250,NASDAQ,Intel Corporation Common Stock
+9,BBAI,23716819113,250,NYSE,"BigBear.ai Holdings, Inc."
+10,SQQQ,23140610155,250,NASDAQ,ProShares UltraPro Short QQQ
+11,TSLA,21894084718,250,NASDAQ,"Tesla, Inc. Common Stock"
+12,TQQQ,20990829410,250,NASDAQ,ProShares UltraPro QQQ
+13,F,20191391849,250,NYSE,Ford Motor Company
+14,SPY,19911763873,250,ARCA,State Street SPDR S&P 500 ETF Trust
+15,GNLN,19182840875,250,NASDAQ,"Greenlane Holdings, Inc. Class A Common Stock"
+16,DNN,18773121764,250,AMEX,Denison Mines Corp
+17,SOFI,16722080084,250,NASDAQ,"SoFi Technologies, Inc. Common Stock"
+18,AAL,16188382114,250,NASDAQ,American Airlines Group Inc. Common Stock
+19,PLTR,16140958308,250,NASDAQ,Palantir Technologies Inc. Class A Common Stock
+20,NCNA,15969079716,250,NASDAQ,NuCana plc American Depositary Share
+21,BYND,15959717652,250,NASDAQ,"Beyond Meat, Inc. Common Stock"
+22,TZA,15702780381,250,ARCA,Direxion Daily Small Cap Bear 3x ETF
+23,ONDS,14672642722,250,NASDAQ,Ondas Inc. Common Stock
+24,TSLZ,14601364967,250,BATS,T-Rex 2X Inverse Tesla Daily Target ETF
+25,LCID,14282057755,250,NASDAQ,"Lucid Group, Inc. Common Stock"
+26,SNAP,14187602774,250,NYSE,Snap Inc.
+27,IBIT,13875753319,250,NASDAQ,iShares Bitcoin Trust ETF Shares
+28,QQQ,13822451755,250,NASDAQ,"Invesco QQQ Trust, Series 1"
+29,NIO,13761933436,250,NYSE,"NIO Inc. American depositary shares, each representing one Class A ordinary share"
+30,BURU,13693107064,250,AMEX,"Nuburu, Inc."
+31,IXHL,13511798886,250,NASDAQ,Incannex Healthcare Inc. Common Stock
+32,AAPL,13082973912,250,NASDAQ,Apple Inc. Common Stock
+33,NU,12996312516,250,NYSE,Nu Holdings Ltd.
+34,MSTU,12811350404,250,BATS,T-Rex 2X Long MSTR Daily Target ETF
+35,PFE,12696680299,250,NYSE,Pfizer Inc.
+36,RGTI,12535077756,250,NASDAQ,"Rigetti Computing, Inc. Common Stock"
+37,AMD,12011047616,250,NASDAQ,"Advanced Micro Devices, Inc. Common Stock"
+38,SLV,12002252431,250,ARCA,iShares Silver Trust
+39,MARA,11990566358,250,NASDAQ,"MARA Holdings, Inc. Common Stock"
+40,WBD,11721091130,250,NASDAQ,"Warner Bros. Discovery, Inc. Series A Common Stock"
+41,QBTS,11604112033,250,NYSE,D-Wave Quantum Inc.
+42,AMZN,11597810965,250,NASDAQ,"Amazon.com, Inc. Common Stock"
+43,ZSL,11415186475,250,ARCA,ProShares UltraShort Silver
+44,ASST,11117468950,250,NASDAQ,"Strive, Inc. Class A Common Stock"
+45,XLF,11036431283,250,ARCA,State Street Financial Select Sector SPDR ETF
+46,GRAB,11016331014,250,NASDAQ,Grab Holdings Limited Class A Ordinary Shares
+47,BTG,10877497117,250,AMEX,B2Gold Corp.
+48,HYG,10786279204,250,ARCA,iShares iBoxx $ High Yield Corporate Bond ETF
+49,DVLT,10427834775,250,NASDAQ,Datavault AI Inc. Common Stock
+50,RIG,10317794740,250,NYSE,Transocean LTD.
+51,BBD,10235504470,250,NYSE,Banco Bradesco S.A. American Depositary Shares (Each representing one Preferred Shares)
+52,WULF,10166405317,250,NASDAQ,TeraWulf Inc. Common Stock
+53,ACHR,10103732463,250,NYSE,Archer Aviation Inc.
+54,T,10035397207,250,NYSE,AT&T Inc.
+55,YYAI,10035222277,250,NASDAQ,AiRWA Inc. Common Stock
+56,BAC,10020793537,250,NYSE,Bank of America Corporation
+57,ETHA,9965951081,250,NASDAQ,iShares Ethereum Trust ETF Shares
+58,IWM,9794302491,250,ARCA,iShares Russell 2000 ETF
+59,TLT,9539327366,250,NASDAQ,iShares 20 Year Treasury Bond ETF
+60,SOUN,9530707169,250,NASDAQ,"SoundHound AI, Inc Class A Common Stock"
+61,RIVN,9528260442,250,NASDAQ,"Rivian Automotive, Inc. Class A Common Stock"
+62,TLRY,9433820999,250,NASDAQ,"Tilray Brands, Inc. Common Stock"
+63,GOOGL,9210283939,250,NASDAQ,Alphabet Inc. Class A Common Stock
+64,TSLS,9191005394,250,NASDAQ,Direxion Shares ETF Trust Direxion Daily TSLA Bear 1X ETF
+65,HOOD,9050077677,250,NASDAQ,"Robinhood Markets, Inc. Class A Common Stock"
+66,SMCI,9032116480,250,NASDAQ,"Super Micro Computer, Inc. Common Stock"
+67,BITO,8990809167,250,ARCA,ProShares Bitcoin ETF
+68,VALE,8880607911,250,NYSE,VALE S.A.
+69,BMNR,8876123250,209,AMEX,"BitMine Immersion Technologies, Inc."
+70,APLD,8704144181,250,NASDAQ,Applied Digital Corporation Common Stock
+71,FXI,8592237462,250,ARCA,iShares China Large-Cap ETF
+72,SPXS,8486665322,250,ARCA,Direxion Daily S&P 500 Bear 3x ETF
+73,NOK,8465283677,250,NYSE,Nokia Corporation
+74,GPUS,8462169593,250,AMEX,"Hyperscale Data, Inc."
+75,CIFR,8444835403,250,NASDAQ,Cipher Digital Inc. Common Stock
+76,CAN,8253963997,250,NASDAQ,Canaan Inc. American Depositary Shares
+77,HIMS,8238658059,250,NYSE,"Hims & Hers Health, Inc."
+78,NVD,8144017414,250,NASDAQ,GraniteShares ETF Trust GraniteShares 2x Short NVDA Daily ETF
+79,ABEV,8080445882,250,NYSE,AMBEV S.A.
+80,LQD,8064749957,250,ARCA,iShares iBoxx $ Investment Grade Corporate Bond ETF
+81,IREN,8022074173,250,NASDAQ,IREN Limited Ordinary Shares
+82,KVUE,7810561673,250,NYSE,Kenvue Inc.
+83,EEM,7678510923,250,ARCA,iShares MSCI Emerging Markets ETF
+84,NVTS,7555870471,250,NASDAQ,Navitas Semiconductor Corporation Common Stock
+85,BTBT,7530799487,250,NASDAQ,"Bit Digital, Inc. Ordinary Shares"
+86,BMNU,7482577112,131,BATS,T-REX 2X Long BMNR Daily Target ETF
+87,BTE,7454816868,250,NYSE,Baytex Energy Corp.
+88,EWZ,7421542909,250,ARCA,iShares MSCI Brazil ETF
+89,HBAN,7419586267,250,NASDAQ,Huntington Bancshares Incorporated Common Stock
+90,JOBY,7406338896,250,NYSE,"Joby Aviation, Inc."
+91,GIBO,7383010016,250,NASDAQ,GIBO Holdings Limited Class A Ordinary Shares
+92,RIOT,7169578494,250,NASDAQ,"Riot Platforms, Inc. Common Stock"
+93,XLE,7096962880,250,ARCA,State Street Energy Select Sector SPDR ETF
+94,CMCSA,7094616154,250,NASDAQ,Comcast Corporation Class A Common Stock
+95,MU,7078749741,250,NASDAQ,"Micron Technology, Inc. Common Stock"
+96,QS,6961948625,250,NASDAQ,QuantumScape Corporation Class A Common Stock
+97,RXRX,6947922247,250,NASDAQ,"Recursion Pharmaceuticals, Inc. Class A Common Stock"
+98,MSTZ,6915136386,250,BATS,T-Rex 2X Inverse MSTR Daily Target ETF
+99,UVIX,6896182482,250,BATS,2x Long VIX Futures ETF
+100,CLSK,6894295318,250,NASDAQ,"CleanSpark, Inc. Common Stock"

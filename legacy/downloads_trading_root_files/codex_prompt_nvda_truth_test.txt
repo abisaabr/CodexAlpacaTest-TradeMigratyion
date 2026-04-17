@@ -1,0 +1,296 @@
+MASTER CODEX PROMPT: NVDA DEPENDENCY + CONCENTRATION + PORTABILITY TRUTH TEST
+
+You are running on my Windows machine.
+
+This is NOT a giant all-strategy tournament.
+This is a focused truth test whose only purpose is to identify whether the strongest apparent edge is:
+- truly portable
+- mostly NVDA-driven
+- mostly concentration-driven
+- or actually robust enough to deserve promotion toward a real money-making system
+
+OPEN THESE EXACT FILES FIRST
+- C:\Users\rabisaab\Downloads\master_strategy_memo.txt
+- C:\Users\rabisaab\Downloads\top10_authoritative_inventory.txt
+- C:\Users\rabisaab\Downloads\strategy_chat_seed.txt
+- C:\Users\rabisaab\Downloads\tournament_master_report.md
+- C:\Users\rabisaab\Downloads\monday_paper_plan.md
+
+If any of those exact files are missing, say so explicitly and continue with the ones you can open.
+
+PRIMARY CONTEXT YOU MUST PRESERVE
+- The prior tournament found the biggest raw-return upside in:
+  - relative_strength_vs_benchmark
+  - cross_sectional_momentum
+  - breakout_consolidation
+  - volatility_contraction_breakout
+  - pullback_in_trend
+- The prior tournament also identified top edge hotspots concentrated on NVDA.
+- The current best practical paper-engine candidate is:
+  - qqq_led_tqqq_sqqq_pair_opening_range_intraday_system
+- The current best confirmed daily benchmark/control is:
+  - down_streak_exhaustion
+- Honest historical options replay is still blocked by missing trustworthy options quotes.
+- Do not solve that options problem in this task. This task is about underlying edge truth-testing only.
+
+MISSION
+Find out whether the apparent edge in the highest-upside daily families is real, concentrated, and portable.
+
+You are trying to answer these exact questions:
+1. Is the strongest edge mostly NVDA?
+2. Does the edge survive if NVDA is removed?
+3. Does the edge survive if concentration is capped?
+4. Is the edge broad across symbols, or is it a single-name illusion?
+5. Which family has the best chance of becoming a real money-making sleeve after harder truth tests?
+6. Which family should become the next research priority after the QQQ pair?
+
+DO NOT DO THESE THINGS
+- Do not rerun the full giant tournament.
+- Do not spend time on options replay.
+- Do not optimize dozens of parameters.
+- Do not change native strategy logic.
+- Do not silently reinterpret blocked top-10 variants.
+- Do not chase raw return without concentration controls.
+- Do not present a strategy as robust if it fails these truth tests.
+
+TARGET FAMILIES
+Run this truth test on these families first:
+1. relative_strength_vs_benchmark
+2. cross_sectional_momentum
+3. breakout_consolidation
+4. volatility_contraction_breakout
+5. pullback_in_trend
+
+Use these as controls / references:
+6. down_streak_exhaustion
+7. qqq_led_tqqq_sqqq_pair_opening_range_intraday_system
+
+If exact repo-backed variants exist for the above, use them. Otherwise use the exact family implementations that powered the prior tournament.
+
+ACCOUNT / EXECUTION RULES
+- Account size: $25,000
+- RTH only where applicable
+- Use the same 5-year window and same daily user-subset methodology as the prior tournament unless a more exact apples-to-apples rerun is clearly available locally
+- Preserve native execution assumptions
+- No lookahead
+- Use the same fees/slippage assumptions that were used in the prior underlying tournament for comparability
+- Do not improve logic; only test robustness and concentration
+
+PHASE 0: BUILD A TRUTH-TEST INPUT DIGEST
+Create:
+1. nvda_truth_test_input_digest.md
+
+This file must show:
+- which exact files were opened
+- which exact family implementations are being used
+- which prior results are being used as baseline references
+- what local data coverage limits still exist
+- whether GOOG/GOOGL naming still affects the symbol universe
+
+PHASE 1: DEFINE THE TEST MATRIX
+Create:
+2. nvda_truth_test_matrix.md
+
+Run every target family in these slices where structurally valid:
+
+A. Native prior tournament slice
+- same user-subset universe as before
+
+B. NVDA-only slice
+- only NVDA trades/signals retained
+
+C. Mega-cap tech ex-NVDA slice
+- AAPL
+- AMZN
+- GOOG or GOOGL, whichever exists locally
+- META
+- NFLX
+- TSLA
+
+D. Broad basket ex-NVDA slice
+- all available symbols from the prior user-subset except NVDA
+
+E. ETF-only slice
+- SPY
+- QQQ
+- IWM
+
+F. Top-3-symbol concentration-capped slice
+- no single symbol allowed to contribute more than 25% of sleeve PnL
+- if needed, down-weight or cap position allocation by realized contribution, but do not alter signal logic
+
+G. Equal-risk symbol-capped slice
+- enforce equal per-symbol capital budgeting
+- prevent one symbol from dominating exposure
+
+H. Time-stability slices
+- first half of the 5-year window
+- second half of the 5-year window
+- rolling annual windows if computationally reasonable
+
+I. Regime slices if available from local tooling
+- rising / bullish
+- falling / volatile
+- calm / low-vol
+Only include if the same regime tagging used in prior work is locally available.
+
+Important:
+These are truth-test slices, not new strategies.
+
+PHASE 2: RUN THE CONCENTRATION AND PORTABILITY RERUNS
+For each family and each slice above, compute at minimum:
+- final equity
+- total return pct
+- CAGR
+- max drawdown pct
+- Sharpe
+- profit factor
+- expectancy
+- win rate
+- trade count
+- average win
+- average loss
+- payoff ratio
+- percent of total PnL contributed by top symbol
+- percent of total PnL contributed by top 10% of days
+- symbol concentration index
+- whether final equity exceeded $100,000 from $25,000
+- whether win rate exceeded 60%
+
+Create:
+3. concentration_portability_metrics.csv
+4. concentration_portability_leaderboard.md
+
+PHASE 3: BUILD THE EDGE SURVIVAL SCORE
+Create a score that rewards survival under truth tests, not just raw return.
+
+Create:
+5. edge_survival_scorecard.csv
+
+Score each family using:
+- 20% survival after removing NVDA
+- 20% concentration control under symbol caps
+- 15% drawdown control
+- 15% expectancy / payoff quality
+- 10% time stability across halves/windows
+- 10% breadth across symbols
+- 5% evidence quality from prior decision-grade artifacts
+- 5% raw return
+
+Rules:
+- raw return is intentionally low weight
+- if a family collapses outside NVDA, penalize heavily
+- if a family only works in one period, penalize heavily
+- if a family is already flagged as speculative or conflicting in the memo, apply a trust penalty unless the new evidence clearly improves the case
+
+PHASE 4: CLUSTER THE MONEY POCKET
+For each target family, mine the trade distribution to locate the actual edge pocket.
+
+Create:
+6. nvda_cluster_truth_map.csv
+7. nvda_edge_hotspots.md
+
+Cluster by:
+- symbol
+- side
+- volatility bucket
+- trend alignment
+- day-of-week
+- gap bucket
+- holding-time bucket
+- regime bucket if available
+
+For each cluster compute:
+- expectancy
+- payoff ratio
+- win rate
+- MFE/MAE
+- drawdown contribution
+- percent of total PnL
+- trade count
+- stability across time slices
+
+The goal is to determine:
+- whether NVDA is the true edge carrier
+- whether NVDA is just one good cluster inside a broader family
+- whether the family has any secondary edge pockets outside NVDA
+
+PHASE 5: HARD ELIMINATION RULES
+Create:
+8. truth_test_elimination_report.md
+
+A family fails the truth test if any of the following are true:
+- more than 50% of total PnL comes from NVDA unless the family is explicitly reclassified as NVDA-specific
+- removing NVDA drops expectancy below zero
+- concentration-capped slices destroy the edge
+- the second half of the window is materially weaker or negative without a good reason
+- the edge disappears outside one or two symbols
+- the family's best results depend mainly on top 10% of days
+- drawdown becomes unacceptable relative to the edge retained
+- evidence remains in conflict with the prior decision-grade memo without any new confirming artifacts
+
+For each family, classify as:
+- survives broadly
+- survives but mostly as NVDA-specific
+- survives only as niche research
+- fails and should be deprioritized
+
+PHASE 6: COMPARE AGAINST THE CONTROLS
+Use these as control benchmarks:
+- down_streak_exhaustion
+- qqq_led_tqqq_sqqq_pair_opening_range_intraday_system
+
+Important:
+- Do not force daily apples-to-apples against the intraday QQQ pair on every metric
+- Instead compare them on role:
+  - best confirmed daily control = down_streak_exhaustion
+  - best deployable operational control = qqq pair
+
+Create:
+9. control_comparison_summary.md
+
+It must answer:
+- Which target family beats DSE on raw return but loses on trust?
+- Which target family keeps more real edge after hard truth tests?
+- Which target family is actually a better next research priority than DSE?
+- Which target family is still less deployable than the QQQ pair even if returns are higher?
+
+PHASE 7: FINAL DECISION
+Create:
+10. next_edge_research_ranking.md
+11. next_edge_action_plan.md
+
+The final decision must answer directly:
+1. Which family appears to contain the most real surviving edge after removing concentration illusions?
+2. Is that family broad, or should it be explicitly narrowed into an NVDA-specific sleeve?
+3. Which family should be the next research priority?
+4. Which family should be cut or demoted?
+5. What is the best next experiment to move from interesting backtest to real edge?
+
+The action plan must give a ranked next-step list such as:
+- continue papering QQQ pair now
+- run focused NVDA sleeve research on [family]
+- rerun [family] with ex-NVDA basket
+- demote [family] entirely
+- preserve [family] only as benchmark/control
+
+TERMINAL SUMMARY REQUIRED
+At the end print:
+- which exact files opened successfully
+- which families were tested
+- whether NVDA naming or GOOG/GOOGL affected the run
+- the top family by raw return
+- the top family by edge survival score
+- which families survived broadly
+- which families survived only as NVDA-specific
+- which families failed
+- the single best next research priority
+- the single best current paper-trading candidate
+- paths to all deliverables
+
+BOTTOM LINE
+You are not trying to prove a strategy is great.
+You are trying to falsify concentration-driven illusions and isolate the edge that is most likely to survive into a real money-making system.
+
+START NOW.
+Open the exact files first, build the input digest, define the truth-test matrix, run the reruns, score edge survival, and finish with the ranked action plan.

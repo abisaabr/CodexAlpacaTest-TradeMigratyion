@@ -1,0 +1,254 @@
+MASTER CODEX PROMPT: BEST-DAY DEPENDENCE AUTOPSY FOR RS TOP-3 VS CSM VS DSE
+
+You are running on my Windows machine.
+
+This is the next step after the RS hardening pass.
+Do NOT rerun the giant tournament.
+Do NOT run options.
+Do NOT broaden to unrelated families.
+This task is a forensic audit of day-level edge quality.
+
+OPEN THESE EXACT FILES FIRST
+- C:\Users\rabisaab\Downloads\master_strategy_memo.txt
+- C:\Users\rabisaab\Downloads\tournament_master_report.md
+- C:\Users\rabisaab\Downloads\monday_paper_plan.md
+- C:\Users\rabisaab\Downloads\rs_canonical_branch_decision.md
+- C:\Users\rabisaab\Downloads\rs_branch_paper_watch_decision.md
+- C:\Users\rabisaab\Downloads\rs_final_head_to_head_report.md
+- C:\Users\rabisaab\Downloads\rs_hardening_forensics_report.md
+- C:\Users\rabisaab\Downloads\rs_hardening_metrics.csv
+- C:\Users\rabisaab\Downloads\rs_hardening_forensics.csv
+- C:\Users\rabisaab\Downloads\rs_final_head_to_head.csv
+- C:\Users\rabisaab\Downloads\best_day_dependence_report.md
+- C:\Users\rabisaab\Downloads\best_day_dependence_metrics.csv
+- C:\Users\rabisaab\Downloads\rs_edge_quality_scorecard.csv
+- C:\Users\rabisaab\Downloads\underlying_trade_ledger.csv
+- C:\Users\rabisaab\Downloads\underlying_tournament_metrics.csv
+- C:\Users\rabisaab\Downloads\trade_cluster_edge_map.csv
+
+If any are missing, say so explicitly and continue with what you can open.
+
+PRIMARY CONTEXT YOU MUST PRESERVE
+- The canonical upside research branch is now:
+  - relative_strength_vs_benchmark::reduced_selection_top3
+- The main challenger remains:
+  - cross_sectional_momentum
+- The trust anchor / daily control remains:
+  - down_streak_exhaustion
+- The active paper strategy remains:
+  - qqq_led_tqqq_sqqq_pair_opening_range_intraday_system
+- No hardened RS sleeve is honest enough for paper-watch yet
+- The biggest blocker for RS top-3 is best-day dependence
+- The decisive forensic result so far is:
+  - RS top-3 becomes negative after removing the best 2.5% of days
+- Options remain blocked and are out of scope
+
+MISSION
+Figure out what the best days actually are.
+
+You are trying to answer:
+1. What types of days generate the outsized profits for RS top-3?
+2. Are those days broad market trend days, NVDA-led momentum days, gap days, earnings-like reaction days, or something else?
+3. Does RS top-3 have a real secondary edge outside those outsized days?
+4. Is CSM cleaner than RS top-3 at the day-profile level?
+5. Does DSE remain the most trustworthy day-level edge despite lower upside?
+6. Should RS top-3 be reframed as a regime sleeve, event sleeve, or broad daily sleeve?
+
+DO NOT DO THESE THINGS
+- Do not optimize the strategy.
+- Do not invent new signals.
+- Do not change trade logic.
+- Do not spend time on options.
+- Do not rerun unrelated families.
+- Do not hide if the edge is mostly a handful of exceptional days.
+- Do not pretend day-type labels are exact if the needed local data is not available; use only what is honestly derivable.
+
+TARGETS
+1. relative_strength_vs_benchmark::reduced_selection_top3
+2. cross_sectional_momentum
+3. down_streak_exhaustion
+
+PHASE 0: INPUT DIGEST
+Create:
+1. best_day_autopsy_input_digest.md
+
+Show:
+- which files opened
+- which exact implementations are being audited
+- whether day-level trade and PnL decomposition is available directly or must be reconstructed from ledgers
+- remaining local data limitations
+- whether GOOG/GOOGL still affects interpretation
+
+PHASE 1: BUILD DAY-LEVEL PNL DECOMPOSITION
+For each target strategy, create a day-level table covering the 5-year run.
+
+For each trading day compute:
+- total PnL dollars
+- total PnL pct
+- number of trades
+- number of symbols traded
+- winning trades count
+- losing trades count
+- biggest winner contribution
+- biggest loser contribution
+- top symbol contribution
+- percent of day PnL from top symbol
+- cumulative equity before and after the day
+- rolling drawdown before and after the day
+
+Create:
+2. day_level_pnl_decomposition.csv
+3. day_level_pnl_summary.md
+
+PHASE 2: AUTOPSY THE BEST DAYS
+For each target strategy, identify:
+- best 1% of days
+- best 2.5% of days
+- best 5% of days
+- best 10% of days
+
+For those sets of days, classify each day using whatever local features are honestly available, such as:
+- dominant symbol
+- dominant sector or family if derivable from symbol
+- gap size bucket
+- market trend bucket
+- volatility bucket
+- day-of-week
+- breadth proxy if available
+- whether the day was mainly one-symbol driven or multi-symbol driven
+- whether the day followed a major gap or continuation pattern
+- whether the day was part of a clustered streak of exceptional days
+
+Create:
+4. best_day_archetypes.csv
+5. best_day_autopsy_report.md
+
+The report must answer directly:
+- what the best days mostly are
+- whether they are concentrated in NVDA
+- whether they are broad multi-symbol days or mostly single-name explosions
+- whether RS top-3 is best described as a broad sleeve or a selective event/regime sleeve
+- whether CSM has a cleaner or dirtier best-day profile
+- how DSE's best-day profile differs from the upside families
+
+PHASE 3: AUTOPSY THE WORST DAYS
+Do the same for:
+- worst 1% of days
+- worst 2.5% of days
+- worst 5% of days
+
+Create:
+6. worst_day_archetypes.csv
+7. worst_day_autopsy_report.md
+
+This report must answer:
+- what types of days hurt RS top-3 most
+- whether the worst days are the mirror image of the best days or a different failure mode
+- whether concentration relief helps worst-day control
+- whether DSE is structurally cleaner on bad days
+
+PHASE 4: NON-EXTREME DAY EDGE TEST
+Now strip away the extreme tails and test whether the strategy still has a real everyday edge.
+
+For each target strategy compute performance after removing:
+- both best and worst 1% of days
+- both best and worst 2.5% of days
+- both best and worst 5% of days
+
+Create:
+8. non_extreme_day_edge_metrics.csv
+9. non_extreme_day_edge_report.md
+
+This report must answer:
+- does RS top-3 still have positive expectancy outside extreme tails
+- does CSM look cleaner outside tails
+- does DSE become the clear winner once tails are stripped
+- whether the upside branches are fundamentally tail-dependent or still retain a core edge
+
+PHASE 5: SYMBOL AND REGIME CONTRIBUTION MAP
+For RS top-3 and CSM, break day-level profits into:
+- NVDA contribution
+- mega-cap tech ex-NVDA contribution
+- ETF contribution
+- all other symbols contribution
+
+If regime tags are locally available, also break best and worst days into:
+- rising / bullish
+- falling / volatile
+- calm / low-vol
+
+Create:
+10. day_type_symbol_regime_map.csv
+11. symbol_regime_contribution_report.md
+
+The report must answer:
+- how much of the exceptional-day edge is NVDA
+- whether the surviving edge outside NVDA is still meaningful
+- whether the branch should be reframed as a momentum-regime sleeve, an event sleeve, or a broad sleeve
+
+PHASE 6: RS VS CSM DAY-PROFILE HEAD-TO-HEAD
+Create:
+12. rs_vs_csm_day_profile.csv
+13. rs_vs_csm_day_profile_report.md
+
+Compare:
+- day concentration
+- symbol concentration
+- best-day dependence
+- worst-day containment
+- non-extreme-day expectancy
+- breadth of participation
+- time clustering of edge
+
+This report must answer:
+- which one is actually cleaner at the day-profile level
+- whether RS deserves to stay ahead of CSM as the canonical branch
+- whether CSM should replace RS as the primary branch
+- whether both should remain alive with distinct roles
+
+PHASE 7: CANONICAL EDGE HYPOTHESIS
+Create:
+14. canonical_edge_hypothesis.md
+15. next_micro_experiments.md
+
+The edge hypothesis file must answer directly:
+1. What is the most honest description of RS top-3 now:
+   - broad daily sleeve
+   - narrowed momentum sleeve
+   - event-sensitive sleeve
+   - regime sleeve
+   - still just a research artifact
+2. What is the most honest description of CSM now?
+3. Does DSE remain the best trust anchor at the day-profile level?
+4. What single mechanism appears to be driving the upside families?
+5. What is the next most important falsification test?
+
+The next experiments file must give a short ranked list such as:
+- preserve QQQ pair as only paper strategy
+- preserve DSE as control
+- keep RS top-3 as canonical research branch
+- keep or demote CSM depending on day-profile cleanliness
+- run one ex-NVDA day-type rerun
+- run one regime-conditional RS rerun
+- run one anti-tail-dependence wrapper experiment only if it is clean and interpretable
+
+TERMINAL SUMMARY REQUIRED
+At the end print:
+- which files opened successfully
+- which strategy has the cleanest best-day profile
+- which strategy has the cleanest worst-day profile
+- which strategy has the best non-extreme-day edge
+- whether RS top-3 is really a broad sleeve or a narrower regime/event sleeve
+- whether CSM remains the main challenger
+- whether DSE remains the trust anchor
+- the single best next falsification test
+- paths to all deliverables
+
+BOTTOM LINE
+You are trying to understand whether RS top-3 contains a real repeatable money-making edge, or whether it is mainly a concentration of exceptional days.
+Do not hide the answer.
+Do not drift into generic research.
+Perform the autopsy and identify the real edge mechanism.
+
+START NOW.
+Open the exact files first, build the day-level decomposition, autopsy the best and worst days, test the non-extreme-day edge, compare RS vs CSM, and finish with the canonical edge hypothesis.

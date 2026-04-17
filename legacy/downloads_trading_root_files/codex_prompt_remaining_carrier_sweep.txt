@@ -1,0 +1,240 @@
+MASTER CODEX PROMPT: REMAINING-CARRIER LEAVE-ONE-OUT SWEEP FOR RS VS CSM VS DSE
+
+You are running on my Windows machine.
+
+This is the next falsification step after the ex-AAPL / ex-META dependency test.
+Do NOT rerun the giant tournament.
+Do NOT run options.
+Do NOT broaden scope to unrelated families.
+This task is only about determining whether the surviving weak broad core is real across the remaining mega-cap names, or whether it is still just one carrier at a time.
+
+OPEN THESE EXACT FILES FIRST
+- C:\Users\rabisaab\Downloads\master_strategy_memo.txt
+- C:\Users\rabisaab\Downloads\tournament_master_report.md
+- C:\Users\rabisaab\Downloads\monday_paper_plan.md
+- C:\Users\rabisaab\Downloads\broad_participation_branch_decision.md
+- C:\Users\rabisaab\Downloads\broad_participation_forensics_report.md
+- C:\Users\rabisaab\Downloads\broad_participation_paper_watch_recheck.md
+- C:\Users\rabisaab\Downloads\ex_aapl_meta_branch_redecision.md
+- C:\Users\rabisaab\Downloads\ex_aapl_meta_dependency_report.md
+- C:\Users\rabisaab\Downloads\ex_aapl_meta_forensics_report.md
+- C:\Users\rabisaab\Downloads\ex_aapl_meta_paper_watch_recheck.md
+- C:\Users\rabisaab\Downloads\next_after_ex_aapl_meta.md
+- C:\Users\rabisaab\Downloads\best_day_autopsy_report.md
+- C:\Users\rabisaab\Downloads\non_extreme_day_edge_report.md
+- C:\Users\rabisaab\Downloads\canonical_edge_hypothesis.md
+- C:\Users\rabisaab\Downloads\broad_participation_metrics.csv
+- C:\Users\rabisaab\Downloads\ex_aapl_meta_metrics.csv
+- C:\Users\rabisaab\Downloads\leader_vs_broad_participation_contrast.csv
+- C:\Users\rabisaab\Downloads\ex_aapl_meta_symbol_impact.csv
+- C:\Users\rabisaab\Downloads\day_type_symbol_regime_map.csv
+- C:\Users\rabisaab\Downloads\day_level_pnl_decomposition.csv
+- C:\Users\rabisaab\Downloads\underlying_trade_ledger.csv
+- C:\Users\rabisaab\Downloads\underlying_tournament_metrics.csv
+- C:\Users\rabisaab\Downloads\trade_cluster_edge_map.csv
+
+If any are missing, say so explicitly and continue with what you can open.
+
+PRIMARY CONTEXT YOU MUST PRESERVE
+- The only active paper strategy remains:
+  - qqq_led_tqqq_sqqq_pair_opening_range_intraday_system
+- The trust anchor / control remains:
+  - down_streak_exhaustion
+- The current canonical upside research branch is:
+  - relative_strength_vs_benchmark :: rs_top3_native
+- The main challenger is:
+  - cross_sectional_momentum :: csm_native
+- The most honest current label is:
+  - narrow research artifact with weak broad core
+- RS survived ex-AAPL and ex-META better than CSM
+- META is the more important remaining carrier for RS
+- AAPL is the more important remaining carrier for CSM
+- Neither branch is meaningfully closer to paper-watch
+- The single best next experiment from the last run was:
+  - ex-AMZN or ex-GOOGL dependency test
+
+MISSION
+Stop doing one-off carrier guesses and map the remaining dependency structure cleanly.
+
+You are trying to answer:
+1. Does RS still have a meaningful weak broad core after removing each remaining carrier one at a time?
+2. Does CSM still have a meaningful weak broad core after removing each remaining carrier one at a time?
+3. Which remaining carrier matters most now for RS?
+4. Which remaining carrier matters most now for CSM?
+5. Is the edge still broad enough across the remaining names to matter, or is it just rotating leader dependence?
+6. Should RS remain canonical, should CSM take over, or should both be demoted further?
+
+DO NOT DO THESE THINGS
+- Do not invent new logic
+- Do not optimize parameters
+- Do not run options
+- Do not broaden to unrelated families
+- Do not hide collapse if the branch fails repeated carrier removals
+- Do not call a tiny residual edge robust
+- Do not collapse RS and CSM into one family
+
+TARGETS
+1. relative_strength_vs_benchmark :: rs_top3_native
+2. cross_sectional_momentum :: csm_native
+3. down_streak_exhaustion as control only
+
+PRIMARY UNIVERSE FOR THIS TASK
+Use the same narrowed mega-cap ex-NVDA ex-TSLA universe:
+- AAPL
+- AMZN
+- GOOG or GOOGL, whichever exists locally
+- META
+- NFLX
+
+Then run a leave-one-out sweep across the remaining carriers:
+- ex-AAPL
+- ex-AMZN
+- ex-GOOG or ex-GOOGL
+- ex-META
+- ex-NFLX
+
+Do not silently add or remove names.
+
+PHASE 0: INPUT DIGEST
+Create:
+1. remaining_carrier_input_digest.md
+
+Show:
+- which files opened
+- which exact implementations are being tested
+- exact symbol universe used
+- whether GOOG vs GOOGL affects the run
+- what fields are available to define the weak broad core honestly
+- remaining data limits
+
+PHASE 1: DEFINE THE LEAVE-ONE-OUT MATRIX
+Create:
+2. remaining_carrier_test_matrix.md
+
+Run each target in these slices where honestly possible:
+
+A. ex-TSLA full baseline
+B. broad-participation-only baseline
+C. ex-AAPL full
+D. ex-AMZN full
+E. ex-GOOG or ex-GOOGL full
+F. ex-META full
+G. ex-NFLX full
+H. ex-AAPL broad-participation-only
+I. ex-AMZN broad-participation-only
+J. ex-GOOG or ex-GOOGL broad-participation-only
+K. ex-META broad-participation-only
+L. ex-NFLX broad-participation-only
+
+If computationally reasonable after the leave-one-out sweep, also run ONLY the top two most important remaining-carrier pair removals that emerge from the first pass. Do not run a full combinatorial search.
+
+Important:
+These are falsification slices, not new strategies.
+If a slice cannot be defined honestly from local fields, say so explicitly.
+
+PHASE 2: RUN THE LEAVE-ONE-OUT RERUNS
+For each valid slice, compute:
+- final equity
+- total return pct
+- CAGR
+- max drawdown pct
+- Sharpe
+- profit factor
+- expectancy
+- win rate
+- average win
+- average loss
+- payoff ratio
+- trade count
+- percent profitable months
+- percent of total PnL from top symbol
+- percent of total PnL from top 10% of days
+- non-extreme-day expectancy if available
+- whether final equity exceeded $100,000 from $25,000
+
+Create:
+3. remaining_carrier_metrics.csv
+4. remaining_carrier_leaderboard.md
+
+PHASE 3: CARRIER DEPENDENCY MAP
+Create:
+5. remaining_carrier_dependency_map.csv
+6. remaining_carrier_dependency_report.md
+
+This report must answer:
+- which remaining carrier is most important for RS
+- which remaining carrier is most important for CSM
+- whether the edge survives repeated leave-one-out removals
+- whether the branch is still just rotating one-carrier dependence
+- whether the surviving edge is broad enough to matter at all
+
+PHASE 4: FORENSIC RECHECK
+For the best RS slice and best CSM slice from the leave-one-out sweep:
+- remove best 1% of days
+- remove best 2.5% of days
+- remove best 5% of days
+- remove both best and worst 2.5% of days
+
+Create:
+7. remaining_carrier_forensics.csv
+8. remaining_carrier_forensics_report.md
+
+This report must answer:
+- which branch survives repeated carrier removals and best-day trimming better
+- whether either branch still has a cleaner non-extreme-day core
+- whether the crown should stay with RS, move to CSM, or both be demoted
+
+PHASE 5: CANONICAL BRANCH REDECISION
+Create:
+9. remaining_carrier_branch_redecision.md
+10. remaining_carrier_paper_watch_recheck.md
+11. next_after_remaining_carrier_sweep.md
+
+The branch redecision must answer directly:
+1. Does RS remain the canonical upside research branch after the leave-one-out sweep?
+2. Should CSM take over instead?
+3. Should both be demoted further if repeated carrier removals collapse the weak broad core?
+4. What is the most honest label now:
+   - narrow research artifact with weak broad core
+   - leader-following research artifact
+   - too weak to prioritize
+   - weakened but still the best upside branch
+5. Does DSE remain the control benchmark?
+
+The paper-watch recheck must answer directly:
+1. Did either branch get materially closer to paper-watch?
+2. What exact deficiency still blocks paper-watch?
+3. Is the next step another falsification test, a narrower confirmation rerun, or a demotion?
+
+The next experiments file must give a short ranked list such as:
+- keep QQQ pair as only active paper strategy
+- preserve DSE as control
+- keep RS as canonical branch
+- switch to CSM as canonical branch
+- demote both upside branches if repeated dependency removals break the weak broad core
+- run one final pair-removal test if one dominant carrier pair remains
+- stop any branch that cannot survive repeated carrier removals
+
+TERMINAL SUMMARY REQUIRED
+At the end print:
+- which files opened successfully
+- whether RS survives repeated leave-one-out removals
+- whether CSM survives repeated leave-one-out removals
+- which remaining carrier matters most for RS
+- which remaining carrier matters most for CSM
+- whether RS remains canonical
+- whether CSM takes over
+- whether both should be demoted
+- whether DSE remains the control
+- whether either branch got closer to paper-watch
+- the single best next experiment
+- paths to all deliverables
+
+BOTTOM LINE
+You are trying to determine whether the weak broad core is actually real across the remaining names, or whether it is still just a rotating one-carrier dependence story.
+If it collapses under repeated leave-one-out removals, say so plainly.
+If it survives meaningfully, say so plainly.
+Be decisive.
+
+START NOW.
+Open the exact files first, define the leave-one-out matrix, run the reruns, map the remaining carrier dependencies, do the forensics, and finish with the branch redecision.

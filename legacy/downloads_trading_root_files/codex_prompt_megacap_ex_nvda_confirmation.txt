@@ -1,0 +1,244 @@
+MASTER CODEX PROMPT: NARROWER MEGA-CAP EX-NVDA CONFIRMATION RERUN
+
+You are running on my Windows machine.
+
+This is the next falsification / confirmation step after the ex-NVDA regime test.
+Do NOT rerun the giant tournament.
+Do NOT run options.
+Do NOT broaden scope to unrelated families.
+This task is only about determining whether the canonical RS branch has a real, repeatable mega-cap ex-NVDA core, and whether CSM should overtake it.
+
+OPEN THESE EXACT FILES FIRST
+- C:\Users\rabisaab\Downloads\master_strategy_memo.txt
+- C:\Users\rabisaab\Downloads\tournament_master_report.md
+- C:\Users\rabisaab\Downloads\monday_paper_plan.md
+- C:\Users\rabisaab\Downloads\rs_canonical_branch_decision.md
+- C:\Users\rabisaab\Downloads\rs_branch_paper_watch_decision.md
+- C:\Users\rabisaab\Downloads\rs_final_head_to_head_report.md
+- C:\Users\rabisaab\Downloads\best_day_autopsy_report.md
+- C:\Users\rabisaab\Downloads\non_extreme_day_edge_report.md
+- C:\Users\rabisaab\Downloads\rs_vs_csm_day_profile_report.md
+- C:\Users\rabisaab\Downloads\canonical_edge_hypothesis.md
+- C:\Users\rabisaab\Downloads\ex_nvda_core_edge_report.md
+- C:\Users\rabisaab\Downloads\supportive_regime_day_profile_report.md
+- C:\Users\rabisaab\Downloads\rs_branch_recheck_after_ex_nvda.md
+- C:\Users\rabisaab\Downloads\rs_vs_csm_recheck.md
+- C:\Users\rabisaab\Downloads\next_falsification_steps.md
+- C:\Users\rabisaab\Downloads\ex_nvda_regime_metrics.csv
+- C:\Users\rabisaab\Downloads\day_type_symbol_regime_map.csv
+- C:\Users\rabisaab\Downloads\day_level_pnl_decomposition.csv
+- C:\Users\rabisaab\Downloads\underlying_trade_ledger.csv
+- C:\Users\rabisaab\Downloads\underlying_tournament_metrics.csv
+- C:\Users\rabisaab\Downloads\trade_cluster_edge_map.csv
+
+If any are missing, say so explicitly and continue with what you can open.
+
+PRIMARY CONTEXT YOU MUST PRESERVE
+- The canonical upside research branch is still:
+  - relative_strength_vs_benchmark::reduced_selection_top3
+- But only narrowly
+- The main challenger is still:
+  - cross_sectional_momentum
+- DSE remains the trust anchor / control
+- QQQ pair remains the only active paper strategy
+- The most honest current label for RS is:
+  - mega-cap momentum regime sleeve
+- The ex-NVDA falsification showed:
+  - RS survives ex-NVDA in supportive regimes
+  - CSM also survives ex-NVDA in supportive regimes
+  - CSM is cleaner on supportive-regime day profile
+  - RS keeps the crown only narrowly
+- The single best next falsification step identified by the last run is:
+  - narrower mega-cap ex-NVDA confirmation rerun
+
+MISSION
+Determine whether RS has a real reusable mega-cap ex-NVDA core that is strong enough to keep the crown, or whether CSM should take over as the cleaner canonical branch.
+
+You are trying to answer:
+1. If we narrow the universe to mega-cap ex-NVDA only, does RS still deserve to lead?
+2. What is the cleanest honest narrowed ex-NVDA sleeve for RS?
+3. Is CSM actually cleaner and just as strong once the universe is narrowed?
+4. Is the real edge a broad mega-cap participation effect, or still a one-leader-of-the-day effect?
+5. Can either branch get materially closer to paper-watch status?
+6. What exact branch should remain canonical after this narrower confirmation rerun?
+
+DO NOT DO THESE THINGS
+- Do not invent new strategy logic
+- Do not optimize dozens of parameters
+- Do not drift into options
+- Do not broaden to unrelated families
+- Do not ignore concentration or best-day dependence
+- Do not pretend a branch is paper-ready if it still fails honesty tests
+- Do not collapse RS and CSM into one family; preserve lineage
+
+TARGETS
+1. relative_strength_vs_benchmark::reduced_selection_top3
+2. cross_sectional_momentum
+3. down_streak_exhaustion as control only
+
+PRIMARY UNIVERSE FOR THIS TASK
+Mega-cap ex-NVDA only:
+- AAPL
+- AMZN
+- GOOG or GOOGL, whichever exists locally
+- META
+- NFLX
+- TSLA
+
+If the local data supports additional mega-cap names in the same exact prior methodology, you may note them, but do not change the canonical comparison universe unless clearly justified and documented.
+
+PHASE 0: INPUT DIGEST
+Create:
+1. megacap_ex_nvda_input_digest.md
+
+Show:
+- which files opened
+- which exact implementations are being tested
+- what exact symbol universe is used
+- whether GOOG vs GOOGL affects the run
+- what regime tags are available
+- what data limitations remain
+
+PHASE 1: DEFINE A SMALL CONFIRMATION GRID
+Create:
+2. megacap_ex_nvda_test_grid.md
+
+Test only a small, interpretable confirmation grid for RS and CSM:
+
+Universe slices:
+A. mega-cap ex-NVDA full slice
+B. mega-cap ex-NVDA rising_market
+C. mega-cap ex-NVDA calm_low_vol
+D. mega-cap ex-NVDA strong_momentum_participation if honestly derivable
+E. mega-cap ex-NVDA non-extreme days only if reconstructable cleanly
+
+Wrapper slices for RS only:
+F. native RS top-3 on mega-cap ex-NVDA
+G. RS top-2 if rank-depth can be reduced cleanly without changing signal semantics
+H. RS top-3 with equal-weight symbol budget
+I. RS top-3 with top-symbol contribution cap at 20% as audit wrapper
+J. RS top-3 with both reduced selection and equal-weight budget if cleanly implementable
+
+Wrapper slices for CSM only:
+K. native CSM on mega-cap ex-NVDA
+L. CSM with equal-weight symbol budget
+M. CSM with top-symbol contribution cap at 20% as audit wrapper
+
+Rules:
+- Keep the grid small
+- Only use wrappers that are clean and interpretable
+- If a wrapper cannot be applied honestly, say so explicitly
+- Do not turn this into a blind hyperparameter search
+
+PHASE 2: RUN THE NARROWER CONFIRMATION RERUNS
+For each valid slice, compute:
+- final equity
+- total return pct
+- CAGR
+- max drawdown pct
+- Sharpe
+- profit factor
+- expectancy
+- win rate
+- average win
+- average loss
+- payoff ratio
+- trade count
+- percent profitable months
+- percent of total PnL from top symbol
+- percent of total PnL from top 10% of days
+- non-extreme-day expectancy if available
+- whether final equity exceeded $100,000 from $25,000
+
+Create:
+3. megacap_ex_nvda_metrics.csv
+4. megacap_ex_nvda_leaderboard.md
+
+PHASE 3: LEADER-OF-THE-DAY VS BROAD-PARTICIPATION DIAGNOSTIC
+For RS and CSM inside mega-cap ex-NVDA slices, classify profitable days as:
+- one dominant leader day
+- two-name participation day
+- broad participation day
+- event-like gap reaction day
+- continuation day
+- mixed day
+
+Use only honest derivations from local fields.
+
+Create:
+5. leader_vs_breadth_diagnostic.csv
+6. leader_vs_breadth_report.md
+
+This report must answer:
+- whether RS still relies on one dominant leader-of-the-day
+- whether CSM distributes gains more broadly
+- whether the narrowed ex-NVDA sleeve is really a broad participation engine or still a leader-following engine
+
+PHASE 4: BEST-DAY AND NON-EXTREME-DAY RECHECK
+For the best RS narrowed mega-cap ex-NVDA variant and the best CSM mega-cap ex-NVDA variant:
+- remove best 1% of days
+- remove best 2.5% of days
+- remove best 5% of days
+- remove both best and worst 2.5% of days
+
+Create:
+7. megacap_ex_nvda_forensics.csv
+8. megacap_ex_nvda_forensics_report.md
+
+This report must answer:
+- which branch holds up better after best-day removal
+- which branch has the cleaner non-extreme-day edge
+- whether RS still deserves to lead once the universe is narrowed
+
+PHASE 5: CANONICAL BRANCH REDECISION
+Create:
+9. megacap_ex_nvda_branch_decision.md
+10. megacap_ex_nvda_paper_watch_recheck.md
+11. next_branch_experiments.md
+
+The branch decision must answer directly:
+1. Does RS remain the canonical branch after narrower mega-cap ex-NVDA confirmation?
+2. Should CSM take over instead?
+3. What exact variant should be canonical now?
+4. What is the most honest label now:
+   - mega-cap momentum regime sleeve
+   - mega-cap leader-following sleeve
+   - event-sensitive sleeve
+   - still research-only artifact
+5. Does DSE remain the control benchmark?
+
+The paper-watch recheck must answer directly:
+1. Did any narrowed mega-cap ex-NVDA branch get materially closer to paper-watch status?
+2. Is RS still research-only?
+3. Is CSM still research-only?
+4. What exact deficiency still blocks paper-watch?
+
+The next experiments file must give a short ranked list such as:
+- keep QQQ pair as only active paper strategy
+- preserve DSE as control
+- keep RS as canonical branch
+- switch to CSM as canonical branch
+- run one further anti-leader-dependence test
+- run one ex-TSLA diagnostic if TSLA now looks like the dominant secondary carrier
+- stop any branch that only survives through one-symbol dominance
+
+TERMINAL SUMMARY REQUIRED
+At the end print:
+- which files opened successfully
+- which branch won raw return in mega-cap ex-NVDA
+- which branch won trust-adjusted quality in mega-cap ex-NVDA
+- whether RS remains canonical
+- whether CSM should take over
+- whether any branch got closer to paper-watch
+- whether DSE remains the control
+- the single best next experiment
+- paths to all deliverables
+
+BOTTOM LINE
+You are trying to decide whether the canonical upside branch still deserves the crown after a narrower mega-cap ex-NVDA confirmation rerun.
+If RS only wins through a one-leader-of-the-day mechanism, say so.
+If CSM is cleaner and strong enough, say so.
+Be honest and decisive.
+
+START NOW.
+Open the exact files first, define the small confirmation grid, run the mega-cap ex-NVDA reruns, perform the leader-vs-breadth diagnostic, do the best-day recheck, and finish with the canonical branch redecision.

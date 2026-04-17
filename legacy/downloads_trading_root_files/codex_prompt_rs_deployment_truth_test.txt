@@ -1,0 +1,231 @@
+MASTER CODEX PROMPT: RELATIVE-STRENGTH DEPLOYMENT TRUTH TEST
+
+You are running on my Windows machine.
+
+This is the next step after the NVDA dependency truth test.
+Do NOT rerun the giant tournament.
+Do NOT spend time on options replay.
+This task is about deciding whether the strongest surviving upside family can become a real money-making daily sleeve.
+
+OPEN THESE EXACT FILES FIRST
+- C:\Users\rabisaab\Downloads\master_strategy_memo.txt
+- C:\Users\rabisaab\Downloads\top10_authoritative_inventory.txt
+- C:\Users\rabisaab\Downloads\strategy_chat_seed.txt
+- C:\Users\rabisaab\Downloads\tournament_master_report.md
+- C:\Users\rabisaab\Downloads\monday_paper_plan.md
+- C:\Users\rabisaab\Downloads\next_edge_research_ranking.md
+- C:\Users\rabisaab\Downloads\next_edge_action_plan.md
+- C:\Users\rabisaab\Downloads\truth_test_elimination_report.md
+- C:\Users\rabisaab\Downloads\concentration_portability_metrics.csv
+- C:\Users\rabisaab\Downloads\edge_survival_scorecard.csv
+- C:\Users\rabisaab\Downloads\nvda_edge_hotspots.md
+
+If any are missing, say so explicitly and continue with what you can open.
+
+PRIMARY CONTEXT YOU MUST PRESERVE
+- relative_strength_vs_benchmark is now the best next research priority
+- cross_sectional_momentum is the main sibling challenger
+- down_streak_exhaustion remains the best confirmed daily control
+- qqq_led_tqqq_sqqq_pair_opening_range_intraday_system remains the best current paper-trading candidate
+- the NVDA truth test showed the upside families are not purely NVDA illusions, but still have too much profit concentration by best days
+- no family earned a clean survives-broadly label
+- pullback_in_trend failed and should not be the focus of this task
+- options remain blocked and are out of scope here
+
+MISSION
+Decide whether relative_strength_vs_benchmark is:
+1. a real next-generation daily sleeve candidate,
+2. just a high-return but unstable research artifact,
+3. or a family that needs to be narrowed into a more disciplined deployment-ready version.
+
+SECONDARY MISSION
+Compare it directly against:
+- cross_sectional_momentum
+- down_streak_exhaustion
+
+You are trying to answer:
+- Which of the two upside families is more trustworthy after concentration controls?
+- Can either be turned into a disciplined daily sleeve without killing the edge?
+- What exact version should become the next serious research branch?
+- What should be paper-watched versus cut?
+
+DO NOT DO THESE THINGS
+- Do not run options.
+- Do not build a broad portfolio sleeve here.
+- Do not optimize dozens of parameters.
+- Do not invent new strategy logic.
+- Do not ignore best-day concentration.
+- Do not present raw return as enough.
+
+TARGET STRATEGIES
+1. relative_strength_vs_benchmark
+2. cross_sectional_momentum
+3. down_streak_exhaustion as control
+
+ACCOUNT / TEST RULES
+- $25,000 starting equity
+- daily underlying strategies only
+- preserve the same local user-subset data conventions used in the prior runs
+- no lookahead
+- same fees/slippage assumptions as the prior daily tournament for comparability
+- if GOOG vs GOOGL naming still affects the universe, document it clearly
+
+PHASE 0: INPUT DIGEST
+Create:
+1. rs_deployment_input_digest.md
+
+Show:
+- which files opened
+- which exact implementations are being tested
+- which prior results are the baseline references
+- remaining local data limitations
+
+PHASE 1: APPLES-TO-APPLES HEAD-TO-HEAD
+Run direct head-to-head comparisons for:
+- relative_strength_vs_benchmark
+- cross_sectional_momentum
+- down_streak_exhaustion
+
+Create:
+2. rs_head_to_head_metrics.csv
+3. rs_head_to_head_summary.md
+
+Metrics required:
+- final equity
+- total return pct
+- CAGR
+- max drawdown pct
+- Sharpe
+- profit factor
+- expectancy
+- win rate
+- average win
+- average loss
+- payoff ratio
+- trade count
+- percent profitable months
+- percent of total PnL from top symbol
+- percent of total PnL from top 10% of days
+
+PHASE 2: BEST-DAY DEPENDENCE TRUTH TEST
+The biggest remaining problem is profit concentration by best days.
+Test each target strategy after removing:
+- best 1% of days
+- best 2.5% of days
+- best 5% of days
+- best 10% of days
+
+Do not alter signals. This is a forensic robustness test only.
+
+Create:
+4. best_day_dependence_metrics.csv
+5. best_day_dependence_report.md
+
+This report must answer:
+- which family is most dependent on a handful of outsized days
+- whether the edge remains positive after those days are removed
+- whether DSE remains the trust anchor after this test
+
+PHASE 3: DEPLOYMENT-DISCIPLINE WRAPPERS
+Do NOT change native strategy logic.
+Instead test whether a more disciplined sleeve wrapper improves investability.
+
+Run these wrappers where structurally valid:
+A. native
+B. equal-weight symbol cap
+C. top-symbol contribution cap at 20%
+D. reduced turnover sleeve if the local implementation allows a clean rank-depth or selection-count cap without changing core signal semantics
+E. calendar smoothing wrapper if execution can be staggered without changing ranking logic
+
+Rules:
+- preserve the core strategy
+- wrappers are separate evaluation layers, not rewritten strategies
+- if a wrapper cannot be applied cleanly, say so explicitly
+
+Create:
+6. rs_wrapper_metrics.csv
+7. rs_wrapper_report.md
+
+For each wrapper measure:
+- final equity
+- drawdown
+- expectancy
+- payoff ratio
+- concentration
+- best-day dependence
+- trade count
+- operational simplicity
+
+PHASE 4: TIME-STABILITY AND REGIME-STABILITY
+Run:
+- first half vs second half of the 5-year window
+- rolling annual windows if practical
+- regime slices if the same local regime tags exist
+
+Create:
+8. rs_stability_metrics.csv
+9. rs_stability_report.md
+
+This report must answer:
+- which family is more stable through time
+- which family degrades most in the later half
+- whether relative_strength_vs_benchmark is merely a strong era-specific phenomenon
+
+PHASE 5: EDGE QUALITY SCORE
+Create:
+10. rs_edge_quality_scorecard.csv
+
+Weight:
+- 20% expectancy after controls
+- 20% survival after best-day removal
+- 15% drawdown control
+- 15% concentration control
+- 10% time stability
+- 10% evidence quality / prior trust
+- 10% raw return
+
+Rules:
+- raw return stays low weight
+- if a strategy remains highly dependent on a few days, penalize hard
+- if DSE loses on return but wins clearly on trust, say that plainly
+- if relative_strength_vs_benchmark beats cross_sectional_momentum on trust-adjusted edge, say that plainly
+
+PHASE 6: FINAL DECISION
+Create:
+11. rs_deployment_decision.md
+12. rs_next_action_plan.md
+
+The decision file must answer directly:
+1. Is relative_strength_vs_benchmark the best next daily research branch?
+2. Is it more trustworthy than cross_sectional_momentum after hard concentration and best-day tests?
+3. Should it be pursued as:
+   - broad daily sleeve
+   - narrowed disciplined sleeve
+   - NVDA-aware but cross-symbol sleeve
+   - research-only artifact
+4. Does DSE remain the best control benchmark?
+5. What exact next experiment should happen after this?
+
+The action plan must be ranked and specific, for example:
+- keep papering QQQ pair now
+- preserve DSE as control
+- promote relative_strength_vs_benchmark to focused research branch
+- demote cross_sectional_momentum if it is weaker on trust-adjusted edge
+- cut any wrapper that kills the edge without enough drawdown relief
+
+TERMINAL SUMMARY REQUIRED
+At the end print:
+- which files opened successfully
+- which strategy won on raw return
+- which strategy won on trust-adjusted edge quality
+- which strategy was most dependent on best days
+- whether relative_strength_vs_benchmark deserves promotion to the next focused research branch
+- whether cross_sectional_momentum should remain a challenger or be demoted
+- whether DSE remains the best daily control
+- paths to all deliverables
+
+BOTTOM LINE
+You are trying to determine whether the strongest upside family can survive concentration, best-day dependence, and deployment-discipline tests well enough to become the next serious branch toward a real money-making system.
+
+START NOW.
+Open the exact files first, run the head-to-head, run the best-day dependence truth test, run the deployment-discipline wrappers, score edge quality, and finish with the ranked decision and action plan.

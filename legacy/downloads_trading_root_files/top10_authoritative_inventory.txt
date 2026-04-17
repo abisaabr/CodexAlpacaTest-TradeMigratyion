@@ -1,0 +1,166 @@
+AUTHORITATIVE TOP 10 TRADING STRATEGIES INVENTORY
+Authoritative ranking date: 2026-04-04
+
+Important constraints:
+- Do not invent “equivalent” logic.
+- Do not optimize or improve anything.
+- Do not silently change fills, timeframe, slippage, sessions, or filters.
+- If exact source code or config is missing, preserve the ambiguity and say exactly what is missing.
+- Treat this as a 1:1 reconstruction task, not a research task.
+
+1. tv_pvt_top5_finalists :: tsla_30m
+- Market: TSLA
+- Timeframe: 30m
+- Strategy family: breakout_confirmation / pvt_roc
+- Type: direct-underlying stock
+- Execution assumptions: next_open, RTH only, no_lookahead, 2 bps per side
+- Trades: 487
+- Win rate: 0.511294
+- Profit factor: 2.584840
+- Expectancy: 20.677012
+- Max drawdown pct: 0.003959
+- Consistency: 6/6 positive years
+- Validation: validation_pass=True, test_pass=True
+- Audit verdict: best direct-underlying stock paper candidate
+
+2. index_opening_drive_lab :: FB_OR15_W09351000_Dlong_only_EMA0_VWAP0_VOLoff_Xtime_stop_1030
+- Market: SPY/QQQ/IWM opening-drive workflow
+- Timeframe: 1m opening drive
+- Strategy family: opening drive continuation
+- Type: stock/ETF
+- Execution assumptions: next-bar, RTH only, no overnight holds
+- Combined return pct: 16.880584
+- Combined Sharpe: 4.803461
+- Combined profit factor: 2.247960
+- Combined max drawdown pct: 2.807224
+- Combined trades: 221
+- Validation: passes_final_credibility=True
+- Forward status: on_track=False as of 2026-04-03
+- Audit verdict: strongest process discipline, not promoted yet
+
+3. tv_pvt_top5_finalists :: nvda_30m
+- Market: NVDA
+- Timeframe: 30m
+- Strategy family: breakout_confirmation / raw_pvt
+- Type: direct-underlying stock
+- Execution assumptions: next_open, RTH only, no_lookahead, 2 bps per side
+- Trades: 520
+- Win rate: 0.530769
+- Profit factor: 2.441635
+- Expectancy: 18.171218
+- Max drawdown pct: 0.004030
+- Consistency: 5/6 positive years
+- Validation: validation_pass=True, test_pass=True
+- Audit verdict: credible secondary finalist
+
+4. tv_pvt_top5_finalists :: vix_vxx_30m
+- Market: VIX signal -> VXX trade proxy
+- Timeframe: 30m
+- Strategy family: breakout_confirmation / pvt_roc
+- Type: proxy-based stock/ETF strategy
+- Execution assumptions: next_open, RTH only, no_lookahead, 2 bps per side
+- Trades: 264
+- Win rate: 0.636364
+- Profit factor: 6.903371
+- Expectancy: 59.519560
+- Max drawdown pct: 0.001946
+- Consistency: 6/6 positive years
+- Validation: validation_pass=True, test_pass=True
+- Audit verdict: best proxy-based experimental candidate
+
+5. index_opening_drive_lab :: FB_OR5_W09351000_Dlong_only_EMA0_VWAP0_VOLoff_Xtime_stop_1030
+- Market: SPY/QQQ/IWM opening-drive workflow
+- Timeframe: 1m opening drive
+- Strategy family: opening drive continuation
+- Type: stock/ETF
+- Execution assumptions: next-bar, RTH only, no overnight holds
+- Combined return pct: 15.144497
+- Combined Sharpe: 4.745713
+- Combined profit factor: 2.247361
+- Combined max drawdown pct: 2.844462
+- Combined trades: 205
+- Validation: passes_final_credibility=True
+- Audit verdict: strong shadow benchmark, not promoted
+
+6. tv_pvt_top5_finalists :: vix_vxx_60m
+- Market: VIX signal -> VXX trade proxy
+- Timeframe: 60m
+- Strategy family: thresholded_normalized_pvt / normalized_pvt
+- Type: proxy-based stock/ETF strategy
+- Execution assumptions: next_open, RTH only, no_lookahead, 2 bps per side
+- Trades: 179
+- Win rate: 0.642458
+- Profit factor: 7.267063
+- Expectancy: 64.502087
+- Max drawdown pct: 0.001107
+- Consistency: 6/6 positive years
+- Validation: validation_pass=True, test_pass=True
+- Audit verdict: best backup candidate
+
+7. tv_pvt_top5_finalists :: iwm_15m
+- Market: IWM
+- Timeframe: 15m
+- Strategy family: pvt_divergence_proxy / raw_pvt
+- Type: stock/ETF
+- Execution assumptions: next_open, RTH only, no_lookahead, 2 bps per side
+- Trades: 118
+- Win rate: 0.525424
+- Profit factor: 1.694151
+- Expectancy: 7.876699
+- Max drawdown pct: 0.002311
+- Consistency: 4/6 positive years
+- Validation: validation_pass=True, test_pass=True
+- Audit verdict: weaker but still real research artifact
+
+8. codex_leveraged_pipeline :: out_base_20260103_122420
+- Market: leveraged ETF basket
+- Symbols: SQQQ, TQQQ, TZA, TNA, SPXU, UPRO, SDOW, UDOW
+- Timeframe: 1m
+- Strategy family: leveraged ETF trend basket
+- Config details:
+  ema_fast=20
+  ema_slow=50
+  atr_len=14
+  stop_atr=0.45
+  target_atr=4.0
+  time_stop_min=45
+  start_equity=1800
+  risk_frac=0.05
+  max_risk_cap=90
+  max_concurrent_positions=1
+  slip_bps=3
+  fee_per_side=0
+- Trades: 2419
+- Return pct: 86.599208
+- Win rate pct: 18.974783
+- Profit factor: 1.244707
+- Max drawdown pct: 10.028691
+- Avg R: 0.195182
+- Audit verdict: interesting but still research-only
+
+9. tv_squeeze_top5_finalists :: TSLA_30m
+- Market: TSLA
+- Timeframe: 30m
+- Strategy family: squeeze multitimeframe
+- Type: stock
+- Claimed execution assumptions: strict next_open, RTH only, no_lookahead
+- Trades: 285
+- Win rate: 0.936842
+- Profit factor: 240.648511
+- Expectancy pct: 0.004678264
+- Audit verdict: recreate exactly, but treat as likely overfit and untrustworthy until independently validated
+
+10. flux_signal_engine_top20_2025 :: MSFT residual survivor
+- Market: MSFT-centered residual survivor from a broader opening-bias signal engine
+- Strategy family: opening-bias signal engine
+- Type: stock
+- Broad engine assumptions: offline minute-bar signal engine, no-lookahead alignment, next-bar style execution, portfolio slot management
+- Best symbol-specific validated portfolio metrics found in the audit:
+  combined return pct: 10.22
+  combined Sharpe: 2.234
+  combined profit factor: 2.123
+  combined max drawdown pct: 0.93
+  combined trades: 263
+- Important caveat: the overall framework was later falsified
+- Final audit verdict: not robust enough for stock paper trading, not suitable for options translation, MSFT at most watchlist-only, broader framework retired
+- Reconstruction note: exact surviving MSFT config may be ambiguous and must be traced explicitly rather than guessed

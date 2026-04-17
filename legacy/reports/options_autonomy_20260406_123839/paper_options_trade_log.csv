@@ -1,0 +1,2 @@
+timestamp,underlying_symbol,option_symbol,structure,strategy_name,source_run,status,order_id,client_order_id,qty,entry_limit_price,entry_filled_price,exit_plan,exit_price,pnl
+2026-04-06T12:38:47.609571-04:00,SPY,,iron_condor,range_bound_condor_shadow,live_range_scan,filled,c44d18b7-66e9-4edc-875e-339bf94b6e62,codex-condor-spy-84fa2584,1,0.87,-0.86,"Range thesis on 5min. Exit near 50% credit capture, on break of 656.13/659.87, or end-of-day review if the range breaks.",,

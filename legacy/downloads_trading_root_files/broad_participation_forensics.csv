@@ -1,0 +1,9 @@
+variant_id,base_strategy,slice_name,scenario,final_equity,total_return_pct,CAGR,max_drawdown_pct,Sharpe,profit_factor,daily_expectancy,edge_stays_positive
+csm_native,cross_sectional_momentum,broad_participation_only,remove_best_1pct,11943.524319540284,-52.22590272183887,-13.77480962462656,63.27976335767186,-0.590991753529164,0.0,-24.634859774452295,False
+csm_native,cross_sectional_momentum,broad_participation_only,remove_best_2_5pct,-1696.7883796012393,-106.78715351840495,0.0,110.24384309085235,-0.44252717729416113,0.0,-52.24420426536446,False
+csm_native,cross_sectional_momentum,broad_participation_only,remove_best_5pct,-15106.713924552481,-160.42685569820995,0.0,162.00392968191406,-0.1875312458935586,0.0,-83.55565400948429,False
+csm_native,cross_sectional_momentum,broad_participation_only,remove_best_and_worst_2_5pct,32762.313649700074,31.049254598800303,5.575150717285382,9.90835043155166,0.8154879572436255,0.0,16.20524770292291,True
+rs_top3_native,relative_strength_vs_benchmark,broad_participation_only,remove_best_1pct,18829.222341852532,-24.683110632589877,-5.528662827706232,44.52126203634303,-0.2544900099454873,0.0,-10.301799095404789,False
+rs_top3_native,relative_strength_vs_benchmark,broad_participation_only,remove_best_2_5pct,4720.6334234105525,-81.11746630635778,-28.42671581361662,86.64192770459556,-0.8360825448697875,0.0,-34.96442513205077,False
+rs_top3_native,relative_strength_vs_benchmark,broad_participation_only,remove_best_5pct,-13447.63357419608,-153.79053429678433,0.0,156.41874112280706,0.7651998040302486,0.0,-70.03211944298013,False
+rs_top3_native,relative_strength_vs_benchmark,broad_participation_only,remove_best_and_worst_2_5pct,39986.03566749132,59.94414266996528,9.881248213701642,7.164125675414301,1.0427952371272853,0.0,27.346780415130144,True

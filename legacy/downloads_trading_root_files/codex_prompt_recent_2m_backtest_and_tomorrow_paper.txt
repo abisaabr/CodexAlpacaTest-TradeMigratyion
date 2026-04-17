@@ -1,0 +1,239 @@
+MASTER CODEX PROMPT: LAST-2-MONTHS HONEST READINESS BACKTEST + TOMORROW PAPER PLAN
+
+You are running on my local machine.
+
+This is a final recent-performance readiness pass.
+Do NOT rerun the giant historical tournament.
+Do NOT run options.
+Do NOT broaden to unrelated strategy families.
+Your job is to run the current exact top strategies as they are over the most recent 2-month window, show the results clearly, and then decide what should actually run tomorrow on Alpaca paper during regular trading hours.
+
+IMPORTANT DATE CONTEXT
+- Today for planning purposes is Sunday 2026-04-05.
+- “Tomorrow” means Monday 2026-04-06.
+- Use the most recent continuous 2-month window ending at the latest complete trading day available in local data.
+- State the exact start and end dates you used.
+
+OPEN THESE EXACT FILES FIRST
+- C:\Users\rabisaab\Downloads\master_strategy_memo.txt
+- C:\Users\rabisaab\Downloads\tournament_master_report.md
+- C:\Users\rabisaab\Downloads\monday_paper_plan.md
+- C:\Users\rabisaab\Downloads\remaining_carrier_branch_redecision.md
+- C:\Users\rabisaab\Downloads\remaining_carrier_dependency_report.md
+- C:\Users\rabisaab\Downloads\remaining_carrier_forensics_report.md
+- C:\Users\rabisaab\Downloads\remaining_carrier_paper_watch_recheck.md
+- C:\Users\rabisaab\Downloads\broad_participation_branch_decision.md
+- C:\Users\rabisaab\Downloads\ex_aapl_meta_branch_redecision.md
+- C:\Users\rabisaab\Downloads\ex_tsla_branch_redecision.md
+- C:\Users\rabisaab\Downloads\rs_canonical_branch_decision.md
+- C:\Users\rabisaab\Downloads\rs_branch_paper_watch_decision.md
+- C:\Users\rabisaab\Downloads\best_day_autopsy_report.md
+- C:\Users\rabisaab\Downloads\non_extreme_day_edge_report.md
+- C:\Users\rabisaab\Downloads\underlying_trade_ledger.csv
+- C:\Users\rabisaab\Downloads\underlying_tournament_metrics.csv
+
+If any are missing, say so explicitly and continue with what you can open.
+
+PRIMARY CONTEXT YOU MUST PRESERVE
+- The only active paper strategy right now is:
+  - qqq_led_tqqq_sqqq_pair_opening_range_intraday_system
+- The daily trust anchor / control is:
+  - down_streak_exhaustion
+- The canonical upside research branch is:
+  - relative_strength_vs_benchmark :: rs_top3_native
+- The main challenger is:
+  - cross_sectional_momentum :: csm_native
+- The current honest label for the upside branch is:
+  - weakened but still the best upside branch
+  - narrow research artifact with weak broad core
+- Neither RS nor CSM is close enough for honest paper-watch yet
+- DSE remains cleaner but lower-powered
+- Options remain blocked and are out of scope
+
+MISSION
+Run a final last-2-month backtest for the current exact top strategies as they are, show the results cleanly, and give an honest operational plan for what should and should not run tomorrow during RTH on Alpaca paper.
+
+DO NOT DO THESE THINGS
+- Do not run options
+- Do not optimize parameters
+- Do not invent new strategies
+- Do not mutate core strategy logic
+- Do not promote a strategy just because the last 2 months were hot
+- Do not ignore the prior trust hierarchy
+- Do not recommend anything for tomorrow if the recent 2-month evidence is weak or inconsistent
+
+TARGET STRATEGIES
+Run these exact strategies if the local implementations exist:
+
+1. qqq_led_tqqq_sqqq_pair_opening_range_intraday_system
+   Use the exact adverse-baseline paper settings already identified:
+   - opening window = 10
+   - threshold = 15 bps
+   - decision interval = 15m
+   - start delay = 25m
+   - flat before close = 40m
+   - notional = 50%
+   - blocked hours = []
+   - minimum relative volume = 1.0
+
+2. down_streak_exhaustion
+   Use the exact confirmed baseline / exact reproduction settings already used in prior work.
+
+3. relative_strength_vs_benchmark :: rs_top3_native
+   Use the canonical narrowed branch exactly as currently defined.
+
+4. cross_sectional_momentum :: csm_native
+   Use the current challenger exactly as currently defined.
+
+If one of these cannot be run exactly from local code/config, say so explicitly and mark it blocked or partial.
+
+ACCOUNT / EXECUTION RULES
+- Account size: $25,000
+- RTH only
+- Preserve native strategy assumptions
+- No lookahead
+- Use the same fees/slippage assumptions as the prior comparable runs
+- Do not normalize away differences between intraday and daily systems
+- For daily systems, use the exact local methodology already established
+- For the QQQ pair, use the exact paper-first settings above
+
+PHASE 0: INPUT DIGEST
+Create:
+1. recent_2m_input_digest.md
+
+Show:
+- which files opened
+- which exact implementations were found
+- which strategies are runnable exact / partial / blocked
+- exact 2-month date window used
+- remaining data limitations
+
+PHASE 1: RUN THE LAST-2-MONTH BACKTESTS
+Create:
+2. recent_2m_metrics.csv
+3. recent_2m_trade_ledger.csv
+4. recent_2m_leaderboard.md
+
+For each runnable strategy, compute:
+- final equity
+- total return pct
+- max drawdown pct
+- Sharpe if meaningful
+- profit factor
+- expectancy
+- win rate
+- average win
+- average loss
+- payoff ratio
+- trade count
+- trades per day
+- percent profitable days
+- largest win
+- largest loss
+- top-symbol concentration if relevant
+- top-10%-days concentration if derivable
+- ending status: strong / mixed / weak over the last 2 months
+
+PHASE 2: RECENT-VS-HISTORICAL CONSISTENCY CHECK
+Create:
+5. recent_vs_historical_consistency.csv
+6. recent_vs_historical_consistency.md
+
+For each strategy compare:
+- last-2-month result
+- historical trust level from prior work
+- whether recent behavior confirms, weakens, or contradicts the prior thesis
+
+This report must answer:
+- did the QQQ pair behave like the best operational candidate should?
+- did DSE behave like the trust anchor should?
+- did RS recent behavior justify continued research attention?
+- did CSM stay close enough to remain the challenger?
+- did any strategy degrade badly enough to lose priority?
+
+PHASE 3: TOMORROW PAPER READINESS DECISION
+Create:
+7. tomorrow_paper_readiness.md
+
+This file must answer directly:
+1. Which exact strategies should run tomorrow on Alpaca paper during RTH?
+2. Which exact strategies should NOT run tomorrow?
+3. Which should remain research-only?
+4. Which should remain benchmark/control only?
+5. What is the honest reason for each inclusion or exclusion?
+
+Rules:
+- Be conservative.
+- It is acceptable for only one strategy to be approved for tomorrow.
+- Do not approve RS or CSM unless the last-2-month run plus prior evidence honestly support it.
+
+PHASE 4: ALPACA PAPER RUN PLAN FOR TOMORROW
+Create:
+8. tomorrow_alpaca_paper_runbook.md
+
+This runbook must include:
+- exact strategies to run
+- exact symbols to watch or trade
+- exact start/end times in RTH
+- daily risk limits
+- per-strategy kill switches
+- what logs to collect
+- what output files to save
+- what to do if quotes/data are stale
+- what to do if a strategy has no signals
+- what to do if multiple strategies conflict
+- what to do if execution infrastructure fails
+
+Use exact language for Monday 2026-04-06.
+
+PHASE 5: DEPLOYMENT HANDOFF FOR THE OTHER MACHINE
+Prepare a handoff bundle that another machine can assemble.
+
+Create:
+9. other_machine_handoff.md
+10. deployment_file_manifest.md
+
+Also prepare or update, if local code structure allows cleanly:
+- one runner script or entrypoint per approved strategy
+- one shared config file for paper account / RTH / logging
+- one scheduler/setup note for running during RTH
+- one environment template listing required env vars only by name, not secrets
+- one README explaining how to launch the paper system tomorrow
+
+If files are created or updated, list exact paths in the manifest.
+
+Important:
+- Do not invent secrets
+- Do not hardcode credentials
+- Do not claim scheduling is done unless you actually created the scheduler instructions or task files
+- If full automation is not possible from local code, create the clearest handoff docs possible
+
+PHASE 6: FINAL DECISION PACK
+Create:
+11. recent_2m_final_decision.md
+
+This file must answer directly:
+- best recent performer
+- best recent operational candidate
+- best recent trust anchor
+- which strategy actually deserves to run tomorrow
+- which strategies should wait
+- what the next step is after tomorrow’s paper run
+
+TERMINAL SUMMARY REQUIRED
+At the end print:
+- which files opened successfully
+- exact 2-month window used
+- which strategies were runnable
+- recent leaderboard
+- which strategies are approved for tomorrow
+- which strategies are research-only
+- exact files created for the other-machine handoff
+- paths to all deliverables
+
+BOTTOM LINE
+You are not trying to force multiple strategies into tomorrow’s paper run.
+You are trying to make the most honest recent-performance decision possible and prepare a clean handoff so the approved strategy set can run on another machine during RTH on Alpaca paper starting Monday 2026-04-06.
+
+START NOW.
+Open the exact files first, run the last-2-month backtests, compare recent behavior against the historical trust hierarchy, decide what actually runs tomorrow, and prepare the other-machine handoff files.

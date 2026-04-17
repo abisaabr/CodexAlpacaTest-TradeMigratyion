@@ -1,0 +1,54 @@
+STRATEGY CHAT SEED
+
+Executive Summary
+The current strategy book has one strongest confirmed daily winner, one strongest operationally mature intraday system, and one strongest paper-only supporting signal family. Down Streak Exhaustion is the most credible all-around strategy on decision-grade evidence: test ending equity 125394.19, CAGR 20.50%, profit factor 1.6426, Sharpe 1.4177, max drawdown 6.05%, and benchmark wins versus SPY, equal_weight_full, and equal_weight_etf, but it is still marked fragile because subset and regime robustness are uneven. QQQ-Led TQQQ/SQQQ Pair Opening-Range Intraday System is the closest to real deployment: adverse validate/test net PnL 922.21 / 1441.14, combined expectancy 16.06, max drawdown about 9.23%, explicit paper runbooks, and quote-aware validation, but promotion is still blocked by concentration and slippage realism. Durable cRSI Family is the best paper-only support layer: 768 stress-test runs, 22 survivors at slippage >= 10 bps, and durable presets that still work at 10 to 15 bps, but every preset is still needs_cleaner_ops because the paper sample is short and overnight/stale-data risk remains. The main upside reserve is in Momentum / Relative-Strength Family and Breakout / Trend-Continuation Family, but both remain promising rather than settled because their strongest rows come from raw search tables rather than final confirmation packets.
+
+Ranked Top 5
+1. Down Streak Exhaustion
+Confirmed research winner. Best metrics: 125394.19 ending equity, 20.50% CAGR, 1.6426 profit factor, 1.4177 Sharpe, 6.05% max drawdown, 354 trades, benchmark wins, and survival through 2.0x cost stress. Key blocker: fragile across subsets and some regimes, with no paper-trading packet yet.
+
+2. QQQ-Led TQQQ/SQQQ Pair Opening-Range Intraday System
+Best deployability and best intraday system. Best metrics: paper-promotion adverse validate/test 922.21 / 1441.14, combined expectancy 16.06, max drawdown about 9.23%, median daily test PnL 61.08. Key blocker: concentration and slippage realism still block promotion.
+
+3. Durable cRSI Family
+Best friction-resistant paper-only signal layer. Best metrics: 22 tougher survivors at slippage >= 10 bps; RKLB 30m test equity 1188.89 at 15 bps with 82.61% win rate and 23 trades; GE 60m max drawdown 4.30%; FCX 60m strongest 10 bps robustness. Key blocker: short paper history, overnight dependency, stale-data risk, and ops cleanliness.
+
+4. Momentum / Relative-Strength Family
+Largest visible upside in daily-stock research. Best metrics: authoritative phase-5 rows show 49.03% to 123.15% test CAGR, while raw search tables go even higher. Key blocker: this family conflicts with the repo's own final decision summary and some top rows carry extreme drawdown, so it is not yet trustworthy as a winner.
+
+5. Breakout / Trend-Continuation Family
+Best non-momentum upside reserve outside the confirmed winner. Best metrics: breakout_consolidation up to 33.23% CAGR, volatility_contraction_breakout up to 31.92% CAGR, ma_regime_continuation up to 25.00% CAGR, all from newer raw tables. Key blocker: no final confirmation packet, and the older corrected breakout baseline was negative after accounting cleanup.
+
+Tier 1
+- Down Streak Exhaustion
+- QQQ-Led TQQQ/SQQQ Pair Opening-Range Intraday System
+- Durable cRSI Family
+
+Tier 2
+- Momentum / Relative-Strength Family
+- Breakout / Trend-Continuation Family
+- RSI Pullback / Z-Score Pullback / Gap Reversion Family
+- Pullback in Trend Family
+
+Tier 3
+- Turn of Month Trend Family
+- Stacked Ensemble Family
+- Older Corrected Mean Reversion Baseline
+- Older Corrected Day-of-Week / Vol-Regime / Breakout Baseline Cluster
+- Options Vertical-Spread Wrappers
+- TradingView Reference / Ideation Scripts Cluster
+
+Key Blockers
+- Down Streak Exhaustion: subset and regime robustness are not uniform; still no paper packet.
+- QQQ-Led TQQQ/SQQQ Pair Opening-Range Intraday System: concentration is too high and slippage realism is not closed.
+- Durable cRSI Family: too little clean paper history; overnight and stale-data dependency remain.
+- Momentum / Relative-Strength Family: raw-table and final-summary conflict; drawdowns on the loudest rows are too extreme.
+- Breakout / Trend-Continuation Family: upside exists, but it still lacks final confirmation and has an older breakout failure as a warning.
+
+Exact Next Comparison Tasks
+1. Re-run Down Streak Exhaustion, Momentum / Relative-Strength Family, Breakout / Trend-Continuation Family, and RSI Pullback / Z-Score Pullback / Gap Reversion Family on the same 74-symbol universe, same cost model, same walk-forward dates, and same benchmark pack.
+2. Extend Down Streak Exhaustion with rolling walk-forward, start-date perturbation, subset-specific equal-weight benchmarks, and a harsher open/close execution model.
+3. Compare the preserved QQQ-Led TQQQ/SQQQ Pair Opening-Range Intraday System champion against its best nearby variants with 40/45/50 minute flatten buffers, concentration caps, and longer quote-aware paper windows.
+4. Run a longer paper-only comparison across Durable cRSI Family presets on the same dates and ops rules: FCX versus GE versus RKLB versus BE.
+5. Test Momentum / Relative-Strength Family as a ranking or filter layer on top of Down Streak Exhaustion and Breakout / Trend-Continuation Family, rather than treating it only as a standalone book.
+6. Keep Tier 1 as the continuous reference set and use Tier 2 only as challengers until they clear confirmation-grade validation.

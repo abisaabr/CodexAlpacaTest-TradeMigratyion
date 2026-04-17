@@ -1,0 +1,1 @@
+strategy_id,symbol,underlying_timestamp_in,underlying_timestamp_out,structure_type,legs,entry_fill_price,exit_fill_price,gross_pnl,net_pnl,return_pct,max_drawdown_pct,data_quality_flag,fallback_note

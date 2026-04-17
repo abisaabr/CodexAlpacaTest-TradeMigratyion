@@ -1,0 +1,568 @@
+MASTER CODEX PROMPT: EDGE-FIRST STRATEGY TOURNAMENT WITH EXPLICIT FILES, OVERFIT KILL SWITCHS, CLUSTER MINING, PORTFOLIO SLEEVES, AND MONDAY PAPER PLAN
+
+You are running on my Windows machine. Use these exact files first before doing any broader scan.
+
+AUTHORITATIVE FILE PATHS
+- C:\Users\rabisaab\Downloads\master_strategy_memo.txt
+- C:\Users\rabisaab\Downloads\top10_authoritative_inventory.txt
+- C:\Users\rabisaab\Downloads\strategy_chat_seed.txt
+- C:\Users\rabisaab\Downloads\codex_master_tournament_prompt_with_top10.txt
+- C:\Users\rabisaab\Downloads\codex_master_tournament_prompt.txt
+
+CRITICAL ORDER OF OPERATIONS
+1. Open and read the five files above first.
+2. Treat `top10_authoritative_inventory.txt` as hard input from another machine.
+3. Treat `master_strategy_memo.txt` as the current canonical consolidation memo.
+4. Treat `strategy_chat_seed.txt` as a compact summary only, not as a replacement for the memo or top-10 inventory.
+5. Use the older tournament prompt files only as workflow guidance, not as the primary source of truth if they conflict with the memo or top-10 inventory.
+
+SOURCE PRIORITY
+Highest priority:
+1. C:\Users\rabisaab\Downloads\top10_authoritative_inventory.txt
+2. C:\Users\rabisaab\Downloads\master_strategy_memo.txt
+
+Secondary:
+3. C:\Users\rabisaab\Downloads\strategy_chat_seed.txt
+
+Supporting workflow references:
+4. C:\Users\rabisaab\Downloads\codex_master_tournament_prompt_with_top10.txt
+5. C:\Users\rabisaab\Downloads\codex_master_tournament_prompt.txt
+
+OBJECTIVE
+Build a complete strategy tournament framework that merges:
+- the authoritative top 10 strategies from the other machine
+- the currently consolidated strategy families from the memo
+- any repo-backed implementations, configs, reports, leaderboards, finalists, validation packets, and paper artifacts found locally
+
+Then run a two-layer tournament:
+1. underlying stock/ETF backtests
+2. options-translated backtests based on the exact timestamps of underlying trades
+
+PRIMARY GOAL
+Sniff out the real money-making edge, not just attractive backtests.
+
+That means:
+- favor reproducible edge over headline return
+- favor net expectancy after friction over raw win rate
+- favor small controlled losses and strong payoff over noisy gross return
+- favor decision-grade evidence over raw table outliers
+- favor deployable edge over fragile research artifacts
+- preserve exact logic where known
+- preserve ambiguity where true 1:1 recreation is not possible
+
+GOALS
+Screen for strategy systems that:
+- lose small and win big
+- preserve tight losses
+- maintain favorable payoff ratio
+- can be run RTH only
+- can be evaluated on a $25,000 account
+- can be translated into paper options trading workflows
+- can eventually support many paper trades per day if the data honestly supports that
+- are good enough to test against these screens:
+  - win rate above 60%
+  - final equity above $100,000 from a $25,000 start over the 5-year tournament
+
+Important:
+Those are screening thresholds, not assumptions. Do not force any strategy to pass them.
+
+TOURNAMENT UNIVERSE
+Where structurally valid, evaluate across:
+- SPY
+- QQQ
+- IWM
+- NVDA
+- META
+- AAPL
+- AMZN
+- NFLX
+- GOOG
+- TSLA
+
+ACCOUNT / EXECUTION RULES
+- Account size: $25,000
+- RTH only
+- No overnight stock holdings unless a strategy explicitly requires them and authoritative evidence proves that
+- Preserve exact strategy-native assumptions where known
+- Do not improve or normalize strategy logic
+- Do not invent missing config values
+- If exact source code or config is missing, preserve ambiguity explicitly
+- If a strategy cannot be reproduced 1:1, classify it as exact, partial, or blocked
+- Use deterministic seeds where needed
+- Record all assumptions and fallbacks in a reproducibility manifest
+
+PHASE 0: INGEST THE EXACT FILES FIRST
+Before scanning any repos:
+- read the five exact files listed above
+- extract all strategy names, aliases, verdicts, execution assumptions, known metrics, blockers, and provenance
+- build an input digest so later repo discoveries can be matched back to these files
+
+Create:
+1. explicit_input_digest.md
+
+This file must show:
+- each exact file path
+- whether it was successfully opened
+- what role it plays
+- what strategy families or variants it defines
+- any conflicts between the files
+
+PHASE 0A: EDGE TRIAGE
+Before the full tournament, run a fast evidence-first triage on the leading and challenger families:
+- Down Streak Exhaustion
+- QQQ-Led TQQQ/SQQQ Pair Opening-Range Intraday System
+- Durable cRSI Family
+- Momentum / Relative-Strength Family
+- Breakout / Trend-Continuation Family
+- any top-10 authoritative variant that appears materially stronger or more specific than the memo family labels
+
+For each, score:
+- evidence quality
+- reproducibility confidence
+- friction sensitivity
+- drawdown quality
+- concentration risk
+- portability
+- options translatability
+- operational readiness
+
+Create:
+2. edge_triage_scorecard.csv
+3. edge_triage_summary.md
+
+The purpose of this phase is to answer:
+- where is the cleanest repeatable edge?
+- where is the largest upside but weakest trust?
+- which strategies deserve immediate deep testing?
+- which strategies are likely dead ends?
+
+PHASE 1: BUILD THE MASTER STRATEGY REGISTRY
+Create a canonical registry merging:
+- the 13 strategy families from the memo
+- the file-backed top 10 from the other machine
+- any local repo-backed implementations and verified finalists
+
+Create:
+4. strategy_registry_master.csv
+5. strategy_registry_master.md
+6. strategy_reconstruction_gaps.md
+
+For each family or exact variant include:
+- canonical strategy_id
+- family name
+- aliases
+- source file(s)
+- source repo/folder if found
+- source provenance: top10_file / master_memo / seed / repo_verified / mixed
+- asset universe
+- timeframe
+- directionality
+- execution assumptions
+- exact known parameters
+- reconstruction status: exact / partial / blocked
+- evidence quality: high / medium / low
+- prior audited metrics
+- major risks
+- eligible for underlying tournament: yes/no
+- eligible for options single-leg translation: yes/no
+- eligible for multi-leg translation: yes/no
+
+PHASE 2: REPRODUCE BASELINES
+For each exact or partial-but-runnable strategy:
+- reproduce the native backtest as closely as possible
+- compare against prior audited metrics
+- measure drift
+- document why any drift exists
+- reject any claimed reproduction that materially diverges without a documented reason
+
+Create:
+7. baseline_reproduction_report.md
+8. baseline_reproduction_metrics.csv
+
+PHASE 2A: EDGE SCORE
+Create a master edge score for every reproduced strategy. Use this weighting:
+- 25% net expectancy after costs
+- 20% payoff ratio
+- 15% max drawdown control
+- 15% average loss containment
+- 10% robustness across windows and regimes
+- 10% concentration control
+- 5% win rate
+
+Create:
+9. master_edge_scorecard.csv
+
+Rules:
+- score underlying and options variants separately
+- do not let win rate dominate the ranking
+- if evidence quality is low, apply an explicit confidence penalty
+- if a strategy is partial or blocked, do not present it as a leader without a warning label
+
+PHASE 2B: OVERFIT KILL SWITCH
+Any strategy must be demoted or excluded if any of the following occur:
+- validation/test ranking collapse greater than 50%
+- top 10% of days drive more than 40% of total PnL
+- one symbol contributes more than 50% of total profit unless the strategy is explicitly symbol-specific
+- small parameter perturbations destroy expectancy
+- the strategy only works in one regime slice
+- options translation profitability disappears under conservative spread and slippage assumptions
+- the strongest rows come only from raw tables while decision-grade evidence contradicts them
+- the strategy is explicitly flagged as fragile, falsified, retired, or likely overfit and the new evidence does not overturn that label
+
+Create:
+10. overfit_kill_switch_report.md
+
+For each strategy, list:
+- passed / failed
+- exact reasons
+- what evidence triggered the kill switch
+- whether the strategy remains usable as research-only, watchlist-only, or promotion-ineligible
+
+PHASE 2C: RISK-WRAPPER TESTS
+Do not alter native strategy logic.
+Instead, for tournament comparability, where structurally eligible run a separate wrapper layer:
+- native exits only
+- native + hard catastrophe stop
+- native + tighter profit lock
+- native + capped time-stop
+
+Rules:
+- clearly separate native result from wrapped result
+- do not overwrite the native backtest
+- if the strategy already has exact stop/target/time logic, preserve it and only apply wrappers as a separate comparison
+- do not invent wrappers where the strategy structure makes them meaningless
+
+Create:
+11. risk_wrapper_comparison.csv
+12. risk_wrapper_summary.md
+
+PHASE 3: FIVE-YEAR UNDERLYING TOURNAMENT
+Use the most recent full continuous 5-year window ending at the latest complete trading day in the local data.
+
+Important:
+- If a strategy is symbol-specific, run native-symbol results first
+- Only expand cross-symbol if the family is structurally portable
+- If portability is uncertain, label the expanded run experimental
+- Preserve lineage so native-only and expanded runs are never mixed without labels
+
+Use:
+- $25,000 starting equity
+- no lookahead
+- RTH only
+- strategy-native fill rules if known
+- otherwise conservative documented fill assumptions
+- realistic fees/slippage where specified
+
+For every trade record:
+- strategy_id
+- family
+- symbol
+- timestamp_in
+- timestamp_out
+- side
+- entry_price
+- exit_price
+- shares/contracts
+- stop_level
+- target_level
+- pnl_dollars
+- pnl_pct
+- mfe
+- mae
+- exit_reason
+- rth_compliant_flag
+
+Create:
+13. underlying_trade_ledger.csv
+14. underlying_tournament_metrics.csv
+15. underlying_tournament_leaderboard.md
+16. underlying_asymmetric_edge_ranking.csv
+
+Required metrics:
+- total return pct
+- CAGR
+- max drawdown pct
+- Sharpe
+- Sortino
+- profit factor
+- expectancy
+- win rate
+- average win
+- average loss
+- payoff ratio
+- median win
+- median loss
+- trade count
+- average trades per day
+- percent profitable months
+- percent profitable quarters
+- largest loss
+- largest win
+- average MAE
+- average MFE
+- ulcer index if available
+- return over max drawdown
+- final equity
+- reached_100k_from_25k flag
+- above_60pct_winrate flag
+
+Ranking focus for asymmetric edge:
+- positive expectancy
+- high payoff ratio
+- small average loss
+- controlled max drawdown
+- favorable MFE/MAE
+- final equity growth
+Do not overweight win rate alone.
+
+PHASE 3B: TRADE CLUSTER MINING
+For each strategy, mine the trades to locate the real money pocket.
+
+Cluster trades by:
+- symbol
+- side
+- regime
+- volatility bucket
+- trend alignment
+- time-of-day bucket
+- day-of-week
+- gap bucket
+- holding-time bucket
+- if applicable, setup subtype or signal subtype
+
+For each cluster compute:
+- expectancy
+- payoff ratio
+- win rate
+- MFE/MAE
+- drawdown contribution
+- profit concentration
+- trade count
+- stability across subperiods
+
+Create:
+17. trade_cluster_edge_map.csv
+18. edge_hotspots.md
+
+Goal:
+identify where the real edge lives and where the strategy is just noise.
+
+PHASE 4: OPTIONS REALISM GATE
+Before options replay, exclude any trade timestamp if:
+- bid/ask spread is greater than 12% of mid for single legs
+- no valid bid/ask exists on entry or exit
+- contract bars around the timestamp are too sparse for a credible fill
+- open interest, volume, or other liquidity proxies when available indicate the contract is too illiquid
+- the resulting position would use more than 8% of account risk on one trade unless explicitly approved by the source strategy
+- chain or greeks reconstruction is too ambiguous to support honest fills
+
+Create:
+19. options_realism_gate_report.csv
+20. options_excluded_trades.csv
+
+Rules:
+- do not fabricate prices
+- do not backfill missing options data with theory values
+- keep an explicit fallback log
+- if the realism gate excludes too many trades, say so and downgrade the strategy's options viability
+
+PHASE 5: OPTIONS SINGLE-LEG TRANSLATION
+For each eligible underlying trade that survives the realism gate:
+- locate the nearest valid 2 DTE chain at entry timestamp
+- choose the 1-strike OTM contract in the trade direction
+  - bullish -> call
+  - bearish -> put
+- use minute options bars if available
+- attach greeks if available
+- do not use future knowledge
+- if exact 2 DTE or exact 1-strike OTM is unavailable, choose nearest valid fallback and log it explicitly
+- exit at the first valid marketable bar after the underlying exit timestamp
+- remain RTH only
+
+Create:
+21. options_trade_ledger_single_leg.csv
+22. options_tournament_metrics_single_leg.csv
+23. options_tournament_leaderboard_single_leg.md
+
+Required fields:
+- strategy_id
+- symbol
+- underlying_timestamp_in
+- underlying_timestamp_out
+- option_timestamp_in
+- option_timestamp_out
+- direction
+- option_type
+- expiry
+- dte_at_entry
+- strike
+- moneyness
+- contract_symbol
+- bid_at_entry
+- ask_at_entry
+- mid_at_entry
+- entry_fill_price
+- bid_at_exit
+- ask_at_exit
+- mid_at_exit
+- exit_fill_price
+- delta_at_entry
+- gamma_at_entry
+- theta_at_entry
+- vega_at_entry
+- implied_vol_at_entry
+- contracts
+- gross_pnl
+- net_pnl
+- return_pct
+- max_contract_drawdown_pct
+- exit_reason
+- data_quality_flag
+- fallback_note
+
+PHASE 6: OPTIONS MULTI-LEG SCREEN
+Evaluate whether any strategy legitimately supports:
+- long calls
+- long puts
+- call debit spreads
+- put debit spreads
+- call credit spreads
+- put credit spreads
+- iron condors
+- other multi-leg structures only if the signal logic truly supports them
+
+Hard rule:
+- Do not force neutral structures onto directional strategies
+- Only use range/neutral structures where the signal semantics justify them
+- If unsupported, mark the structure ineligible
+
+Create:
+24. options_translation_eligibility.md
+25. options_trade_ledger_multileg.csv
+26. options_tournament_metrics_multileg.csv
+27. options_tournament_leaderboard_multileg.md
+
+PHASE 6B: PORTFOLIO SLEEVE ASSEMBLY
+Build and test small portfolios using only robust or semi-robust sleeves.
+
+Test combinations such as:
+- Tier 1 only
+- Tier 1 + one Tier 2 challenger
+- intraday sleeve + daily sleeve
+- directional sleeve + mean-reversion sleeve
+- underlying-only sleeve
+- options-only sleeve
+- mixed sleeve if capital and overlap allow
+
+Rules:
+- optimize allocation caps only, not signal logic
+- keep clear lineage to the underlying strategies
+- do not hide when portfolio improvement comes only from diversification rather than stronger edge per sleeve
+
+Measure:
+- correlation of daily PnL
+- overlap of exposure
+- combined drawdown
+- combined expectancy
+- combined trades per day
+- combined options capital usage
+- concentration by symbol
+- concentration by strategy
+- final equity
+- edge score
+- whether the sleeve reaches $100k from $25k
+- whether the sleeve becomes more operationally viable than any individual strategy
+
+Create:
+28. portfolio_sleeve_matrix.csv
+29. portfolio_sleeve_report.md
+
+PHASE 7: DAILY PAPER-ENGINE SCREEN
+Evaluate which candidates can plausibly support a daily paper engine for options under a $25,000 account.
+
+For each candidate include:
+- estimated trades per day
+- symbols used
+- option structure used
+- average hold time
+- overlap rate
+- portfolio heat
+- capital bottlenecks
+- liquidity concerns
+- whether standalone or portfolio use is better
+- whether it passed the >60% win-rate screen
+- whether it reached the $100k target
+- whether it stayed robust under conservative fills
+- whether the real edge comes from a specific cluster rather than the full strategy
+- whether it is deployable now, paper-only, or research-only
+
+Create:
+30. daily_paper_engine_candidates.md
+
+PHASE 8: FINAL DECISION PACK
+Create:
+31. tournament_master_leaderboard.csv
+32. tournament_master_report.md
+33. promotion_candidates.md
+34. monday_paper_plan.md
+
+The final report must clearly separate:
+- robust candidates
+- speculative candidates
+- overfit candidates
+- dead or retired candidates
+- blocked candidates awaiting missing artifacts
+
+It must also name:
+- best overall underlying strategy
+- best overall options single-leg strategy
+- best overall options multi-leg strategy
+- best lose-small-win-big strategy
+- best high-win-rate strategy
+- best practical paper-engine candidate
+- best symbol-specific strategy
+- best portable cross-symbol family
+
+FINAL OPERATIONAL DECISION
+The monday paper plan must answer directly:
+1. Which exact strategies should be run in paper now?
+2. Which should stay research-only?
+3. Which should be excluded entirely?
+4. Which symbols and option structures should be used first?
+5. What is the daily risk budget?
+6. What is the expected trade count per day?
+7. What exact blockers still prevent promotion?
+
+Do not hedge. Give a ranked operational recommendation.
+
+STRICT RULES
+- Do not hide missing artifacts
+- Do not fabricate fills
+- Do not improve rules
+- Do not collapse distinct finalists without preserving lineage
+- Do not let raw return dominate if the path is unstable
+- Do not silently reinterpret the other-machine top 10
+- Preserve all ambiguity notes where exact recreation is not possible
+- Favor decision-grade evidence over raw search-table excitement
+
+TERMINAL SUMMARY REQUIRED
+At the end print:
+- which of the five exact files were opened successfully
+- total canonical strategies found
+- total exact / partial / blocked
+- total baseline reproductions completed
+- total underlying trades
+- total options single-leg trades
+- total options multi-leg trades
+- top 10 underlying leaderboard
+- top 10 options single-leg leaderboard
+- top 10 options multi-leg leaderboard
+- strategies above 60% win rate
+- strategies reaching $100k from $25k
+- recommended paper-engine candidates
+- top edge hotspots from trade cluster mining
+- which strategies failed the overfit kill switch
+- paths of all final deliverables
+
+START NOW.
+Open the five exact file paths first, build the explicit input digest, run edge triage, build the registry, reproduce baselines, then run the full tournament and finish with the Monday paper plan.

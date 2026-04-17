@@ -1,0 +1,2 @@
+timestamp,symbol,strategy_variant,strategy_template,status,order_id,client_order_id,qty,entry_price,entry_limit_price,exit_plan,stop_price,take_profit_price,time_exit_plan,exit_price,pnl
+2026-04-06T11:27:26.186047-04:00,AMD,rs_lb60_hold10_thr0p0,relative_strength_vs_benchmark,new,ae0eb42d-32ba-4e60-a980-4d2e47aff625,codex-amd-rs_lb60_hold10_thr0p0-98352524,15,,219.79,Bracket stop 212.09 / target 233.65,212.09,233.65,10 trading days if neither bracket leg fills,,

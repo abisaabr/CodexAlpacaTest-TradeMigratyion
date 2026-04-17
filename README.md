@@ -1,28 +1,29 @@
 # CodexAlpacaTest-TradeMigratyion
 
-This repo is a temporary migration landing zone for the multi-ticker paper trader and the cleanroom research workspace.
+This repo is a GitHub-only migration helper for moving the paper-trader setup to a new machine without carrying raw options datasets.
 
-What is here:
-- Public-safe runtime handoff state with no `.env`
-- Cleanroom research code and summary metadata
-- Small and medium archive snapshots that do not contain raw options minute data
-- Operator docs and copy/paste Codex prompts for the new machine
-
-What is not here:
-- Raw options datasets
-- Large parquet backfills
-- Full cleanroom snapshot with minute-bar option data
-- Local secrets
-
-Primary code repo:
+Primary codebase:
 - [abisaabr/CodexAlpacaTest-Trade](https://github.com/abisaabr/CodexAlpacaTest-Trade)
 
-Quick use:
-1. Clone this repo.
-2. Clone `abisaabr/CodexAlpacaTest-Trade` beside it.
-3. Run [`scripts/RESTORE_PUBLIC_MIGRATION.ps1`](./scripts/RESTORE_PUBLIC_MIGRATION.ps1) to restore the public-safe runtime state and the cleanroom code-only workspace.
-4. Fill secrets locally in the main repo `.env`.
-5. Follow [`docs/NEW_MACHINE_CODEX_PROMPTS.md`](./docs/NEW_MACHINE_CODEX_PROMPTS.md) and [`docs/PORTABLE_DEPLOYMENT.md`](./docs/PORTABLE_DEPLOYMENT.md).
+What this repo contains:
+- A public-safe runtime handoff bundle with no `.env`
+- Cleanroom research scripts
+- Cleanroom summary outputs without raw option bars
+- Legacy strategy scripts, reports, and CSV research artifacts extracted from archive bundles
+- Setup docs and a restore script for the new machine
 
-Important note:
-- The repo name contains a typo: `Migratyion`. I kept it as-is to match the repository that already exists.
+What this repo does not contain:
+- Raw options minute data
+- Large parquet datasets
+- Full backfill archives
+- Local secrets
+
+Suggested usage:
+1. Clone `abisaabr/CodexAlpacaTest-Trade` to the new machine.
+2. Clone this repo beside it.
+3. Run [`scripts/RESTORE_PUBLIC_MIGRATION.ps1`](./scripts/RESTORE_PUBLIC_MIGRATION.ps1).
+4. Fill `.env` locally in the main repo.
+5. Let Codex finish the machine setup using [`docs/EXHAUSTIVE_NEW_MACHINE_PROMPT.md`](./docs/EXHAUSTIVE_NEW_MACHINE_PROMPT.md).
+
+Note:
+- The repo name contains a typo, `Migratyion`, because that is the repository that already existed on GitHub.

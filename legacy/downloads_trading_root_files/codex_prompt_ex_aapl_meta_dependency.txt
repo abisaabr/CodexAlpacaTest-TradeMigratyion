@@ -1,0 +1,232 @@
+MASTER CODEX PROMPT: EX-AAPL / EX-META DEPENDENCY TEST FOR RS VS CSM VS DSE
+
+You are running on my Windows machine.
+
+This is the next falsification step after the broad-participation-only confirmation.
+Do NOT rerun the giant tournament.
+Do NOT run options.
+Do NOT broaden scope to unrelated families.
+This task is only about testing whether the surviving weak broad core still depends too heavily on one remaining carrier, especially AAPL or META.
+
+OPEN THESE EXACT FILES FIRST
+- C:\Users\rabisaab\Downloads\master_strategy_memo.txt
+- C:\Users\rabisaab\Downloads\tournament_master_report.md
+- C:\Users\rabisaab\Downloads\monday_paper_plan.md
+- C:\Users\rabisaab\Downloads\broad_participation_branch_decision.md
+- C:\Users\rabisaab\Downloads\leader_vs_broad_participation_report.md
+- C:\Users\rabisaab\Downloads\broad_participation_forensics_report.md
+- C:\Users\rabisaab\Downloads\broad_participation_paper_watch_recheck.md
+- C:\Users\rabisaab\Downloads\next_after_broad_participation.md
+- C:\Users\rabisaab\Downloads\megacap_ex_nvda_branch_decision.md
+- C:\Users\rabisaab\Downloads\ex_tsla_branch_redecision.md
+- C:\Users\rabisaab\Downloads\best_day_autopsy_report.md
+- C:\Users\rabisaab\Downloads\non_extreme_day_edge_report.md
+- C:\Users\rabisaab\Downloads\canonical_edge_hypothesis.md
+- C:\Users\rabisaab\Downloads\broad_participation_metrics.csv
+- C:\Users\rabisaab\Downloads\leader_vs_broad_participation_contrast.csv
+- C:\Users\rabisaab\Downloads\broad_participation_forensics.csv
+- C:\Users\rabisaab\Downloads\day_type_symbol_regime_map.csv
+- C:\Users\rabisaab\Downloads\day_level_pnl_decomposition.csv
+- C:\Users\rabisaab\Downloads\underlying_trade_ledger.csv
+- C:\Users\rabisaab\Downloads\underlying_tournament_metrics.csv
+- C:\Users\rabisaab\Downloads\trade_cluster_edge_map.csv
+
+If any are missing, say so explicitly and continue with what you can open.
+
+PRIMARY CONTEXT YOU MUST PRESERVE
+- The only active paper strategy remains:
+  - qqq_led_tqqq_sqqq_pair_opening_range_intraday_system
+- The trust anchor / control remains:
+  - down_streak_exhaustion
+- The current canonical upside research branch is:
+  - relative_strength_vs_benchmark :: rs_top3_native
+- The main challenger is:
+  - cross_sectional_momentum :: csm_native
+- The most honest current label is:
+  - narrow research artifact with weak broad core
+- Both branches still survive broad-participation-only confirmation, but the edge is weak and too concentrated to call robust
+- RS stayed canonical narrowly because it was cleaner and stronger on the broad-participation slice
+- Neither branch got materially closer to paper-watch
+- The single best next experiment identified by the prior work is:
+  - ex-AAPL or ex-META dependency test
+
+MISSION
+Determine whether the surviving weak broad core still depends too heavily on AAPL or META, and whether removing either one collapses the remaining edge.
+
+You are trying to answer:
+1. Does RS still have a meaningful broad-core edge if AAPL is removed?
+2. Does RS still have a meaningful broad-core edge if META is removed?
+3. Does CSM survive either of those removals better than RS?
+4. Which remaining carrier matters more: AAPL or META?
+5. Should RS remain canonical, should CSM take over, or should both be demoted further?
+6. Does DSE remain the correct trust benchmark after this dependency test?
+
+DO NOT DO THESE THINGS
+- Do not invent new logic
+- Do not optimize parameters
+- Do not run options
+- Do not broaden to unrelated families
+- Do not hide collapse if the branch fails after removing AAPL or META
+- Do not call a tiny positive remnant robust
+- Do not collapse RS and CSM into one family
+
+TARGETS
+1. relative_strength_vs_benchmark :: rs_top3_native
+2. cross_sectional_momentum :: csm_native
+3. down_streak_exhaustion as control only
+
+PRIMARY UNIVERSE FOR THIS TASK
+Use the same narrowed mega-cap ex-NVDA ex-TSLA universe from the prior test:
+- AAPL
+- AMZN
+- GOOG or GOOGL, whichever exists locally
+- META
+- NFLX
+
+Then create dependency-removal slices:
+- ex-AAPL
+- ex-META
+
+Do not silently add or remove names beyond those slices.
+
+PHASE 0: INPUT DIGEST
+Create:
+1. ex_aapl_meta_input_digest.md
+
+Show:
+- which files opened
+- which exact implementations are being tested
+- exact symbol universe used
+- whether GOOG vs GOOGL affects the run
+- what fields are available to define broad participation honestly
+- remaining data limits
+
+PHASE 1: DEFINE THE DEPENDENCY TEST MATRIX
+Create:
+2. ex_aapl_meta_test_matrix.md
+
+Run each target in these slices where honestly possible:
+
+A. ex-TSLA full baseline
+B. broad-participation-only baseline
+C. ex-AAPL full slice
+D. ex-AAPL broad-participation-only slice
+E. ex-META full slice
+F. ex-META broad-participation-only slice
+G. ex-AAPL rising_market if regime tags are available
+H. ex-META rising_market if regime tags are available
+I. ex-AAPL non-extreme-day slice if reconstructable cleanly
+J. ex-META non-extreme-day slice if reconstructable cleanly
+
+Important:
+These are falsification slices, not new strategies.
+If a slice cannot be defined honestly from local fields, say so explicitly.
+
+PHASE 2: RUN THE EX-AAPL / EX-META RERUNS
+For each valid slice, compute:
+- final equity
+- total return pct
+- CAGR
+- max drawdown pct
+- Sharpe
+- profit factor
+- expectancy
+- win rate
+- average win
+- average loss
+- payoff ratio
+- trade count
+- percent profitable months
+- percent of total PnL from top symbol
+- percent of total PnL from top 10% of days
+- non-extreme-day expectancy if available
+- whether final equity exceeded $100,000 from $25,000
+
+Create:
+3. ex_aapl_meta_metrics.csv
+4. ex_aapl_meta_leaderboard.md
+
+PHASE 3: DEPENDENCY DIAGNOSTIC
+Create:
+5. ex_aapl_meta_dependency_report.md
+6. ex_aapl_meta_symbol_impact.csv
+
+This report must answer:
+- whether AAPL or META is the more important remaining carrier for RS
+- whether AAPL or META is the more important remaining carrier for CSM
+- which branch survives ex-AAPL better
+- which branch survives ex-META better
+- whether the surviving edge is still broad enough to matter
+- whether the branch is still honestly a weak broad core or has collapsed into another leader-dependence story
+
+PHASE 4: BEST-DAY AND NON-EXTREME-DAY RECHECK
+For the best RS slice and best CSM slice among ex-AAPL / ex-META reruns:
+- remove best 1% of days
+- remove best 2.5% of days
+- remove best 5% of days
+- remove both best and worst 2.5% of days
+
+Create:
+7. ex_aapl_meta_forensics.csv
+8. ex_aapl_meta_forensics_report.md
+
+This report must answer:
+- which branch survives best-day removal better after AAPL or META removal
+- whether either branch still has a cleaner non-extreme-day core
+- whether the crown should stay with RS, move to CSM, or both be demoted
+
+PHASE 5: CANONICAL BRANCH REDECISION
+Create:
+9. ex_aapl_meta_branch_redecision.md
+10. ex_aapl_meta_paper_watch_recheck.md
+11. next_after_ex_aapl_meta.md
+
+The branch redecision must answer directly:
+1. Does RS remain the canonical upside research branch after the ex-AAPL / ex-META dependency test?
+2. Should CSM take over instead?
+3. Should both be demoted further if the weak broad core collapses?
+4. What is the most honest label now:
+   - narrow research artifact with weak broad core
+   - leader-following research artifact
+   - narrowed momentum regime sleeve
+   - too weak to prioritize
+5. Does DSE remain the control benchmark?
+
+The paper-watch recheck must answer directly:
+1. Did either branch get materially closer to paper-watch?
+2. What exact deficiency still blocks paper-watch?
+3. Is the next step another falsification test, a narrower confirmation rerun, or a demotion?
+
+The next experiments file must give a short ranked list such as:
+- keep QQQ pair as only active paper strategy
+- preserve DSE as control
+- keep RS as canonical branch
+- switch to CSM as canonical branch
+- demote both upside branches if the weak broad core collapses
+- run one ex-AMZN or ex-GOOGL test if a new dominant carrier emerges
+- stop any branch that cannot survive repeated dependency removals
+
+TERMINAL SUMMARY REQUIRED
+At the end print:
+- which files opened successfully
+- whether RS survives ex-AAPL
+- whether RS survives ex-META
+- whether CSM survives ex-AAPL
+- whether CSM survives ex-META
+- which remaining carrier matters more
+- whether RS remains canonical
+- whether CSM takes over
+- whether both should be demoted
+- whether DSE remains the control
+- whether either branch got closer to paper-watch
+- the single best next experiment
+- paths to all deliverables
+
+BOTTOM LINE
+You are trying to determine whether the surviving weak broad core is real, or whether it collapses as soon as another remaining carrier is removed.
+If it collapses, say so plainly.
+If it survives meaningfully, say so plainly.
+Be decisive.
+
+START NOW.
+Open the exact files first, define the dependency matrix, run the ex-AAPL and ex-META reruns, perform the dependency diagnostic, do the forensics, and finish with the branch redecision.

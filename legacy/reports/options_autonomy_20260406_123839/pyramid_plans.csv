@@ -1,0 +1,3 @@
+symbol,strategy_name,source_run,pnl_per_day,scale_needed,recommended_total_scale,stage_sizes,notes
+SPY,failed_breakout_mean_reversion_option_buyer_otm_focus,options_recent_otm_focus,56.538181818181776,4,4,"[1, 1, 2]","Stage 1 on initial fill. Stage 2 only if a fresh same-direction signal appears and the first tranche is in profit. Stage 3 only if unrealized PnL stays positive, the setup remains live, and it is still before 14:30 ET."
+QQQ,failed_breakout_mean_reversion_option_buyer_otm_focus,options_recent_otm_focus,28.91272727272718,7,4,"[1, 1, 2]","Stage 1 on initial fill. Stage 2 only if a fresh same-direction signal appears and the first tranche is in profit. Stage 3 only if unrealized PnL stays positive, the setup remains live, and it is still before 14:30 ET."

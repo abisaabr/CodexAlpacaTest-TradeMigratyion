@@ -1,0 +1,15 @@
+candidate,type,evidence_quality_score,reproducibility_confidence_score,friction_sensitivity_score,drawdown_quality_score,concentration_risk_score,portability_score,options_translatability_score,operational_readiness_score,composite_edge_priority_score,triage_verdict,key_takeaway
+Down Streak Exhaustion,canonical_family,5,5,3,5,3,4,2,2,3.62,Immediate deep testing,Cleanest daily decision-grade edge with exact local code and exact confirmation match.
+QQQ-Led TQQQ/SQQQ Pair Opening-Range Intraday System,canonical_family,5,5,3,4,2,2,4,5,3.75,Immediate deep testing,"Best operational maturity, but concentration and slippage gaps still block promotion."
+Durable cRSI Family,canonical_family,4,5,4,4,4,1,1,3,3.25,Deep test for paper sleeve only,"Strong friction-survival evidence, but overnight dependence and thin paper history limit promotion."
+Momentum / Relative-Strength Family,canonical_family,2,4,2,1,1,4,3,1,2.25,Challenger with trust gap,"Largest upside in raw tables, but the raw-table versus decision-grade conflict is severe."
+Breakout / Trend-Continuation Family,canonical_family,2,4,2,2,2,4,3,1,2.5,Challenger with caution,"Interesting newer rows, but the older corrected repo is a direct caution against naive breakout optimism."
+tv_pvt_top5_finalists :: tsla_30m,authoritative_top10_variant,4,1,4,5,2,2,4,2,3.0,High-upside blocked finalist,"Hard-file metrics are elite, but exact source/config is still missing locally."
+tv_pvt_top5_finalists :: nvda_30m,authoritative_top10_variant,4,1,4,5,2,2,4,2,3.0,High-upside blocked finalist,"Credible secondary finalist on the hard inventory, but still blocked on exact local lineage."
+tv_pvt_top5_finalists :: vix_vxx_30m,authoritative_top10_variant,4,1,4,5,3,1,2,1,2.62,"Strong metrics, weak deployability",Proxy-based edge is powerful on paper but structurally awkward for honest deployment.
+tv_pvt_top5_finalists :: vix_vxx_60m,authoritative_top10_variant,4,1,4,5,3,1,2,1,2.62,"Strong metrics, weak deployability",Backup candidate with great path metrics but still blocked and proxy-dependent.
+index_opening_drive_lab :: OR15 finalist,authoritative_top10_variant,5,1,3,4,4,4,4,3,3.5,Prime blocked challenger,"Process-discipline leader in the top-10 file, but exact source remains missing locally."
+index_opening_drive_lab :: OR5 finalist,authoritative_top10_variant,5,1,3,4,4,4,4,3,3.5,Prime blocked challenger,"Strong shadow benchmark in the hard inventory, still blocked on missing exact implementation."
+codex_leveraged_pipeline :: out_base_20260103_122420,authoritative_top10_variant,4,1,2,2,2,3,1,1,2.0,Research-only upside,"Return is real enough to keep, but low win rate and missing local source keep it out of the trusted set."
+tv_squeeze_top5_finalists :: TSLA_30m,authoritative_top10_variant,2,2,1,5,1,1,3,1,2.0,Likely dead end until independently validated,Headline stats are too extreme; this stays under the overfit kill switch until proven otherwise.
+flux_signal_engine_top20_2025 :: MSFT residual survivor,authoritative_top10_variant,3,1,2,4,2,1,0,0,1.62,Watchlist-only at best,"Residual survivor metrics exist, but the broader engine was later falsified and remains retired."

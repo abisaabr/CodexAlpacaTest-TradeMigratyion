@@ -1,0 +1,213 @@
+MASTER CODEX PROMPT: RELATIVE_STRENGTH_VS_BENCHMARK NARROWED SLEEVE HARDENING
+
+You are running on my Windows machine.
+
+This is the next step after the RS deployment truth test.
+Do NOT rerun the giant tournament.
+Do NOT run options.
+Do NOT broaden scope to every family.
+This task is only about hardening the strongest upside branch into a disciplined sleeve candidate without lying to ourselves.
+
+OPEN THESE EXACT FILES FIRST
+- C:\Users\rabisaab\Downloads\master_strategy_memo.txt
+- C:\Users\rabisaab\Downloads\tournament_master_report.md
+- C:\Users\rabisaab\Downloads\monday_paper_plan.md
+- C:\Users\rabisaab\Downloads\next_edge_research_ranking.md
+- C:\Users\rabisaab\Downloads\next_edge_action_plan.md
+- C:\Users\rabisaab\Downloads\truth_test_elimination_report.md
+- C:\Users\rabisaab\Downloads\concentration_portability_metrics.csv
+- C:\Users\rabisaab\Downloads\edge_survival_scorecard.csv
+- C:\Users\rabisaab\Downloads\rs_deployment_decision.md
+- C:\Users\rabisaab\Downloads\rs_next_action_plan.md
+- C:\Users\rabisaab\Downloads\best_day_dependence_report.md
+- C:\Users\rabisaab\Downloads\rs_wrapper_metrics.csv
+- C:\Users\rabisaab\Downloads\rs_edge_quality_scorecard.csv
+- C:\Users\rabisaab\Downloads\rs_stability_report.md
+
+If any file is missing, say so explicitly and continue with what you can open.
+
+PRIMARY CONTEXT YOU MUST PRESERVE
+- relative_strength_vs_benchmark won raw return
+- cross_sectional_momentum won trust-adjusted edge quality by a very small margin
+- relative_strength_vs_benchmark still won the branch decision
+- the correct interpretation was: promote relative_strength_vs_benchmark only as a narrowed disciplined sleeve, not as a broad deployable sleeve
+- cross_sectional_momentum remains the main challenger
+- down_streak_exhaustion remains the best daily control benchmark
+- qqq_led_tqqq_sqqq_pair_opening_range_intraday_system remains the best current paper-trading candidate
+- options are still blocked and out of scope
+
+MISSION
+Take relative_strength_vs_benchmark from “best next research branch” to a much more concrete disciplined sleeve candidate.
+
+You are trying to answer:
+1. What is the narrowest version of relative_strength_vs_benchmark that still keeps a meaningful edge?
+2. What sleeve constraints reduce concentration and best-day dependence the most without killing the strategy?
+3. Is the best narrowed sleeve still better than cross_sectional_momentum on a trust-adjusted basis?
+4. Does the narrowed sleeve become strong enough to deserve paper-watch status?
+5. What exact version should become the canonical next research implementation?
+
+DO NOT DO THESE THINGS
+- Do not invent a new strategy family.
+- Do not optimize dozens of parameters blindly.
+- Do not search the entire repo for unrelated ideas.
+- Do not change signal semantics.
+- Do not ignore best-day dependence.
+- Do not recommend live/paper deployment unless the evidence improves materially.
+- Do not drop the control comparison to DSE.
+
+TARGETS
+Primary:
+1. relative_strength_vs_benchmark
+
+Direct challenger:
+2. cross_sectional_momentum
+
+Control:
+3. down_streak_exhaustion
+
+PHASE 0: INPUT DIGEST
+Create:
+1. rs_hardening_input_digest.md
+
+Show:
+- which files opened
+- which exact implementation(s) of relative_strength_vs_benchmark are being tested
+- which exact implementation(s) of cross_sectional_momentum are being used as challenger
+- which prior wrapper / stability / best-day reports are being used as baselines
+- remaining data limits
+
+PHASE 1: DEFINE A SMALL DISCIPLINE-WRAPPER GRID
+You are not allowed to do a giant parameter search.
+Test only a small, interpretable wrapper grid around relative_strength_vs_benchmark.
+
+Create:
+2. rs_hardening_test_grid.md
+
+Test only clearly interpretable sleeve controls such as:
+A. native baseline
+B. equal-weight symbol budget
+C. top-symbol contribution cap at 20%
+D. top-symbol contribution cap at 15%
+E. smaller selection-count / rank-depth cap if the local implementation supports it cleanly
+F. turnover reduction wrapper if it can be implemented without changing ranking logic
+G. calendar staggering / smoothing wrapper if it can be implemented cleanly
+H. ex-NVDA sleeve
+I. mega-cap tech ex-NVDA sleeve
+J. combined discipline wrapper:
+   - equal-weight symbol budget
+   - top-symbol cap
+   - reduced selection count or turnover cap if cleanly available
+
+Rules:
+- Keep the grid small and interpretable.
+- Do not test dozens of tiny tweaks.
+- If a wrapper cannot be applied cleanly, say so explicitly.
+
+PHASE 2: HARDENING RERUN
+For every wrapper variant of relative_strength_vs_benchmark, compute:
+- final equity
+- total return pct
+- CAGR
+- max drawdown pct
+- Sharpe
+- profit factor
+- expectancy
+- win rate
+- average win
+- average loss
+- payoff ratio
+- trade count
+- percent profitable months
+- percent of total PnL from top symbol
+- percent of total PnL from top 10% of days
+- symbol concentration index
+- whether final equity exceeded $100,000 from $25,000
+
+Create:
+3. rs_hardening_metrics.csv
+4. rs_hardening_leaderboard.md
+
+PHASE 3: BEST-DAY AND CONCENTRATION SURVIVAL RECHECK
+For the most promising 3 hardened variants, rerun the forensic removals:
+- remove best 1% of days
+- remove best 2.5% of days
+- remove best 5% of days
+- remove best 10% of days
+
+Also compare:
+- native symbol contribution
+- capped symbol contribution
+- ex-NVDA contribution
+
+Create:
+5. rs_hardening_forensics.csv
+6. rs_hardening_forensics_report.md
+
+The report must answer:
+- which hardened variant is least dependent on a handful of best days
+- which hardened variant keeps the cleanest edge after concentration controls
+- whether the narrowed sleeve still has a materially better upside/trust tradeoff than the native version
+
+PHASE 4: HEAD-TO-HEAD AGAINST THE CHALLENGER AND CONTROL
+Compare:
+- best hardened relative_strength_vs_benchmark variant
+- native relative_strength_vs_benchmark
+- cross_sectional_momentum
+- down_streak_exhaustion
+
+Create:
+7. rs_final_head_to_head.csv
+8. rs_final_head_to_head_report.md
+
+This report must answer:
+- does the best hardened RS variant now beat cross_sectional_momentum on trust-adjusted quality
+- does it still clearly beat DSE on upside
+- does it narrow the trust gap enough to matter
+- is the native RS version still too undisciplined to be the canonical branch
+
+PHASE 5: CANONICAL BRANCH DECISION
+Create:
+9. rs_canonical_branch_decision.md
+10. rs_branch_paper_watch_decision.md
+11. rs_branch_next_experiments.md
+
+The canonical branch decision must answer directly:
+1. What exact RS variant should become the canonical next research branch?
+2. What wrapper set defines it?
+3. Is it still broad, or should it be explicitly labeled as a narrowed disciplined sleeve?
+4. Is cross_sectional_momentum still the best challenger, or did it lose that role?
+5. Does DSE remain the correct control benchmark?
+
+The paper-watch decision must answer directly:
+1. Is the hardened RS sleeve strong enough for paper-watch status?
+2. Is it still research-only?
+3. What would have to improve before it deserves paper alongside the QQQ pair?
+4. Is the right next step a paper-watch, a deeper rerun, or a demotion?
+
+The next experiments file must give a ranked short list such as:
+- preserve QQQ pair as the only active paper strategy
+- preserve DSE as control
+- promote hardened RS variant to canonical research branch
+- keep CSM as challenger
+- run one additional ex-NVDA validation
+- run one additional best-day dependence audit
+- stop exploring any wrapper that kills the edge without enough concentration relief
+
+TERMINAL SUMMARY REQUIRED
+At the end print:
+- which files opened successfully
+- which RS variant won raw return
+- which RS variant won trust-adjusted hardening quality
+- whether any hardened RS sleeve is strong enough for paper-watch status
+- whether cross_sectional_momentum remains the main challenger
+- whether DSE remains the best control
+- the single canonical next research branch
+- paths to all deliverables
+
+BOTTOM LINE
+You are trying to convert the strongest upside family into the narrowest honest version that still has real edge.
+The right answer may still be “research-only.”
+Do not pretend the branch is deployable unless the evidence improves materially.
+
+START NOW.
+Open the exact files first, define the small wrapper grid, run the hardening reruns, do the forensics, compare against CSM and DSE, and finish with the canonical branch decision.

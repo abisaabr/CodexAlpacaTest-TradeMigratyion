@@ -1,0 +1,233 @@
+MASTER CODEX PROMPT: ANTI-LEADER-DEPENDENCE EX-TSLA DIAGNOSTIC FOR CSM VS RS VS DSE
+
+You are running on my Windows machine.
+
+This is the next falsification step after the mega-cap ex-NVDA confirmation rerun.
+Do NOT rerun the giant tournament.
+Do NOT run options.
+Do NOT broaden scope to unrelated families.
+This task is only about testing whether the newly canonical branch still has a real core edge once the dominant secondary leader is removed.
+
+OPEN THESE EXACT FILES FIRST
+- C:\Users\rabisaab\Downloads\master_strategy_memo.txt
+- C:\Users\rabisaab\Downloads\tournament_master_report.md
+- C:\Users\rabisaab\Downloads\monday_paper_plan.md
+- C:\Users\rabisaab\Downloads\megacap_ex_nvda_branch_decision.md
+- C:\Users\rabisaab\Downloads\leader_vs_breadth_report.md
+- C:\Users\rabisaab\Downloads\megacap_ex_nvda_forensics_report.md
+- C:\Users\rabisaab\Downloads\megacap_ex_nvda_paper_watch_recheck.md
+- C:\Users\rabisaab\Downloads\next_branch_experiments.md
+- C:\Users\rabisaab\Downloads\best_day_autopsy_report.md
+- C:\Users\rabisaab\Downloads\non_extreme_day_edge_report.md
+- C:\Users\rabisaab\Downloads\rs_vs_csm_day_profile_report.md
+- C:\Users\rabisaab\Downloads\canonical_edge_hypothesis.md
+- C:\Users\rabisaab\Downloads\ex_nvda_core_edge_report.md
+- C:\Users\rabisaab\Downloads\supportive_regime_day_profile_report.md
+- C:\Users\rabisaab\Downloads\rs_branch_recheck_after_ex_nvda.md
+- C:\Users\rabisaab\Downloads\rs_vs_csm_recheck.md
+- C:\Users\rabisaab\Downloads\ex_nvda_regime_metrics.csv
+- C:\Users\rabisaab\Downloads\megacap_ex_nvda_metrics.csv
+- C:\Users\rabisaab\Downloads\leader_vs_breadth_diagnostic.csv
+- C:\Users\rabisaab\Downloads\day_type_symbol_regime_map.csv
+- C:\Users\rabisaab\Downloads\day_level_pnl_decomposition.csv
+- C:\Users\rabisaab\Downloads\underlying_trade_ledger.csv
+- C:\Users\rabisaab\Downloads\underlying_tournament_metrics.csv
+- C:\Users\rabisaab\Downloads\trade_cluster_edge_map.csv
+
+If any are missing, say so explicitly and continue with what you can open.
+
+PRIMARY CONTEXT YOU MUST PRESERVE
+- The active paper strategy remains:
+  - qqq_led_tqqq_sqqq_pair_opening_range_intraday_system
+- The daily trust anchor / control remains:
+  - down_streak_exhaustion
+- The canonical upside research branch after the last rerun is now:
+  - cross_sectional_momentum :: csm_native
+- The immediate challenger is:
+  - relative_strength_vs_benchmark :: rs_top3_native
+- The honest label for the narrowed mega-cap ex-NVDA branch is:
+  - mega-cap leader-following sleeve
+- No branch is close enough for paper-watch yet
+- The exact blocker is still too much leader dependence, best-day concentration, and drawdown
+- The single best next experiment identified by the last run is:
+  - anti-leader-dependence ex-TSLA diagnostic
+
+MISSION
+Falsify the new canonical branch as hard as possible by removing TSLA and testing whether the surviving edge is still meaningful.
+
+You are trying to answer:
+1. Does csm_native still have a real core edge when TSLA is removed from the mega-cap ex-NVDA universe?
+2. Does RS top-3 survive this anti-leader-dependence test better or worse?
+3. Is the mega-cap sleeve really broad enough across AAPL, AMZN, GOOG/GOOGL, META, and NFLX to matter?
+4. Does the branch remain leader-following even after TSLA is removed?
+5. Should CSM stay canonical, or should the crown revert to RS?
+6. Does DSE remain the correct trust benchmark after this test?
+
+DO NOT DO THESE THINGS
+- Do not invent new logic
+- Do not optimize dozens of parameters
+- Do not broaden to unrelated families
+- Do not run options
+- Do not hide failure if both branches collapse ex-TSLA
+- Do not call partial survival robust if concentration remains high
+- Do not collapse CSM and RS into one family
+
+TARGETS
+1. cross_sectional_momentum :: csm_native
+2. relative_strength_vs_benchmark :: rs_top3_native
+3. down_streak_exhaustion as control only
+
+PRIMARY UNIVERSE FOR THIS TASK
+Mega-cap ex-NVDA ex-TSLA only:
+- AAPL
+- AMZN
+- GOOG or GOOGL, whichever exists locally
+- META
+- NFLX
+
+If the local data supports an identical methodology with the exact same field structure, use that narrow universe only. Do not silently add new names.
+
+PHASE 0: INPUT DIGEST
+Create:
+1. ex_tsla_input_digest.md
+
+Show:
+- which files opened
+- which exact implementations are being tested
+- exact universe used
+- whether GOOG vs GOOGL affects the run
+- regime tags available
+- remaining data limits
+
+PHASE 1: DEFINE THE EX-TSLA FALSIFICATION MATRIX
+Create:
+2. ex_tsla_test_matrix.md
+
+Run each target in these slices where honestly possible:
+
+A. mega-cap ex-NVDA baseline
+B. mega-cap ex-NVDA ex-TSLA full slice
+C. mega-cap ex-NVDA ex-TSLA rising_market
+D. mega-cap ex-NVDA ex-TSLA calm_low_vol
+E. mega-cap ex-NVDA ex-TSLA strong_momentum_participation if derivable honestly
+F. mega-cap ex-NVDA ex-TSLA non-extreme days only if reconstructable cleanly
+G. remaining-single-leader stress slice:
+   - identify days where one symbol drives most PnL even after TSLA removal
+H. broad-participation-only slice if derivable honestly:
+   - retain only days with multi-symbol participation above a clean threshold from local diagnostics
+
+Important:
+These are falsification slices, not new strategies.
+If a slice cannot be defined honestly from local fields, say so explicitly.
+
+PHASE 2: RUN THE EX-TSLA RERUNS
+For each valid slice, compute:
+- final equity
+- total return pct
+- CAGR
+- max drawdown pct
+- Sharpe
+- profit factor
+- expectancy
+- win rate
+- average win
+- average loss
+- payoff ratio
+- trade count
+- percent profitable months
+- percent of total PnL from top symbol
+- percent of total PnL from top 10% of days
+- non-extreme-day expectancy if available
+- whether final equity exceeded $100,000 from $25,000
+
+Create:
+3. ex_tsla_metrics.csv
+4. ex_tsla_leaderboard.md
+
+PHASE 3: LEADER-DEPENDENCE RECHECK
+For CSM and RS inside the ex-TSLA universe, classify profitable days as:
+- one dominant leader day
+- two-name participation day
+- broad participation day
+- event-like gap reaction day
+- continuation day
+- mixed day
+
+Create:
+5. ex_tsla_leader_diagnostic.csv
+6. ex_tsla_leader_report.md
+
+This report must answer:
+- whether CSM still relies on a single dominant leader after TSLA is removed
+- whether RS becomes cleaner or dirtier than CSM after TSLA removal
+- whether the surviving edge is actually broad across the remaining mega-cap names
+- whether the canonical branch is still honestly a leader-following sleeve
+
+PHASE 4: FORENSIC BEST-DAY AND NON-EXTREME-DAY RECHECK
+For the best ex-TSLA CSM slice and the best ex-TSLA RS slice:
+- remove best 1% of days
+- remove best 2.5% of days
+- remove best 5% of days
+- remove both best and worst 2.5% of days
+
+Create:
+7. ex_tsla_forensics.csv
+8. ex_tsla_forensics_report.md
+
+This report must answer:
+- which branch survives best-day removal better after TSLA is gone
+- which branch has the cleaner non-extreme-day edge
+- whether the canonical crown still belongs to CSM
+- whether both branches are still too tail-shaped to matter
+
+PHASE 5: CANONICAL BRANCH RECHECK AFTER EX-TSLA
+Create:
+9. ex_tsla_branch_redecision.md
+10. ex_tsla_paper_watch_recheck.md
+11. next_post_ex_tsla_experiments.md
+
+The branch redecision must answer directly:
+1. Does CSM remain the canonical upside research branch after the ex-TSLA diagnostic?
+2. Should RS retake the crown instead?
+3. What is the most honest label now:
+   - mega-cap leader-following sleeve
+   - narrowed momentum regime sleeve
+   - narrow research artifact
+   - broadening toward something cleaner
+4. Does DSE remain the control benchmark?
+5. Is the real edge now broad enough across the remaining names to matter?
+
+The paper-watch recheck must answer directly:
+1. Did either branch get materially closer to paper-watch?
+2. What exact deficiency still blocks paper-watch?
+3. Should the next step be another falsification test, a narrower confirmation rerun, or a demotion?
+
+The next experiments file must give a short ranked list such as:
+- keep QQQ pair as only active paper strategy
+- preserve DSE as control
+- keep CSM as canonical branch
+- switch back to RS if warranted
+- run one ex-META or ex-AAPL dependency test if a new dominant carrier emerges
+- run one broad-participation-only confirmation test
+- stop any branch that still survives only by one-name dominance
+
+TERMINAL SUMMARY REQUIRED
+At the end print:
+- which files opened successfully
+- whether CSM survives ex-TSLA
+- whether RS survives ex-TSLA
+- which branch is cleaner after TSLA removal
+- whether CSM remains canonical
+- whether RS retakes the crown
+- whether DSE remains the control
+- whether either branch got closer to paper-watch
+- the single best next experiment
+- paths to all deliverables
+
+BOTTOM LINE
+You are trying to determine whether the new canonical branch still has a real reusable edge after removing TSLA from the already narrowed mega-cap ex-NVDA universe.
+If the edge still depends on one dominant name after that, say so plainly.
+If the crown should switch again, say so plainly.
+
+START NOW.
+Open the exact files first, define the ex-TSLA matrix, run the reruns, perform the leader-dependence recheck, do the forensics, and finish with the branch redecision.

@@ -1,0 +1,34 @@
+strategy_id,family,single_leg_semantic_eligibility,vertical_spread_semantic_eligibility,neutral_structure_semantic_eligibility,actual_backtest_status,notes
+down_streak_exhaustion,Down Streak Exhaustion,yes,yes,no,blocked_without_historical_quotes_and_full_chain_archive,"Directional stock/ETF logic can translate to long options or debit spreads, but neutral structures would be a semantic mismatch."
+qqq_led_tqqq_sqqq_pair_opening_range_intraday_system,QQQ-Led TQQQ/SQQQ Pair Opening-Range Intraday System,yes,yes,no,blocked_without_historical_quotes_and_full_chain_archive,Directional intraday signal. Long calls/puts and debit spreads fit; neutral structures do not.
+durable_crsi_family,Durable cRSI Family,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,Overnight gap dependence and symbol-specific presets make honest options translation unattractive.
+momentum_relative_strength_family,Momentum / Relative-Strength Family,yes,yes,no,blocked_without_historical_quotes_and_full_chain_archive,"Directional stock/ETF logic can translate to long options or debit spreads, but neutral structures would be a semantic mismatch."
+rsi_pullback_z_score_pullback_gap_reversion_family,RSI Pullback / Z-Score Pullback / Gap Reversion Family,yes,yes,no,blocked_without_historical_quotes_and_full_chain_archive,"Directional stock/ETF logic can translate to long options or debit spreads, but neutral structures would be a semantic mismatch."
+breakout_trend_continuation_family,Breakout / Trend-Continuation Family,yes,yes,no,blocked_without_historical_quotes_and_full_chain_archive,"Directional stock/ETF logic can translate to long options or debit spreads, but neutral structures would be a semantic mismatch."
+pullback_in_trend_family,Pullback in Trend Family,yes,yes,no,blocked_without_historical_quotes_and_full_chain_archive,"Directional stock/ETF logic can translate to long options or debit spreads, but neutral structures would be a semantic mismatch."
+turn_of_month_trend_family,Turn of Month Trend Family,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+stacked_ensemble_family,Stacked Ensemble Family,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+older_corrected_mean_reversion_baseline,Older Corrected Mean Reversion Baseline,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+older_corrected_day_of_week_vol_regime_breakout_baseline_cluster,Older Corrected Day-of-Week / Vol-Regime / Breakout Baseline Cluster,yes,yes,no,blocked_without_historical_quotes_and_full_chain_archive,"Directional stock/ETF logic can translate to long options or debit spreads, but neutral structures would be a semantic mismatch."
+options_vertical_spread_wrappers,Options Vertical-Spread Wrappers,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+tradingview_reference_ideation_scripts_cluster,TradingView Reference / Ideation Scripts Cluster,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+tv_pvt_top5_finalists_tsla_30m,tv_pvt_top5_finalists :: tsla_30m,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+index_opening_drive_lab_fb_or15_w09351000_dlong_only_ema0_vwap0_voloff_xtime_stop_1030,index_opening_drive_lab :: FB_OR15_W09351000_Dlong_only_EMA0_VWAP0_VOLoff_Xtime_stop_1030,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+tv_pvt_top5_finalists_nvda_30m,tv_pvt_top5_finalists :: nvda_30m,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+tv_pvt_top5_finalists_vix_vxx_30m,tv_pvt_top5_finalists :: vix_vxx_30m,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+index_opening_drive_lab_fb_or5_w09351000_dlong_only_ema0_vwap0_voloff_xtime_stop_1030,index_opening_drive_lab :: FB_OR5_W09351000_Dlong_only_EMA0_VWAP0_VOLoff_Xtime_stop_1030,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+tv_pvt_top5_finalists_vix_vxx_60m,tv_pvt_top5_finalists :: vix_vxx_60m,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+tv_pvt_top5_finalists_iwm_15m,tv_pvt_top5_finalists :: iwm_15m,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+codex_leveraged_pipeline_out_base_20260103_122420,codex_leveraged_pipeline :: out_base_20260103_122420,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+tv_squeeze_top5_finalists_tsla_30m,tv_squeeze_top5_finalists :: TSLA_30m,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+flux_signal_engine_top20_2025_msft_residual_survivor,flux_signal_engine_top20_2025 :: MSFT residual survivor,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+project_smart_money_concepts_family,Project Smart Money Concepts Family,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+project_sqzmom_lb_family,Project SQZMOM LB Family,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+project_supertrend_family,Project SuperTrend Family,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+project_rsi_cyclic_smoothed_family,Project RSI Cyclic Smoothed Family,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+project_combo_consensus_family,Project Combo Consensus Family,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+luxalgo_fvg_backtest_family,LuxAlgo FVG Backtest Family,partial,partial,partial,blocked_without_historical_quotes_and_full_chain_archive,"Some signal layers may support directional or range structures, but the local evidence stack is incomplete."
+qqq_gap_prob_tool_signal_layer,QQQ Gap Probability Tool,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+qqq_range_engine_signal_layer,QQQ Range Engine,partial,partial,partial,blocked_without_historical_quotes_and_full_chain_archive,"Some signal layers may support directional or range structures, but the local evidence stack is incomplete."
+qqq_same_day_scan_signal_layer,QQQ Same-Day Scan,no,no,no,blocked_without_historical_quotes_and_full_chain_archive,No semantic review logged.
+qqq_today_nowcast_signal_layer,QQQ Today Nowcast,partial,partial,partial,blocked_without_historical_quotes_and_full_chain_archive,"Some signal layers may support directional or range structures, but the local evidence stack is incomplete."

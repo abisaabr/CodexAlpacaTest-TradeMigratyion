@@ -1,0 +1,463 @@
+MASTER CODEX PROMPT: STRATEGY MEGA-TOURNAMENT + OPTIONS TRANSLATION + AUTHORITATIVE TOP 10
+
+You are working on my local machine and should use local files, repos, reports, CSVs, configs, and artifacts to build a single tournament framework.
+
+CRITICAL INPUT RULE
+Below in this prompt is an AUTHORITATIVE TOP 10 inventory from another machine. Treat it as hard input. Do not wait to rediscover it from local files. Use it immediately when building the master registry. If local artifacts later confirm, enrich, or refine those entries, preserve lineage and note what was confirmed versus what came only from the embedded inventory.
+
+AUTHORITATIVE TOP 10 INVENTORY START
+AUTHORITATIVE RANKING DATE: 2026-04-04
+
+Important constraints:
+- Do not invent “equivalent” logic.
+- Do not optimize or improve anything.
+- Do not silently change fills, timeframe, slippage, sessions, or filters.
+- If exact source code or config is missing, preserve the ambiguity and say exactly what is missing.
+- Treat this as a 1:1 reconstruction task, not a research task.
+
+1. tv_pvt_top5_finalists :: tsla_30m
+- Market: TSLA
+- Timeframe: 30m
+- Strategy family: breakout_confirmation / pvt_roc
+- Type: direct-underlying stock
+- Execution assumptions: next_open, RTH only, no_lookahead, 2 bps per side
+- Trades: 487
+- Win rate: 0.511294
+- Profit factor: 2.584840
+- Expectancy: 20.677012
+- Max drawdown pct: 0.003959
+- Consistency: 6/6 positive years
+- Validation: validation_pass=True, test_pass=True
+- Audit verdict: best direct-underlying stock paper candidate
+
+2. index_opening_drive_lab :: FB_OR15_W09351000_Dlong_only_EMA0_VWAP0_VOLoff_Xtime_stop_1030
+- Market: SPY/QQQ/IWM opening-drive workflow
+- Timeframe: 1m opening drive
+- Strategy family: opening drive continuation
+- Type: stock/ETF
+- Execution assumptions: next-bar, RTH only, no overnight holds
+- Combined return pct: 16.880584
+- Combined Sharpe: 4.803461
+- Combined profit factor: 2.247960
+- Combined max drawdown pct: 2.807224
+- Combined trades: 221
+- Validation: passes_final_credibility=True
+- Forward status: on_track=False as of 2026-04-03
+- Audit verdict: strongest process discipline, not promoted yet
+
+3. tv_pvt_top5_finalists :: nvda_30m
+- Market: NVDA
+- Timeframe: 30m
+- Strategy family: breakout_confirmation / raw_pvt
+- Type: direct-underlying stock
+- Execution assumptions: next_open, RTH only, no_lookahead, 2 bps per side
+- Trades: 520
+- Win rate: 0.530769
+- Profit factor: 2.441635
+- Expectancy: 18.171218
+- Max drawdown pct: 0.004030
+- Consistency: 5/6 positive years
+- Validation: validation_pass=True, test_pass=True
+- Audit verdict: credible secondary finalist
+
+4. tv_pvt_top5_finalists :: vix_vxx_30m
+- Market: VIX signal -> VXX trade proxy
+- Timeframe: 30m
+- Strategy family: breakout_confirmation / pvt_roc
+- Type: proxy-based stock/ETF strategy
+- Execution assumptions: next_open, RTH only, no_lookahead, 2 bps per side
+- Trades: 264
+- Win rate: 0.636364
+- Profit factor: 6.903371
+- Expectancy: 59.519560
+- Max drawdown pct: 0.001946
+- Consistency: 6/6 positive years
+- Validation: validation_pass=True, test_pass=True
+- Audit verdict: best proxy-based experimental candidate
+
+5. index_opening_drive_lab :: FB_OR5_W09351000_Dlong_only_EMA0_VWAP0_VOLoff_Xtime_stop_1030
+- Market: SPY/QQQ/IWM opening-drive workflow
+- Timeframe: 1m opening drive
+- Strategy family: opening drive continuation
+- Type: stock/ETF
+- Execution assumptions: next-bar, RTH only, no overnight holds
+- Combined return pct: 15.144497
+- Combined Sharpe: 4.745713
+- Combined profit factor: 2.247361
+- Combined max drawdown pct: 2.844462
+- Combined trades: 205
+- Validation: passes_final_credibility=True
+- Audit verdict: strong shadow benchmark, not promoted
+
+6. tv_pvt_top5_finalists :: vix_vxx_60m
+- Market: VIX signal -> VXX trade proxy
+- Timeframe: 60m
+- Strategy family: thresholded_normalized_pvt / normalized_pvt
+- Type: proxy-based stock/ETF strategy
+- Execution assumptions: next_open, RTH only, no_lookahead, 2 bps per side
+- Trades: 179
+- Win rate: 0.642458
+- Profit factor: 7.267063
+- Expectancy: 64.502087
+- Max drawdown pct: 0.001107
+- Consistency: 6/6 positive years
+- Validation: validation_pass=True, test_pass=True
+- Audit verdict: best backup candidate
+
+7. tv_pvt_top5_finalists :: iwm_15m
+- Market: IWM
+- Timeframe: 15m
+- Strategy family: pvt_divergence_proxy / raw_pvt
+- Type: stock/ETF
+- Execution assumptions: next_open, RTH only, no_lookahead, 2 bps per side
+- Trades: 118
+- Win rate: 0.525424
+- Profit factor: 1.694151
+- Expectancy: 7.876699
+- Max drawdown pct: 0.002311
+- Consistency: 4/6 positive years
+- Validation: validation_pass=True, test_pass=True
+- Audit verdict: weaker but still real research artifact
+
+8. codex_leveraged_pipeline :: out_base_20260103_122420
+- Market: leveraged ETF basket
+- Symbols: SQQQ, TQQQ, TZA, TNA, SPXU, UPRO, SDOW, UDOW
+- Timeframe: 1m
+- Strategy family: leveraged ETF trend basket
+- Config details:
+  ema_fast=20
+  ema_slow=50
+  atr_len=14
+  stop_atr=0.45
+  target_atr=4.0
+  time_stop_min=45
+  start_equity=1800
+  risk_frac=0.05
+  max_risk_cap=90
+  max_concurrent_positions=1
+  slip_bps=3
+  fee_per_side=0
+- Trades: 2419
+- Return pct: 86.599208
+- Win rate pct: 18.974783
+- Profit factor: 1.244707
+- Max drawdown pct: 10.028691
+- Avg R: 0.195182
+- Audit verdict: interesting but still research-only
+
+9. tv_squeeze_top5_finalists :: TSLA_30m
+- Market: TSLA
+- Timeframe: 30m
+- Strategy family: squeeze multitimeframe
+- Type: stock
+- Claimed execution assumptions: strict next_open, RTH only, no_lookahead
+- Trades: 285
+- Win rate: 0.936842
+- Profit factor: 240.648511
+- Expectancy pct: 0.004678264
+- Audit verdict: recreate exactly, but treat as likely overfit and untrustworthy until independently validated
+
+10. flux_signal_engine_top20_2025 :: MSFT residual survivor
+- Market: MSFT-centered residual survivor from a broader opening-bias signal engine
+- Strategy family: opening-bias signal engine
+- Type: stock
+- Broad engine assumptions: offline minute-bar signal engine, no-lookahead alignment, next-bar style execution, portfolio slot management
+- Best symbol-specific validated portfolio metrics found in the audit:
+  combined return pct: 10.22
+  combined Sharpe: 2.234
+  combined profit factor: 2.123
+  combined max drawdown pct: 0.93
+  combined trades: 263
+- Important caveat: the overall framework was later falsified
+- Final audit verdict: not robust enough for stock paper trading, not suitable for options translation, MSFT at most watchlist-only, broader framework retired
+- Reconstruction note: exact surviving MSFT config may be ambiguous and must be traced explicitly rather than guessed
+AUTHORITATIVE TOP 10 INVENTORY END
+
+USE THESE LOCAL FILES TOO IF THEY EXIST
+- best_strategies_consolidated.txt
+- master_strategy_memo.txt
+- strategy_chat_seed.txt
+- strategy_consolidation_shortlist.txt
+- top10_authoritative_inventory.txt
+
+GOAL
+Consolidate all strategy families, recreate each one as faithfully as possible, and run a large 5-year tournament in two layers:
+1. underlying stock/ETF backtests
+2. options-translated backtests at the exact timestamps of the underlying trades
+
+The end goal is to identify strategy systems that:
+- lose small and win big
+- use tight stop losses and take profits
+- can realistically be orchestrated into a daily paper-trading engine
+- target high win rate, with a screen of >60% win rate
+- target turning a $25,000 account into at least $100,000 over the 5-year tournament
+- are suitable for RTH-only execution
+- can eventually support many paper trades per day using options and multi-leg structures
+
+IMPORTANT:
+These are screening and selection goals, not assumptions. Do not force strategies to pass them. Measure honestly and reject those that do not.
+
+ACCOUNT / DATA CONTEXT
+- Alpaca plan supports US Stocks, ETFs, Options, and Crypto
+- 9+ years historical data
+- real-time market coverage
+- 10,000 API calls/min
+- all US stock exchanges
+- unlimited symbols on websocket
+- Account size for all tournament simulations: $25,000
+- RTH only
+- No overnight stock holdings unless a strategy explicitly requires it and authoritative evidence proves it
+- For options, prefer same-day open/close inside RTH unless the exact strategy translation requires otherwise
+- Preserve strategy-native execution assumptions whenever known
+- Do not invent improvements
+
+UNIVERSE FOR THE 5-YEAR TOURNAMENT
+Run every strategy, where applicable, across:
+- SPY
+- QQQ
+- IWM
+- NVDA
+- META
+- AAPL
+- AMZN
+- NFLX
+- GOOG
+- TSLA
+
+TRAILING WINDOW
+- Use the most recent full continuous 5-year window ending at the latest complete trading day available in the local data
+- If a strategy or options dataset does not fully cover the whole window, mark the exact coverage gap
+
+PRIMARY RULES
+1. Do not silently alter strategy logic.
+2. Do not optimize before baseline reproduction.
+3. If exact source code/config is missing, preserve ambiguity explicitly.
+4. If a strategy cannot be recreated 1:1, mark it as partial or blocked.
+5. Do not normalize away oddities.
+6. Keep infrastructure/data projects separate from strategy engines.
+7. Use conservative assumptions when a simulator detail is missing, but do not override known exact assumptions.
+8. For any strategy family already audited as fragile, falsified, overfit, or retired, keep it in the tournament only if it can still be reconstructed, and label the risk clearly.
+
+PHASE 1: BUILD THE MASTER STRATEGY REGISTRY
+Create one canonical registry that merges:
+- the previously standardized 13 canonical strategy families
+- the embedded authoritative top-10 inventory from this prompt
+- any local repo-backed strategy implementations and finalist variants you can verify
+
+Deliverables for this phase:
+1. strategy_registry_master.csv
+2. strategy_registry_master.md
+3. strategy_reconstruction_gaps.md
+
+For each strategy family or exact variant, include:
+- canonical strategy_id
+- family name
+- aliases
+- source repo/folder
+- source provenance: embedded_top10 / local_file / repo_verified / mixed
+- asset universe
+- timeframe
+- directionality
+- execution assumptions
+- exact known parameters
+- reconstruction status: exact / partial / blocked
+- evidence quality: high / medium / low
+- known metrics from prior audits
+- major risks
+- whether it is eligible for underlying tournament
+- whether it is eligible for options translation
+- whether it is eligible for multi-leg options translation
+
+PHASE 2: REPRODUCE BASELINE STRATEGIES BEFORE ANY TRANSLATION
+For every strategy that is exact or partial-but-runnable:
+- reproduce the baseline backtest exactly as closely as possible on its native market/timeframe/symbols
+- compare reproduced metrics to prior audited metrics when available
+- record drift versus prior metrics
+- reject any reconstruction that deviates materially without a documented reason
+
+Create:
+4. baseline_reproduction_report.md
+5. baseline_reproduction_metrics.csv
+
+PHASE 3: FIVE-YEAR UNDERLYING TOURNAMENT
+Run a standardized tournament over the last full 5 years for all applicable strategies across:
+SPY, QQQ, IWM, NVDA, META, AAPL, AMZN, NFLX, GOOG, TSLA
+
+Important:
+- Do not force a strategy onto symbols where it is structurally invalid.
+- If a strategy is symbol-specific, test it on its native symbol first, and only expand to other symbols if the strategy family is actually portable.
+- If portability is unknown, run both:
+  - native-only result
+  - expanded-universe result marked experimental
+
+Use:
+- $25,000 starting equity
+- RTH only
+- Strategy-native fills if known
+- otherwise conservative fills, explicitly documented
+- realistic slippage and fees if specified
+- no lookahead
+- timestamp-accurate execution
+
+For every trade, record:
+- strategy_id
+- family
+- symbol
+- timestamp_in
+- timestamp_out
+- side
+- entry_price
+- exit_price
+- shares/contracts
+- stop level
+- target level
+- pnl_dollars
+- pnl_pct
+- mfe
+- mae
+- exit_reason
+- whether the trade respected RTH rules
+
+Create:
+6. underlying_trade_ledger.csv
+7. underlying_tournament_metrics.csv
+8. underlying_tournament_leaderboard.md
+9. underlying_asymmetric_edge_ranking.csv
+
+Metrics required:
+- total return pct
+- CAGR
+- max drawdown pct
+- Sharpe
+- Sortino
+- profit factor
+- expectancy
+- win rate
+- average win
+- average loss
+- payoff ratio
+- median win
+- median loss
+- trade count
+- average trades per day
+- percent profitable months
+- percent profitable quarters
+- largest loss
+- largest win
+- average MAE
+- average MFE
+- ulcer index if available
+- return / max drawdown
+- final equity
+- whether $25k reached $100k
+- whether win rate > 60%
+
+PHASE 4: OPTIONS TRANSLATION TOURNAMENT
+For every underlying trade generated in Phase 3, create an options translation replay.
+
+DEFAULT OPTIONS TRANSLATION RULE
+At each underlying trade entry timestamp:
+- find the nearest valid 2 DTE option chain for that symbol
+- select the 1-strike OTM contract in the trade direction
+  - bullish trade -> call
+  - bearish trade -> put
+- use minute-level options bars if available
+- attach greeks if available
+- if exact 2 DTE or 1-strike OTM is unavailable, choose the nearest valid contract and record the fallback explicitly
+- do not use future knowledge when selecting the contract
+
+At each underlying trade exit timestamp:
+- exit the option position at the first valid marketable bar after the exit signal
+- stay RTH only
+
+Create:
+10. options_trade_ledger_single_leg.csv
+11. options_tournament_metrics_single_leg.csv
+12. options_tournament_leaderboard_single_leg.md
+
+PHASE 5: MULTI-LEG / ADVANCED OPTIONS TOURNAMENT
+Evaluate whether any strategies can support:
+- long calls
+- long puts
+- call debit spreads
+- put debit spreads
+- call credit spreads
+- put credit spreads
+- iron condors
+- other multi-leg structures only if the signal logic genuinely supports them
+
+Hard rule:
+- Do not force iron condors or neutral premium structures onto directional strategies.
+- Only use neutral/range structures if the signal family truly predicts compression, range, or non-breakout conditions.
+- If unsupported, mark ineligible.
+
+Create:
+13. options_translation_eligibility.md
+14. options_trade_ledger_multileg.csv
+15. options_tournament_metrics_multileg.csv
+16. options_tournament_leaderboard_multileg.md
+
+PHASE 6: DAILY PAPER-ENGINE DESIGN SCREEN
+Evaluate:
+- which strategies generate enough signal frequency
+- which option translations remain liquid enough
+- which combinations can coexist in one $25k paper portfolio
+- which combinations keep losses tight and preserve convex upside
+- which can plausibly scale to many paper trades per day without violating capital, overlap, or liquidity constraints
+
+Create:
+17. daily_paper_engine_candidates.md
+
+PHASE 7: FINAL TOURNAMENT DECISION PACK
+Create:
+18. tournament_master_leaderboard.csv
+19. tournament_master_report.md
+20. promotion_candidates.md
+
+PROMOTION GATES
+A strategy or portfolio candidate should only be promoted if it shows:
+- honest reproducibility
+- acceptable drawdown for a $25k account
+- tight average loss
+- favorable payoff ratio
+- strong enough trade count to matter
+- >60% win rate if being considered for the high-win-rate sleeve
+- ability to reach or exceed $100k final equity from $25k in the 5-year tournament if being considered for the aggressive-growth sleeve
+
+STRICT IMPLEMENTATION NOTES
+- Save every major intermediate artifact
+- Prefer CSV plus Markdown summaries
+- Use timestamp-precise ledgers
+- Use deterministic seeds where needed
+- Log every fallback and ambiguity
+- Keep a reproducibility manifest
+- If contract lookup is expensive, build a cache
+- If options chain reconstruction requires OCC names, do it systematically and cache results
+- If data coverage is missing or corrupted, say so explicitly
+
+DO NOT DO THESE THINGS
+- Do not hide missing artifacts
+- Do not backfill unavailable option prices with fantasy values
+- Do not improve strategy rules
+- Do not collapse distinct finalists into one without preserving lineage
+- Do not let raw return dominate everything if the path is unstable or unrepeatable
+- Do not silently convert a directional signal into a neutral options structure
+
+TERMINAL SUMMARY REQUIRED
+At the end, print:
+- total canonical strategies found
+- total exact / partial / blocked
+- total baseline reproductions completed
+- total underlying trades
+- total options single-leg trades
+- total options multi-leg trades
+- top 10 underlying leaderboard
+- top 10 options single-leg leaderboard
+- top 10 options multi-leg leaderboard
+- which strategies passed >60% win rate
+- which strategies reached $100k from $25k
+- which candidates are recommended for paper-engine assembly
+- file paths of all final deliverables
+
+START NOW.
+First build the master registry from the embedded top-10 plus local files before running any tournament.

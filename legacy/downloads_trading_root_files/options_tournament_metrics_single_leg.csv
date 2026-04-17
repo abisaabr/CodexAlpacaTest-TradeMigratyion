@@ -1,0 +1,13 @@
+strategy_id,family,translation_status,resolved_trades,unresolved_trades,final_equity,total_return_pct,max_drawdown_pct,Sharpe,profit_factor,win_rate,notes
+relative_strength_vs_benchmark_rep_user_subset_5y,Momentum / Relative-Strength Family,blocked,0,2674,,,,,,,historical_option_quotes_unavailable_and_local_option_bars_sparse
+cross_sectional_momentum_rep_user_subset_5y,Momentum / Relative-Strength Family,blocked,0,2214,,,,,,,historical_option_quotes_unavailable_and_local_option_bars_sparse
+pullback_in_trend_rep_user_subset_5y,Pullback in Trend Family,blocked,0,2053,,,,,,,historical_option_quotes_unavailable_and_local_option_bars_sparse
+rsi_pullback_rep_user_subset_5y,RSI Pullback / Z-Score Pullback / Gap Reversion Family,blocked,0,1370,,,,,,,historical_option_quotes_unavailable_and_local_option_bars_sparse
+volatility_contraction_breakout_rep_user_subset_5y,Breakout / Trend-Continuation Family,blocked,0,357,,,,,,,historical_option_quotes_unavailable_and_local_option_bars_sparse
+breakout_consolidation_rep_user_subset_5y,Breakout / Trend-Continuation Family,blocked,0,465,,,,,,,historical_option_quotes_unavailable_and_local_option_bars_sparse
+zscore_pullback_rep_user_subset_5y,RSI Pullback / Z-Score Pullback / Gap Reversion Family,blocked,0,762,,,,,,,historical_option_quotes_unavailable_and_local_option_bars_sparse
+ma_regime_continuation_rep_user_subset_5y,Breakout / Trend-Continuation Family,blocked,0,263,,,,,,,historical_option_quotes_unavailable_and_local_option_bars_sparse
+dse_exact_user_subset_5y,Down Streak Exhaustion,blocked,0,231,,,,,,,historical_option_quotes_unavailable_and_local_option_bars_sparse
+gap_reversion_rep_user_subset_5y,RSI Pullback / Z-Score Pullback / Gap Reversion Family,blocked,0,188,,,,,,,historical_option_quotes_unavailable_and_local_option_bars_sparse
+turn_of_month_trend_rep_user_subset_5y,Turn of Month Trend Family,blocked,0,474,,,,,,,historical_option_quotes_unavailable_and_local_option_bars_sparse
+qqq_pair_adverse_baseline_short_window,QQQ-Led TQQQ/SQQQ Pair Opening-Range Intraday System,blocked,0,385,,,,,,,historical_option_quotes_unavailable_and_no_local_chain_archive

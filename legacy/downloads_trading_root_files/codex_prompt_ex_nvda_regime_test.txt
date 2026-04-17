@@ -1,0 +1,214 @@
+MASTER CODEX PROMPT: REGIME-CONDITIONAL EX-NVDA FALSIFICATION TEST FOR RS TOP-3
+
+You are running on my Windows machine.
+
+This is the next falsification step after the best-day autopsy.
+Do NOT rerun the giant tournament.
+Do NOT run options.
+Do NOT broaden scope to unrelated families.
+This task is specifically about answering whether the canonical RS research branch still has a usable core edge when NVDA is removed inside the same supportive regimes that previously carried the upside.
+
+OPEN THESE EXACT FILES FIRST
+- C:\Users\rabisaab\Downloads\master_strategy_memo.txt
+- C:\Users\rabisaab\Downloads\tournament_master_report.md
+- C:\Users\rabisaab\Downloads\monday_paper_plan.md
+- C:\Users\rabisaab\Downloads\rs_canonical_branch_decision.md
+- C:\Users\rabisaab\Downloads\rs_branch_paper_watch_decision.md
+- C:\Users\rabisaab\Downloads\rs_final_head_to_head_report.md
+- C:\Users\rabisaab\Downloads\best_day_autopsy_report.md
+- C:\Users\rabisaab\Downloads\non_extreme_day_edge_report.md
+- C:\Users\rabisaab\Downloads\rs_vs_csm_day_profile_report.md
+- C:\Users\rabisaab\Downloads\canonical_edge_hypothesis.md
+- C:\Users\rabisaab\Downloads\next_micro_experiments.md
+- C:\Users\rabisaab\Downloads\day_type_symbol_regime_map.csv
+- C:\Users\rabisaab\Downloads\day_level_pnl_decomposition.csv
+- C:\Users\rabisaab\Downloads\underlying_trade_ledger.csv
+- C:\Users\rabisaab\Downloads\underlying_tournament_metrics.csv
+- C:\Users\rabisaab\Downloads\trade_cluster_edge_map.csv
+
+If any are missing, say so explicitly and continue with what you can open.
+
+PRIMARY CONTEXT YOU MUST PRESERVE
+- The canonical upside research branch is:
+  - relative_strength_vs_benchmark::reduced_selection_top3
+- The main challenger is:
+  - cross_sectional_momentum
+- The trust anchor / daily control is:
+  - down_streak_exhaustion
+- The active paper strategy remains:
+  - qqq_led_tqqq_sqqq_pair_opening_range_intraday_system
+- The best-day autopsy concluded that RS top-3 is not a broad daily sleeve
+- The honest label for RS top-3 is a narrowed momentum-regime / event-sensitive sleeve
+- The key mechanism appears to be concentrated mega-cap momentum participation bursts, especially NVDA and TSLA-led continuation or large-gap reaction days in supportive regimes
+- The single best next falsification test identified by the prior work is:
+  - regime-conditional ex-NVDA rerun of RS top-3
+- Options remain blocked and are out of scope
+
+MISSION
+Falsify the canonical RS branch as hard as possible by removing NVDA inside the same supportive regimes where it previously made its best money.
+
+You are trying to answer:
+1. Does RS top-3 still have a real core edge in supportive momentum regimes when NVDA is removed?
+2. Is the surviving edge broad enough across mega-cap tech ex-NVDA to matter?
+3. Does CSM hold up better or worse than RS in the same ex-NVDA regime slices?
+4. Does the branch need to be reframed again, from momentum-regime sleeve to a narrower mega-cap event sleeve?
+5. Should RS remain the canonical research branch, or should CSM take over?
+6. Does DSE remain the trust benchmark after this harsher falsification test?
+
+DO NOT DO THESE THINGS
+- Do not optimize the strategy.
+- Do not invent new features.
+- Do not change signal logic.
+- Do not run options.
+- Do not broaden to every family.
+- Do not hide failure if the branch collapses ex-NVDA in its best regimes.
+- Do not present partial survival as broad robustness.
+
+TARGETS
+1. relative_strength_vs_benchmark::reduced_selection_top3
+2. cross_sectional_momentum
+3. down_streak_exhaustion
+
+PHASE 0: INPUT DIGEST
+Create:
+1. ex_nvda_regime_test_input_digest.md
+
+Show:
+- which files opened
+- which exact implementations are being used
+- what regime tags are available locally
+- what symbol coverage is available
+- whether GOOG/GOOGL still affects the interpretation
+
+PHASE 1: DEFINE THE FALSIFICATION MATRIX
+Create:
+2. ex_nvda_regime_test_matrix.md
+
+Run each target in these slices where honestly possible:
+
+A. Native baseline slice
+B. Ex-NVDA full slice
+C. Rising / bullish regime only
+D. Rising / bullish regime ex-NVDA
+E. Calm / low-vol regime only
+F. Calm / low-vol regime ex-NVDA
+G. Strong momentum participation days only, if this can be approximated honestly from local fields
+H. Strong momentum participation days ex-NVDA
+I. Mega-cap tech ex-NVDA only
+   - AAPL
+   - AMZN
+   - GOOG or GOOGL, whichever exists locally
+   - META
+   - NFLX
+   - TSLA
+J. Mega-cap tech ex-NVDA inside supportive regimes
+K. ETF-only control slice
+   - SPY
+   - QQQ
+   - IWM
+
+Important:
+These are falsification slices, not new strategies.
+If a slice cannot be defined honestly from local fields, say so explicitly.
+
+PHASE 2: RUN THE REGIME-CONDITIONAL EX-NVDA RERUNS
+For each target and each valid slice, compute:
+- final equity
+- total return pct
+- CAGR
+- max drawdown pct
+- Sharpe
+- profit factor
+- expectancy
+- win rate
+- average win
+- average loss
+- payoff ratio
+- trade count
+- percent profitable months
+- percent of total PnL from top symbol
+- percent of total PnL from top 10% of days
+- non-extreme-day expectancy if derivable from prior decomposition
+- whether final equity exceeded $100,000 from $25,000
+
+Create:
+3. ex_nvda_regime_metrics.csv
+4. ex_nvda_regime_leaderboard.md
+
+PHASE 3: CORE EDGE SURVIVAL TEST
+Create:
+5. ex_nvda_core_edge_report.md
+
+This report must answer directly:
+- does RS top-3 stay positive ex-NVDA in supportive regimes
+- if yes, how much of the original edge survives
+- if no, is the branch mostly a dominant-leader phenomenon
+- whether CSM survives this test better or worse
+- whether DSE remains cleaner but lower-powered as expected
+
+PHASE 4: DAY-PROFILE SURVIVAL INSIDE SUPPORTIVE REGIMES
+For RS top-3 and CSM, compare day-level behavior inside the supportive slices only:
+- best-day concentration
+- worst-day containment
+- dominant-symbol concentration
+- multi-symbol participation
+- non-extreme-day expectancy
+- clustering of outsized days
+
+Create:
+6. supportive_regime_day_profile.csv
+7. supportive_regime_day_profile_report.md
+
+This report must answer:
+- whether RS still needs one dominant leader even inside supportive regimes
+- whether CSM distributes gains more cleanly across symbols
+- whether the surviving ex-NVDA edge is clean enough to matter
+
+PHASE 5: CANONICAL BRANCH RECHECK
+Create:
+8. rs_branch_recheck_after_ex_nvda.md
+9. rs_vs_csm_recheck.md
+10. next_falsification_steps.md
+
+The branch recheck must answer directly:
+1. Does RS top-3 remain the canonical research branch after ex-NVDA regime falsification?
+2. Should it be relabeled again, for example:
+   - mega-cap momentum regime sleeve
+   - event-sensitive leader-following sleeve
+   - narrow research artifact
+3. Is CSM now the cleaner primary branch instead?
+4. Does DSE remain the correct trust anchor and benchmark?
+5. Is the right next step:
+   - preserve RS as canonical branch
+   - switch to CSM as canonical branch
+   - keep both alive with separate roles
+   - demote RS materially
+
+The next falsification steps file must give a short ranked list such as:
+- keep QQQ pair as only active paper strategy
+- preserve DSE as trust anchor
+- keep RS as branch only if ex-NVDA supportive-regime edge remains meaningful
+- promote CSM if it is clearly cleaner under the same test
+- run one narrower mega-cap ex-NVDA confirmation rerun
+- run one leader-following vs broad-participation diagnostic
+- stop any line of work that only survives with one dominant symbol
+
+TERMINAL SUMMARY REQUIRED
+At the end print:
+- which files opened successfully
+- whether RS survives ex-NVDA in supportive regimes
+- whether CSM survives ex-NVDA in supportive regimes
+- which strategy is cleaner under the supportive-regime day-profile test
+- whether RS remains the canonical branch
+- whether CSM should take over
+- whether DSE remains the trust anchor
+- the single best next falsification step
+- paths to all deliverables
+
+BOTTOM LINE
+You are trying to determine whether RS top-3 still has a real edge after removing the dominant momentum carrier inside the very regimes that previously made it attractive.
+If the answer is no, say so plainly.
+If the answer is yes but only narrowly, label it honestly.
+
+START NOW.
+Open the exact files first, define the ex-NVDA regime matrix, run the falsification reruns, compare RS vs CSM vs DSE, and finish with the branch recheck.

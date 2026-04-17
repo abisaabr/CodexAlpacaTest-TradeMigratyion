@@ -1,0 +1,1 @@
+timestamp,symbol,strategy_variant,strategy_template,status,order_id,client_order_id,qty,entry_price,entry_limit_price,exit_plan,stop_price,take_profit_price,time_exit_plan,exit_price,pnl

@@ -1,0 +1,2 @@
+symbol,strategy_name,stage,reasons
+QQQ_OPTION_PAPER_TRIAL_QQQ,Paper Trial Qqq,risk,['max_open_positions reached']

@@ -1,0 +1,306 @@
+MASTER STRATEGY MEMO
+Date: 2026-04-04
+Primary source of truth: C:\Users\rabisaab\Downloads\best_strategies_consolidated.txt
+
+SOURCE HIERARCHY AND RULES
+
+- Primary source: best_strategies_consolidated.txt.
+- Secondary verification used only where needed: confirmation_report.md, research_report_phase5.md, durable cRSI shortlist/stress/blocker packets, intraday finalist/paper-promotion summaries, and the older corrected alpaca-strategy-research report.
+- When files conflict, the latest decision-grade summary wins over raw search tables.
+- Strategy engines are separated from data, infrastructure, and generic caches.
+- Missing metrics are left unstated on purpose.
+
+CANONICAL STRATEGY FAMILIES
+
+1. DOWN STREAK EXHAUSTION
+- Canonical strategy name: Down Streak Exhaustion
+- Aliases / related versions: down_streak_exhaustion; nearby variants with holding_bars 4 to 6, rsi_cap 25 to 35, streak_length 3 to 5
+- Status: Confirmed research winner; fragile; not paper-promoted
+- Market / symbols: 74-symbol explicit liquid stock and ETF universe
+- Timeframe: Daily
+- Setup / entry logic: Long-only exhaustion entry inside an uptrend; require uptrend_regime true, down_streak >= threshold, and RSI(5) <= cap
+- Exit logic: Fixed 5-bar hold in the confirmed finalist; no profit target
+- Sizing / capital assumptions: Research account started at 100000; avg gross exposure on test 0.6968
+- Best reported performance metrics: Test ending equity 125394.19; total return 25.41%; CAGR 20.50%; win rate 55.93%; expectancy 0.72% per trade; profit factor 1.6426; Sharpe 1.4177; Sortino 2.0604; max drawdown 6.05%; 354 trades; beat SPY, equal_weight_full, and equal_weight_etf
+- Robustness / stress results: Exact reproduction matched saved rows; nearby parameter points stayed viable; passed stressed costs through 2.0x; calmer and falling_or_volatile regime slices were strong; subset slices usually failed their own equal-weight subset benchmark; rising_market regime slice failed the full benchmark gate
+- Paper/live readiness: Research-grade only; no paper deployment packet reviewed
+- Main weaknesses: Uneven subset robustness, uneven regime robustness, explicit current-list universe still has survivorship limitations, execution realism on daily entries remains open
+- Source evidence: best_strategies_consolidated.txt; alpaca-stock-strategy-research/reports/confirmation_report.md; alpaca-stock-strategy-research/reports/research_report_phase5.md; alpaca-stock-strategy-research/reports/decision_table_phase5.csv
+
+2. QQQ-LED TQQQ/SQQQ PAIR OPENING-RANGE INTRADAY SYSTEM
+- Canonical strategy name: QQQ-Led TQQQ/SQQQ Pair Opening-Range Intraday System
+- Aliases / related versions: TQQQ/SQQQ pair ORB; pair opening-range champion; nearby flat_before_close, opening_window, threshold_bps, notional, and start_delay variants
+- Status: Best practical / deployable system; paper-first; guarded live path exists; not promoted
+- Market / symbols: QQQ leader; TQQQ for bull regime; SQQQ for bear regime
+- Timeframe: 1-minute execution; validated finalists use 10-minute opening range and 15-minute decision intervals
+- Setup / entry logic: Regime classification from QQQ EMA alignment, EMA slopes, VWAP relation, opening-range relation, relative volume, spread, and quote freshness; enter TQQQ on bullish opening-range breakout or SQQQ on bearish breakdown when threshold, VWAP, EMA, and RVOL filters pass
+- Exit logic: Stop, take profit, trailing stop, time stop, regime invalidation, and forced flat before the close
+- Sizing / capital assumptions: Research finalist used 50% notional in champion packets; runtime defaults are safer and paper-first
+- Best reported performance metrics: Paper-promotion baseline adverse validate/test net PnL 922.21 / 1441.14; combined expectancy 16.06; adverse max drawdown 9.23%; median daily test PnL 61.08; best day / best month share 38.93% / 66.16%; finalist-validation best adverse validate/test 1066.18 / 2140.93 with best adverse max drawdown 9.25%
+- Robustness / stress results: Base, adverse, and severe scenario testing exists; quote-aware and bar-only cross-checks exist; slippage reality check exists; best nearby variants improved some single metrics but did not reduce concentration enough
+- Paper/live readiness: Strongest operational maturity; paper runbook, paper shadow logic, and guarded promotion workflow exist; still not cleared for live
+- Main weaknesses: Concentration is still too high, modeled versus realized slippage gap remains unresolved, no live promotion approval, Saturday 2026-04-04 paper window was closed so no same-day shadow session ran
+- Source evidence: best_strategies_consolidated.txt; nasdaq-etf-intraday-alpaca/best_summary.md; nasdaq-etf-intraday-alpaca/artifacts/finalist_validation/20260403_222107/best_summary.md; nasdaq-etf-intraday-alpaca/artifacts/paper_promotion/20260404_133736/best_summary.md; nasdaq-etf-intraday-alpaca/docs/paper_runbook.md; nasdaq-etf-intraday-alpaca/src/app/strategy.py; nasdaq-etf-intraday-alpaca/src/app/regime.py
+
+3. DURABLE CRSI FAMILY
+- Canonical strategy name: Durable cRSI Family
+- Aliases / related versions: durable cRSI frozen presets; durable shortlist; FCX 60m, GE 60m, RKLB 30m, BE 60m; watchlist presets in CAT, HOOD, XBI, XLY
+- Status: Paper-only durable shortlist; all durable presets currently marked needs_cleaner_ops
+- Market / symbols: BE, FCX, GE, RKLB durable set; CAT, HOOD, XBI, XLY watchlist set
+- Timeframe: 30-minute and 60-minute
+- Setup / entry logic: Symbol-specific cRSI preset triggers frozen by domcycle, leveling, and trend_window configuration; all surviving durable presets retain overnight holding
+- Exit logic: Preset-specific stop-loss or take-profit overlays; flat-at-close was explicitly not part of the durable survivors
+- Sizing / capital assumptions: Normalized/frozen research equity in shortlist and stress reports; no live sizing authority found
+- Best reported performance metrics: Durable shortlist winners were FCX 60m test equity 1114.29 at 10 bps, GE 60m test equity 1120.51 at 10 bps with max drawdown 4.30%, RKLB 30m test equity 1188.89 at 15 bps with 82.61% win rate and 23 trades, and BE 60m test equity 1121.09 at 15 bps; FCX had the strongest 10 bps robustness score, GE had the cleanest drawdown, RKLB had the best 15 bps headline test equity
+- Robustness / stress results: 768 stress-test runs; 103 survivors at baseline criteria; 22 tougher survivors at slippage >= 10 bps; durable shortlist required win_rate >= 80%, trade_count >= 20, validation_final_equity > 1050, and test_final_equity > 1050
+- Paper/live readiness: Paper-only and explicitly not a promotion engine; evidence packet says no live deployment is implied
+- Main weaknesses: Paper track record too short, sample too small, overnight gap dependency is core to the edge, stale-data operational risk, recent no-trade evidence, and alert burden is still elevated on some presets
+- Source evidence: best_strategies_consolidated.txt; alpaca-stock-strategy-research/reports/strategy_zoo/crsi_durable_shortlist_summary.md; alpaca-stock-strategy-research/reports/strategy_zoo/crsi_execution_stress_summary.md; alpaca-stock-strategy-research/reports/strategy_zoo/durable_crsi_ops/durable_registry.csv; alpaca-stock-strategy-research/reports/strategy_zoo/durable_crsi_ops/durable_crsi_promotion_blockers.md
+
+4. MOMENTUM / RELATIVE-STRENGTH FAMILY
+- Canonical strategy name: Momentum / Relative-Strength Family
+- Aliases / related versions: cross_sectional_momentum; relative_strength_vs_benchmark
+- Status: Promising but unconfirmed research family; not the repo's final chosen winner
+- Market / symbols: 74-symbol liquid stock and ETF universe
+- Timeframe: Daily
+- Setup / entry logic: Long-only rank-based selection inside uptrend_regime; choose names by excess return versus SPY or cross-sectional rank over a lookback window
+- Exit logic: Fixed holding periods in the tested variants
+- Sizing / capital assumptions: Research portfolio sizing; exposure is materially higher than the confirmed exhaustion candidate in raw tables
+- Best reported performance metrics: Authoritative phase-5 summary highlights relative_strength_vs_benchmark test CAGR 49.03% on one 10-bar row and 123.15% on one 20-bar row; raw final search table contains even larger rows up to ending equity 355356.67 and CAGR 184.13%, but those rows also show extreme drawdowns above 100% and conflict with the report's own benchmark-gate summary and final conclusion
+- Robustness / stress results: Upside is visible, but the evidence stack is internally inconsistent; this family is exactly where the raw-table versus final-decision conflict is strongest
+- Paper/live readiness: Research only; no paper packet and no promotion workflow reviewed
+- Main weaknesses: Decision conflict, high drawdowns in raw-table outliers, likely concentration/capacity risk, no final confirmation artifact
+- Source evidence: best_strategies_consolidated.txt; alpaca-stock-strategy-research/reports/research_report_phase5.md; alpaca-stock-strategy-research/reports/search_results_phase5_final.csv
+
+5. RSI PULLBACK / Z-SCORE PULLBACK / GAP REVERSION FAMILY
+- Canonical strategy name: RSI Pullback / Z-Score Pullback / Gap Reversion Family
+- Aliases / related versions: rsi_pullback; zscore_pullback; gap_reversion; phase-1 mean-reversion baseline family
+- Status: Secondary research family; not promoted
+- Market / symbols: Liquid stock and ETF universes across the two stock research repos
+- Timeframe: Daily
+- Setup / entry logic: Mean-reversion entries in higher-timeframe uptrends; RSI and z-score variants buy weakness; gap_reversion buys downside gaps inside an uptrend
+- Exit logic: Fixed hold in the main search framework; optional profit target in some variants
+- Sizing / capital assumptions: Research portfolio sizing; no standalone deployment sizing found
+- Best reported performance metrics: In the newer repo, best raw-table RSI pullback row reached ending equity 130886.87 with CAGR 24.83%, Sharpe 0.7582, profit factor 1.2195, and max drawdown 38.99%; best z-score row reached ending equity 129327.49 with CAGR 23.60%, Sharpe 0.9452, profit factor 1.3136, and max drawdown 25.34%; authoritative phase-5 text also cites an RSI pullback example with validation win rate 65.38% but weak test CAGR 5.38%; frozen phase-1 gap_reversion ended 99913.70 with test CAGR -0.07% and failed the benchmark gate
+- Robustness / stress results: Useful building-block family, but the newer raw-table upside was not elevated to the final project winner and the older frozen gap_reversion baseline failed economically
+- Paper/live readiness: Research only
+- Main weaknesses: Uneven performance across versions, weaker final evidence than Down Streak Exhaustion, and no deployment packet
+- Source evidence: best_strategies_consolidated.txt; alpaca-stock-strategy-research/reports/research_report_phase5.md; alpaca-stock-strategy-research/reports/search_results_phase5_final.csv; alpaca-stock-strategy-research/reports/baselines/phase1_mean_reversion/backtest_results.csv
+
+6. BREAKOUT / TREND-CONTINUATION FAMILY
+- Canonical strategy name: Breakout / Trend-Continuation Family
+- Aliases / related versions: breakout_consolidation; ma_regime_continuation; volatility_contraction_breakout; older breakout baseline
+- Status: Promising but still unconfirmed in the newer repo; archived as a loser in the older corrected repo
+- Market / symbols: Liquid stock and ETF universes
+- Timeframe: Daily
+- Setup / entry logic: Breakouts from consolidation, continuation inside bullish MA regime, and post-compression breakout logic
+- Exit logic: Fixed holding periods in the search framework
+- Sizing / capital assumptions: Research portfolio sizing only
+- Best reported performance metrics: Newer raw search table shows breakout_consolidation ending equity up to 141675.84 with CAGR 33.23%, Sharpe 0.8201, profit factor 1.3654, max drawdown 43.72%, and benchmark_outcome both; volatility_contraction_breakout reached ending equity 139993.07 with CAGR 31.92%, Sharpe 0.8535, profit factor 1.5045, max drawdown 32.72%, and benchmark_outcome both; ma_regime_continuation reached ending equity 131125.44 with CAGR 25.00%, Sharpe 0.7538, and benchmark_outcome both; older corrected breakout baseline ended 98443.60 with CAGR -2.14%
+- Robustness / stress results: The newer repo clearly found interesting rows, but they were not the final chosen thesis; the older corrected baseline confirms that breakout logic can degrade materially once accounting is cleaned up
+- Paper/live readiness: Research only
+- Main weaknesses: No final confirmation packet, raw-table risk still high, and the older repo is a cautionary counterexample
+- Source evidence: best_strategies_consolidated.txt; alpaca-stock-strategy-research/reports/search_results_phase5_final.csv; alpaca-stock-strategy-research/reports/research_report_phase5.md; alpaca-strategy-research/data/reports/breakout_stock_audit.md; alpaca-strategy-research/data/reports/research_report.md
+
+7. PULLBACK IN TREND FAMILY
+- Canonical strategy name: Pullback in Trend Family
+- Aliases / related versions: pullback_in_trend; intraday pullback_resume mode in the ETF repo is related but not the validated champion
+- Status: Secondary research family
+- Market / symbols: Expanded daily-stock universe in the stock repo; related intraday implementation uses QQQ/TQQQ/SQQQ
+- Timeframe: Daily in research tables; intraday variant exists in code
+- Setup / entry logic: Daily family buys pullbacks inside established uptrends; intraday relative uses pullback depth, resume score, relative volume, and trend alignment
+- Exit logic: Fixed hold in daily research; stop, target, trailing, time, regime invalidation, and EOD exits in the intraday implementation
+- Sizing / capital assumptions: Research portfolio sizing on daily tables; intraday runtime uses risk and notional caps
+- Best reported performance metrics: Raw daily search table shows very high headline rows, including ending equity 197448.06 with CAGR 75.13%, Sharpe 0.9518, profit factor 1.3813, max drawdown 80.69%, and ending equity 310992.48 with CAGR 154.58% but max drawdown 140.42% and negative Sharpe
+- Robustness / stress results: Visible upside exists, but drawdown behavior is poor in the loudest rows and no final decision artifact selected this family
+- Paper/live readiness: Research only
+- Main weaknesses: Extreme drawdowns, no confirmation artifact, and confusion risk with the separate intraday pullback_resume module
+- Source evidence: best_strategies_consolidated.txt; alpaca-stock-strategy-research/reports/search_results_phase5_final.csv; nasdaq-etf-intraday-alpaca/src/app/strategy.py
+
+8. TURN OF MONTH TREND FAMILY
+- Canonical strategy name: Turn of Month Trend Family
+- Aliases / related versions: turn_of_month_trend
+- Status: Archived / fragile
+- Market / symbols: Expanded daily-stock universe
+- Timeframe: Daily
+- Setup / entry logic: Long seasonal turn-of-month bias gated by uptrend_regime
+- Exit logic: Fixed holding periods
+- Sizing / capital assumptions: Research portfolio sizing
+- Best reported performance metrics: Validation occasionally looked attractive, but top inspected rows ended with test equity 95652.47 to 87467.97 and test CAGR -3.59% to -10.43%; all inspected rows failed the benchmark gate
+- Robustness / stress results: This fits the classic search-casualty pattern: validation attraction, negative test, no benchmark pass
+- Paper/live readiness: Archive only
+- Main weaknesses: Negative test results, no benchmark support, no deployment case
+- Source evidence: best_strategies_consolidated.txt; alpaca-stock-strategy-research/reports/search_results_phase5_final.csv
+
+9. STACKED ENSEMBLE FAMILY
+- Canonical strategy name: Stacked Ensemble Family
+- Aliases / related versions: pair_any_with_market_filter; RSI pullback plus Down Streak Exhaustion under spy_uptrend
+- Status: Archived / non-promoted
+- Market / symbols: Expanded daily-stock universe
+- Timeframe: Daily
+- Setup / entry logic: Combine component signals and require a SPY uptrend market filter
+- Exit logic: Fixed-hold stacked composition
+- Sizing / capital assumptions: Research portfolio sizing
+- Best reported performance metrics: Best decision-grade row ended at 106637 with CAGR 5.44%, Sharpe 0.3654, profit factor 1.1091, max drawdown 22.07%, and benchmark_outcome neither
+- Robustness / stress results: Validation allowed stacking, but out-of-sample improvement was weak and failed both benchmark comparisons
+- Paper/live readiness: Archive only
+- Main weaknesses: Added complexity without clear edge improvement
+- Source evidence: best_strategies_consolidated.txt; alpaca-stock-strategy-research/reports/research_report_phase5.md; alpaca-stock-strategy-research/reports/decision_table_phase5.csv
+
+10. OLDER CORRECTED MEAN REVERSION BASELINE
+- Canonical strategy name: Older Corrected Mean Reversion Baseline
+- Aliases / related versions: corrected mean_reversion in alpaca-strategy-research
+- Status: Validated baseline; archive / monitor only
+- Market / symbols: SPY and QQQ stock-only universe
+- Timeframe: Daily
+- Setup / entry logic: Mean reversion on z-score and RSI; long on oversold and short on overbought conditions
+- Exit logic: Average corrected hold length 3 bars
+- Sizing / capital assumptions: Research account started at 100000; avg gross exposure 0.0418 on the best corrected row
+- Best reported performance metrics: Ending equity 102029.85; CAGR 2.81%; Sharpe 2.2262; max drawdown 0.39%; expectancy 1.07% per trade; 19 trades
+- Robustness / stress results: Numerically attractive Sharpe and drawdown, but the project conclusion explicitly says it did not beat SPY or equal-weight buy-and-hold in an economically meaningful way after costs
+- Paper/live readiness: No follow-through justified
+- Main weaknesses: Too small economically, too little exposure, benchmark failure
+- Source evidence: best_strategies_consolidated.txt; alpaca-strategy-research/data/reports/research_report.md; alpaca-strategy-research/data/reports/decision_table_corrected.csv
+
+11. OLDER CORRECTED DAY-OF-WEEK / VOL-REGIME / BREAKOUT BASELINE CLUSTER
+- Canonical strategy name: Older Corrected Day-of-Week / Vol-Regime / Breakout Baseline Cluster
+- Aliases / related versions: day_of_week; vol_regime; breakout in alpaca-strategy-research
+- Status: Archived baseline cluster
+- Market / symbols: SPY and QQQ
+- Timeframe: Daily
+- Setup / entry logic: Weekday pattern rules, volatility-regime switching, and simple breakout trend-following
+- Exit logic: Corrected holds of about 1 bar for day_of_week and 5 bars for vol_regime and breakout
+- Sizing / capital assumptions: Research baseline sizing
+- Best reported performance metrics: day_of_week ending equity 100303.16; vol_regime 99835.00; breakout 98443.60; none beat benchmarks; corrected breakout was clearly negative
+- Robustness / stress results: These serve as benchmark baselines, not live candidates
+- Paper/live readiness: Archive only
+- Main weaknesses: Weak or negative out-of-sample returns, no benchmark edge
+- Source evidence: best_strategies_consolidated.txt; alpaca-strategy-research/data/reports/research_report.md
+
+12. OPTIONS VERTICAL-SPREAD WRAPPERS
+- Canonical strategy name: Options Vertical-Spread Wrappers
+- Aliases / related versions: vertical_spread_short_dated; vertical_spread_swing_dated
+- Status: Fragile / invalid research branch; excluded from serious strategy ranking
+- Market / symbols: SPY and QQQ options
+- Timeframe: Very short overlap windows in 2026
+- Setup / entry logic: Defined-risk option spreads wrapped around frozen stock strategies
+- Exit logic: Spread payoff over narrow overlap windows; detailed exit mechanics were not the reliable point of this packet
+- Sizing / capital assumptions: Options spread notional implied, but exact sizing is not decision-grade because sample coverage is too narrow
+- Best reported performance metrics: Some rows showed spectacular headline returns over 5 to 13 trading days, but the same report says they are not economically meaningful after costs
+- Robustness / stress results: Active-contract-only option universe, zero-row contract-list endpoint on paper environment, narrow overlap windows, and survivorship bias make the historical evidence untrustworthy
+- Paper/live readiness: Do not promote
+- Main weaknesses: Data validity problem overwhelms the strategy results
+- Source evidence: best_strategies_consolidated.txt; alpaca-strategy-research/data/reports/options_research_results.csv; alpaca-strategy-research/PHASE2_STOP.md; alpaca-strategy-research/data/reports/research_report.md
+
+13. TRADINGVIEW REFERENCE / IDEATION SCRIPTS CLUSTER
+- Canonical strategy name: TradingView Reference / Ideation Scripts Cluster
+- Aliases / related versions: LogNormal SQQQ 1min Strategy v6; Hull Suite Strategy; SuperTrend Strategy; Strategy library files
+- Status: Weak-evidence reference cluster
+- Market / symbols: Mostly generic; one explicit SQQQ 1-minute script
+- Timeframe: Mostly script-level; LogNormal explicitly targets 1-minute
+- Setup / entry logic: Varies by script; examples include log-return z-score extremes, Hull direction flips, and ATR-based SuperTrend reversals
+- Exit logic: Script-defined stops, targets, and time exits where present
+- Sizing / capital assumptions: Often 100% strategy equity inside the Pine scripts
+- Best reported performance metrics: No trustworthy result packets were found alongside the scripts
+- Robustness / stress results: Not enough evidence to assess
+- Paper/live readiness: Ideation only
+- Main weaknesses: No validated reports, no operational packet, and unclear provenance of backtests
+- Source evidence: best_strategies_consolidated.txt; TV Strategies/LogNormal SQQQ 1min Strategy v6.pine; TV Strategies/Hull Suite Strategy by DashTrader.txt; TV Strategies/SuperTrend Strategy.txt; TV Strategies/Strategy.txt
+
+RANKING VIEWS
+
+- Best overall return: Down Streak Exhaustion on confirmed, decision-grade evidence. Raw upside outlier: Momentum / Relative-Strength Family, but that remains unconfirmed and internally conflicted.
+- Best risk-adjusted: Down Streak Exhaustion as the most credible risk-adjusted winner. Numerical anomaly: Older Corrected Mean Reversion Baseline has the highest clean Sharpe but is too small and benchmark-weak to treat as a real winner.
+- Best robustness: Durable cRSI Family on friction-survival evidence at 10 to 15 bps across multiple frozen presets. Caveat: sample depth is too short for full trust.
+- Best practical deployability: QQQ-Led TQQQ/SQQQ Pair Opening-Range Intraday System.
+- Best intraday: QQQ-Led TQQQ/SQQQ Pair Opening-Range Intraday System.
+- Best swing / multi-day: Down Streak Exhaustion.
+- Best supporting model / signal layer: Durable cRSI Family. Runner-up: the QQQ intraday regime classifier embedded in the pair system.
+- Weakest / fragile / archived: Options Vertical-Spread Wrappers, Turn of Month Trend Family, Older Corrected Day-of-Week / Vol-Regime / Breakout Baseline Cluster, Stacked Ensemble Family, and TradingView Reference / Ideation Scripts Cluster.
+
+APPLES-TO-APPLES TOP 5 SHORTLIST
+
+1. Down Streak Exhaustion
+- Why it made the top 5: It is the strongest fully confirmed strategy family in the entire scan.
+- What evidence supports it: Confirmation report reproduced the saved row exactly, beat all main benchmarks on test, held up through 2.0x cost stress, and kept drawdown contained at 6.05%.
+- What still blocks promotion: Subset and regime robustness are not uniform, and there is no paper-trading packet.
+- Whether it should be combined with another model as a filter: Yes, but only experimentally. The right comparison is a clean head-to-head against a simple market-regime filter or momentum overlay, not immediate production stacking.
+
+2. QQQ-Led TQQQ/SQQQ Pair Opening-Range Intraday System
+- Why it made the top 5: It is the only strategy family with serious execution engineering, paper runbooks, slippage cross-checks, and promotion artifacts.
+- What evidence supports it: Positive adverse validate/test PnL in the paper-promotion packet, explicit quote-aware finalist validation, and a preserved champion configuration.
+- What still blocks promotion: Concentration is still too high and the slippage realism gap is not closed.
+- Whether it should be combined with another model as a filter: It already contains its own regime filter stack. The better next step is to compare variants inside the system, not bolt on an unrelated external filter.
+
+3. Durable cRSI Family
+- Why it made the top 5: It has the best repeated evidence of surviving high friction on symbol-specific presets.
+- What evidence supports it: 768 stress-test runs, 22 tougher survivors at slippage >= 10 bps, and a durable shortlist that still works at 10 to 15 bps.
+- What still blocks promotion: Short paper sample, overnight dependency, stale-data risk, and ops cleanliness.
+- Whether it should be combined with another model as a filter: Yes. It is a strong candidate for a gated satellite book, ideally filtered by broader market or symbol-health rules rather than traded naked at larger scale.
+
+4. Momentum / Relative-Strength Family
+- Why it made the top 5: It has the largest visible upside in the daily-stock research stack.
+- What evidence supports it: Multiple phase-5 rows show strong test CAGR and benchmark wins, including relative_strength_vs_benchmark and cross_sectional_momentum leaders.
+- What still blocks promotion: The raw-table winners conflict with the repo's own final benchmark-gate summary and final conclusion, and some outliers carry extreme drawdown.
+- Whether it should be combined with another model as a filter: Yes. This family is a natural portfolio-selection layer and should be tested as a filter or ranking overlay on top of mean-reversion or breakout entries.
+
+5. Breakout / Trend-Continuation Family
+- Why it made the top 5: It is the strongest non-momentum upside family outside the confirmed exhaustion winner.
+- What evidence supports it: Newer phase-5 raw tables show multiple both-benchmark passes with CAGR around 25% to 33% across breakout_consolidation, volatility_contraction_breakout, and ma_regime_continuation.
+- What still blocks promotion: It lacks a final confirmation packet, and the older corrected breakout repo is a warning that naive breakout conclusions can collapse after accounting cleanup.
+- Whether it should be combined with another model as a filter: Yes. The best candidate test is breakout entry plus market-regime or relative-strength ranking, not a standalone promotion attempt.
+
+RECOMMENDED CONSOLIDATION SET
+
+TIER 1 = MUST PRESERVE AND COMPARE CONTINUOUSLY
+- Down Streak Exhaustion
+- QQQ-Led TQQQ/SQQQ Pair Opening-Range Intraday System
+- Durable cRSI Family
+
+TIER 2 = PROMISING BUT NEEDS MORE VALIDATION
+- Momentum / Relative-Strength Family
+- Breakout / Trend-Continuation Family
+- RSI Pullback / Z-Score Pullback / Gap Reversion Family
+- Pullback in Trend Family
+
+TIER 3 = ARCHIVE / MONITOR ONLY
+- Turn of Month Trend Family
+- Stacked Ensemble Family
+- Older Corrected Mean Reversion Baseline
+- Older Corrected Day-of-Week / Vol-Regime / Breakout Baseline Cluster
+- Options Vertical-Spread Wrappers
+- TradingView Reference / Ideation Scripts Cluster
+
+CANONICAL NEXT ACTIONS
+
+DOWN STREAK EXHAUSTION
+- Retest: Re-run the confirmed params on the newest available extension window, plus rolling walk-forward windows and start-date perturbations.
+- Validate: Re-check subset behavior on ETF-only, single-names-only, and large-cap-tech slices; repeat regime slicing; rerun with more adverse open/close execution assumptions.
+- Compare head-to-head: Compare directly against the best Momentum / Relative-Strength row, the best Breakout / Trend-Continuation row, and the best RSI Pullback / Z-Score Pullback row on the same universe and costs.
+- Production/paper blockers: Uneven subset and regime robustness; no paper packet; still needs capacity and execution realism work.
+
+QQQ-LED TQQQ/SQQQ PAIR OPENING-RANGE INTRADAY SYSTEM
+- Retest: Re-run the preserved champion and the top nearby variants using fresh paper weeks, quote-aware slippage, and concentration caps.
+- Validate: Measure realized versus quote-expected slippage over a longer paper sample; track day and month concentration, severe-scenario expectancy, and no-trade / stale-quote conditions.
+- Compare head-to-head: Baseline champion versus best expectancy variant, 40/45/50 minute flatten buffers, and blocked-hours variants on the same paper window.
+- Production/paper blockers: Concentration remains high, slippage realism gap remains open, and live promotion is not approved.
+
+DURABLE CRSI FAMILY
+- Retest: Re-run the frozen FCX, GE, RKLB, and BE presets with fresh paper cycles and the same 10 to 15 bps friction assumptions.
+- Validate: Extend paper sample length, confirm overnight behavior remains stable, reduce stale-data interruptions, and document enough closed trades to judge drift.
+- Compare head-to-head: FCX versus GE versus RKLB versus BE on the same paper dates, same alerting rules, and same ops hygiene standard.
+- Production/paper blockers: Paper history is too short, overnight dependency is real, stale-data risk remains, and every preset is still marked needs_cleaner_ops.
+
+NON-STRATEGY / INFRASTRUCTURE PROJECTS TO KEEP SEPARATE
+
+- alpaca-market-data-lake: data acquisition / endpoint planning, not a strategy engine
+- Root CSV datasets in Downloads: data only, not strategy evidence by themselves
+- Generic data and cache folders: supporting artifacts only unless a decision-grade summary sits on top
+- Large raw intraday quote/trade caches: useful for forensic reruns, but not primary strategy truth sources
+
+BOTTOM LINE
+
+- If one strategy family needs to remain the default daily-stock reference, it is Down Streak Exhaustion.
+- If one system is closest to paper-to-production workflow maturity, it is the QQQ-Led TQQQ/SQQQ Pair Opening-Range Intraday System.
+- If one supporting signal family deserves continued paper preservation despite operational blockers, it is the Durable cRSI Family.
+- The main upside reserve is still in Momentum / Relative-Strength and Breakout / Trend-Continuation, but both must be treated as promising rather than settled.

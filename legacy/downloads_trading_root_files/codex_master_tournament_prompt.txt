@@ -1,0 +1,413 @@
+MASTER CODEX PROMPT: STRATEGY MEGA-TOURNAMENT + OPTIONS TRANSLATION
+
+You are working on my local machine and should use local files, repos, reports, CSVs, configs, and artifacts to build a single tournament framework.
+
+GOAL
+Consolidate all of my strategy families, recreate each one as faithfully as possible, and run a large 5-year tournament in two layers:
+1. underlying stock/ETF backtests
+2. options-translated backtests at the exact timestamps of the underlying trades
+
+The end goal is to identify strategy systems that:
+- lose small and win big
+- use tight stop losses and take profits
+- can realistically be orchestrated into a daily paper-trading engine
+- target high win rate, with a screen of >60% win rate
+- target turning a $25,000 account into at least $100,000 over the 5-year tournament
+- are suitable for RTH-only execution
+- can eventually support many paper trades per day using options and multi-leg structures
+
+IMPORTANT:
+These are screening and selection goals, not assumptions. Do not force strategies to pass them. Measure honestly and reject those that do not.
+
+ACCOUNT / DATA CONTEXT
+- Alpaca plan from my screenshot shows Algo Trader Plus with:
+  - US Stocks, ETFs, Options, and Crypto
+  - 9+ years historical data
+  - real-time market coverage
+  - 10,000 API calls/min
+  - all US stock exchanges
+  - unlimited symbols on websocket
+- Account size for all tournament simulations: $25,000
+- RTH only
+- No overnight stock holdings unless a strategy explicitly requires it and authoritative evidence proves it
+- For options, prefer same-day open/close inside RTH unless the exact strategy translation requires otherwise
+- Preserve strategy-native execution assumptions whenever known
+- Do not invent improvements
+
+UNIVERSE FOR THE 5-YEAR TOURNAMENT
+Run every strategy, where applicable, across:
+- SPY
+- QQQ
+- IWM
+- NVDA
+- META
+- AAPL
+- AMZN
+- NFLX
+- GOOG
+- TSLA
+
+TRAILING WINDOW
+- Use the most recent full continuous 5-year window ending at the latest complete trading day available in the local data
+- If a strategy or options dataset does not fully cover the whole window, mark the exact coverage gap
+
+AUTHORITATIVE INPUTS TO FIND AND USE
+Search my local files for these if present:
+- best_strategies_consolidated.txt
+- master_strategy_memo.txt
+- strategy_chat_seed.txt
+- strategy_consolidation_shortlist.txt
+- any files containing the audited top-10 strategy inventory from the other machine
+- repo folders and artifacts for the following families:
+  - tv_pvt_top5_finalists
+  - index_opening_drive_lab
+  - codex_leveraged_pipeline
+  - tv_squeeze_top5_finalists
+  - flux_signal_engine_top20_2025
+  - durable cRSI
+  - down streak exhaustion
+  - FVG / fair value gap
+  - opening range / opening drive
+  - qqq gap nowcast / range engine
+  - any finalist / promotion / leaderboard / validation / paper artifacts
+
+PRIMARY RULES
+1. Do not silently alter strategy logic.
+2. Do not optimize before baseline reproduction.
+3. If exact source code/config is missing, preserve ambiguity explicitly.
+4. If a strategy cannot be recreated 1:1, mark it as partial or blocked.
+5. Do not normalize away oddities.
+6. Keep infrastructure/data projects separate from strategy engines.
+7. Use conservative assumptions when a simulator detail is missing, but do not override known exact assumptions.
+8. For any strategy family already audited as fragile, falsified, overfit, or retired, keep it in the tournament only if it can still be reconstructed, and label the risk clearly.
+
+PHASE 1: BUILD THE MASTER STRATEGY REGISTRY
+Create one canonical registry that merges:
+- the previously standardized 13 canonical strategy families
+- the authoritative top-10 inventory from the other machine
+- any local repo-backed strategy implementations and finalist variants you can verify
+
+Deliverables for this phase:
+1. strategy_registry_master.csv
+2. strategy_registry_master.md
+
+For each strategy family or exact variant, include:
+- canonical strategy_id
+- family name
+- aliases
+- source repo/folder
+- asset universe
+- timeframe
+- directionality
+- execution assumptions
+- exact known parameters
+- reconstruction status: exact / partial / blocked
+- evidence quality: high / medium / low
+- known metrics from prior audits
+- major risks
+- whether it is eligible for underlying tournament
+- whether it is eligible for options translation
+- whether it is eligible for multi-leg options translation
+
+Also create:
+3. strategy_reconstruction_gaps.md
+This must list every strategy with the exact missing code/config/artifacts preventing true 1:1 recreation.
+
+PHASE 2: REPRODUCE BASELINE STRATEGIES BEFORE ANY TRANSLATION
+For every strategy that is exact or partial-but-runnable:
+- reproduce the baseline backtest exactly as closely as possible on its native market/timeframe/symbols
+- compare reproduced metrics to prior audited metrics when available
+- record drift versus prior metrics
+- reject any reconstruction that deviates materially without a documented reason
+
+Create:
+4. baseline_reproduction_report.md
+5. baseline_reproduction_metrics.csv
+
+Fields to include:
+- strategy_id
+- original reported metrics
+- reproduced metrics
+- absolute and percent drift
+- reason for drift
+- final baseline confidence: high / medium / low
+
+PHASE 3: FIVE-YEAR UNDERLYING TOURNAMENT
+Run a standardized tournament over the last full 5 years for all applicable strategies across:
+SPY, QQQ, IWM, NVDA, META, AAPL, AMZN, NFLX, GOOG, TSLA
+
+Important:
+- Do not force a strategy onto symbols where it is structurally invalid.
+- If a strategy is symbol-specific, test it on its native symbol first, and only expand to other symbols if the strategy family is actually portable.
+- If portability is unknown, run both:
+  - native-only result
+  - expanded-universe result marked experimental
+
+Use:
+- $25,000 starting equity
+- RTH only
+- Strategy-native fills if known
+- otherwise conservative fills, explicitly documented
+- realistic slippage and fees if specified
+- no lookahead
+- timestamp-accurate execution
+
+For every trade, record:
+- strategy_id
+- family
+- symbol
+- timestamp_in
+- timestamp_out
+- side
+- entry_price
+- exit_price
+- shares/contracts
+- stop level
+- target level
+- pnl_dollars
+- pnl_pct
+- mfe
+- mae
+- exit_reason
+- whether the trade respected RTH rules
+
+Create:
+6. underlying_trade_ledger.csv
+7. underlying_tournament_metrics.csv
+8. underlying_tournament_leaderboard.md
+
+Metrics required:
+- total return pct
+- CAGR
+- max drawdown pct
+- Sharpe
+- Sortino
+- profit factor
+- expectancy
+- win rate
+- average win
+- average loss
+- payoff ratio
+- median win
+- median loss
+- trade count
+- average trades per day
+- percent profitable months
+- percent profitable quarters
+- largest loss
+- largest win
+- average MAE
+- average MFE
+- ulcer index if available
+- return / max drawdown
+- final equity
+- whether $25k reached $100k
+- whether win rate > 60%
+
+Also create a specific ranking focused on “lose small, win big”:
+9. underlying_asymmetric_edge_ranking.csv
+
+Score this ranking with strong weight on:
+- positive expectancy
+- payoff ratio
+- controlled average loss
+- controlled max drawdown
+- favorable MFE/MAE profile
+- final equity growth
+Do not overweight win rate alone.
+
+PHASE 4: OPTIONS TRANSLATION TOURNAMENT
+For every underlying trade generated in Phase 3, create an options translation replay.
+
+DEFAULT OPTIONS TRANSLATION RULE
+At each underlying trade entry timestamp:
+- find the nearest valid 2 DTE option chain for that symbol
+- select the 1-strike OTM contract in the trade direction
+  - bullish trade -> call
+  - bearish trade -> put
+- use minute-level options bars if available
+- attach greeks if available
+- if exact 2 DTE or 1-strike OTM is unavailable, choose the nearest valid contract and record the fallback explicitly
+- do not use future knowledge when selecting the contract
+
+At each underlying trade exit timestamp:
+- exit the option position at the first valid marketable bar after the exit signal
+- stay RTH only
+
+Important:
+- Preserve timestamp alignment exactly
+- Record the actual contract selected, including OCC symbol if available
+- If options data is missing at a timestamp, mark the trade unresolved and do not fabricate fills
+- If a strategy issues too many overlapping signals for a $25k account, enforce capital and position limits explicitly
+
+Create:
+10. options_trade_ledger_single_leg.csv
+11. options_tournament_metrics_single_leg.csv
+12. options_tournament_leaderboard_single_leg.md
+
+Required fields in the options trade ledger:
+- strategy_id
+- symbol
+- underlying_timestamp_in
+- underlying_timestamp_out
+- option_timestamp_in
+- option_timestamp_out
+- direction
+- option_type
+- expiry
+- dte_at_entry
+- strike
+- moneyness
+- contract_symbol
+- bid_at_entry
+- ask_at_entry
+- mid_at_entry
+- entry_fill_price
+- bid_at_exit
+- ask_at_exit
+- mid_at_exit
+- exit_fill_price
+- delta_at_entry
+- gamma_at_entry
+- theta_at_entry
+- vega_at_entry
+- implied_vol_at_entry
+- contracts
+- gross_pnl
+- net_pnl
+- return_pct
+- max_contract_drawdown_pct
+- exit_reason
+- data_quality_flag
+
+PHASE 5: MULTI-LEG / ADVANCED OPTIONS TOURNAMENT
+Now evaluate whether any strategies can support more advanced structures:
+- long calls
+- long puts
+- call debit spreads
+- put debit spreads
+- call credit spreads
+- put credit spreads
+- iron condors
+- other multi-leg structures only if the signal logic genuinely supports them
+
+Hard rule:
+- Do not force iron condors or neutral premium structures onto directional strategies.
+- Only use neutral/range structures if the signal family truly predicts compression, range, or non-breakout conditions.
+- If a structure is unsupported by the underlying signal semantics, mark it ineligible.
+
+For each eligible strategy family, build a conservative translation matrix and test:
+- single-leg
+- simple vertical spread
+- neutral structure if actually appropriate
+
+Use explicit capital usage and risk caps for a $25k account.
+Model fills conservatively.
+Track max concurrent positions.
+
+Create:
+13. options_translation_eligibility.md
+14. options_trade_ledger_multileg.csv
+15. options_tournament_metrics_multileg.csv
+16. options_tournament_leaderboard_multileg.md
+
+PHASE 6: DAILY PAPER-ENGINE DESIGN SCREEN
+I eventually want a system that can launch every trading day and generate many paper trades per day in options.
+Do not assume the current strategies already achieve this.
+
+Instead, evaluate:
+- which strategies generate enough signal frequency
+- which option translations remain liquid enough
+- which combinations can coexist in one $25k paper portfolio
+- which combinations keep losses tight and preserve convex upside
+- which can plausibly scale to many paper trades per day without violating capital, overlap, or liquidity constraints
+
+Create:
+17. daily_paper_engine_candidates.md
+
+For each candidate, include:
+- estimated trades per day
+- symbols used
+- option structure used
+- average hold time
+- overlap rate
+- portfolio heat
+- capital bottlenecks
+- liquidity concerns
+- whether it should be run standalone or in a portfolio
+- whether it meets the >60% win-rate screen
+- whether it reaches the $100k target in the 5-year tournament
+- whether it remains robust after conservative slippage/fill handling
+
+PHASE 7: FINAL TOURNAMENT DECISION PACK
+Create the final outputs:
+18. tournament_master_leaderboard.csv
+19. tournament_master_report.md
+20. promotion_candidates.md
+
+The final report must include:
+- best overall underlying strategy
+- best overall options single-leg strategy
+- best overall options multi-leg strategy
+- best “lose small, win big” strategy
+- best high-win-rate strategy
+- best practical daily paper-engine candidate
+- best symbol-specific strategy
+- best portable cross-symbol family
+- fragile / overfit / rejected strategies
+- blocked strategies awaiting source artifacts
+
+PROMOTION GATES
+A strategy or portfolio candidate should only be promoted if it shows:
+- honest reproducibility
+- acceptable drawdown for a $25k account
+- tight average loss
+- favorable payoff ratio
+- strong enough trade count to matter
+- >60% win rate if it is being considered for the “high win rate” sleeve
+- ability to reach or exceed $100k final equity from $25k in the 5-year tournament if it is being considered for the “aggressive growth” sleeve
+
+Important:
+A strategy does not need to satisfy every gate to remain interesting, but the final report must clearly separate:
+- robust candidates
+- speculative candidates
+- overfit candidates
+- dead/retired candidates
+
+STRICT IMPLEMENTATION NOTES
+- Save every major intermediate artifact
+- Prefer CSV plus Markdown summaries
+- Use timestamp-precise ledgers
+- Use deterministic seeds where needed
+- Log every fallback and ambiguity
+- Keep a reproducibility manifest
+- If contract lookup is expensive, build a cache
+- If options chain reconstruction requires OCC names, do it systematically and cache results
+- If data coverage is missing or corrupted, say so explicitly
+
+DO NOT DO THESE THINGS
+- Do not hide missing artifacts
+- Do not backfill unavailable option prices with fantasy values
+- Do not improve strategy rules
+- Do not collapse distinct finalists into one without preserving lineage
+- Do not let raw return dominate everything if the path is unstable or unrepeatable
+- Do not silently convert a directional signal into a neutral options structure
+
+TERMINAL SUMMARY REQUIRED
+At the end, print:
+- total canonical strategies found
+- total exact / partial / blocked
+- total baseline reproductions completed
+- total underlying trades
+- total options single-leg trades
+- total options multi-leg trades
+- top 10 underlying leaderboard
+- top 10 options single-leg leaderboard
+- top 10 options multi-leg leaderboard
+- which strategies passed >60% win rate
+- which strategies reached $100k from $25k
+- which candidates are recommended for paper-engine assembly
+- file paths of all final deliverables
+
+START NOW.
+First scan the local strategy files and build the master registry before running any tournament.
