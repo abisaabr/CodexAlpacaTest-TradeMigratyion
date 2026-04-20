@@ -37,6 +37,16 @@ def build_parser() -> argparse.ArgumentParser:
         default=str(DEFAULT_RESEARCH_DIR),
         help="Directory to store candidate research outputs.",
     )
+    parser.add_argument(
+        "--force-rerun",
+        action="store_true",
+        help="Ignore cached ticker research and rerun using the current strategy set.",
+    )
+    parser.add_argument(
+        "--continue-on-error",
+        action="store_true",
+        help="Record ticker-level failures in the summary instead of stopping the whole batch.",
+    )
     return parser
 
 
@@ -50,12 +60,22 @@ def main() -> None:
 
     rows: list[dict[str, Any]] = []
     for ticker in tickers:
-        result = round2.load_or_run_result(ticker=ticker, profiles=profiles)
-        summary = result["summary"]
-        promoted = summary["promoted"]
-        rows.append(
-            {
+        try:
+            result = round2.load_or_run_result(
+                ticker=ticker,
+                profiles=profiles,
+                force_rerun=args.force_rerun,
+            )
+            summary = result["summary"]
+            promoted = summary["promoted"]
+            frozen_family_buckets = list(summary["frozen_initial"].get("family_bucket_contributions", []))
+            reoptimized_family_buckets = list(summary["reoptimized"].get("family_bucket_contributions", []))
+            top_frozen_bucket = frozen_family_buckets[0] if frozen_family_buckets else {}
+            top_reoptimized_bucket = reoptimized_family_buckets[0] if reoptimized_family_buckets else {}
+            row = {
                 "ticker": ticker.upper(),
+                "status": "ok",
+                "error": "",
                 "trade_date_start": summary["trade_date_start"],
                 "trade_date_end": summary["trade_date_end"],
                 "day_count": int(summary["day_count"]),
@@ -77,25 +97,54 @@ def main() -> None:
                 "selected_bull": ",".join(promoted["selected_bull"]),
                 "selected_bear": ",".join(promoted["selected_bear"]),
                 "selected_choppy": ",".join(promoted["selected_choppy"]),
+                "top_frozen_family_bucket": str(top_frozen_bucket.get("family_bucket", "")),
+                "top_frozen_family_bucket_pnl": float(top_frozen_bucket.get("portfolio_net_pnl", 0.0)),
+                "top_reoptimized_family_bucket": str(top_reoptimized_bucket.get("family_bucket", "")),
+                "top_reoptimized_family_bucket_pnl": float(top_reoptimized_bucket.get("portfolio_net_pnl", 0.0)),
             }
-        )
-        print(
-            json.dumps(
-                {
-                    "ticker": ticker.upper(),
-                    "frozen_total_return_pct": rows[-1]["frozen_total_return_pct"],
-                    "frozen_max_drawdown_pct": rows[-1]["frozen_max_drawdown_pct"],
-                    "selected_bull_count": rows[-1]["selected_bull_count"],
-                    "selected_bear_count": rows[-1]["selected_bear_count"],
-                    "selected_choppy_count": rows[-1]["selected_choppy_count"],
-                }
-            ),
-            flush=True,
-        )
+            print(
+                json.dumps(
+                    {
+                        "ticker": row["ticker"],
+                        "status": row["status"],
+                        "frozen_total_return_pct": row["frozen_total_return_pct"],
+                        "frozen_max_drawdown_pct": row["frozen_max_drawdown_pct"],
+                        "top_frozen_family_bucket": row["top_frozen_family_bucket"],
+                        "selected_bull_count": row["selected_bull_count"],
+                        "selected_bear_count": row["selected_bear_count"],
+                        "selected_choppy_count": row["selected_choppy_count"],
+                    }
+                ),
+                flush=True,
+            )
+        except Exception as exc:
+            if not args.continue_on_error:
+                raise
+            row = {
+                "ticker": ticker.upper(),
+                "status": "error",
+                "error": str(exc),
+            }
+            print(
+                json.dumps(
+                    {
+                        "ticker": row["ticker"],
+                        "status": row["status"],
+                        "error": row["error"],
+                    }
+                ),
+                flush=True,
+            )
+        rows.append(row)
 
-    summary_df = pd.DataFrame(rows).sort_values(
-        ["frozen_total_return_pct", "frozen_final_equity"],
-        ascending=[False, False],
+    summary_df = pd.DataFrame(rows)
+    for column in ("frozen_total_return_pct", "frozen_final_equity"):
+        if column not in summary_df.columns:
+            summary_df[column] = pd.NA
+    summary_df = summary_df.sort_values(
+        ["status", "frozen_total_return_pct", "frozen_final_equity"],
+        ascending=[True, False, False],
+        na_position="last",
     )
     summary_df.to_csv(research_dir / "standalone_summary.csv", index=False)
     (research_dir / "standalone_summary.json").write_text(

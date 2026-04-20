@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from dataclasses import dataclass, replace
 from itertools import product
 from pathlib import Path
@@ -29,6 +30,12 @@ DEFAULT_STARTING_EQUITY = 25_000.0
 DEFAULT_INITIAL_TRAIN_DAYS = 126
 DEFAULT_TEST_DAYS = 21
 DEFAULT_STEP_DAYS = 21
+REGIME_THRESHOLD_GRID = [0.30, 0.35, 0.40, 0.45, 0.50, 0.55]
+TOP_BULL_GRID = [1, 2, 3, 4]
+TOP_BEAR_GRID = [1, 2, 3, 4]
+TOP_CHOPPY_GRID = [0, 1, 2]
+MIN_TRADE_GRID = [2, 3, 5, 8, 10]
+RISK_CAP_GRID = [0.08, 0.10, 0.12, 0.15, 0.18, 0.20]
 
 
 @dataclass(frozen=True)
@@ -51,11 +58,35 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--initial-train-days", type=int, default=DEFAULT_INITIAL_TRAIN_DAYS)
     parser.add_argument("--test-days", type=int, default=DEFAULT_TEST_DAYS)
     parser.add_argument("--step-days", type=int, default=DEFAULT_STEP_DAYS)
+    parser.add_argument(
+        "--strategy-set",
+        choices=("standard", "family_expansion"),
+        default="standard",
+        help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates.",
+    )
+    parser.add_argument(
+        "--continue-on-error",
+        action="store_true",
+        help="Continue the batch when a ticker fails research and record it in the master summary.",
+    )
+    parser.add_argument(
+        "--reuse-completed-tickers",
+        action="store_true",
+        help="Reuse existing per-ticker artifacts in the research directory when they match the requested strategy/timing setup.",
+    )
     return parser
 
 
 def build_timing_profiles() -> tuple[TimingProfile, ...]:
     return (
+        TimingProfile(
+            name="reactive",
+            orb_window=5,
+            trend_start=20,
+            credit_minute=45,
+            straddle_minute=5,
+            condor_minute=15,
+        ),
         TimingProfile(
             name="fast",
             orb_window=10,
@@ -79,6 +110,14 @@ def build_timing_profiles() -> tuple[TimingProfile, ...]:
             credit_minute=120,
             straddle_minute=20,
             condor_minute=45,
+        ),
+        TimingProfile(
+            name="patient",
+            orb_window=25,
+            trend_start=75,
+            credit_minute=150,
+            straddle_minute=25,
+            condor_minute=60,
         ),
     )
 
@@ -352,9 +391,14 @@ def build_signal_dispatch(profiles: tuple[TimingProfile, ...]) -> dict[str, Any]
     return dispatch
 
 
-def build_strategy_variants(ticker: str, profiles: tuple[TimingProfile, ...]) -> list[DeltaStrategy]:
+def build_strategy_variants(
+    ticker: str,
+    profiles: tuple[TimingProfile, ...],
+    *,
+    strategy_set: str = "standard",
+) -> list[DeltaStrategy]:
     variants: list[DeltaStrategy] = []
-    for base_strategy in build_delta_strategies():
+    for base_strategy in build_delta_strategies(include_family_expansion=(strategy_set == "family_expansion")):
         for profile in profiles:
             variants.append(
                 replace(
@@ -383,10 +427,94 @@ def enrich_candidate_trades(trades: pd.DataFrame) -> pd.DataFrame:
     return enriched
 
 
+def family_bucket_for_strategy_family(family: str) -> str:
+    if family in {"Single-leg long call", "Single-leg long put"}:
+        return "Single-leg"
+    if family in {"Debit call spread", "Debit put spread"}:
+        return "Debit spread"
+    if family in {"Credit put spread", "Credit call spread"}:
+        return "Credit spread"
+    if family in {
+        "Iron condor",
+        "Iron butterfly",
+        "Call butterfly",
+        "Put butterfly",
+        "Broken-wing call butterfly",
+        "Broken-wing put butterfly",
+    }:
+        return "Neutral premium"
+    if family in {"Long straddle", "Long strangle", "Call backspread", "Put backspread"}:
+        return "Long-vol"
+    return family
+
+
+def summarize_strategy_group_contributions(
+    *,
+    trades_df: pd.DataFrame,
+    strategy_map: dict[str, DeltaStrategy] | None,
+    group_column: str,
+    group_resolver,
+) -> list[dict[str, object]]:
+    if trades_df.empty or not strategy_map:
+        return []
+    enriched = trades_df.copy()
+    enriched[group_column] = [
+        group_resolver(strategy_map.get(str(name))) if strategy_map.get(str(name)) is not None else "Unknown"
+        for name in enriched["strategy"].astype(str)
+    ]
+    grouped = (
+        enriched.groupby(group_column, as_index=False)
+        .agg(
+            portfolio_net_pnl=("portfolio_net_pnl", "sum"),
+            trade_count=("portfolio_net_pnl", "size"),
+            win_rate_pct=("portfolio_net_pnl", lambda values: (values > 0).mean() * 100.0),
+            avg_trade_pnl=("portfolio_net_pnl", "mean"),
+        )
+        .sort_values(["portfolio_net_pnl", "trade_count"], ascending=[False, False])
+        .reset_index(drop=True)
+    )
+    grouped["portfolio_net_pnl"] = grouped["portfolio_net_pnl"].round(2)
+    grouped["win_rate_pct"] = grouped["win_rate_pct"].round(2)
+    grouped["avg_trade_pnl"] = grouped["avg_trade_pnl"].round(2)
+    return grouped.to_dict(orient="records")
+
+
+def attach_family_contributions(
+    *,
+    summary: dict[str, object],
+    trades_df: pd.DataFrame,
+    strategy_map: dict[str, DeltaStrategy] | None,
+) -> dict[str, object]:
+    enriched = dict(summary)
+    enriched["family_contributions"] = summarize_strategy_group_contributions(
+        trades_df=trades_df,
+        strategy_map=strategy_map,
+        group_column="family",
+        group_resolver=lambda strategy: strategy.family,
+    )
+    enriched["family_bucket_contributions"] = summarize_strategy_group_contributions(
+        trades_df=trades_df,
+        strategy_map=strategy_map,
+        group_column="family_bucket",
+        group_resolver=lambda strategy: family_bucket_for_strategy_family(strategy.family),
+    )
+    return enriched
+
+
+def contribution_rows_to_frame(rows: list[dict[str, object]], label_column: str) -> pd.DataFrame:
+    frame = pd.DataFrame(rows)
+    if frame.empty:
+        return pd.DataFrame(
+            columns=[label_column, "portfolio_net_pnl", "trade_count", "win_rate_pct", "avg_trade_pnl"]
+        )
+    return frame
+
+
 def summarize_run(
     trades_df: pd.DataFrame,
     equity_df: pd.DataFrame,
     starting_equity: float,
+    strategy_map: dict[str, DeltaStrategy] | None = None,
 ) -> dict[str, object]:
     if equity_df.empty:
         final_equity = starting_equity
@@ -415,7 +543,7 @@ def summarize_run(
         summary["strategy_contributions"] = contributions.to_dict(orient="records")
     else:
         summary["strategy_contributions"] = []
-    return summary
+    return attach_family_contributions(summary=summary, trades_df=trades_df, strategy_map=strategy_map)
 
 
 def strategy_objects_from_names(
@@ -468,13 +596,22 @@ def select_best_config(
         )
         strategies = strategy_objects_from_names(selected_names, strategy_map=strategy_map)
         if filtered.empty or not strategies:
-            summary = empty_summary(starting_equity=DEFAULT_STARTING_EQUITY, risk_cap=risk_cap)
+            summary = attach_family_contributions(
+                summary=empty_summary(starting_equity=DEFAULT_STARTING_EQUITY, risk_cap=risk_cap),
+                trades_df=pd.DataFrame(),
+                strategy_map=strategy_map,
+            )
         else:
-            _, _, summary = run_portfolio_allocator(
+            portfolio_trades, _, summary = run_portfolio_allocator(
                 strategies=strategies,
                 trades_df=filtered,
                 portfolio_max_open_risk_fraction=risk_cap,
                 starting_equity=DEFAULT_STARTING_EQUITY,
+            )
+            summary = attach_family_contributions(
+                summary=summary,
+                trades_df=portfolio_trades,
+                strategy_map=strategy_map,
             )
         row = {
             "regime_threshold_pct": regime_threshold,
@@ -497,6 +634,8 @@ def select_best_config(
                 max_drawdown_pct=float(summary["max_drawdown_pct"]),
             ),
             "strategy_contributions": list(summary.get("strategy_contributions", [])),
+            "family_contributions": list(summary.get("family_contributions", [])),
+            "family_bucket_contributions": list(summary.get("family_bucket_contributions", [])),
         }
         if best_row is None:
             best_row = row
@@ -548,12 +687,26 @@ def evaluate_config(
         strategy_map=strategy_map,
     )
     if filtered.empty or not strategies:
-        return pd.DataFrame(), pd.DataFrame(), empty_summary(starting_equity, float(config["risk_cap"])), filtered
+        return (
+            pd.DataFrame(),
+            pd.DataFrame(),
+            attach_family_contributions(
+                summary=empty_summary(starting_equity, float(config["risk_cap"])),
+                trades_df=pd.DataFrame(),
+                strategy_map=strategy_map,
+            ),
+            filtered,
+        )
     portfolio_trades, equity_curve, summary = run_portfolio_allocator(
         strategies=strategies,
         trades_df=filtered,
         portfolio_max_open_risk_fraction=float(config["risk_cap"]),
         starting_equity=starting_equity,
+    )
+    summary = attach_family_contributions(
+        summary=summary,
+        trades_df=portfolio_trades,
+        strategy_map=strategy_map,
     )
     return portfolio_trades, equity_curve, summary, filtered
 
@@ -614,6 +767,7 @@ def run_single_ticker_research(
     test_days: int,
     step_days: int,
     profiles: tuple[TimingProfile, ...],
+    strategy_set: str,
 ) -> dict[str, object]:
     ticker_lower = ticker.lower()
     research_dir.mkdir(parents=True, exist_ok=True)
@@ -631,17 +785,46 @@ def run_single_ticker_research(
         wide=wide,
     )
 
-    strategy_variants = build_strategy_variants(ticker_lower, profiles)
+    strategy_variants = build_strategy_variants(
+        ticker_lower,
+        profiles,
+        strategy_set=strategy_set,
+    )
     strategy_map = {strategy.name: strategy for strategy in strategy_variants}
     original_dispatch = bqp.SIGNAL_DISPATCH
     try:
         bqp.SIGNAL_DISPATCH = build_signal_dispatch(profiles)
+        ticker_started_at = time.perf_counter()
+
+        def _progress_callback(progress: dict[str, object]) -> None:
+            strategy_index = int(progress["strategy_index"])
+            strategy_count = int(progress["strategy_count"])
+            if strategy_index != 1 and strategy_index % 5 != 0 and strategy_index != strategy_count:
+                return
+            print(
+                (
+                    f"{ticker.upper()} candidate progress: "
+                    f"{strategy_index}/{strategy_count} "
+                    f"{progress['strategy_name']} "
+                    f"new_trades={int(progress['new_trade_count'])} "
+                    f"total_trades={int(progress['trade_count'])} "
+                    f"elapsed={float(progress['elapsed_seconds']):.1f}s"
+                ),
+                flush=True,
+            )
+
         candidate_trades = generate_candidate_trades(
             strategies=strategy_variants,
             day_contexts=day_contexts,
             chain_index=chain_index,
             price_index=price_index,
             regime_map=bqp.build_regime_map(wide),
+            progress_callback=_progress_callback,
+        )
+        print(
+            f"{ticker.upper()} candidate generation complete in {time.perf_counter() - ticker_started_at:.1f}s "
+            f"with {len(candidate_trades)} trades.",
+            flush=True,
         )
     finally:
         bqp.SIGNAL_DISPATCH = original_dispatch
@@ -662,12 +845,12 @@ def run_single_ticker_research(
         candidate_trades=subset_trades(candidate_trades, train_dates),
         day_return_map=day_return_map,
         strategy_map=strategy_map,
-        thresholds=[0.35, 0.40, 0.45, 0.50],
-        top_bull_values=[1, 2, 3],
-        top_bear_values=[1, 2, 3],
-        top_choppy_values=[0, 1],
-        min_trade_values=[3, 5, 10],
-        risk_caps=[0.10, 0.15, 0.20],
+        thresholds=REGIME_THRESHOLD_GRID,
+        top_bull_values=TOP_BULL_GRID,
+        top_bear_values=TOP_BEAR_GRID,
+        top_choppy_values=TOP_CHOPPY_GRID,
+        min_trade_values=MIN_TRADE_GRID,
+        risk_caps=RISK_CAP_GRID,
     )
 
     reopt_trade_frames: list[pd.DataFrame] = []
@@ -682,12 +865,12 @@ def run_single_ticker_research(
             candidate_trades=subset_trades(candidate_trades, set(fold["train_dates"])),
             day_return_map=day_return_map,
             strategy_map=strategy_map,
-            thresholds=[0.35, 0.40, 0.45, 0.50],
-            top_bull_values=[1, 2, 3],
-            top_bear_values=[1, 2, 3],
-            top_choppy_values=[0, 1],
-            min_trade_values=[3, 5, 10],
-            risk_caps=[0.10, 0.15, 0.20],
+            thresholds=REGIME_THRESHOLD_GRID,
+            top_bull_values=TOP_BULL_GRID,
+            top_bear_values=TOP_BEAR_GRID,
+            top_choppy_values=TOP_CHOPPY_GRID,
+            min_trade_values=MIN_TRADE_GRID,
+            risk_caps=RISK_CAP_GRID,
         )
         reopt_trades, reopt_equity, reopt_summary, _ = evaluate_config(
             candidate_trades=candidate_trades,
@@ -745,11 +928,13 @@ def run_single_ticker_research(
         trades_df=frozen_trades_df,
         equity_df=frozen_equity_df,
         starting_equity=DEFAULT_STARTING_EQUITY,
+        strategy_map=strategy_map,
     )
     reoptimized_summary = summarize_run(
         trades_df=reopt_trades_df,
         equity_df=reopt_equity_df,
         starting_equity=DEFAULT_STARTING_EQUITY,
+        strategy_map=strategy_map,
     )
     promoted = promote_config(
         ticker=ticker_lower,
@@ -762,6 +947,22 @@ def run_single_ticker_research(
     pd.DataFrame(fold_rows).to_csv(research_dir / f"{ticker_lower}_walkforward_folds.csv", index=False)
     frozen_trades_df.to_csv(research_dir / f"{ticker_lower}_walkforward_frozen_trades.csv", index=False)
     frozen_equity_df.to_csv(research_dir / f"{ticker_lower}_walkforward_frozen_equity.csv", index=False)
+    contribution_rows_to_frame(
+        list(frozen_summary.get("family_contributions", [])),
+        "family",
+    ).to_csv(research_dir / f"{ticker_lower}_walkforward_frozen_family_contributions.csv", index=False)
+    contribution_rows_to_frame(
+        list(frozen_summary.get("family_bucket_contributions", [])),
+        "family_bucket",
+    ).to_csv(research_dir / f"{ticker_lower}_walkforward_frozen_family_bucket_contributions.csv", index=False)
+    contribution_rows_to_frame(
+        list(reoptimized_summary.get("family_contributions", [])),
+        "family",
+    ).to_csv(research_dir / f"{ticker_lower}_walkforward_reoptimized_family_contributions.csv", index=False)
+    contribution_rows_to_frame(
+        list(reoptimized_summary.get("family_bucket_contributions", [])),
+        "family_bucket",
+    ).to_csv(research_dir / f"{ticker_lower}_walkforward_reoptimized_family_bucket_contributions.csv", index=False)
     (research_dir / f"{ticker_lower}_frozen_config.json").write_text(
         json.dumps(frozen_config, indent=2),
         encoding="utf-8",
@@ -776,6 +977,7 @@ def run_single_ticker_research(
         "trade_date_end": ordered_trade_dates[-1].isoformat(),
         "day_count": len(ordered_trade_dates),
         "candidate_trade_count": int(len(candidate_trades)),
+        "strategy_set": strategy_set,
         "timing_profiles": [profile.name for profile in profiles],
         "frozen_initial_config": frozen_config,
         "reoptimized": reoptimized_summary,
@@ -791,6 +993,65 @@ def run_single_ticker_research(
         "strategy_map": strategy_map,
         "regime_summary": regime_summary,
         "summary": summary,
+    }
+
+
+def try_load_existing_ticker_result(
+    *,
+    ticker: str,
+    output_dir: Path,
+    research_dir: Path,
+    profiles: tuple[TimingProfile, ...],
+    strategy_set: str,
+) -> dict[str, object] | None:
+    ticker_lower = ticker.lower()
+    summary_path = research_dir / f"{ticker_lower}_summary.json"
+    candidate_trades_path = research_dir / f"{ticker_lower}_candidate_trades.csv"
+    regime_summary_path = research_dir / f"{ticker_lower}_regime_summary.csv"
+    wide_path = output_dir / f"{ticker_lower}_365d_option_1min_wide_backtest.parquet"
+
+    if not summary_path.exists() or not candidate_trades_path.exists() or not wide_path.exists():
+        return None
+
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    expected_profiles = [profile.name for profile in profiles]
+    if summary.get("timing_profiles") != expected_profiles:
+        return None
+    if summary.get("strategy_set", "standard") != strategy_set:
+        return None
+
+    strategy_variants = build_strategy_variants(
+        ticker_lower,
+        profiles,
+        strategy_set=strategy_set,
+    )
+    strategy_map = {strategy.name: strategy for strategy in strategy_variants}
+    promoted = summary.get("promoted", {})
+    selected_names = (
+        list(promoted.get("selected_bull", []))
+        + list(promoted.get("selected_bear", []))
+        + list(promoted.get("selected_choppy", []))
+    )
+    if any(name not in strategy_map for name in selected_names):
+        return None
+
+    candidate_trades = pd.read_csv(candidate_trades_path)
+    regime_summary = (
+        pd.read_csv(regime_summary_path)
+        if regime_summary_path.exists()
+        else summarize_regimes(candidate_trades)
+    )
+    wide = load_wide_data_for_ticker(wide_path, ticker_lower)
+    ordered_trade_dates, day_return_map = build_day_return_map(wide=wide)
+    return {
+        "ticker": ticker.upper(),
+        "candidate_trades": candidate_trades,
+        "day_return_map": day_return_map,
+        "ordered_trade_dates": ordered_trade_dates,
+        "strategy_map": strategy_map,
+        "regime_summary": regime_summary,
+        "summary": summary,
+        "reused_existing": True,
     }
 
 
@@ -838,7 +1099,11 @@ def optimize_shared_portfolio(
     strategies = strategy_objects_from_names(candidate_trades["strategy"].tolist(), strategy_map)
     for risk_cap in risk_caps:
         if candidate_trades.empty or not strategies:
-            summary = empty_summary(DEFAULT_STARTING_EQUITY, risk_cap)
+            summary = attach_family_contributions(
+                summary=empty_summary(DEFAULT_STARTING_EQUITY, risk_cap),
+                trades_df=pd.DataFrame(),
+                strategy_map=strategy_map,
+            )
             trades = pd.DataFrame()
             equity = pd.DataFrame()
         else:
@@ -847,6 +1112,11 @@ def optimize_shared_portfolio(
                 trades_df=candidate_trades,
                 portfolio_max_open_risk_fraction=risk_cap,
                 starting_equity=DEFAULT_STARTING_EQUITY,
+            )
+            summary = attach_family_contributions(
+                summary=summary,
+                trades_df=trades,
+                strategy_map=strategy_map,
             )
         row = {
             "risk_cap": risk_cap,
@@ -860,6 +1130,8 @@ def optimize_shared_portfolio(
                 max_drawdown_pct=float(summary["max_drawdown_pct"]),
             ),
             "strategy_contributions": list(summary.get("strategy_contributions", [])),
+            "family_contributions": list(summary.get("family_contributions", [])),
+            "family_bucket_contributions": list(summary.get("family_bucket_contributions", [])),
         }
         if best_summary is None:
             best_summary = row
@@ -887,8 +1159,33 @@ def optimize_shared_portfolio(
     return best_summary, best_trades, best_equity
 
 
+def build_family_ranking_rows(
+    *,
+    scope: str,
+    ticker: str | None,
+    summary: dict[str, object],
+    contribution_key: str,
+    label_key: str,
+) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    for item in summary.get(contribution_key, []):
+        rows.append(
+            {
+                "scope": scope,
+                "ticker": ticker or "",
+                label_key: item.get(label_key, ""),
+                "portfolio_net_pnl": float(item.get("portfolio_net_pnl", 0.0)),
+                "trade_count": int(item.get("trade_count", 0)),
+                "win_rate_pct": float(item.get("win_rate_pct", 0.0)),
+                "avg_trade_pnl": float(item.get("avg_trade_pnl", 0.0)),
+            }
+        )
+    return rows
+
+
 def write_master_report(path: Path, payload: dict[str, object]) -> None:
     lines: list[str] = []
+    failed_tickers = list(payload.get("failed_tickers", []))
     lines.append("# Multi-Ticker Cleanroom Portfolio Report")
     lines.append("")
     lines.append(
@@ -896,6 +1193,12 @@ def write_master_report(path: Path, payload: dict[str, object]) -> None:
     )
     lines.append(
         f"- Training window: {payload['initial_train_days']} days, test window: {payload['test_days']} days, step: {payload['step_days']} days."
+    )
+    lines.append(
+        f"- Successful tickers: {', '.join(payload.get('successful_tickers', [])) if payload.get('successful_tickers') else 'none'}"
+    )
+    lines.append(
+        f"- Failed tickers: {', '.join(row['ticker'] for row in failed_tickers) if failed_tickers else 'none'}"
     )
     lines.append("")
     lines.append("## Promoted Strategies")
@@ -918,16 +1221,64 @@ def write_master_report(path: Path, payload: dict[str, object]) -> None:
     lines.append("## Shared Account")
     lines.append("")
     shared = payload["shared_account"]
-    qqq_only = payload["qqq_only"]
+    qqq_only = payload.get("qqq_only")
     lines.append(
         f"- Combined promoted book: ${shared['final_equity']:.2f}, {shared['total_return_pct']:.2f}%, drawdown {shared['max_drawdown_pct']:.2f}%, risk cap {shared['risk_cap'] * 100:.0f}%."
     )
-    lines.append(
-        f"- QQQ-only promoted book: ${qqq_only['final_equity']:.2f}, {qqq_only['total_return_pct']:.2f}%, drawdown {qqq_only['max_drawdown_pct']:.2f}%, risk cap {qqq_only['risk_cap'] * 100:.0f}%."
-    )
-    lines.append(
-        f"- Relative lift vs QQQ-only: {payload['relative_return_vs_qqq_only_pct']:.2f} percentage points."
-    )
+    if qqq_only is None:
+        lines.append("- QQQ-only promoted book: unavailable for this batch.")
+        lines.append("- Relative lift vs QQQ-only: unavailable for this batch.")
+    else:
+        lines.append(
+            f"- QQQ-only promoted book: ${qqq_only['final_equity']:.2f}, {qqq_only['total_return_pct']:.2f}%, drawdown {qqq_only['max_drawdown_pct']:.2f}%, risk cap {qqq_only['risk_cap'] * 100:.0f}%."
+        )
+        lines.append(
+            f"- Relative lift vs QQQ-only: {payload['relative_return_vs_qqq_only_pct']:.2f} percentage points."
+        )
+    family_rankings = payload.get("family_rankings", {})
+    shared_buckets = list(family_rankings.get("shared_account_buckets", []))
+    qqq_buckets = list(family_rankings.get("qqq_only_buckets", []))
+    per_ticker_buckets = list(family_rankings.get("per_ticker_frozen_buckets", []))
+    lines.append("")
+    lines.append("## Family Leaders")
+    lines.append("")
+    lines.append("### Shared Account Buckets")
+    lines.append("")
+    if shared_buckets:
+        for row in shared_buckets:
+            lines.append(
+                f"- `{row['family_bucket']}`: ${row['portfolio_net_pnl']:.2f} across {row['trade_count']} trades, win rate {row['win_rate_pct']:.2f}%."
+            )
+    else:
+        lines.append("- none")
+    lines.append("")
+    lines.append("### QQQ-Only Buckets")
+    lines.append("")
+    if qqq_buckets:
+        for row in qqq_buckets:
+            lines.append(
+                f"- `{row['family_bucket']}`: ${row['portfolio_net_pnl']:.2f} across {row['trade_count']} trades, win rate {row['win_rate_pct']:.2f}%."
+            )
+    else:
+        lines.append("- none")
+    lines.append("")
+    lines.append("### Per-Ticker Frozen Leaders")
+    lines.append("")
+    if per_ticker_buckets:
+        for row in per_ticker_buckets:
+            lines.append(
+                f"- `{row['ticker']}` / `{row['family_bucket']}`: ${row['portfolio_net_pnl']:.2f} across {row['trade_count']} trades, win rate {row['win_rate_pct']:.2f}%."
+            )
+    else:
+        lines.append("- none")
+    if failed_tickers:
+        lines.append("")
+        lines.append("## Failed Tickers")
+        lines.append("")
+        for row in failed_tickers:
+            lines.append(
+                f"- `{row['ticker']}`: {row['error_type']} - {row['message']}"
+            )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -939,22 +1290,57 @@ def main() -> None:
     profiles = build_timing_profiles()
 
     ticker_results: list[dict[str, object]] = []
+    failed_tickers: list[dict[str, object]] = []
     for ticker in tickers:
+        if args.reuse_completed_tickers:
+            reused = try_load_existing_ticker_result(
+                ticker=ticker,
+                output_dir=output_dir,
+                research_dir=research_dir,
+                profiles=profiles,
+                strategy_set=args.strategy_set,
+            )
+            if reused is not None:
+                ticker_results.append(reused)
+                print(
+                    f"Reusing {ticker.upper()} existing results from {research_dir}.",
+                    flush=True,
+                )
+                continue
         print(f"Running {ticker.upper()} research...", flush=True)
-        result = run_single_ticker_research(
-            ticker=ticker,
-            output_dir=output_dir,
-            research_dir=research_dir,
-            initial_train_days=args.initial_train_days,
-            test_days=args.test_days,
-            step_days=args.step_days,
-            profiles=profiles,
-        )
+        try:
+            result = run_single_ticker_research(
+                ticker=ticker,
+                output_dir=output_dir,
+                research_dir=research_dir,
+                initial_train_days=args.initial_train_days,
+                test_days=args.test_days,
+                step_days=args.step_days,
+                profiles=profiles,
+                strategy_set=args.strategy_set,
+            )
+        except Exception as exc:
+            error_row = {
+                "ticker": ticker.upper(),
+                "error_type": type(exc).__name__,
+                "message": str(exc),
+            }
+            failed_tickers.append(error_row)
+            print(
+                f"{ticker.upper()} failed: {type(exc).__name__}: {exc}",
+                flush=True,
+            )
+            if not args.continue_on_error:
+                raise
+            continue
         ticker_results.append(result)
         print(
             f"{ticker.upper()} complete: frozen ${result['summary']['frozen_initial']['final_equity']:.2f}",
             flush=True,
         )
+
+    if not ticker_results:
+        raise RuntimeError("all requested tickers failed research")
 
     common_dates = set(ticker_results[0]["ordered_trade_dates"][args.initial_train_days :])
     combined_candidates, combined_strategy_map = build_combined_promoted_candidates(
@@ -967,18 +1353,27 @@ def main() -> None:
         risk_caps=[0.08, 0.10, 0.12, 0.15],
     )
 
-    qqq_result = next(result for result in ticker_results if result["ticker"] == "QQQ")
-    qqq_candidates, qqq_strategy_map = build_combined_promoted_candidates(
-        ticker_results=[qqq_result],
-        oos_dates=common_dates,
-    )
-    qqq_summary, qqq_trades, qqq_equity = optimize_shared_portfolio(
-        candidate_trades=qqq_candidates,
-        strategy_map=qqq_strategy_map,
-        risk_caps=[0.08, 0.10, 0.12, 0.15],
-    )
+    qqq_result = next((result for result in ticker_results if result["ticker"] == "QQQ"), None)
+    if qqq_result is None:
+        qqq_candidates = pd.DataFrame()
+        qqq_trades = pd.DataFrame()
+        qqq_equity = pd.DataFrame()
+        qqq_summary = None
+    else:
+        qqq_candidates, qqq_strategy_map = build_combined_promoted_candidates(
+            ticker_results=[qqq_result],
+            oos_dates=common_dates,
+        )
+        qqq_summary, qqq_trades, qqq_equity = optimize_shared_portfolio(
+            candidate_trades=qqq_candidates,
+            strategy_map=qqq_strategy_map,
+            risk_caps=[0.08, 0.10, 0.12, 0.15],
+        )
 
     ticker_promotions: list[dict[str, object]] = []
+    family_detail_rows: list[dict[str, object]] = []
+    family_bucket_rows: list[dict[str, object]] = []
+    per_ticker_frozen_bucket_leaders: list[dict[str, object]] = []
     for result in ticker_results:
         summary = result["summary"]
         promoted = summary["promoted"]
@@ -994,9 +1389,105 @@ def main() -> None:
                 "frozen_max_drawdown_pct": float(summary["frozen_initial"]["max_drawdown_pct"]),
             }
         )
+        family_detail_rows.extend(
+            build_family_ranking_rows(
+                scope="ticker_frozen",
+                ticker=result["ticker"],
+                summary=summary["frozen_initial"],
+                contribution_key="family_contributions",
+                label_key="family",
+            )
+        )
+        family_detail_rows.extend(
+            build_family_ranking_rows(
+                scope="ticker_reoptimized",
+                ticker=result["ticker"],
+                summary=summary["reoptimized"],
+                contribution_key="family_contributions",
+                label_key="family",
+            )
+        )
+        family_bucket_rows.extend(
+            build_family_ranking_rows(
+                scope="ticker_frozen",
+                ticker=result["ticker"],
+                summary=summary["frozen_initial"],
+                contribution_key="family_bucket_contributions",
+                label_key="family_bucket",
+            )
+        )
+        family_bucket_rows.extend(
+            build_family_ranking_rows(
+                scope="ticker_reoptimized",
+                ticker=result["ticker"],
+                summary=summary["reoptimized"],
+                contribution_key="family_bucket_contributions",
+                label_key="family_bucket",
+            )
+        )
+        top_bucket = list(summary["frozen_initial"].get("family_bucket_contributions", []))
+        if top_bucket:
+            leader = dict(top_bucket[0])
+            leader["ticker"] = result["ticker"]
+            per_ticker_frozen_bucket_leaders.append(leader)
+
+    family_detail_rows.extend(
+        build_family_ranking_rows(
+            scope="shared_account",
+            ticker=None,
+            summary=combined_summary,
+            contribution_key="family_contributions",
+            label_key="family",
+        )
+    )
+    if qqq_summary is not None:
+        family_detail_rows.extend(
+            build_family_ranking_rows(
+                scope="qqq_only",
+                ticker="QQQ",
+                summary=qqq_summary,
+                contribution_key="family_contributions",
+                label_key="family",
+            )
+        )
+    family_bucket_rows.extend(
+        build_family_ranking_rows(
+            scope="shared_account",
+            ticker=None,
+            summary=combined_summary,
+            contribution_key="family_bucket_contributions",
+            label_key="family_bucket",
+        )
+    )
+    if qqq_summary is not None:
+        family_bucket_rows.extend(
+            build_family_ranking_rows(
+                scope="qqq_only",
+                ticker="QQQ",
+                summary=qqq_summary,
+                contribution_key="family_bucket_contributions",
+                label_key="family_bucket",
+            )
+        )
+
+    family_detail_rows = sorted(
+        family_detail_rows,
+        key=lambda row: (row["scope"], -row["portfolio_net_pnl"], -row["trade_count"]),
+    )
+    family_bucket_rows = sorted(
+        family_bucket_rows,
+        key=lambda row: (row["scope"], -row["portfolio_net_pnl"], -row["trade_count"]),
+    )
+    per_ticker_frozen_bucket_leaders = sorted(
+        per_ticker_frozen_bucket_leaders,
+        key=lambda row: (-float(row["portfolio_net_pnl"]), -int(row["trade_count"])),
+    )
 
     master_payload = {
         "tickers": [ticker.upper() for ticker in tickers],
+        "strategy_set": args.strategy_set,
+        "successful_tickers": [result["ticker"] for result in ticker_results],
+        "failed_tickers": failed_tickers,
         "initial_train_days": args.initial_train_days,
         "test_days": args.test_days,
         "step_days": args.step_days,
@@ -1006,15 +1497,42 @@ def main() -> None:
         "relative_return_vs_qqq_only_pct": round(
             float(combined_summary["total_return_pct"]) - float(qqq_summary["total_return_pct"]),
             2,
-        ),
+        ) if qqq_summary is not None else None,
+        "family_rankings": {
+            "shared_account_families": list(combined_summary.get("family_contributions", [])),
+            "shared_account_buckets": list(combined_summary.get("family_bucket_contributions", [])),
+            "qqq_only_families": list(qqq_summary.get("family_contributions", [])) if qqq_summary is not None else [],
+            "qqq_only_buckets": list(qqq_summary.get("family_bucket_contributions", [])) if qqq_summary is not None else [],
+            "per_ticker_frozen_buckets": per_ticker_frozen_bucket_leaders,
+        },
     }
 
     combined_candidates.to_csv(research_dir / "combined_promoted_candidates.csv", index=False)
     combined_trades.to_csv(research_dir / "combined_promoted_portfolio_trades.csv", index=False)
     combined_equity.to_csv(research_dir / "combined_promoted_portfolio_equity.csv", index=False)
-    qqq_candidates.to_csv(research_dir / "qqq_only_promoted_candidates.csv", index=False)
-    qqq_trades.to_csv(research_dir / "qqq_only_promoted_portfolio_trades.csv", index=False)
-    qqq_equity.to_csv(research_dir / "qqq_only_promoted_portfolio_equity.csv", index=False)
+    if qqq_summary is not None:
+        qqq_candidates.to_csv(research_dir / "qqq_only_promoted_candidates.csv", index=False)
+        qqq_trades.to_csv(research_dir / "qqq_only_promoted_portfolio_trades.csv", index=False)
+        qqq_equity.to_csv(research_dir / "qqq_only_promoted_portfolio_equity.csv", index=False)
+    contribution_rows_to_frame(
+        list(combined_summary.get("family_contributions", [])),
+        "family",
+    ).to_csv(research_dir / "shared_account_family_contributions.csv", index=False)
+    contribution_rows_to_frame(
+        list(combined_summary.get("family_bucket_contributions", [])),
+        "family_bucket",
+    ).to_csv(research_dir / "shared_account_family_bucket_contributions.csv", index=False)
+    if qqq_summary is not None:
+        contribution_rows_to_frame(
+            list(qqq_summary.get("family_contributions", [])),
+            "family",
+        ).to_csv(research_dir / "qqq_only_family_contributions.csv", index=False)
+        contribution_rows_to_frame(
+            list(qqq_summary.get("family_bucket_contributions", [])),
+            "family_bucket",
+        ).to_csv(research_dir / "qqq_only_family_bucket_contributions.csv", index=False)
+    pd.DataFrame(family_detail_rows).to_csv(research_dir / "family_rankings.csv", index=False)
+    pd.DataFrame(family_bucket_rows).to_csv(research_dir / "family_bucket_rankings.csv", index=False)
     (research_dir / "master_summary.json").write_text(json.dumps(master_payload, indent=2), encoding="utf-8")
     write_master_report(research_dir / "master_report.md", master_payload)
     print(json.dumps(master_payload, indent=2))

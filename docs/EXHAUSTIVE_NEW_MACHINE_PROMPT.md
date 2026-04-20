@@ -34,6 +34,7 @@ Required deliverables:
 - a readiness verdict for live paper-trader takeover
 - exact remaining local secrets or manual steps, if any
 - the exact command to run a small cleanroom ticker batch
+- the exact command to launch the overnight family-expansion conveyor
 - the exact command to run the standby failover check
 - the exact command to run the health check
 - confirmation that scheduled tasks are installed and correct

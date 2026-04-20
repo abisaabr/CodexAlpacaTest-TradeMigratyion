@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import time
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
@@ -75,9 +76,37 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def build_delta_strategies() -> list[DeltaStrategy]:
-    return [
-        DeltaStrategy(
+def build_delta_strategies(*, include_family_expansion: bool = False) -> list[DeltaStrategy]:
+    def make_strategy(
+        *,
+        name: str,
+        family: str,
+        description: str,
+        dte_mode: str,
+        legs: tuple[DeltaLegTemplate, ...],
+        signal_name: str,
+        hard_exit_minute: int,
+        risk_fraction: float,
+        max_contracts: int,
+        profit_target_multiple: float,
+        stop_loss_multiple: float,
+    ) -> DeltaStrategy:
+        return DeltaStrategy(
+            name=name,
+            family=family,
+            description=description,
+            dte_mode=dte_mode,
+            legs=legs,
+            signal_name=signal_name,
+            hard_exit_minute=hard_exit_minute,
+            risk_fraction=risk_fraction,
+            max_contracts=max_contracts,
+            profit_target_multiple=profit_target_multiple,
+            stop_loss_multiple=stop_loss_multiple,
+        )
+
+    strategies = [
+        make_strategy(
             name="orb_long_call_same_day",
             family="Single-leg long call",
             description="Buy the same-day call closest to +0.50 delta on an opening range breakout.",
@@ -90,7 +119,7 @@ def build_delta_strategies() -> list[DeltaStrategy]:
             profit_target_multiple=0.50,
             stop_loss_multiple=0.35,
         ),
-        DeltaStrategy(
+        make_strategy(
             name="orb_long_put_same_day",
             family="Single-leg long put",
             description="Buy the same-day put closest to -0.50 delta on an opening range breakdown.",
@@ -103,7 +132,7 @@ def build_delta_strategies() -> list[DeltaStrategy]:
             profit_target_multiple=0.50,
             stop_loss_multiple=0.35,
         ),
-        DeltaStrategy(
+        make_strategy(
             name="trend_long_call_next_expiry",
             family="Single-leg long call",
             description="Buy the next-expiry call closest to +0.60 delta on upside trend continuation.",
@@ -116,7 +145,7 @@ def build_delta_strategies() -> list[DeltaStrategy]:
             profit_target_multiple=0.45,
             stop_loss_multiple=0.30,
         ),
-        DeltaStrategy(
+        make_strategy(
             name="trend_long_put_next_expiry",
             family="Single-leg long put",
             description="Buy the next-expiry put closest to -0.60 delta on downside trend continuation.",
@@ -129,7 +158,7 @@ def build_delta_strategies() -> list[DeltaStrategy]:
             profit_target_multiple=0.45,
             stop_loss_multiple=0.30,
         ),
-        DeltaStrategy(
+        make_strategy(
             name="bull_call_spread_next_expiry",
             family="Debit call spread",
             description="Buy a next-expiry bull call spread targeting +0.55 and +0.30 deltas.",
@@ -145,7 +174,7 @@ def build_delta_strategies() -> list[DeltaStrategy]:
             profit_target_multiple=0.40,
             stop_loss_multiple=0.28,
         ),
-        DeltaStrategy(
+        make_strategy(
             name="bear_put_spread_next_expiry",
             family="Debit put spread",
             description="Buy a next-expiry bear put spread targeting -0.55 and -0.30 deltas.",
@@ -161,7 +190,7 @@ def build_delta_strategies() -> list[DeltaStrategy]:
             profit_target_multiple=0.40,
             stop_loss_multiple=0.28,
         ),
-        DeltaStrategy(
+        make_strategy(
             name="bull_put_credit_spread_same_day",
             family="Credit put spread",
             description="Sell a same-day bull put spread targeting -0.35 and -0.15 deltas.",
@@ -177,7 +206,7 @@ def build_delta_strategies() -> list[DeltaStrategy]:
             profit_target_multiple=0.50,
             stop_loss_multiple=1.00,
         ),
-        DeltaStrategy(
+        make_strategy(
             name="bear_call_credit_spread_same_day",
             family="Credit call spread",
             description="Sell a same-day bear call spread targeting +0.35 and +0.15 deltas.",
@@ -193,7 +222,7 @@ def build_delta_strategies() -> list[DeltaStrategy]:
             profit_target_multiple=0.50,
             stop_loss_multiple=1.00,
         ),
-        DeltaStrategy(
+        make_strategy(
             name="long_straddle_same_day",
             family="Long straddle",
             description="Buy a same-day straddle targeting +0.50 and -0.50 deltas.",
@@ -209,7 +238,7 @@ def build_delta_strategies() -> list[DeltaStrategy]:
             profit_target_multiple=0.35,
             stop_loss_multiple=0.25,
         ),
-        DeltaStrategy(
+        make_strategy(
             name="iron_condor_same_day",
             family="Iron condor",
             description="Sell a same-day iron condor targeting +/-0.25 shorts and +/-0.10 wings.",
@@ -228,6 +257,523 @@ def build_delta_strategies() -> list[DeltaStrategy]:
             stop_loss_multiple=1.25,
         ),
     ]
+
+    for delta in (0.40, 0.60):
+        delta_label = f"{int(round(delta * 100)):02d}"
+        strategies.append(
+            make_strategy(
+                name=f"orb_long_call_same_day_d{delta_label}",
+                family="Single-leg long call",
+                description=f"Buy the same-day call closest to +{delta:.2f} delta on an opening range breakout.",
+                dte_mode="same_day",
+                legs=(DeltaLegTemplate(option_type="call", side="long", target_delta=delta),),
+                signal_name="orb_call",
+                hard_exit_minute=375,
+                risk_fraction=0.05,
+                max_contracts=8,
+                profit_target_multiple=0.50,
+                stop_loss_multiple=0.35,
+            )
+        )
+        strategies.append(
+            make_strategy(
+                name=f"orb_long_put_same_day_d{delta_label}",
+                family="Single-leg long put",
+                description=f"Buy the same-day put closest to -{delta:.2f} delta on an opening range breakdown.",
+                dte_mode="same_day",
+                legs=(DeltaLegTemplate(option_type="put", side="long", target_delta=-delta),),
+                signal_name="orb_put",
+                hard_exit_minute=375,
+                risk_fraction=0.05,
+                max_contracts=8,
+                profit_target_multiple=0.50,
+                stop_loss_multiple=0.35,
+            )
+        )
+
+    strategies.extend(
+        [
+            make_strategy(
+                name="orb_long_call_next_expiry",
+                family="Single-leg long call",
+                description="Buy the next-expiry call closest to +0.50 delta on an opening range breakout.",
+                dte_mode="next_expiry",
+                legs=(DeltaLegTemplate(option_type="call", side="long", target_delta=0.50),),
+                signal_name="orb_call",
+                hard_exit_minute=360,
+                risk_fraction=0.05,
+                max_contracts=6,
+                profit_target_multiple=0.45,
+                stop_loss_multiple=0.30,
+            ),
+            make_strategy(
+                name="orb_long_put_next_expiry",
+                family="Single-leg long put",
+                description="Buy the next-expiry put closest to -0.50 delta on an opening range breakdown.",
+                dte_mode="next_expiry",
+                legs=(DeltaLegTemplate(option_type="put", side="long", target_delta=-0.50),),
+                signal_name="orb_put",
+                hard_exit_minute=360,
+                risk_fraction=0.05,
+                max_contracts=6,
+                profit_target_multiple=0.45,
+                stop_loss_multiple=0.30,
+            ),
+        ]
+    )
+
+    for delta in (0.50, 0.70):
+        delta_label = f"{int(round(delta * 100)):02d}"
+        strategies.append(
+            make_strategy(
+                name=f"trend_long_call_next_expiry_d{delta_label}",
+                family="Single-leg long call",
+                description=f"Buy the next-expiry call closest to +{delta:.2f} delta on upside trend continuation.",
+                dte_mode="next_expiry",
+                legs=(DeltaLegTemplate(option_type="call", side="long", target_delta=delta),),
+                signal_name="trend_call",
+                hard_exit_minute=360,
+                risk_fraction=0.05,
+                max_contracts=6,
+                profit_target_multiple=0.45,
+                stop_loss_multiple=0.30,
+            )
+        )
+        strategies.append(
+            make_strategy(
+                name=f"trend_long_put_next_expiry_d{delta_label}",
+                family="Single-leg long put",
+                description=f"Buy the next-expiry put closest to -{delta:.2f} delta on downside trend continuation.",
+                dte_mode="next_expiry",
+                legs=(DeltaLegTemplate(option_type="put", side="long", target_delta=-delta),),
+                signal_name="trend_put",
+                hard_exit_minute=360,
+                risk_fraction=0.05,
+                max_contracts=6,
+                profit_target_multiple=0.45,
+                stop_loss_multiple=0.30,
+            )
+        )
+
+    for suffix, long_delta, short_delta in (("tight", 0.50, 0.35), ("wide", 0.60, 0.20)):
+        strategies.append(
+            make_strategy(
+                name=f"bull_call_spread_next_expiry_{suffix}",
+                family="Debit call spread",
+                description=f"Buy a next-expiry bull call spread targeting +{long_delta:.2f} and +{short_delta:.2f} deltas.",
+                dte_mode="next_expiry",
+                legs=(
+                    DeltaLegTemplate(option_type="call", side="long", target_delta=long_delta),
+                    DeltaLegTemplate(option_type="call", side="short", target_delta=short_delta),
+                ),
+                signal_name="trend_call",
+                hard_exit_minute=360,
+                risk_fraction=0.06,
+                max_contracts=8,
+                profit_target_multiple=0.40,
+                stop_loss_multiple=0.28,
+            )
+        )
+        strategies.append(
+            make_strategy(
+                name=f"bear_put_spread_next_expiry_{suffix}",
+                family="Debit put spread",
+                description=f"Buy a next-expiry bear put spread targeting -{long_delta:.2f} and -{short_delta:.2f} deltas.",
+                dte_mode="next_expiry",
+                legs=(
+                    DeltaLegTemplate(option_type="put", side="long", target_delta=-long_delta),
+                    DeltaLegTemplate(option_type="put", side="short", target_delta=-short_delta),
+                ),
+                signal_name="trend_put",
+                hard_exit_minute=360,
+                risk_fraction=0.06,
+                max_contracts=8,
+                profit_target_multiple=0.40,
+                stop_loss_multiple=0.28,
+            )
+        )
+
+    for suffix, short_delta, wing_delta in (("conservative", 0.25, 0.10), ("aggressive", 0.45, 0.20)):
+        strategies.append(
+            make_strategy(
+                name=f"bull_put_credit_spread_same_day_{suffix}",
+                family="Credit put spread",
+                description=f"Sell a same-day bull put spread targeting -{short_delta:.2f} and -{wing_delta:.2f} deltas.",
+                dte_mode="same_day",
+                legs=(
+                    DeltaLegTemplate(option_type="put", side="short", target_delta=-short_delta),
+                    DeltaLegTemplate(option_type="put", side="long", target_delta=-wing_delta),
+                ),
+                signal_name="credit_bull",
+                hard_exit_minute=380,
+                risk_fraction=0.05,
+                max_contracts=10,
+                profit_target_multiple=0.50,
+                stop_loss_multiple=1.00,
+            )
+        )
+        strategies.append(
+            make_strategy(
+                name=f"bear_call_credit_spread_same_day_{suffix}",
+                family="Credit call spread",
+                description=f"Sell a same-day bear call spread targeting +{short_delta:.2f} and +{wing_delta:.2f} deltas.",
+                dte_mode="same_day",
+                legs=(
+                    DeltaLegTemplate(option_type="call", side="short", target_delta=short_delta),
+                    DeltaLegTemplate(option_type="call", side="long", target_delta=wing_delta),
+                ),
+                signal_name="credit_bear",
+                hard_exit_minute=380,
+                risk_fraction=0.05,
+                max_contracts=10,
+                profit_target_multiple=0.50,
+                stop_loss_multiple=1.00,
+            )
+        )
+
+    strategies.extend(
+        [
+            make_strategy(
+                name="long_straddle_next_expiry",
+                family="Long straddle",
+                description="Buy a next-expiry straddle targeting +0.50 and -0.50 deltas.",
+                dte_mode="next_expiry",
+                legs=(
+                    DeltaLegTemplate(option_type="call", side="long", target_delta=0.50),
+                    DeltaLegTemplate(option_type="put", side="long", target_delta=-0.50),
+                ),
+                signal_name="long_straddle",
+                hard_exit_minute=300,
+                risk_fraction=0.04,
+                max_contracts=4,
+                profit_target_multiple=0.30,
+                stop_loss_multiple=0.22,
+            ),
+            make_strategy(
+                name="long_strangle_same_day",
+                family="Long strangle",
+                description="Buy a same-day strangle targeting +0.35 and -0.35 deltas.",
+                dte_mode="same_day",
+                legs=(
+                    DeltaLegTemplate(option_type="call", side="long", target_delta=0.35),
+                    DeltaLegTemplate(option_type="put", side="long", target_delta=-0.35),
+                ),
+                signal_name="long_straddle",
+                hard_exit_minute=240,
+                risk_fraction=0.04,
+                max_contracts=5,
+                profit_target_multiple=0.38,
+                stop_loss_multiple=0.24,
+            ),
+            make_strategy(
+                name="long_strangle_next_expiry",
+                family="Long strangle",
+                description="Buy a next-expiry strangle targeting +0.35 and -0.35 deltas.",
+                dte_mode="next_expiry",
+                legs=(
+                    DeltaLegTemplate(option_type="call", side="long", target_delta=0.35),
+                    DeltaLegTemplate(option_type="put", side="long", target_delta=-0.35),
+                ),
+                signal_name="long_straddle",
+                hard_exit_minute=300,
+                risk_fraction=0.04,
+                max_contracts=4,
+                profit_target_multiple=0.32,
+                stop_loss_multiple=0.22,
+            ),
+        ]
+    )
+
+    for suffix, short_delta, wing_delta in (("conservative", 0.20, 0.08), ("aggressive", 0.30, 0.12)):
+        strategies.append(
+            make_strategy(
+                name=f"iron_condor_same_day_{suffix}",
+                family="Iron condor",
+                description=f"Sell a same-day iron condor targeting +/-{short_delta:.2f} shorts and +/-{wing_delta:.2f} wings.",
+                dte_mode="same_day",
+                legs=(
+                    DeltaLegTemplate(option_type="call", side="short", target_delta=short_delta),
+                    DeltaLegTemplate(option_type="call", side="long", target_delta=wing_delta),
+                    DeltaLegTemplate(option_type="put", side="short", target_delta=-short_delta),
+                    DeltaLegTemplate(option_type="put", side="long", target_delta=-wing_delta),
+                ),
+                signal_name="iron_condor",
+                hard_exit_minute=375,
+                risk_fraction=0.04,
+                max_contracts=6,
+                profit_target_multiple=0.40,
+                stop_loss_multiple=1.25,
+            )
+        )
+
+    strategies.append(
+        make_strategy(
+            name="iron_butterfly_same_day",
+            family="Iron butterfly",
+            description="Sell a same-day iron butterfly targeting +/-0.50 shorts and +/-0.20 wings.",
+            dte_mode="same_day",
+            legs=(
+                DeltaLegTemplate(option_type="call", side="short", target_delta=0.50),
+                DeltaLegTemplate(option_type="call", side="long", target_delta=0.20),
+                DeltaLegTemplate(option_type="put", side="short", target_delta=-0.50),
+                DeltaLegTemplate(option_type="put", side="long", target_delta=-0.20),
+            ),
+            signal_name="iron_condor",
+            hard_exit_minute=360,
+            risk_fraction=0.04,
+            max_contracts=5,
+            profit_target_multiple=0.35,
+            stop_loss_multiple=1.10,
+        )
+    )
+
+    if include_family_expansion:
+        strategies.extend(
+            [
+                make_strategy(
+                    name="bull_put_credit_spread_next_expiry",
+                    family="Credit put spread",
+                    description="Sell a next-expiry bull put spread targeting -0.30 and -0.12 deltas.",
+                    dte_mode="next_expiry",
+                    legs=(
+                        DeltaLegTemplate(option_type="put", side="short", target_delta=-0.30),
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-0.12),
+                    ),
+                    signal_name="credit_bull",
+                    hard_exit_minute=360,
+                    risk_fraction=0.05,
+                    max_contracts=8,
+                    profit_target_multiple=0.45,
+                    stop_loss_multiple=0.90,
+                ),
+                make_strategy(
+                    name="bear_call_credit_spread_next_expiry",
+                    family="Credit call spread",
+                    description="Sell a next-expiry bear call spread targeting +0.30 and +0.12 deltas.",
+                    dte_mode="next_expiry",
+                    legs=(
+                        DeltaLegTemplate(option_type="call", side="short", target_delta=0.30),
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=0.12),
+                    ),
+                    signal_name="credit_bear",
+                    hard_exit_minute=360,
+                    risk_fraction=0.05,
+                    max_contracts=8,
+                    profit_target_multiple=0.45,
+                    stop_loss_multiple=0.90,
+                ),
+                make_strategy(
+                    name="bull_put_credit_spread_next_expiry_conservative",
+                    family="Credit put spread",
+                    description="Sell a next-expiry conservative bull put spread targeting -0.22 and -0.10 deltas.",
+                    dte_mode="next_expiry",
+                    legs=(
+                        DeltaLegTemplate(option_type="put", side="short", target_delta=-0.22),
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-0.10),
+                    ),
+                    signal_name="credit_bull",
+                    hard_exit_minute=360,
+                    risk_fraction=0.05,
+                    max_contracts=7,
+                    profit_target_multiple=0.42,
+                    stop_loss_multiple=0.85,
+                ),
+                make_strategy(
+                    name="bear_call_credit_spread_next_expiry_conservative",
+                    family="Credit call spread",
+                    description="Sell a next-expiry conservative bear call spread targeting +0.22 and +0.10 deltas.",
+                    dte_mode="next_expiry",
+                    legs=(
+                        DeltaLegTemplate(option_type="call", side="short", target_delta=0.22),
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=0.10),
+                    ),
+                    signal_name="credit_bear",
+                    hard_exit_minute=360,
+                    risk_fraction=0.05,
+                    max_contracts=7,
+                    profit_target_multiple=0.42,
+                    stop_loss_multiple=0.85,
+                ),
+                make_strategy(
+                    name="call_backspread_next_expiry",
+                    family="Call backspread",
+                    description="Buy a next-expiry call backspread with one short +0.35 call against two long +0.55 calls.",
+                    dte_mode="next_expiry",
+                    legs=(
+                        DeltaLegTemplate(option_type="call", side="short", target_delta=0.35),
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=0.55),
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=0.55),
+                    ),
+                    signal_name="trend_call",
+                    hard_exit_minute=360,
+                    risk_fraction=0.04,
+                    max_contracts=4,
+                    profit_target_multiple=0.60,
+                    stop_loss_multiple=0.28,
+                ),
+                make_strategy(
+                    name="put_backspread_next_expiry",
+                    family="Put backspread",
+                    description="Buy a next-expiry put backspread with one short -0.35 put against two long -0.55 puts.",
+                    dte_mode="next_expiry",
+                    legs=(
+                        DeltaLegTemplate(option_type="put", side="short", target_delta=-0.35),
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-0.55),
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-0.55),
+                    ),
+                    signal_name="trend_put",
+                    hard_exit_minute=360,
+                    risk_fraction=0.04,
+                    max_contracts=4,
+                    profit_target_multiple=0.60,
+                    stop_loss_multiple=0.28,
+                ),
+                make_strategy(
+                    name="call_backspread_next_expiry_aggressive",
+                    family="Call backspread",
+                    description="Buy an aggressive next-expiry call backspread with one short +0.25 call against two long +0.50 calls.",
+                    dte_mode="next_expiry",
+                    legs=(
+                        DeltaLegTemplate(option_type="call", side="short", target_delta=0.25),
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=0.50),
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=0.50),
+                    ),
+                    signal_name="trend_call",
+                    hard_exit_minute=360,
+                    risk_fraction=0.04,
+                    max_contracts=4,
+                    profit_target_multiple=0.65,
+                    stop_loss_multiple=0.30,
+                ),
+                make_strategy(
+                    name="put_backspread_next_expiry_aggressive",
+                    family="Put backspread",
+                    description="Buy an aggressive next-expiry put backspread with one short -0.25 put against two long -0.50 puts.",
+                    dte_mode="next_expiry",
+                    legs=(
+                        DeltaLegTemplate(option_type="put", side="short", target_delta=-0.25),
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-0.50),
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-0.50),
+                    ),
+                    signal_name="trend_put",
+                    hard_exit_minute=360,
+                    risk_fraction=0.04,
+                    max_contracts=4,
+                    profit_target_multiple=0.65,
+                    stop_loss_multiple=0.30,
+                ),
+                make_strategy(
+                    name="call_butterfly_same_day",
+                    family="Call butterfly",
+                    description="Sell a same-day call butterfly targeting +0.20, +0.35, and +0.50 deltas.",
+                    dte_mode="same_day",
+                    legs=(
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=0.20),
+                        DeltaLegTemplate(option_type="call", side="short", target_delta=0.35),
+                        DeltaLegTemplate(option_type="call", side="short", target_delta=0.35),
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=0.50),
+                    ),
+                    signal_name="iron_condor",
+                    hard_exit_minute=360,
+                    risk_fraction=0.04,
+                    max_contracts=5,
+                    profit_target_multiple=0.38,
+                    stop_loss_multiple=0.95,
+                ),
+                make_strategy(
+                    name="put_butterfly_same_day",
+                    family="Put butterfly",
+                    description="Sell a same-day put butterfly targeting -0.20, -0.35, and -0.50 deltas.",
+                    dte_mode="same_day",
+                    legs=(
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-0.20),
+                        DeltaLegTemplate(option_type="put", side="short", target_delta=-0.35),
+                        DeltaLegTemplate(option_type="put", side="short", target_delta=-0.35),
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-0.50),
+                    ),
+                    signal_name="iron_condor",
+                    hard_exit_minute=360,
+                    risk_fraction=0.04,
+                    max_contracts=5,
+                    profit_target_multiple=0.38,
+                    stop_loss_multiple=0.95,
+                ),
+                make_strategy(
+                    name="call_butterfly_same_day_conservative",
+                    family="Call butterfly",
+                    description="Sell a conservative same-day call butterfly targeting +0.15, +0.28, and +0.42 deltas.",
+                    dte_mode="same_day",
+                    legs=(
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=0.15),
+                        DeltaLegTemplate(option_type="call", side="short", target_delta=0.28),
+                        DeltaLegTemplate(option_type="call", side="short", target_delta=0.28),
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=0.42),
+                    ),
+                    signal_name="iron_condor",
+                    hard_exit_minute=360,
+                    risk_fraction=0.04,
+                    max_contracts=5,
+                    profit_target_multiple=0.35,
+                    stop_loss_multiple=0.90,
+                ),
+                make_strategy(
+                    name="put_butterfly_same_day_conservative",
+                    family="Put butterfly",
+                    description="Sell a conservative same-day put butterfly targeting -0.15, -0.28, and -0.42 deltas.",
+                    dte_mode="same_day",
+                    legs=(
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-0.15),
+                        DeltaLegTemplate(option_type="put", side="short", target_delta=-0.28),
+                        DeltaLegTemplate(option_type="put", side="short", target_delta=-0.28),
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-0.42),
+                    ),
+                    signal_name="iron_condor",
+                    hard_exit_minute=360,
+                    risk_fraction=0.04,
+                    max_contracts=5,
+                    profit_target_multiple=0.35,
+                    stop_loss_multiple=0.90,
+                ),
+                make_strategy(
+                    name="broken_wing_call_butterfly_next_expiry",
+                    family="Broken-wing call butterfly",
+                    description="Trade a next-expiry broken-wing call butterfly targeting +0.15, +0.35, and +0.60 deltas.",
+                    dte_mode="next_expiry",
+                    legs=(
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=0.15),
+                        DeltaLegTemplate(option_type="call", side="short", target_delta=0.35),
+                        DeltaLegTemplate(option_type="call", side="short", target_delta=0.35),
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=0.60),
+                    ),
+                    signal_name="trend_call",
+                    hard_exit_minute=360,
+                    risk_fraction=0.04,
+                    max_contracts=5,
+                    profit_target_multiple=0.45,
+                    stop_loss_multiple=0.55,
+                ),
+                make_strategy(
+                    name="broken_wing_put_butterfly_next_expiry",
+                    family="Broken-wing put butterfly",
+                    description="Trade a next-expiry broken-wing put butterfly targeting -0.15, -0.35, and -0.60 deltas.",
+                    dte_mode="next_expiry",
+                    legs=(
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-0.15),
+                        DeltaLegTemplate(option_type="put", side="short", target_delta=-0.35),
+                        DeltaLegTemplate(option_type="put", side="short", target_delta=-0.35),
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-0.60),
+                    ),
+                    signal_name="trend_put",
+                    hard_exit_minute=360,
+                    risk_fraction=0.04,
+                    max_contracts=5,
+                    profit_target_multiple=0.45,
+                    stop_loss_multiple=0.55,
+                ),
+            ]
+        )
+
+    return strategies
 
 
 def norm_pdf(value: float) -> float:
@@ -456,10 +1002,13 @@ def generate_candidate_trades(
     chain_index: pd.DataFrame,
     price_index: pd.DataFrame,
     regime_map: dict[date, str],
+    progress_callback=None,
 ) -> pd.DataFrame:
     trades: list[dict[str, object]] = []
+    started_at = time.perf_counter()
 
-    for strategy in strategies:
+    for strategy_index, strategy in enumerate(strategies, start=1):
+        trade_count_before = len(trades)
         for ctx in day_contexts:
             dte = resolve_dte(available_dtes=ctx.available_dtes, mode=strategy.dte_mode)
             if dte is None:
@@ -579,6 +1128,17 @@ def generate_candidate_trades(
                     "holding_minutes": int(exit_idx - entry_idx),
                     "legs_json": json.dumps(legs, sort_keys=True),
                     "mark_to_market_json": json.dumps(mark_to_market, sort_keys=True),
+                }
+            )
+        if progress_callback is not None:
+            progress_callback(
+                {
+                    "strategy_index": strategy_index,
+                    "strategy_count": len(strategies),
+                    "strategy_name": strategy.name,
+                    "trade_count": len(trades),
+                    "new_trade_count": len(trades) - trade_count_before,
+                    "elapsed_seconds": time.perf_counter() - started_at,
                 }
             )
 

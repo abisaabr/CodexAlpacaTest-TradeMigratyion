@@ -8,6 +8,7 @@ Primary codebase:
 What this repo contains:
 - A public-safe runtime handoff bundle with no `.env`
 - Cleanroom research scripts
+- The current cleanroom tournament conveyor scripts for chained family-expansion runs
 - Cleanroom summary outputs without raw option bars
 - Legacy strategy scripts, reports, and CSV research artifacts extracted from archive bundles
 - Setup docs and a restore script for the new machine

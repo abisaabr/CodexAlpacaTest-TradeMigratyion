@@ -31,3 +31,39 @@ Perform a full readiness check for the multi-ticker paper trader on this machine
 ```text
 Verify that this machine now owns the multi-ticker portfolio lease, that the paper trader is running correctly, that Alpaca positions match the local session ledger, and that the health check reports no issues. If there is a safe operational mismatch, fix it directly and summarize the final state.
 ```
+
+## 6. Run The Family-Expansion Tournament Conveyor
+
+```text
+Open these sibling folders and use them together:
+
+1. C:\Users\<you>\Downloads\codexalpaca_repo
+2. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+3. C:\Users\<you>\Downloads\qqq_options_30d_cleanroom
+
+Treat qqq_options_30d_cleanroom as the research workspace. Verify that the cleanroom contains the conveyor scripts:
+- run_core_strategy_expansion_overnight.py
+- queue_bundle_candidate_batch.py
+- queue_family_expansion_after_quality6.ps1
+- queue_ready_family_expansion_after_status.ps1
+- export_promoted_strategies.py
+- wait_and_sync_live_manifest.ps1
+
+Then set up and run a chained overnight family-expansion tournament that:
+- uses only complete backtester_ready datasets
+- avoids shrinking the current live manifest
+- benchmarks on the current core live symbols when useful
+- searches for new edge on complete-data symbols not already live
+- exports winners
+- merges approved winners into the live manifest
+- validates and pushes only if the manifest truly improved
+
+Use the GitHub live manifest as the source of truth for what is already promoted. Prefer discovery on complete-data symbols that are not already live before retesting live symbols. Keep promotion serialized so only one promotion lane writes the manifest at a time.
+
+At the end, report:
+- what tournament lane is running now
+- what lanes are queued
+- which tickers are in each lane
+- which scripts are orchestrating the conveyor
+- whether GitHub promotion is armed correctly
+```
