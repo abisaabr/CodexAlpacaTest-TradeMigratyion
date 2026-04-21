@@ -4,6 +4,7 @@ param(
     [string]$RepoDir = "C:\Users\rabisaab\OneDrive\CodexAlpaca\downloads_remaining_20260417\folders\codexalpaca_repo",
     [string]$ReadyBaseDir = "C:\Users\rabisaab\OneDrive - First American Corporation\qqq_options_30d_cleanroom\output\backtester_ready",
     [string[]]$Tickers,
+    [int]$ShardSize = 0,
     [int]$PollSeconds = 60,
     [int]$TimeoutMinutes = 720
 )
@@ -47,7 +48,10 @@ function Write-Log {
 function Write-Status {
     param(
         [string]$Phase,
-        [string]$Message
+        [string]$Message,
+        [object[]]$Shards = @(),
+        [string[]]$SuccessfulTickers = @(),
+        [string[]]$FailedTickers = @()
     )
     $payload = [ordered]@{
         phase = $Phase
@@ -59,7 +63,16 @@ function Write-Status {
         ready_base_dir = $readyBasePath
         tickers = $Tickers
     }
-    $payload | ConvertTo-Json | Set-Content -Path $statusPath
+    if ($Shards.Count -gt 0) {
+        $payload.shards = $Shards
+    }
+    if ($SuccessfulTickers.Count -gt 0) {
+        $payload.successful_tickers = $SuccessfulTickers
+    }
+    if ($FailedTickers.Count -gt 0) {
+        $payload.failed_tickers = $FailedTickers
+    }
+    $payload | ConvertTo-Json -Depth 8 | Set-Content -Path $statusPath
 }
 
 function Get-WaitPhase {
@@ -73,6 +86,87 @@ function Get-WaitPhase {
     catch {
         return $null
     }
+}
+
+function Invoke-FamilyExpansionShard {
+    param(
+        [string[]]$ShardTickers,
+        [int]$ShardIndex,
+        [int]$ShardCount
+    )
+
+    $shardSuffix = "{0:D2}_{1}" -f $ShardIndex, ($ShardTickers -join "_")
+    $shardResearchPath =
+        if ($ShardCount -gt 1) {
+            Join-Path $researchPath ("shards\" + $shardSuffix)
+        }
+        else {
+            $researchPath
+        }
+    New-Item -ItemType Directory -Force -Path $shardResearchPath | Out-Null
+
+    Write-Log "Launching family-expansion shard $ShardIndex/$ShardCount for $($ShardTickers -join ', ')"
+    & python $launcherPath `
+        --tickers ($ShardTickers -join ",") `
+        --ready-base-dir $readyBasePath `
+        --research-dir $shardResearchPath `
+        --strategy-set "family_expansion"
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Log "Shard $ShardIndex/$ShardCount failed with exit code $LASTEXITCODE."
+        return [ordered]@{
+            shard_index = $ShardIndex
+            tickers = $ShardTickers
+            research_dir = $shardResearchPath
+            phase = "failed"
+            stage = "research"
+            exit_code = $LASTEXITCODE
+        }
+    }
+
+    Write-Log "Shard $ShardIndex/$ShardCount finished research. Starting promotion flow."
+    & powershell -ExecutionPolicy Bypass -File $promotionPath `
+        -ResearchDir $shardResearchPath `
+        -RepoDir $repoPath `
+        -Tickers $ShardTickers `
+        -PollSeconds 10 `
+        -TimeoutMinutes 60
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Log "Shard $ShardIndex/$ShardCount promotion failed with exit code $LASTEXITCODE."
+        return [ordered]@{
+            shard_index = $ShardIndex
+            tickers = $ShardTickers
+            research_dir = $shardResearchPath
+            phase = "failed"
+            stage = "promotion"
+            exit_code = $LASTEXITCODE
+        }
+    }
+
+    Write-Log "Shard $ShardIndex/$ShardCount completed successfully."
+    return [ordered]@{
+        shard_index = $ShardIndex
+        tickers = $ShardTickers
+        research_dir = $shardResearchPath
+        phase = "completed"
+        stage = "completed"
+        exit_code = 0
+    }
+}
+
+function Build-Shards {
+    if ($ShardSize -le 0 -or $Tickers.Count -le $ShardSize) {
+        return @(@($Tickers))
+    }
+
+    $shards = @()
+    for ($index = 0; $index -lt $Tickers.Count; $index += $ShardSize) {
+        $endIndex = [Math]::Min($index + $ShardSize - 1, $Tickers.Count - 1)
+        $chunk = @($Tickers[$index..$endIndex])
+        $shards += ,$chunk
+    }
+    return $shards
 }
 
 Write-Log "Waiting for upstream status file $waitStatusFile"
@@ -98,37 +192,87 @@ if ((Get-WaitPhase) -ne "completed") {
     exit 3
 }
 
-Write-Log "Launching queued family-expansion tournament for $($Tickers -join ', ')"
-Write-Status -Phase "running_family_expansion" -Message "Launching queued family-expansion tournament."
+$shards = Build-Shards
+$shardCount = $shards.Count
+$allShardResults = @()
 
-& python $launcherPath `
-    --tickers ($Tickers -join ",") `
-    --ready-base-dir $readyBasePath `
-    --research-dir $researchPath `
-    --strategy-set "family_expansion"
+Write-Log "Launching queued family-expansion tournament for $($Tickers -join ', ') in $shardCount shard(s)."
+Write-Status -Phase "running_family_expansion" -Message "Launching queued family-expansion tournament." -Shards $allShardResults
 
-if ($LASTEXITCODE -ne 0) {
-    Write-Log "Queued family-expansion run failed with exit code $LASTEXITCODE"
-    Write-Status -Phase "failed" -Message "Queued family-expansion run failed."
-    exit $LASTEXITCODE
+for ($shardIndex = 0; $shardIndex -lt $shardCount; $shardIndex++) {
+    $result = Invoke-FamilyExpansionShard -ShardTickers $shards[$shardIndex] -ShardIndex ($shardIndex + 1) -ShardCount $shardCount
+    $allShardResults += $result
+
+    $successfulTickers = @(
+        $allShardResults |
+            Where-Object { $_.phase -eq "completed" } |
+            ForEach-Object { $_.tickers } |
+            ForEach-Object { $_ }
+    )
+    $failedTickers = @(
+        $allShardResults |
+            Where-Object { $_.phase -ne "completed" } |
+            ForEach-Object { $_.tickers } |
+            ForEach-Object { $_ }
+    )
+
+    Write-Status `
+        -Phase "running_family_expansion" `
+        -Message "Processed $($shardIndex + 1) of $shardCount family-expansion shard(s)." `
+        -Shards $allShardResults `
+        -SuccessfulTickers $successfulTickers `
+        -FailedTickers $failedTickers
 }
 
-Write-Log "Queued family-expansion tournament finished. Starting promotion flow."
-Write-Status -Phase "promoting" -Message "Exporting and syncing queued family-expansion winners into the live manifest."
+$completedShards = @($allShardResults | Where-Object { $_.phase -eq "completed" })
+$failedShards = @($allShardResults | Where-Object { $_.phase -ne "completed" })
+$successfulTickers = @(
+    $completedShards |
+        ForEach-Object { $_.tickers } |
+        ForEach-Object { $_ }
+)
+$failedTickers = @(
+    $failedShards |
+        ForEach-Object { $_.tickers } |
+        ForEach-Object { $_ }
+)
 
-& powershell -ExecutionPolicy Bypass -File $promotionPath `
-    -ResearchDir $researchPath `
-    -RepoDir $repoPath `
-    -Tickers $Tickers `
-    -PollSeconds 10 `
-    -TimeoutMinutes 60
+$shardSummaryPath = Join-Path $researchPath "shard_run_summary.json"
+[ordered]@{
+    tickers = $Tickers
+    shard_size = $ShardSize
+    shard_count = $shardCount
+    completed_shard_count = $completedShards.Count
+    failed_shard_count = $failedShards.Count
+    successful_tickers = $successfulTickers
+    failed_tickers = $failedTickers
+    shards = $allShardResults
+} | ConvertTo-Json -Depth 8 | Set-Content -Path $shardSummaryPath
 
-if ($LASTEXITCODE -ne 0) {
-    Write-Log "Promotion flow failed with exit code $LASTEXITCODE"
-    Write-Status -Phase "failed" -Message "Queued family-expansion run completed, but promotion to GitHub failed."
-    exit $LASTEXITCODE
+if ($completedShards.Count -eq 0) {
+    Write-Log "All queued family-expansion shards failed."
+    Write-Status `
+        -Phase "failed" `
+        -Message "All queued family-expansion shards failed." `
+        -Shards $allShardResults `
+        -SuccessfulTickers $successfulTickers `
+        -FailedTickers $failedTickers
+    exit 4
 }
 
-Write-Log "Queued family-expansion run and promotion flow completed successfully."
-Write-Status -Phase "completed" -Message "Queued family-expansion run completed and winners were promoted to GitHub."
+$message =
+    if ($failedShards.Count -gt 0) {
+        "Queued family-expansion shards completed with partial failures, and successful winners were promoted to GitHub."
+    }
+    else {
+        "Queued family-expansion run completed and winners were promoted to GitHub."
+    }
+
+Write-Log $message
+Write-Status `
+    -Phase "completed" `
+    -Message $message `
+    -Shards $allShardResults `
+    -SuccessfulTickers $successfulTickers `
+    -FailedTickers $failedTickers
 exit 0
