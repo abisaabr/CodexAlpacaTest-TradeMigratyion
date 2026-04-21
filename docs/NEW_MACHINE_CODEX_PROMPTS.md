@@ -72,6 +72,8 @@ If the ready universe is smaller than the staged/registry universe, use material
 
 Before launching the next large wave, run build_coverage_next_wave_plan.py to refresh the 159-symbol ticker-family coverage matrix and use its next-wave outputs to choose under-tested families and symbols instead of repeating already-covered combinations.
 
+Each large batch should leave behind a `run_manifest.json` inside its `research_dir` plus an append-only `run_registry.jsonl` under the cleanroom `output` root. Use those files to verify machine lineage, code lineage, input fingerprints, ticker completion state, and the final shared-account snapshot before trusting or promoting results.
+
 At the end, report:
 - what tournament lane is running now
 - what lanes are queued

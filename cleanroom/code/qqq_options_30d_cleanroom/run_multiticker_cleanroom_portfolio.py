@@ -1,8 +1,14 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import platform
+import socket
+import subprocess
+import sys
 import time
+from datetime import datetime, timezone
 from dataclasses import dataclass, replace
 from itertools import product
 from pathlib import Path
@@ -33,6 +39,7 @@ DEFAULT_TEST_DAYS = 21
 DEFAULT_STEP_DAYS = 21
 DEFAULT_SELECTION_PROFILE = "balanced"
 RUN_CHECKPOINT_VERSION = 1
+RUN_MANIFEST_VERSION = 1
 REGIME_THRESHOLD_GRID = [0.30, 0.35, 0.40, 0.45, 0.50, 0.55]
 TOP_BULL_GRID = [1, 2, 3, 4]
 TOP_BEAR_GRID = [1, 2, 3, 4]
@@ -153,6 +160,211 @@ def build_run_signature(
 
 def run_signature_matches(existing: dict[str, object] | None, expected: dict[str, object]) -> bool:
     return existing == expected
+
+
+def utc_now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def build_run_id(*, tickers: list[str], strategy_set: str, selection_profile: str, research_dir: Path) -> str:
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    seed = "|".join(
+        [
+            strategy_set,
+            selection_profile,
+            str(research_dir.resolve()),
+            ",".join(ticker.upper() for ticker in tickers),
+        ]
+    ).encode("utf-8")
+    suffix = hashlib.sha1(seed).hexdigest()[:10]
+    return f"{stamp}_{strategy_set}_{suffix}"
+
+
+def file_lineage_descriptor(path: Path, *, prefer_full_hash: bool = False, sample_bytes: int = 262_144) -> dict[str, object]:
+    descriptor: dict[str, object] = {
+        "path": str(path.resolve()),
+        "exists": path.exists(),
+    }
+    if not path.exists():
+        return descriptor
+    stat = path.stat()
+    descriptor.update(
+        {
+            "size": int(stat.st_size),
+            "mtime_ns": int(stat.st_mtime_ns),
+        }
+    )
+    hasher = hashlib.sha256()
+    if prefer_full_hash or stat.st_size <= sample_bytes * 2:
+        with path.open("rb") as handle:
+            while True:
+                chunk = handle.read(1024 * 1024)
+                if not chunk:
+                    break
+                hasher.update(chunk)
+        descriptor["content_hash_scope"] = "full"
+    else:
+        with path.open("rb") as handle:
+            first = handle.read(sample_bytes)
+            hasher.update(first)
+            handle.seek(max(0, stat.st_size - sample_bytes))
+            last = handle.read(sample_bytes)
+            hasher.update(last)
+        hasher.update(str(stat.st_size).encode("utf-8"))
+        descriptor["content_hash_scope"] = "edge_sample"
+    descriptor["sha256"] = hasher.hexdigest()
+    return descriptor
+
+
+def find_git_root(start: Path) -> Path | None:
+    current = start.resolve()
+    for candidate in (current, *current.parents):
+        if (candidate / ".git").exists():
+            return candidate
+    return None
+
+
+def git_repo_lineage(start: Path) -> dict[str, object] | None:
+    git_root = find_git_root(start)
+    if git_root is None:
+        return None
+    try:
+        head = subprocess.run(
+            ["git", "-C", str(git_root), "rev-parse", "HEAD"],
+            capture_output=True,
+            check=True,
+            text=True,
+        ).stdout.strip()
+        branch = subprocess.run(
+            ["git", "-C", str(git_root), "branch", "--show-current"],
+            capture_output=True,
+            check=True,
+            text=True,
+        ).stdout.strip()
+        dirty = bool(
+            subprocess.run(
+                ["git", "-C", str(git_root), "status", "--porcelain"],
+                capture_output=True,
+                check=True,
+                text=True,
+            ).stdout.strip()
+        )
+        return {
+            "git_root": str(git_root),
+            "head": head,
+            "branch": branch,
+            "dirty": dirty,
+        }
+    except Exception:
+        return {
+            "git_root": str(git_root),
+            "head": "",
+            "branch": "",
+            "dirty": None,
+        }
+
+
+def collect_code_lineage() -> dict[str, object]:
+    code_paths = [
+        Path(__file__).resolve(),
+        (Path(__file__).resolve().parent / "backtest_qqq_greeks_portfolio.py").resolve(),
+        (Path(__file__).resolve().parent / "backtest_qqq_option_strategies.py").resolve(),
+        (Path(__file__).resolve().parent / "backtest_qqq_regime_gated_portfolio.py").resolve(),
+    ]
+    sibling_repo = (Path(__file__).resolve().parent.parent / "codexalpaca_repo").resolve()
+    repo_contexts = [context for context in [git_repo_lineage(Path(__file__).resolve()), git_repo_lineage(sibling_repo)] if context]
+    unique_repo_contexts: list[dict[str, object]] = []
+    seen_roots: set[str] = set()
+    for context in repo_contexts:
+        root = str(context.get("git_root", ""))
+        if root and root not in seen_roots:
+            seen_roots.add(root)
+            unique_repo_contexts.append(context)
+    return {
+        "files": [file_lineage_descriptor(path, prefer_full_hash=True) for path in code_paths],
+        "git_repositories": unique_repo_contexts,
+    }
+
+
+def collect_machine_lineage() -> dict[str, object]:
+    return {
+        "hostname": socket.gethostname(),
+        "platform": platform.platform(),
+        "python_executable": sys.executable,
+        "python_version": sys.version,
+    }
+
+
+def ticker_input_lineage(output_dir: Path, ticker: str) -> dict[str, object]:
+    ticker_lower = ticker.lower()
+    paths = {
+        "wide": output_dir / f"{ticker_lower}_365d_option_1min_wide_backtest.parquet",
+        "dense": output_dir / f"{ticker_lower}_365d_option_1min_dense.parquet",
+        "daily_universe": output_dir / f"{ticker_lower}_365d_option_daily_universe.parquet",
+        "audit": output_dir / f"{ticker_lower}_365d_audit_report.json",
+    }
+    return {name: file_lineage_descriptor(path) for name, path in paths.items()}
+
+
+def collect_ticker_output_lineage(research_dir: Path, ticker: str) -> dict[str, object]:
+    paths = ticker_artifact_paths(research_dir, ticker.lower())
+    artifacts: dict[str, object] = {}
+    for name, path in paths.items():
+        if name == "fold_dir":
+            if path.exists():
+                artifacts[name] = {
+                    "path": str(path.resolve()),
+                    "file_count": len(list(path.glob("*"))),
+                }
+            continue
+        if path.exists():
+            artifacts[name] = file_lineage_descriptor(path)
+    return artifacts
+
+
+def collect_master_output_lineage(research_dir: Path) -> dict[str, object]:
+    paths = {
+        "master_summary": research_dir / "master_summary.json",
+        "master_report": research_dir / "master_report.md",
+        "combined_promoted_candidates": research_dir / "combined_promoted_candidates.csv",
+        "combined_promoted_portfolio_trades": research_dir / "combined_promoted_portfolio_trades.csv",
+        "combined_promoted_portfolio_equity": research_dir / "combined_promoted_portfolio_equity.csv",
+        "shared_account_family_contributions": research_dir / "shared_account_family_contributions.csv",
+        "shared_account_family_bucket_contributions": research_dir / "shared_account_family_bucket_contributions.csv",
+        "shared_account_premium_bucket_contributions": research_dir / "shared_account_premium_bucket_contributions.csv",
+        "family_rankings": research_dir / "family_rankings.csv",
+        "family_bucket_rankings": research_dir / "family_bucket_rankings.csv",
+        "premium_bucket_rankings": research_dir / "premium_bucket_rankings.csv",
+        "run_manifest": research_dir / "run_manifest.json",
+    }
+    artifacts: dict[str, object] = {}
+    for name, path in paths.items():
+        if path.exists():
+            artifacts[name] = file_lineage_descriptor(path)
+    qqq_optional_paths = {
+        "qqq_only_promoted_candidates": research_dir / "qqq_only_promoted_candidates.csv",
+        "qqq_only_promoted_portfolio_trades": research_dir / "qqq_only_promoted_portfolio_trades.csv",
+        "qqq_only_promoted_portfolio_equity": research_dir / "qqq_only_promoted_portfolio_equity.csv",
+        "qqq_only_family_contributions": research_dir / "qqq_only_family_contributions.csv",
+        "qqq_only_family_bucket_contributions": research_dir / "qqq_only_family_bucket_contributions.csv",
+        "qqq_only_premium_bucket_contributions": research_dir / "qqq_only_premium_bucket_contributions.csv",
+    }
+    for name, path in qqq_optional_paths.items():
+        if path.exists():
+            artifacts[name] = file_lineage_descriptor(path)
+    return artifacts
+
+
+def write_run_manifest(path: Path, payload: dict[str, object]) -> None:
+    manifest = dict(payload)
+    manifest["updated_at_iso"] = utc_now_iso()
+    write_json(path, manifest)
+
+
+def append_run_registry(path: Path, payload: dict[str, object]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(payload) + "\n")
 
 
 def ticker_artifact_paths(research_dir: Path, ticker_lower: str) -> dict[str, Path]:
@@ -1291,6 +1503,7 @@ def run_single_ticker_research(
     ticker: str,
     output_dir: Path,
     research_dir: Path,
+    run_id: str,
     initial_train_days: int,
     test_days: int,
     step_days: int,
@@ -1673,6 +1886,7 @@ def run_single_ticker_research(
         write_json(paths["frozen_config"], frozen_config)
         write_json(paths["promotion"], promoted)
         summary = {
+            "run_id": run_id,
             "ticker": ticker.upper(),
             "trade_date_start": ordered_trade_dates[0].isoformat(),
             "trade_date_end": ordered_trade_dates[-1].isoformat(),
@@ -2076,14 +2290,99 @@ def main() -> None:
     args = build_parser().parse_args()
     output_dir = Path(args.output_dir).resolve()
     research_dir = Path(args.research_dir).resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+    research_dir.mkdir(parents=True, exist_ok=True)
     tickers = [ticker.strip().lower() for ticker in args.tickers.split(",") if ticker.strip()]
     profiles = build_timing_profiles(args.strategy_set)
     family_include_filters = parse_family_filters(args.family_include)
     family_exclude_filters = parse_family_filters(args.family_exclude)
+    run_id = build_run_id(
+        tickers=tickers,
+        strategy_set=args.strategy_set,
+        selection_profile=args.selection_profile,
+        research_dir=research_dir,
+    )
+    manifest_path = research_dir / "run_manifest.json"
+    registry_path = output_dir / "run_registry.jsonl"
+    run_manifest: dict[str, object] = {
+        "version": RUN_MANIFEST_VERSION,
+        "run_id": run_id,
+        "status": "running",
+        "created_at_iso": utc_now_iso(),
+        "research_dir": str(research_dir),
+        "output_dir": str(output_dir),
+        "parameters": {
+            "tickers": [ticker.upper() for ticker in tickers],
+            "strategy_set": args.strategy_set,
+            "selection_profile": args.selection_profile,
+            "initial_train_days": int(args.initial_train_days),
+            "test_days": int(args.test_days),
+            "step_days": int(args.step_days),
+            "timing_profiles": [profile.name for profile in profiles],
+            "family_include_filters": family_include_filters,
+            "family_exclude_filters": family_exclude_filters,
+            "continue_on_error": bool(args.continue_on_error),
+            "reuse_completed_tickers": bool(args.reuse_completed_tickers),
+            "argv": sys.argv,
+        },
+        "lineage": {
+            "machine": collect_machine_lineage(),
+            "code": collect_code_lineage(),
+            "ticker_inputs": {
+                ticker.upper(): ticker_input_lineage(output_dir, ticker)
+                for ticker in tickers
+            },
+        },
+        "ticker_states": {
+            ticker.upper(): {
+                "status": "pending",
+                "updated_at_iso": utc_now_iso(),
+            }
+            for ticker in tickers
+        },
+        "result_snapshot": {},
+        "master_outputs": {},
+    }
+
+    def sync_manifest(*, status: str | None = None, message: str | None = None) -> None:
+        if status is not None:
+            run_manifest["status"] = status
+        if message is not None:
+            run_manifest["message"] = message
+        write_run_manifest(manifest_path, run_manifest)
+
+    sync_manifest(status="running", message="Run initialized.")
+    append_run_registry(
+        registry_path,
+        {
+            "version": RUN_MANIFEST_VERSION,
+            "event": "started",
+            "timestamp_iso": utc_now_iso(),
+            "run_id": run_id,
+            "status": "running",
+            "research_dir": str(research_dir),
+            "tickers": [ticker.upper() for ticker in tickers],
+            "strategy_set": args.strategy_set,
+            "selection_profile": args.selection_profile,
+            "timing_profiles": [profile.name for profile in profiles],
+            "family_include_filters": family_include_filters,
+            "family_exclude_filters": family_exclude_filters,
+            "continue_on_error": bool(args.continue_on_error),
+            "reuse_completed_tickers": bool(args.reuse_completed_tickers),
+            "hostname": socket.gethostname(),
+        },
+    )
 
     ticker_results: list[dict[str, object]] = []
     failed_tickers: list[dict[str, object]] = []
     for ticker in tickers:
+        ticker_key = ticker.upper()
+        run_manifest["ticker_states"][ticker_key] = {
+            "status": "running",
+            "phase": "ticker_research",
+            "updated_at_iso": utc_now_iso(),
+        }
+        sync_manifest(message=f"Running {ticker_key} research.")
         if args.reuse_completed_tickers:
             reused = try_load_existing_ticker_result(
                 ticker=ticker,
@@ -2097,6 +2396,13 @@ def main() -> None:
             )
             if reused is not None:
                 ticker_results.append(reused)
+                run_manifest["ticker_states"][ticker_key] = {
+                    "status": "reused_existing",
+                    "updated_at_iso": utc_now_iso(),
+                    "summary_path": str((research_dir / f"{ticker.lower()}_summary.json").resolve()),
+                    "output_lineage": collect_ticker_output_lineage(research_dir, ticker),
+                }
+                sync_manifest(message=f"Reused {ticker_key} existing results.")
                 print(
                     f"Reusing {ticker.upper()} existing results from {research_dir}.",
                     flush=True,
@@ -2108,6 +2414,7 @@ def main() -> None:
                 ticker=ticker,
                 output_dir=output_dir,
                 research_dir=research_dir,
+                run_id=run_id,
                 initial_train_days=args.initial_train_days,
                 test_days=args.test_days,
                 step_days=args.step_days,
@@ -2124,20 +2431,77 @@ def main() -> None:
                 "message": str(exc),
             }
             failed_tickers.append(error_row)
+            run_manifest["ticker_states"][ticker_key] = {
+                "status": "failed",
+                "updated_at_iso": utc_now_iso(),
+                "error_type": type(exc).__name__,
+                "message": str(exc),
+                "output_lineage": collect_ticker_output_lineage(research_dir, ticker),
+            }
+            sync_manifest(message=f"{ticker_key} failed.")
             print(
                 f"{ticker.upper()} failed: {type(exc).__name__}: {exc}",
                 flush=True,
             )
             if not args.continue_on_error:
+                run_manifest["result_snapshot"] = {
+                    "successful_tickers": [result["ticker"] for result in ticker_results],
+                    "failed_tickers": failed_tickers,
+                }
+                sync_manifest(status="failed", message=f"{ticker_key} failed and stopped the run.")
+                append_run_registry(
+                    registry_path,
+                    {
+                        "version": RUN_MANIFEST_VERSION,
+                        "event": "failed",
+                        "timestamp_iso": utc_now_iso(),
+                        "run_id": run_id,
+                        "status": "failed",
+                        "research_dir": str(research_dir),
+                        "successful_tickers": [result["ticker"] for result in ticker_results],
+                        "failed_tickers": failed_tickers,
+                        "error_type": type(exc).__name__,
+                        "message": str(exc),
+                    },
+                )
                 raise
             continue
         ticker_results.append(result)
+        run_manifest["ticker_states"][ticker_key] = {
+            "status": "completed",
+            "updated_at_iso": utc_now_iso(),
+            "summary_path": str((research_dir / f"{ticker.lower()}_summary.json").resolve()),
+            "candidate_trade_count": int(result["summary"]["candidate_trade_count"]),
+            "frozen_final_equity": float(result["summary"]["frozen_initial"]["final_equity"]),
+            "output_lineage": collect_ticker_output_lineage(research_dir, ticker),
+        }
+        sync_manifest(message=f"{ticker_key} complete.")
         print(
             f"{ticker.upper()} complete: frozen ${result['summary']['frozen_initial']['final_equity']:.2f}",
             flush=True,
         )
 
     if not ticker_results:
+        run_manifest["result_snapshot"] = {
+            "successful_tickers": [],
+            "failed_tickers": failed_tickers,
+        }
+        sync_manifest(status="failed", message="All requested tickers failed research.")
+        append_run_registry(
+            registry_path,
+            {
+                "version": RUN_MANIFEST_VERSION,
+                "event": "failed",
+                "timestamp_iso": utc_now_iso(),
+                "run_id": run_id,
+                "status": "failed",
+                "research_dir": str(research_dir),
+                "successful_tickers": [],
+                "failed_tickers": failed_tickers,
+                "error_type": "RuntimeError",
+                "message": "all requested tickers failed research",
+            },
+        )
         raise RuntimeError("all requested tickers failed research")
 
     common_dates = set(ticker_results[0]["ordered_trade_dates"][args.initial_train_days :])
@@ -2334,6 +2698,7 @@ def main() -> None:
     )
 
     master_payload = {
+        "run_id": run_id,
         "tickers": [ticker.upper() for ticker in tickers],
         "strategy_set": args.strategy_set,
         "selection_profile": args.selection_profile,
@@ -2410,6 +2775,42 @@ def main() -> None:
     pd.DataFrame(premium_bucket_rows).to_csv(research_dir / "premium_bucket_rankings.csv", index=False)
     (research_dir / "master_summary.json").write_text(json.dumps(master_payload, indent=2), encoding="utf-8")
     write_master_report(research_dir / "master_report.md", master_payload)
+    run_manifest["result_snapshot"] = {
+        "successful_tickers": [result["ticker"] for result in ticker_results],
+        "failed_tickers": failed_tickers,
+        "shared_account": {
+            "final_equity": float(combined_summary["final_equity"]),
+            "total_return_pct": float(combined_summary["total_return_pct"]),
+            "max_drawdown_pct": float(combined_summary["max_drawdown_pct"]),
+            "trade_count": int(combined_summary["trade_count"]),
+        },
+        "qqq_only": {
+            "final_equity": float(qqq_summary["final_equity"]),
+            "total_return_pct": float(qqq_summary["total_return_pct"]),
+            "max_drawdown_pct": float(qqq_summary["max_drawdown_pct"]),
+            "trade_count": int(qqq_summary["trade_count"]),
+        } if qqq_summary is not None else None,
+    }
+    run_manifest["master_outputs"] = collect_master_output_lineage(research_dir)
+    sync_manifest(status="completed", message="Run completed successfully.")
+    append_run_registry(
+        registry_path,
+        {
+            "version": RUN_MANIFEST_VERSION,
+            "event": "completed",
+            "timestamp_iso": utc_now_iso(),
+            "run_id": run_id,
+            "status": "completed",
+            "research_dir": str(research_dir),
+            "successful_tickers": [result["ticker"] for result in ticker_results],
+            "failed_tickers": failed_tickers,
+            "shared_account_final_equity": float(combined_summary["final_equity"]),
+            "shared_account_total_return_pct": float(combined_summary["total_return_pct"]),
+            "shared_account_max_drawdown_pct": float(combined_summary["max_drawdown_pct"]),
+            "shared_account_trade_count": int(combined_summary["trade_count"]),
+            "master_summary_path": str((research_dir / "master_summary.json").resolve()),
+        },
+    )
     print(json.dumps(master_payload, indent=2))
 
 
