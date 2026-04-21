@@ -83,6 +83,8 @@
 - Promotion mode: `none`
 - Only pass survivors from Phase 1 with good friction profile and low cheap-premium dependence.
 - Keep shard size smaller than discovery to protect RAM.
+- Use `cleanroom/code/qqq_options_30d_cleanroom/build_family_wave_shortlist.py` after the four discovery lanes finish.
+- The shortlist builder emits one readable markdown report plus `phase2_plan.json` / `phase2_commands.ps1` so the two exhaustive lanes can start without manual ticker triage.
 
 ### Phase 3 - Balanced Cross-Regime Benchmark
 
