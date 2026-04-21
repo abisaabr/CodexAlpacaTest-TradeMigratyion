@@ -18,6 +18,7 @@
 - `launch_agent_wave.ps1` and `launch_down_choppy_program.ps1` should refresh a colocated `run_registry_report/` packet automatically so every dry-run, started wave, and completed wave leaves behind an operator-readable audit surface.
 - The queue and promotion watchers should refresh the same `run_registry_report/` packet on blocked, failed, and completed transitions so downstream handoffs and GitHub promotion checks inherit the same audit surface.
 - Direct launchers and orchestrators such as `launch_down_choppy_family_wave.ps1` and `run_core_strategy_expansion_overnight.py` should also refresh a colocated `run_registry_report/` packet so legacy or one-off launches still land inside the same audit surface.
+- While a long-running program is active, use `build_active_program_report.py` against the program root so operators can see live lane PIDs, active tickers, stale activity, and exited-without-summary failures without scraping each lane manually.
 - After a down/choppy program reaches a terminal state, `queue_live_book_validation_after_program.ps1` should hand off into `validate_program_live_book.py` so shared-account review starts from the completed program artifacts instead of manual ticker copy/paste.
 - If a program finishes with zero shortlist or phase-2 survivors, validation and hardening review should still complete as a documented no-op, leaving behind explicit packets that say no live-book changes are recommended.
 - Promotion requires friction-aware results plus portfolio-context validation.

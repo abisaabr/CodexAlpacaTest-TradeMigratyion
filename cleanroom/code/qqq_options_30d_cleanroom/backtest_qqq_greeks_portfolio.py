@@ -109,6 +109,53 @@ DOWN_CHOPPY_ONLY_STRATEGY_NAMES = {
     "put_butterfly_same_day_conservative",
 }
 
+CANDIDATE_TRADE_COLUMNS = (
+    "strategy",
+    "family",
+    "description",
+    "trade_date",
+    "regime",
+    "dte",
+    "entry_minute",
+    "exit_minute",
+    "entry_time_et",
+    "exit_time_et",
+    "exit_reason",
+    "entry_underlying",
+    "exit_underlying",
+    "leg_count",
+    "entry_raw_cash_per_combo",
+    "entry_cash_per_combo",
+    "exit_raw_cash_per_combo",
+    "exit_cash_per_combo",
+    "entry_raw_net_premium",
+    "abs_entry_net_premium",
+    "premium_bucket",
+    "is_sub_015_premium",
+    "is_sub_030_premium",
+    "entry_commission_per_combo",
+    "exit_commission_per_combo",
+    "total_commission_per_combo",
+    "entry_slippage_per_combo",
+    "exit_slippage_per_combo",
+    "total_slippage_per_combo",
+    "total_friction_per_combo",
+    "friction_pct_of_entry_premium",
+    "gross_pnl_per_combo",
+    "net_pnl_per_combo",
+    "max_loss_per_combo",
+    "max_profit_per_combo",
+    "gross_return_on_risk_pct",
+    "return_on_risk_pct",
+    "holding_minutes",
+    "legs_json",
+    "mark_to_market_json",
+)
+
+
+def empty_candidate_trades_df() -> pd.DataFrame:
+    return pd.DataFrame(columns=list(CANDIDATE_TRADE_COLUMNS))
+
 
 def combo_entry_raw_net_premium(legs: list[dict[str, object]]) -> float:
     premium = 0.0
@@ -1628,7 +1675,7 @@ def generate_candidate_trades(
                 }
             )
 
-    trades_df = pd.DataFrame(trades)
+    trades_df = pd.DataFrame(trades, columns=list(CANDIDATE_TRADE_COLUMNS))
     if not trades_df.empty:
         trades_df = trades_df.sort_values(["trade_date", "entry_minute", "strategy"]).reset_index(drop=True)
     return trades_df
@@ -1706,7 +1753,7 @@ def run_portfolio_allocator(
     equity_curve: list[dict[str, object]] = []
 
     if trades_df.empty:
-        return pd.DataFrame(), pd.DataFrame([{"trade_date": None, "minute_index": None, "equity": starting_equity}]), {
+        return empty_candidate_trades_df(), pd.DataFrame([{"trade_date": None, "minute_index": None, "equity": starting_equity}]), {
             "starting_equity": starting_equity,
             "final_equity": starting_equity,
             "total_return_pct": 0.0,

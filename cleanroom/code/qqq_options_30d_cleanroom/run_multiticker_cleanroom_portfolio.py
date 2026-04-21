@@ -671,6 +671,10 @@ def relabel_candidate_trades(
     threshold: float,
 ) -> pd.DataFrame:
     relabeled = candidate_trades.copy()
+    if relabeled.empty and len(relabeled.columns) == 0:
+        return bqp.empty_candidate_trades_df()
+    if "trade_date" not in relabeled.columns:
+        return relabeled.iloc[0:0].copy()
     relabeled["trade_date"] = pd.to_datetime(relabeled["trade_date"]).dt.date
     relabeled["regime"] = [
         assign_regime(day_return_map[row.trade_date], threshold=threshold)
@@ -706,7 +710,9 @@ def build_folds(
 
 def subset_trades(trades: pd.DataFrame, dates: set[object]) -> pd.DataFrame:
     if trades.empty or not dates:
-        return trades.iloc[0:0].copy()
+        return trades.iloc[0:0].copy() if len(trades.columns) > 0 else bqp.empty_candidate_trades_df()
+    if "trade_date" not in trades.columns:
+        return trades.iloc[0:0].copy() if len(trades.columns) > 0 else bqp.empty_candidate_trades_df()
     trade_dates = pd.to_datetime(trades["trade_date"]).dt.date
     return trades.loc[trade_dates.isin(dates)].copy()
 
@@ -2040,7 +2046,7 @@ def build_combined_promoted_candidates(
         selected_names = list(selected["bull"]) + list(selected["bear"]) + list(selected["choppy"])
         for name in selected_names:
             strategy_map[name] = result["strategy_map"][name]
-    combined = pd.concat(filtered_frames, ignore_index=True) if filtered_frames else pd.DataFrame()
+    combined = pd.concat(filtered_frames, ignore_index=True) if filtered_frames else bqp.empty_candidate_trades_df()
     if not combined.empty:
         combined = combined.sort_values(["trade_date", "entry_minute", "strategy"]).reset_index(drop=True)
     return combined, strategy_map
@@ -2053,30 +2059,39 @@ def optimize_shared_portfolio(
     risk_caps: list[float],
 ) -> tuple[dict[str, object], pd.DataFrame, pd.DataFrame]:
     best_summary: dict[str, object] | None = None
-    best_trades = pd.DataFrame()
+    best_trades = bqp.empty_candidate_trades_df()
     best_equity = pd.DataFrame()
-    strategies = strategy_objects_from_names(candidate_trades["strategy"].tolist(), strategy_map)
     for risk_cap in risk_caps:
-        if candidate_trades.empty or not strategies:
+        if candidate_trades.empty or "strategy" not in candidate_trades.columns:
             summary = attach_family_contributions(
                 summary=empty_summary(DEFAULT_STARTING_EQUITY, risk_cap),
-                trades_df=pd.DataFrame(),
+                trades_df=bqp.empty_candidate_trades_df(),
                 strategy_map=strategy_map,
             )
-            trades = pd.DataFrame()
+            trades = bqp.empty_candidate_trades_df()
             equity = pd.DataFrame()
         else:
-            trades, equity, summary = run_portfolio_allocator(
-                strategies=strategies,
-                trades_df=candidate_trades,
-                portfolio_max_open_risk_fraction=risk_cap,
-                starting_equity=DEFAULT_STARTING_EQUITY,
-            )
-            summary = attach_family_contributions(
-                summary=summary,
-                trades_df=trades,
-                strategy_map=strategy_map,
-            )
+            strategies = strategy_objects_from_names(candidate_trades["strategy"].tolist(), strategy_map)
+            if not strategies:
+                summary = attach_family_contributions(
+                    summary=empty_summary(DEFAULT_STARTING_EQUITY, risk_cap),
+                    trades_df=bqp.empty_candidate_trades_df(),
+                    strategy_map=strategy_map,
+                )
+                trades = bqp.empty_candidate_trades_df()
+                equity = pd.DataFrame()
+            else:
+                trades, equity, summary = run_portfolio_allocator(
+                    strategies=strategies,
+                    trades_df=candidate_trades,
+                    portfolio_max_open_risk_fraction=risk_cap,
+                    starting_equity=DEFAULT_STARTING_EQUITY,
+                )
+                summary = attach_family_contributions(
+                    summary=summary,
+                    trades_df=trades,
+                    strategy_map=strategy_map,
+                )
         row = {
             "risk_cap": risk_cap,
             "final_equity": float(summary["final_equity"]),
