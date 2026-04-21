@@ -63,7 +63,6 @@ See [AGENT_OPERATING_MODEL.md](./AGENT_OPERATING_MODEL.md) for the stricter owne
 - Rebuild strategy coverage after the latest 59+ bundle universe is staged.
 - Separate currently backtester-ready tickers from full staged-but-not-ready tickers.
 - `build_agent_sharding_plan.py` can now auto-discover an existing strategy repo snapshot or auto-build one if the expected JSON is missing.
-- Use `cleanroom/code/qqq_options_30d_cleanroom/build_coverage_next_wave_plan.py` to generate the ticker-family coverage matrix, family/ticker gap summaries, and the next-wave discovery/exhaustive lane commands before launching another broad sweep.
 - Use `cleanroom/code/qqq_options_30d_cleanroom/build_ticker_family_coverage.py` to build the 159-symbol ticker-family coverage matrix and emit `next_wave_plan.json` / `next_wave_commands.ps1` before starting the next agent wave.
 - Use `cleanroom/code/qqq_options_30d_cleanroom/materialize_backtester_ready.py` to bootstrap `staged_only` and `registry_only` symbols into `backtester_ready` before the next discovery wave when the ready universe is too narrow.
 

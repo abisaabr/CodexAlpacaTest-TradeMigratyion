@@ -45,7 +45,6 @@ Treat qqq_options_30d_cleanroom as the research workspace. Verify that the clean
 - materialize_backtester_ready.py
 - build_ticker_family_coverage.py
 - build_agent_operating_model.py
-- build_coverage_next_wave_plan.py
 - run_core_strategy_expansion_overnight.py
 - launch_down_choppy_program.ps1
 - launch_down_choppy_family_wave.ps1
@@ -71,7 +70,7 @@ Prefer using launch_down_choppy_program.ps1 as the operator entrypoint for the d
 
 If the ready universe is smaller than the staged/registry universe, use materialize_backtester_ready.py or the bootstrap path inside launch_down_choppy_program.ps1 to materialize the planner's highest-priority staged/registry symbols into backtester_ready before launching the next discovery wave.
 
-Before launching the next large wave, run build_coverage_next_wave_plan.py to refresh the 159-symbol ticker-family coverage matrix and use its next-wave outputs to choose under-tested families and symbols instead of repeating already-covered combinations.
+Before launching the next large wave, run build_ticker_family_coverage.py to refresh the 159-symbol ticker-family coverage matrix and use its `next_wave_plan.json` / `next_wave_commands.ps1` outputs to choose under-tested families and symbols instead of repeating already-covered combinations.
 
 Each large batch should leave behind a `run_manifest.json` inside its `research_dir` plus an append-only `run_registry.jsonl` under the cleanroom `output` root. Use those files to verify machine lineage, code lineage, input fingerprints, ticker completion state, and the final shared-account snapshot before trusting or promoting results.
 
