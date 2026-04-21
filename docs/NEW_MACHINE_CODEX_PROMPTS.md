@@ -43,6 +43,9 @@ Open these sibling folders and use them together:
 
 Treat qqq_options_30d_cleanroom as the research workspace. Verify that the cleanroom contains the conveyor scripts:
 - run_core_strategy_expansion_overnight.py
+- launch_down_choppy_program.ps1
+- launch_down_choppy_family_wave.ps1
+- build_family_wave_shortlist.py
 - queue_bundle_candidate_batch.py
 - queue_family_expansion_after_quality6.ps1
 - queue_ready_family_expansion_after_status.ps1
@@ -59,6 +62,8 @@ Then set up and run a chained overnight family-expansion tournament that:
 - validates and pushes only if the manifest truly improved
 
 Use the GitHub live manifest as the source of truth for what is already promoted. Prefer discovery on complete-data symbols that are not already live before retesting live symbols. Keep promotion serialized so only one promotion lane writes the manifest at a time.
+
+Prefer using launch_down_choppy_program.ps1 as the operator entrypoint for the down/choppy program. It should be able to dry-run the full workflow first, then execute the four discovery lanes, build the shortlist, and stage the two exhaustive lanes without manual glue code.
 
 At the end, report:
 - what tournament lane is running now

@@ -85,6 +85,7 @@
 - Keep shard size smaller than discovery to protect RAM.
 - Use `cleanroom/code/qqq_options_30d_cleanroom/build_family_wave_shortlist.py` after the four discovery lanes finish.
 - The shortlist builder emits one readable markdown report plus `phase2_plan.json` / `phase2_commands.ps1` so the two exhaustive lanes can start without manual ticker triage.
+- Use `cleanroom/code/qqq_options_30d_cleanroom/launch_down_choppy_program.ps1` as the top-level dry-run-safe entrypoint when you want one script to stage discovery, run the shortlist, and launch the two exhaustive follow-up lanes.
 
 ### Phase 3 - Balanced Cross-Regime Benchmark
 
