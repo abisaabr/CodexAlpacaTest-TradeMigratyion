@@ -31,6 +31,7 @@ DEFAULT_INITIAL_TRAIN_DAYS = 126
 DEFAULT_TEST_DAYS = 21
 DEFAULT_STEP_DAYS = 21
 DEFAULT_SELECTION_PROFILE = "balanced"
+RUN_CHECKPOINT_VERSION = 1
 REGIME_THRESHOLD_GRID = [0.30, 0.35, 0.40, 0.45, 0.50, 0.55]
 TOP_BULL_GRID = [1, 2, 3, 4]
 TOP_BEAR_GRID = [1, 2, 3, 4]
@@ -82,6 +83,232 @@ def build_parser() -> argparse.ArgumentParser:
         help="How strongly to bias config selection toward bearish and choppy regime robustness.",
     )
     return parser
+
+
+def write_json(path: Path, payload: dict[str, Any] | list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def artifact_signature(path: Path) -> dict[str, object]:
+    stat = path.stat()
+    return {
+        "path": str(path.resolve()),
+        "size": int(stat.st_size),
+        "mtime_ns": int(stat.st_mtime_ns),
+    }
+
+
+def build_run_signature(
+    *,
+    ticker: str,
+    wide_path: Path,
+    dense_path: Path,
+    universe_path: Path,
+    profiles: tuple[TimingProfile, ...],
+    strategy_set: str,
+    selection_profile: str,
+    initial_train_days: int,
+    test_days: int,
+    step_days: int,
+) -> dict[str, object]:
+    code_paths = [
+        Path(__file__).resolve(),
+        (Path(__file__).resolve().parent / "backtest_qqq_greeks_portfolio.py").resolve(),
+        (Path(__file__).resolve().parent / "backtest_qqq_option_strategies.py").resolve(),
+        (Path(__file__).resolve().parent / "backtest_qqq_regime_gated_portfolio.py").resolve(),
+    ]
+    return {
+        "version": RUN_CHECKPOINT_VERSION,
+        "ticker": ticker.upper(),
+        "strategy_set": strategy_set,
+        "selection_profile": selection_profile,
+        "timing_profiles": [profile.name for profile in profiles],
+        "initial_train_days": int(initial_train_days),
+        "test_days": int(test_days),
+        "step_days": int(step_days),
+        "input_artifacts": {
+            "wide": artifact_signature(wide_path),
+            "dense": artifact_signature(dense_path),
+            "daily_universe": artifact_signature(universe_path),
+        },
+        "code_artifacts": [artifact_signature(path) for path in code_paths],
+    }
+
+
+def run_signature_matches(existing: dict[str, object] | None, expected: dict[str, object]) -> bool:
+    return existing == expected
+
+
+def ticker_artifact_paths(research_dir: Path, ticker_lower: str) -> dict[str, Path]:
+    fold_dir = research_dir / f"{ticker_lower}_fold_checkpoints"
+    return {
+        "candidate_trades": research_dir / f"{ticker_lower}_candidate_trades.csv",
+        "regime_summary": research_dir / f"{ticker_lower}_regime_summary.csv",
+        "walkforward_folds": research_dir / f"{ticker_lower}_walkforward_folds.csv",
+        "frozen_trades": research_dir / f"{ticker_lower}_walkforward_frozen_trades.csv",
+        "frozen_equity": research_dir / f"{ticker_lower}_walkforward_frozen_equity.csv",
+        "frozen_family_contributions": research_dir / f"{ticker_lower}_walkforward_frozen_family_contributions.csv",
+        "frozen_family_bucket_contributions": research_dir / f"{ticker_lower}_walkforward_frozen_family_bucket_contributions.csv",
+        "frozen_premium_bucket_contributions": research_dir / f"{ticker_lower}_walkforward_frozen_premium_bucket_contributions.csv",
+        "reoptimized_family_contributions": research_dir / f"{ticker_lower}_walkforward_reoptimized_family_contributions.csv",
+        "reoptimized_family_bucket_contributions": research_dir / f"{ticker_lower}_walkforward_reoptimized_family_bucket_contributions.csv",
+        "reoptimized_premium_bucket_contributions": research_dir / f"{ticker_lower}_walkforward_reoptimized_premium_bucket_contributions.csv",
+        "frozen_config": research_dir / f"{ticker_lower}_frozen_config.json",
+        "promotion": research_dir / f"{ticker_lower}_promotion.json",
+        "summary": research_dir / f"{ticker_lower}_summary.json",
+        "phase_status": research_dir / f"{ticker_lower}_phase_status.json",
+        "candidate_checkpoint": research_dir / f"{ticker_lower}_candidate_checkpoint.json",
+        "walkforward_checkpoint": research_dir / f"{ticker_lower}_walkforward_checkpoint.json",
+        "fold_dir": fold_dir,
+    }
+
+
+def fold_artifact_paths(paths: dict[str, Path], fold_id: int) -> dict[str, Path]:
+    fold_dir = paths["fold_dir"]
+    return {
+        "reopt_trades": fold_dir / f"fold_{fold_id:02d}_reopt_trades.parquet",
+        "reopt_equity": fold_dir / f"fold_{fold_id:02d}_reopt_equity.parquet",
+        "frozen_trades": fold_dir / f"fold_{fold_id:02d}_frozen_trades.parquet",
+        "frozen_equity": fold_dir / f"fold_{fold_id:02d}_frozen_equity.parquet",
+    }
+
+
+def write_phase_status(
+    path: Path,
+    *,
+    ticker: str,
+    phase: str,
+    status: str,
+    message: str = "",
+    extra: dict[str, object] | None = None,
+) -> None:
+    payload: dict[str, object] = {
+        "ticker": ticker.upper(),
+        "phase": phase,
+        "status": status,
+        "message": message,
+        "timestamp_epoch": time.time(),
+    }
+    if extra:
+        payload.update(extra)
+    write_json(path, payload)
+
+
+def try_load_candidate_checkpoint(
+    *,
+    paths: dict[str, Path],
+    run_signature: dict[str, object],
+) -> pd.DataFrame | None:
+    checkpoint_path = paths["candidate_checkpoint"]
+    candidate_trades_path = paths["candidate_trades"]
+    if not checkpoint_path.exists() or not candidate_trades_path.exists():
+        return None
+    checkpoint = json.loads(checkpoint_path.read_text(encoding="utf-8"))
+    if checkpoint.get("phase") != "candidate_ready":
+        return None
+    if not run_signature_matches(checkpoint.get("run_signature"), run_signature):
+        return None
+    return pd.read_csv(candidate_trades_path)
+
+
+def write_candidate_checkpoint(
+    *,
+    paths: dict[str, Path],
+    run_signature: dict[str, object],
+    candidate_trade_count: int,
+) -> None:
+    write_json(
+        paths["candidate_checkpoint"],
+        {
+            "phase": "candidate_ready",
+            "run_signature": run_signature,
+            "candidate_trade_count": int(candidate_trade_count),
+            "completed_at_epoch": time.time(),
+        },
+    )
+
+
+def write_fold_artifacts(
+    *,
+    paths: dict[str, Path],
+    fold_id: int,
+    reopt_trades: pd.DataFrame,
+    reopt_equity: pd.DataFrame,
+    frozen_trades: pd.DataFrame,
+    frozen_equity: pd.DataFrame,
+) -> None:
+    paths["fold_dir"].mkdir(parents=True, exist_ok=True)
+    fold_paths = fold_artifact_paths(paths, fold_id)
+    reopt_trades.to_parquet(fold_paths["reopt_trades"], index=False)
+    reopt_equity.to_parquet(fold_paths["reopt_equity"], index=False)
+    frozen_trades.to_parquet(fold_paths["frozen_trades"], index=False)
+    frozen_equity.to_parquet(fold_paths["frozen_equity"], index=False)
+
+
+def try_load_walkforward_checkpoint(
+    *,
+    paths: dict[str, Path],
+    run_signature: dict[str, object],
+) -> dict[str, object] | None:
+    checkpoint_path = paths["walkforward_checkpoint"]
+    if not checkpoint_path.exists():
+        return None
+    checkpoint = json.loads(checkpoint_path.read_text(encoding="utf-8"))
+    if not run_signature_matches(checkpoint.get("run_signature"), run_signature):
+        return None
+    frozen_config = checkpoint.get("frozen_config")
+    if not isinstance(frozen_config, dict):
+        return None
+    completed_folds = [int(fold_id) for fold_id in checkpoint.get("completed_folds", [])]
+    reopt_trade_frames: list[pd.DataFrame] = []
+    reopt_equity_frames: list[pd.DataFrame] = []
+    frozen_trade_frames: list[pd.DataFrame] = []
+    frozen_equity_frames: list[pd.DataFrame] = []
+    for fold_id in completed_folds:
+        fold_paths = fold_artifact_paths(paths, fold_id)
+        if not all(path.exists() for path in fold_paths.values()):
+            return None
+        reopt_trade_frames.append(pd.read_parquet(fold_paths["reopt_trades"]))
+        reopt_equity_frames.append(pd.read_parquet(fold_paths["reopt_equity"]))
+        frozen_trade_frames.append(pd.read_parquet(fold_paths["frozen_trades"]))
+        frozen_equity_frames.append(pd.read_parquet(fold_paths["frozen_equity"]))
+    return {
+        "frozen_config": frozen_config,
+        "completed_folds": set(completed_folds),
+        "fold_rows": list(checkpoint.get("fold_rows", [])),
+        "reopt_current_equity": float(checkpoint.get("reopt_current_equity", DEFAULT_STARTING_EQUITY)),
+        "frozen_current_equity": float(checkpoint.get("frozen_current_equity", DEFAULT_STARTING_EQUITY)),
+        "reopt_trade_frames": reopt_trade_frames,
+        "reopt_equity_frames": reopt_equity_frames,
+        "frozen_trade_frames": frozen_trade_frames,
+        "frozen_equity_frames": frozen_equity_frames,
+    }
+
+
+def write_walkforward_checkpoint(
+    *,
+    paths: dict[str, Path],
+    run_signature: dict[str, object],
+    frozen_config: dict[str, object],
+    completed_folds: set[int],
+    fold_rows: list[dict[str, object]],
+    reopt_current_equity: float,
+    frozen_current_equity: float,
+) -> None:
+    write_json(
+        paths["walkforward_checkpoint"],
+        {
+            "phase": "walkforward",
+            "run_signature": run_signature,
+            "frozen_config": frozen_config,
+            "completed_folds": sorted(int(fold_id) for fold_id in completed_folds),
+            "fold_rows": fold_rows,
+            "reopt_current_equity": float(reopt_current_equity),
+            "frozen_current_equity": float(frozen_current_equity),
+            "updated_at_epoch": time.time(),
+        },
+    )
 
 
 def build_timing_profiles(strategy_set: str = "standard") -> tuple[TimingProfile, ...]:
@@ -1015,241 +1242,424 @@ def run_single_ticker_research(
 ) -> dict[str, object]:
     ticker_lower = ticker.lower()
     research_dir.mkdir(parents=True, exist_ok=True)
+    paths = ticker_artifact_paths(research_dir, ticker_lower)
     wide_path = output_dir / f"{ticker_lower}_365d_option_1min_wide_backtest.parquet"
     dense_path = output_dir / f"{ticker_lower}_365d_option_1min_dense.parquet"
     universe_path = output_dir / f"{ticker_lower}_365d_option_daily_universe.parquet"
-
-    wide = load_wide_data_for_ticker(wide_path, ticker_lower)
-    _, _, available_dtes = load_daily_universe(universe_path)
-    day_contexts = build_day_contexts(wide=wide, available_dtes=available_dtes)
-    valid_trade_dates = {ctx.trade_date for ctx in day_contexts}
-    chain_index, price_index = load_dense_data(
-        path=dense_path,
-        valid_trade_dates=valid_trade_dates,
-        wide=wide,
-    )
-
-    strategy_variants = build_strategy_variants(
-        ticker_lower,
-        profiles,
-        strategy_set=strategy_set,
-    )
-    strategy_map = {strategy.name: strategy for strategy in strategy_variants}
-    original_dispatch = bqp.SIGNAL_DISPATCH
     try:
-        bqp.SIGNAL_DISPATCH = build_signal_dispatch(profiles)
-        ticker_started_at = time.perf_counter()
+        write_phase_status(
+            paths["phase_status"],
+            ticker=ticker,
+            phase="loading_inputs",
+            status="running",
+            message="Loading wide, universe, and dense data.",
+        )
+        wide = load_wide_data_for_ticker(wide_path, ticker_lower)
+        _, _, available_dtes = load_daily_universe(universe_path)
+        day_contexts = build_day_contexts(wide=wide, available_dtes=available_dtes)
+        valid_trade_dates = {ctx.trade_date for ctx in day_contexts}
+        chain_index, price_index = load_dense_data(
+            path=dense_path,
+            valid_trade_dates=valid_trade_dates,
+            wide=wide,
+        )
 
-        def _progress_callback(progress: dict[str, object]) -> None:
-            strategy_index = int(progress["strategy_index"])
-            strategy_count = int(progress["strategy_count"])
-            if strategy_index != 1 and strategy_index % 5 != 0 and strategy_index != strategy_count:
-                return
+        run_signature = build_run_signature(
+            ticker=ticker,
+            wide_path=wide_path,
+            dense_path=dense_path,
+            universe_path=universe_path,
+            profiles=profiles,
+            strategy_set=strategy_set,
+            selection_profile=selection_profile,
+            initial_train_days=initial_train_days,
+            test_days=test_days,
+            step_days=step_days,
+        )
+
+        strategy_variants = build_strategy_variants(
+            ticker_lower,
+            profiles,
+            strategy_set=strategy_set,
+        )
+        strategy_map = {strategy.name: strategy for strategy in strategy_variants}
+
+        candidate_trades = try_load_candidate_checkpoint(
+            paths=paths,
+            run_signature=run_signature,
+        )
+        if candidate_trades is not None:
+            write_phase_status(
+                paths["phase_status"],
+                ticker=ticker,
+                phase="candidate_generation",
+                status="reused",
+                message="Loaded candidate trades from checkpoint.",
+                extra={"candidate_trade_count": int(len(candidate_trades))},
+            )
             print(
-                (
-                    f"{ticker.upper()} candidate progress: "
-                    f"{strategy_index}/{strategy_count} "
-                    f"{progress['strategy_name']} "
-                    f"new_trades={int(progress['new_trade_count'])} "
-                    f"total_trades={int(progress['trade_count'])} "
-                    f"elapsed={float(progress['elapsed_seconds']):.1f}s"
-                ),
+                f"Resuming {ticker.upper()} from candidate checkpoint with {len(candidate_trades)} trades.",
                 flush=True,
             )
+        else:
+            write_phase_status(
+                paths["phase_status"],
+                ticker=ticker,
+                phase="candidate_generation",
+                status="running",
+                message="Generating candidate trades.",
+            )
+            original_dispatch = bqp.SIGNAL_DISPATCH
+            try:
+                bqp.SIGNAL_DISPATCH = build_signal_dispatch(profiles)
+                ticker_started_at = time.perf_counter()
 
-        candidate_trades = generate_candidate_trades(
-            strategies=strategy_variants,
-            day_contexts=day_contexts,
-            chain_index=chain_index,
-            price_index=price_index,
-            regime_map=bqp.build_regime_map(wide),
-            progress_callback=_progress_callback,
+                def _progress_callback(progress: dict[str, object]) -> None:
+                    strategy_index = int(progress["strategy_index"])
+                    strategy_count = int(progress["strategy_count"])
+                    if strategy_index != 1 and strategy_index % 5 != 0 and strategy_index != strategy_count:
+                        return
+                    print(
+                        (
+                            f"{ticker.upper()} candidate progress: "
+                            f"{strategy_index}/{strategy_count} "
+                            f"{progress['strategy_name']} "
+                            f"new_trades={int(progress['new_trade_count'])} "
+                            f"total_trades={int(progress['trade_count'])} "
+                            f"elapsed={float(progress['elapsed_seconds']):.1f}s"
+                        ),
+                        flush=True,
+                    )
+
+                candidate_trades = generate_candidate_trades(
+                    strategies=strategy_variants,
+                    day_contexts=day_contexts,
+                    chain_index=chain_index,
+                    price_index=price_index,
+                    regime_map=bqp.build_regime_map(wide),
+                    progress_callback=_progress_callback,
+                )
+                print(
+                    f"{ticker.upper()} candidate generation complete in {time.perf_counter() - ticker_started_at:.1f}s "
+                    f"with {len(candidate_trades)} trades.",
+                    flush=True,
+                )
+            finally:
+                bqp.SIGNAL_DISPATCH = original_dispatch
+
+        candidate_trades = enrich_candidate_trades(candidate_trades)
+        ordered_trade_dates, day_return_map = build_day_return_map(wide=wide)
+        folds = build_folds(
+            trade_dates=ordered_trade_dates,
+            initial_train_days=initial_train_days,
+            test_days=test_days,
+            step_days=step_days,
         )
-        print(
-            f"{ticker.upper()} candidate generation complete in {time.perf_counter() - ticker_started_at:.1f}s "
-            f"with {len(candidate_trades)} trades.",
-            flush=True,
+        if not folds:
+            raise RuntimeError(f"no folds built for {ticker.upper()}")
+
+        regime_summary = summarize_regimes(candidate_trades)
+        candidate_trades.to_csv(paths["candidate_trades"], index=False)
+        regime_summary.to_csv(paths["regime_summary"], index=False)
+        write_candidate_checkpoint(
+            paths=paths,
+            run_signature=run_signature,
+            candidate_trade_count=len(candidate_trades),
         )
-    finally:
-        bqp.SIGNAL_DISPATCH = original_dispatch
+        write_phase_status(
+            paths["phase_status"],
+            ticker=ticker,
+            phase="candidate_generation",
+            status="completed",
+            message="Candidate trades are ready.",
+            extra={"candidate_trade_count": int(len(candidate_trades))},
+        )
 
-    candidate_trades = enrich_candidate_trades(candidate_trades)
-    ordered_trade_dates, day_return_map = build_day_return_map(wide=wide)
-    folds = build_folds(
-        trade_dates=ordered_trade_dates,
-        initial_train_days=initial_train_days,
-        test_days=test_days,
-        step_days=step_days,
-    )
-    if not folds:
-        raise RuntimeError(f"no folds built for {ticker.upper()}")
-    regime_summary = summarize_regimes(candidate_trades)
-    selection_grids = build_selection_grids(selection_profile, strategy_set)
-    train_dates = set(folds[0]["train_dates"])
-    frozen_config = select_best_config(
-        candidate_trades=subset_trades(candidate_trades, train_dates),
-        day_return_map=day_return_map,
-        strategy_map=strategy_map,
-        thresholds=selection_grids["thresholds"],
-        top_bull_values=selection_grids["top_bull_values"],
-        top_bear_values=selection_grids["top_bear_values"],
-        top_choppy_values=selection_grids["top_choppy_values"],
-        min_trade_values=selection_grids["min_trade_values"],
-        risk_caps=selection_grids["risk_caps"],
-        selection_profile=selection_profile,
-    )
+        selection_grids = build_selection_grids(selection_profile, strategy_set)
+        walkforward_state = try_load_walkforward_checkpoint(
+            paths=paths,
+            run_signature=run_signature,
+        )
 
-    reopt_trade_frames: list[pd.DataFrame] = []
-    reopt_equity_frames: list[pd.DataFrame] = []
-    frozen_trade_frames: list[pd.DataFrame] = []
-    frozen_equity_frames: list[pd.DataFrame] = []
-    fold_rows: list[dict[str, object]] = []
-    reopt_current_equity = DEFAULT_STARTING_EQUITY
-    frozen_current_equity = DEFAULT_STARTING_EQUITY
-    for fold in folds:
-        reopt_config = select_best_config(
-            candidate_trades=subset_trades(candidate_trades, set(fold["train_dates"])),
-            day_return_map=day_return_map,
+        if walkforward_state is not None:
+            frozen_config = dict(walkforward_state["frozen_config"])
+            completed_folds = set(walkforward_state["completed_folds"])
+            fold_rows = list(walkforward_state["fold_rows"])
+            reopt_current_equity = float(walkforward_state["reopt_current_equity"])
+            frozen_current_equity = float(walkforward_state["frozen_current_equity"])
+            reopt_trade_frames = list(walkforward_state["reopt_trade_frames"])
+            reopt_equity_frames = list(walkforward_state["reopt_equity_frames"])
+            frozen_trade_frames = list(walkforward_state["frozen_trade_frames"])
+            frozen_equity_frames = list(walkforward_state["frozen_equity_frames"])
+            write_phase_status(
+                paths["phase_status"],
+                ticker=ticker,
+                phase="walkforward",
+                status="reused",
+                message="Resuming walkforward from checkpoint.",
+                extra={"completed_folds": sorted(completed_folds)},
+            )
+            print(
+                f"Resuming {ticker.upper()} walkforward from completed folds {sorted(completed_folds)}.",
+                flush=True,
+            )
+        else:
+            train_dates = set(folds[0]["train_dates"])
+            write_phase_status(
+                paths["phase_status"],
+                ticker=ticker,
+                phase="config_selection",
+                status="running",
+                message="Selecting initial frozen config.",
+            )
+            frozen_config = select_best_config(
+                candidate_trades=subset_trades(candidate_trades, train_dates),
+                day_return_map=day_return_map,
+                strategy_map=strategy_map,
+                thresholds=selection_grids["thresholds"],
+                top_bull_values=selection_grids["top_bull_values"],
+                top_bear_values=selection_grids["top_bear_values"],
+                top_choppy_values=selection_grids["top_choppy_values"],
+                min_trade_values=selection_grids["min_trade_values"],
+                risk_caps=selection_grids["risk_caps"],
+                selection_profile=selection_profile,
+            )
+            completed_folds: set[int] = set()
+            reopt_trade_frames = []
+            reopt_equity_frames = []
+            frozen_trade_frames = []
+            frozen_equity_frames = []
+            fold_rows = []
+            reopt_current_equity = DEFAULT_STARTING_EQUITY
+            frozen_current_equity = DEFAULT_STARTING_EQUITY
+            write_walkforward_checkpoint(
+                paths=paths,
+                run_signature=run_signature,
+                frozen_config=frozen_config,
+                completed_folds=completed_folds,
+                fold_rows=fold_rows,
+                reopt_current_equity=reopt_current_equity,
+                frozen_current_equity=frozen_current_equity,
+            )
+
+        for fold in folds:
+            if fold["fold"] in completed_folds:
+                continue
+            write_phase_status(
+                paths["phase_status"],
+                ticker=ticker,
+                phase="walkforward",
+                status="running",
+                message=f"Running fold {fold['fold']} of {len(folds)}.",
+                extra={
+                    "current_fold": int(fold["fold"]),
+                    "fold_count": len(folds),
+                    "completed_folds": sorted(completed_folds),
+                },
+            )
+            reopt_config = select_best_config(
+                candidate_trades=subset_trades(candidate_trades, set(fold["train_dates"])),
+                day_return_map=day_return_map,
+                strategy_map=strategy_map,
+                thresholds=selection_grids["thresholds"],
+                top_bull_values=selection_grids["top_bull_values"],
+                top_bear_values=selection_grids["top_bear_values"],
+                top_choppy_values=selection_grids["top_choppy_values"],
+                min_trade_values=selection_grids["min_trade_values"],
+                risk_caps=selection_grids["risk_caps"],
+                selection_profile=selection_profile,
+            )
+            reopt_trades, reopt_equity, reopt_summary, _ = evaluate_config(
+                candidate_trades=candidate_trades,
+                day_return_map=day_return_map,
+                config=reopt_config,
+                strategy_map=strategy_map,
+                test_dates=set(fold["test_dates"]),
+                starting_equity=reopt_current_equity,
+            )
+            frozen_trades, frozen_equity, frozen_summary, _ = evaluate_config(
+                candidate_trades=candidate_trades,
+                day_return_map=day_return_map,
+                config=frozen_config,
+                strategy_map=strategy_map,
+                test_dates=set(fold["test_dates"]),
+                starting_equity=frozen_current_equity,
+            )
+            if not reopt_trades.empty:
+                tagged = reopt_trades.copy()
+                tagged["fold"] = fold["fold"]
+                reopt_trade_frames.append(tagged)
+            else:
+                tagged = reopt_trades.copy()
+                tagged["fold"] = fold["fold"]
+                reopt_trade_frames.append(tagged)
+            if not reopt_equity.empty:
+                tagged = reopt_equity.copy()
+                tagged["fold"] = fold["fold"]
+                reopt_equity_frames.append(tagged)
+            else:
+                tagged = reopt_equity.copy()
+                tagged["fold"] = fold["fold"]
+                reopt_equity_frames.append(tagged)
+            if not frozen_trades.empty:
+                tagged = frozen_trades.copy()
+                tagged["fold"] = fold["fold"]
+                frozen_trade_frames.append(tagged)
+            else:
+                tagged = frozen_trades.copy()
+                tagged["fold"] = fold["fold"]
+                frozen_trade_frames.append(tagged)
+            if not frozen_equity.empty:
+                tagged = frozen_equity.copy()
+                tagged["fold"] = fold["fold"]
+                frozen_equity_frames.append(tagged)
+            else:
+                tagged = frozen_equity.copy()
+                tagged["fold"] = fold["fold"]
+                frozen_equity_frames.append(tagged)
+            fold_rows.append(
+                {
+                    "fold": fold["fold"],
+                    "train_start": fold["train_dates"][0].isoformat(),
+                    "train_end": fold["train_dates"][-1].isoformat(),
+                    "test_start": fold["test_dates"][0].isoformat(),
+                    "test_end": fold["test_dates"][-1].isoformat(),
+                    "reopt_final_equity": reopt_summary["final_equity"],
+                    "reopt_return_pct": reopt_summary["total_return_pct"],
+                    "frozen_final_equity": frozen_summary["final_equity"],
+                    "frozen_return_pct": frozen_summary["total_return_pct"],
+                }
+            )
+            latest_reopt_trades = reopt_trade_frames[-1]
+            latest_reopt_equity = reopt_equity_frames[-1]
+            latest_frozen_trades = frozen_trade_frames[-1]
+            latest_frozen_equity = frozen_equity_frames[-1]
+            write_fold_artifacts(
+                paths=paths,
+                fold_id=int(fold["fold"]),
+                reopt_trades=latest_reopt_trades,
+                reopt_equity=latest_reopt_equity,
+                frozen_trades=latest_frozen_trades,
+                frozen_equity=latest_frozen_equity,
+            )
+            completed_folds.add(int(fold["fold"]))
+            reopt_current_equity = float(reopt_summary["final_equity"])
+            frozen_current_equity = float(frozen_summary["final_equity"])
+            write_walkforward_checkpoint(
+                paths=paths,
+                run_signature=run_signature,
+                frozen_config=frozen_config,
+                completed_folds=completed_folds,
+                fold_rows=fold_rows,
+                reopt_current_equity=reopt_current_equity,
+                frozen_current_equity=frozen_current_equity,
+            )
+
+        reopt_trades_df = pd.concat(reopt_trade_frames, ignore_index=True) if reopt_trade_frames else pd.DataFrame()
+        reopt_equity_df = pd.concat(reopt_equity_frames, ignore_index=True) if reopt_equity_frames else pd.DataFrame()
+        frozen_trades_df = pd.concat(frozen_trade_frames, ignore_index=True) if frozen_trade_frames else pd.DataFrame()
+        frozen_equity_df = pd.concat(frozen_equity_frames, ignore_index=True) if frozen_equity_frames else pd.DataFrame()
+        frozen_summary = summarize_run(
+            trades_df=frozen_trades_df,
+            equity_df=frozen_equity_df,
+            starting_equity=DEFAULT_STARTING_EQUITY,
             strategy_map=strategy_map,
-            thresholds=selection_grids["thresholds"],
-            top_bull_values=selection_grids["top_bull_values"],
-            top_bear_values=selection_grids["top_bear_values"],
-            top_choppy_values=selection_grids["top_choppy_values"],
-            min_trade_values=selection_grids["min_trade_values"],
-            risk_caps=selection_grids["risk_caps"],
-            selection_profile=selection_profile,
         )
-        reopt_trades, reopt_equity, reopt_summary, _ = evaluate_config(
-            candidate_trades=candidate_trades,
-            day_return_map=day_return_map,
-            config=reopt_config,
+        reoptimized_summary = summarize_run(
+            trades_df=reopt_trades_df,
+            equity_df=reopt_equity_df,
+            starting_equity=DEFAULT_STARTING_EQUITY,
             strategy_map=strategy_map,
-            test_dates=set(fold["test_dates"]),
-            starting_equity=reopt_current_equity,
         )
-        frozen_trades, frozen_equity, frozen_summary, _ = evaluate_config(
-            candidate_trades=candidate_trades,
-            day_return_map=day_return_map,
-            config=frozen_config,
-            strategy_map=strategy_map,
-            test_dates=set(fold["test_dates"]),
-            starting_equity=frozen_current_equity,
+        promoted = promote_config(
+            ticker=ticker_lower,
+            frozen_config=frozen_config,
+            frozen_summary=frozen_summary,
         )
-        if not reopt_trades.empty:
-            tagged = reopt_trades.copy()
-            tagged["fold"] = fold["fold"]
-            reopt_trade_frames.append(tagged)
-        if not reopt_equity.empty:
-            tagged = reopt_equity.copy()
-            tagged["fold"] = fold["fold"]
-            reopt_equity_frames.append(tagged)
-        if not frozen_trades.empty:
-            tagged = frozen_trades.copy()
-            tagged["fold"] = fold["fold"]
-            frozen_trade_frames.append(tagged)
-        if not frozen_equity.empty:
-            tagged = frozen_equity.copy()
-            tagged["fold"] = fold["fold"]
-            frozen_equity_frames.append(tagged)
-        fold_rows.append(
-            {
-                "fold": fold["fold"],
-                "train_start": fold["train_dates"][0].isoformat(),
-                "train_end": fold["train_dates"][-1].isoformat(),
-                "test_start": fold["test_dates"][0].isoformat(),
-                "test_end": fold["test_dates"][-1].isoformat(),
-                "reopt_final_equity": reopt_summary["final_equity"],
-                "reopt_return_pct": reopt_summary["total_return_pct"],
-                "frozen_final_equity": frozen_summary["final_equity"],
-                "frozen_return_pct": frozen_summary["total_return_pct"],
-            }
-        )
-        reopt_current_equity = float(reopt_summary["final_equity"])
-        frozen_current_equity = float(frozen_summary["final_equity"])
 
-    reopt_trades_df = pd.concat(reopt_trade_frames, ignore_index=True) if reopt_trade_frames else pd.DataFrame()
-    reopt_equity_df = pd.concat(reopt_equity_frames, ignore_index=True) if reopt_equity_frames else pd.DataFrame()
-    frozen_trades_df = pd.concat(frozen_trade_frames, ignore_index=True) if frozen_trade_frames else pd.DataFrame()
-    frozen_equity_df = pd.concat(frozen_equity_frames, ignore_index=True) if frozen_equity_frames else pd.DataFrame()
-    frozen_summary = summarize_run(
-        trades_df=frozen_trades_df,
-        equity_df=frozen_equity_df,
-        starting_equity=DEFAULT_STARTING_EQUITY,
-        strategy_map=strategy_map,
-    )
-    reoptimized_summary = summarize_run(
-        trades_df=reopt_trades_df,
-        equity_df=reopt_equity_df,
-        starting_equity=DEFAULT_STARTING_EQUITY,
-        strategy_map=strategy_map,
-    )
-    promoted = promote_config(
-        ticker=ticker_lower,
-        frozen_config=frozen_config,
-        frozen_summary=frozen_summary,
-    )
-
-    candidate_trades.to_csv(research_dir / f"{ticker_lower}_candidate_trades.csv", index=False)
-    regime_summary.to_csv(research_dir / f"{ticker_lower}_regime_summary.csv", index=False)
-    pd.DataFrame(fold_rows).to_csv(research_dir / f"{ticker_lower}_walkforward_folds.csv", index=False)
-    frozen_trades_df.to_csv(research_dir / f"{ticker_lower}_walkforward_frozen_trades.csv", index=False)
-    frozen_equity_df.to_csv(research_dir / f"{ticker_lower}_walkforward_frozen_equity.csv", index=False)
-    contribution_rows_to_frame(
-        list(frozen_summary.get("family_contributions", [])),
-        "family",
-    ).to_csv(research_dir / f"{ticker_lower}_walkforward_frozen_family_contributions.csv", index=False)
-    contribution_rows_to_frame(
-        list(frozen_summary.get("family_bucket_contributions", [])),
-        "family_bucket",
-    ).to_csv(research_dir / f"{ticker_lower}_walkforward_frozen_family_bucket_contributions.csv", index=False)
-    contribution_rows_to_frame(
-        list(frozen_summary.get("premium_bucket_contributions", [])),
-        "premium_bucket",
-    ).to_csv(research_dir / f"{ticker_lower}_walkforward_frozen_premium_bucket_contributions.csv", index=False)
-    contribution_rows_to_frame(
-        list(reoptimized_summary.get("family_contributions", [])),
-        "family",
-    ).to_csv(research_dir / f"{ticker_lower}_walkforward_reoptimized_family_contributions.csv", index=False)
-    contribution_rows_to_frame(
-        list(reoptimized_summary.get("family_bucket_contributions", [])),
-        "family_bucket",
-    ).to_csv(research_dir / f"{ticker_lower}_walkforward_reoptimized_family_bucket_contributions.csv", index=False)
-    contribution_rows_to_frame(
-        list(reoptimized_summary.get("premium_bucket_contributions", [])),
-        "premium_bucket",
-    ).to_csv(research_dir / f"{ticker_lower}_walkforward_reoptimized_premium_bucket_contributions.csv", index=False)
-    (research_dir / f"{ticker_lower}_frozen_config.json").write_text(
-        json.dumps(frozen_config, indent=2),
-        encoding="utf-8",
-    )
-    (research_dir / f"{ticker_lower}_promotion.json").write_text(
-        json.dumps(promoted, indent=2),
-        encoding="utf-8",
-    )
-    summary = {
-        "ticker": ticker.upper(),
-        "trade_date_start": ordered_trade_dates[0].isoformat(),
-        "trade_date_end": ordered_trade_dates[-1].isoformat(),
-        "day_count": len(ordered_trade_dates),
-        "candidate_trade_count": int(len(candidate_trades)),
-        "strategy_set": strategy_set,
-        "selection_profile": selection_profile,
-        "timing_profiles": [profile.name for profile in profiles],
-        "frozen_initial_config": frozen_config,
-        "reoptimized": reoptimized_summary,
-        "frozen_initial": frozen_summary,
-        "promoted": promoted,
-    }
-    (research_dir / f"{ticker_lower}_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
-    return {
-        "ticker": ticker.upper(),
-        "candidate_trades": candidate_trades,
-        "day_return_map": day_return_map,
-        "ordered_trade_dates": ordered_trade_dates,
-        "strategy_map": strategy_map,
-        "regime_summary": regime_summary,
-        "summary": summary,
-    }
+        pd.DataFrame(fold_rows).to_csv(paths["walkforward_folds"], index=False)
+        frozen_trades_df.to_csv(paths["frozen_trades"], index=False)
+        frozen_equity_df.to_csv(paths["frozen_equity"], index=False)
+        contribution_rows_to_frame(
+            list(frozen_summary.get("family_contributions", [])),
+            "family",
+        ).to_csv(paths["frozen_family_contributions"], index=False)
+        contribution_rows_to_frame(
+            list(frozen_summary.get("family_bucket_contributions", [])),
+            "family_bucket",
+        ).to_csv(paths["frozen_family_bucket_contributions"], index=False)
+        contribution_rows_to_frame(
+            list(frozen_summary.get("premium_bucket_contributions", [])),
+            "premium_bucket",
+        ).to_csv(paths["frozen_premium_bucket_contributions"], index=False)
+        contribution_rows_to_frame(
+            list(reoptimized_summary.get("family_contributions", [])),
+            "family",
+        ).to_csv(paths["reoptimized_family_contributions"], index=False)
+        contribution_rows_to_frame(
+            list(reoptimized_summary.get("family_bucket_contributions", [])),
+            "family_bucket",
+        ).to_csv(paths["reoptimized_family_bucket_contributions"], index=False)
+        contribution_rows_to_frame(
+            list(reoptimized_summary.get("premium_bucket_contributions", [])),
+            "premium_bucket",
+        ).to_csv(paths["reoptimized_premium_bucket_contributions"], index=False)
+        write_json(paths["frozen_config"], frozen_config)
+        write_json(paths["promotion"], promoted)
+        summary = {
+            "ticker": ticker.upper(),
+            "trade_date_start": ordered_trade_dates[0].isoformat(),
+            "trade_date_end": ordered_trade_dates[-1].isoformat(),
+            "day_count": len(ordered_trade_dates),
+            "candidate_trade_count": int(len(candidate_trades)),
+            "strategy_set": strategy_set,
+            "selection_profile": selection_profile,
+            "timing_profiles": [profile.name for profile in profiles],
+            "frozen_initial_config": frozen_config,
+            "reoptimized": reoptimized_summary,
+            "frozen_initial": frozen_summary,
+            "promoted": promoted,
+        }
+        write_json(paths["summary"], summary)
+        write_phase_status(
+            paths["phase_status"],
+            ticker=ticker,
+            phase="completed",
+            status="completed",
+            message="Ticker research finished successfully.",
+            extra={
+                "candidate_trade_count": int(len(candidate_trades)),
+                "fold_count": len(folds),
+                "frozen_final_equity": float(summary["frozen_initial"]["final_equity"]),
+            },
+        )
+        write_walkforward_checkpoint(
+            paths=paths,
+            run_signature=run_signature,
+            frozen_config=frozen_config,
+            completed_folds={int(fold["fold"]) for fold in folds},
+            fold_rows=fold_rows,
+            reopt_current_equity=reopt_current_equity,
+            frozen_current_equity=frozen_current_equity,
+        )
+        return {
+            "ticker": ticker.upper(),
+            "candidate_trades": candidate_trades,
+            "day_return_map": day_return_map,
+            "ordered_trade_dates": ordered_trade_dates,
+            "strategy_map": strategy_map,
+            "regime_summary": regime_summary,
+            "summary": summary,
+        }
+    except Exception as exc:
+        write_phase_status(
+            paths["phase_status"],
+            ticker=ticker,
+            phase="failed",
+            status="failed",
+            message=f"{type(exc).__name__}: {exc}",
+        )
+        raise
 
 
 def try_load_existing_ticker_result(
