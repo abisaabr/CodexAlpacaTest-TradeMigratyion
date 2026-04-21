@@ -5,6 +5,8 @@ import ctypes
 import json
 import math
 import csv
+import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -93,7 +95,11 @@ def scan_backtester_ready_tickers(root: Path) -> list[str]:
     if not root.exists():
         return []
     ignored = {"COLLECTIONS"}
-    tickers = [path.name.upper() for path in root.iterdir() if path.is_dir() and path.name.upper() not in ignored]
+    tickers = [
+        path.name.upper()
+        for path in root.iterdir()
+        if path.is_dir() and path.name.upper() not in ignored and (path / "manifest.json").exists()
+    ]
     return sorted(tickers)
 
 
@@ -120,6 +126,35 @@ def load_strategy_repo(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def resolve_strategy_repo_json(path: Path, *, primary_output_dir: Path, backtester_ready_dir: Path) -> Path:
+    if path.exists():
+        return path
+    existing = sorted(primary_output_dir.rglob("strategy_repo.json"), key=lambda candidate: candidate.stat().st_mtime, reverse=True)
+    if existing:
+        return existing[0]
+    builder_path = ROOT / "build_strategy_repo.py"
+    report_dir = primary_output_dir / "strategy_repo_autobuild_20260421"
+    report_dir.mkdir(parents=True, exist_ok=True)
+    subprocess.run(
+        [
+            sys.executable,
+            str(builder_path),
+            "--output-root",
+            str(primary_output_dir),
+            "--ready-base-dir",
+            str(backtester_ready_dir),
+            "--report-dir",
+            str(report_dir),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+    candidate = report_dir / "strategy_repo.json"
+    if not candidate.exists():
+        raise FileNotFoundError(f"strategy repo autobuild did not produce {candidate}")
+    return candidate
 
 
 def family_gap_ranking(strategy_repo: dict[str, Any]) -> list[dict[str, Any]]:
@@ -203,6 +238,11 @@ def build_plan(
     backtester_ready = scan_backtester_ready_tickers(backtester_ready_dir)
     registry_tickers = scan_registry_tickers(secondary_output_dir)
 
+    strategy_repo_json = resolve_strategy_repo_json(
+        strategy_repo_json,
+        primary_output_dir=primary_output_dir,
+        backtester_ready_dir=backtester_ready_dir,
+    )
     strategy_repo = load_strategy_repo(strategy_repo_json)
     family_gaps = family_gap_ranking(strategy_repo)
     top_gaps = family_gaps[:10]
