@@ -222,7 +222,140 @@ def normalize_run(
     return run_row, ticker_rows
 
 
-def build_overview(run_rows: list[dict[str, Any]], registry_events: list[dict[str, Any]]) -> dict[str, Any]:
+def existing_path(path: Path) -> str | None:
+    return str(path.resolve()) if path.exists() else None
+
+
+def build_file_map(row: dict[str, Any]) -> dict[str, Any]:
+    research_dir_value = str(row.get("research_dir", "")).strip()
+    if not research_dir_value:
+        return {"control": {}, "results": {}, "logs": {}, "per_ticker": []}
+    research_dir = Path(research_dir_value)
+
+    control = {
+        "run_manifest": existing_path(research_dir / "run_manifest.json"),
+        "master_summary": existing_path(research_dir / "master_summary.json"),
+        "master_report": existing_path(research_dir / "master_report.md"),
+    }
+    results = {
+        "family_rankings": existing_path(research_dir / "family_rankings.csv"),
+        "family_bucket_rankings": existing_path(research_dir / "family_bucket_rankings.csv"),
+        "premium_bucket_rankings": existing_path(research_dir / "premium_bucket_rankings.csv"),
+        "combined_promoted_candidates": existing_path(research_dir / "combined_promoted_candidates.csv"),
+        "combined_promoted_portfolio_trades": existing_path(research_dir / "combined_promoted_portfolio_trades.csv"),
+        "combined_promoted_portfolio_equity": existing_path(research_dir / "combined_promoted_portfolio_equity.csv"),
+    }
+    logs = {
+        "research_log": existing_path(research_dir / "logs" / "research.log"),
+        "followon_launcher_log": existing_path(research_dir / "logs" / "followon_launcher.log"),
+        "queued_familyexp_log": existing_path(research_dir / "logs" / "queued_familyexp.log"),
+        "overnight_stdout": existing_path(research_dir / "overnight_stdout.log"),
+        "overnight_stderr": existing_path(research_dir / "overnight_stderr.log"),
+        "rerun_stdout": existing_path(research_dir / "logs" / "rerun_stdout.log"),
+        "rerun_stderr": existing_path(research_dir / "logs" / "rerun_stderr.log"),
+    }
+    per_ticker = []
+    for ticker in row.get("tickers", []):
+        ticker_lower = str(ticker).lower()
+        summary_path = research_dir / f"{ticker_lower}_summary.json"
+        phase_status_path = research_dir / f"{ticker_lower}_phase_status.json"
+        fold_dir_path = research_dir / f"{ticker_lower}_fold_checkpoints"
+        per_ticker.append(
+            {
+                "ticker": str(ticker),
+                "summary": existing_path(summary_path),
+                "phase_status": existing_path(phase_status_path),
+                "fold_checkpoints_dir": existing_path(fold_dir_path),
+            }
+        )
+    return {
+        "control": {key: value for key, value in control.items() if value},
+        "results": {key: value for key, value in results.items() if value},
+        "logs": {key: value for key, value in logs.items() if value},
+        "per_ticker": per_ticker,
+    }
+
+
+def progress_snapshot(row: dict[str, Any]) -> dict[str, int]:
+    counts = Counter(row.get("ticker_state_counts", {}))
+    total = int(row.get("ticker_count", 0))
+    return {
+        "total": total,
+        "completed": int(counts.get("completed", 0)),
+        "running": int(counts.get("running", 0)),
+        "failed": int(counts.get("failed", 0)),
+        "reused": int(counts.get("reused_existing", 0)),
+        "pending": int(counts.get("pending", 0)),
+    }
+
+
+def issue_codes_for_run(row: dict[str, Any], files: dict[str, Any]) -> list[str]:
+    codes = list(row.get("warnings", []))
+    status = str(row.get("status", ""))
+    ticker_counts = row.get("ticker_state_counts", {})
+    control_files = files.get("control", {})
+    if status in {"cancelled", "failed", "completed"} and (
+        ticker_counts.get("running", 0) or ticker_counts.get("pending", 0)
+    ):
+        codes.append("terminal_status_with_active_tickers")
+    if status == "completed" and not control_files.get("master_summary"):
+        codes.append("missing_master_summary")
+    if status == "completed" and not control_files.get("master_report"):
+        codes.append("missing_master_report")
+    if status == "running" and not row.get("event_count"):
+        codes.append("running_without_registry_events")
+    deduped: list[str] = []
+    for code in codes:
+        if code not in deduped:
+            deduped.append(code)
+    return deduped
+
+
+def build_program_groups(run_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for row in run_rows:
+        research_dir_value = str(row.get("research_dir", "")).strip()
+        if not research_dir_value:
+            continue
+        research_dir = Path(research_dir_value)
+        program_root = str(research_dir.parent.resolve())
+        grouped.setdefault(program_root, []).append(row)
+
+    program_groups: list[dict[str, Any]] = []
+    status_filenames = [
+        "program_status.json",
+        "phase1_status.json",
+        "phase2_status.json",
+        "launch_status.json",
+        "followon_status.json",
+        "queued_familyexp_status.json",
+        "summary_queue_status.json",
+        "promotion_followon_status.json",
+    ]
+    for program_root, rows in sorted(grouped.items()):
+        root_path = Path(program_root)
+        files = {name.removesuffix(".json"): existing_path(root_path / name) for name in status_filenames}
+        files = {key: value for key, value in files.items() if value}
+        if not files and len(rows) <= 1:
+            continue
+        program_groups.append(
+            {
+                "program_root": program_root,
+                "files": files,
+                "lane_runs": [
+                    {
+                        "run_id": row["run_id"],
+                        "status": row["status"],
+                        "research_dir": row["research_dir"],
+                    }
+                    for row in sorted(rows, key=lambda item: item["run_id"])
+                ],
+            }
+        )
+    return program_groups
+
+
+def build_fleet_summary(run_rows: list[dict[str, Any]], registry_events: list[dict[str, Any]]) -> dict[str, Any]:
     status_counts = Counter(str(row.get("status", "unknown")) for row in run_rows)
     strategy_set_counts = Counter(str(row.get("strategy_set", "")) for row in run_rows if row.get("strategy_set"))
     selection_profile_counts = Counter(str(row.get("selection_profile", "")) for row in run_rows if row.get("selection_profile"))
@@ -234,11 +367,14 @@ def build_overview(run_rows: list[dict[str, Any]], registry_events: list[dict[st
         for git_ref in row.get("git_refs", []):
             git_ref_counts[str(git_ref)] += 1
 
-    recent_runs = sorted(run_rows, key=lambda row: parse_iso_timestamp(row.get("effective_updated_at_iso")) or datetime.min, reverse=True)[:10]
-    attention_runs = [
-        row for row in recent_runs
-        if row.get("status") in {"running", "pending", "failed", "cancelled"} or row.get("warnings")
-    ]
+    latest_event_at = max(
+        [
+            parse_iso_timestamp(str(event.get("timestamp_iso", "")))
+            for event in registry_events
+            if parse_iso_timestamp(str(event.get("timestamp_iso", ""))) is not None
+        ],
+        default=None,
+    )
 
     return {
         "total_runs": len(run_rows),
@@ -249,93 +385,118 @@ def build_overview(run_rows: list[dict[str, Any]], registry_events: list[dict[st
         "unique_ticker_count": len(ticker_counts),
         "ticker_coverage_counts": dict(sorted(ticker_counts.items())),
         "git_ref_counts": dict(sorted(git_ref_counts.items())),
-        "recent_runs": [
-            {
-                "run_id": row["run_id"],
-                "status": row["status"],
-                "strategy_set": row["strategy_set"],
-                "selection_profile": row["selection_profile"],
-                "tickers": row["tickers"],
-                "effective_updated_at_iso": row["effective_updated_at_iso"],
-                "research_dir": row["research_dir"],
-            }
-            for row in recent_runs
-        ],
-        "attention_runs": [
-            {
-                "run_id": row["run_id"],
-                "status": row["status"],
-                "warnings": row["warnings"],
-                "message": row["message"],
-                "effective_updated_at_iso": row["effective_updated_at_iso"],
-                "research_dir": row["research_dir"],
-            }
-            for row in attention_runs
-        ],
+        "active_count": sum(1 for row in run_rows if row.get("status") in {"running", "pending"}),
+        "completed_count": sum(1 for row in run_rows if row.get("status") == "completed"),
+        "attention_count": sum(1 for row in run_rows if row.get("status") in {"running", "pending", "failed", "cancelled"} or row.get("warnings")),
+        "latest_event_at_iso": iso_or_blank(latest_event_at),
     }
 
 
-def render_markdown(*, overview: dict[str, Any], run_rows: list[dict[str, Any]]) -> str:
+def open_next_files(
+    attention: list[dict[str, Any]],
+    active_runs: list[dict[str, Any]],
+    completed_runs: list[dict[str, Any]],
+) -> list[str]:
+    priority_paths: list[str] = []
+    for bucket in (attention, active_runs, completed_runs):
+        for row in bucket:
+            for section in ("control", "results", "logs"):
+                for value in row.get("files", {}).get(section, {}).values():
+                    if value and value not in priority_paths:
+                        priority_paths.append(value)
+            for per_ticker in row.get("files", {}).get("per_ticker", []):
+                for key in ("summary", "phase_status"):
+                    value = per_ticker.get(key)
+                    if value and value not in priority_paths:
+                        priority_paths.append(value)
+    return priority_paths[:20]
+
+
+def render_markdown(
+    *,
+    fleet_summary: dict[str, Any],
+    attention: list[dict[str, Any]],
+    active_runs: list[dict[str, Any]],
+    completed_runs: list[dict[str, Any]],
+    program_groups: list[dict[str, Any]],
+    next_files: list[str],
+) -> str:
     lines = ["# Run Registry Report", ""]
-    lines.append("## Overview")
-    lines.append(f"- Total runs: `{overview['total_runs']}`")
-    lines.append(f"- Total registry events: `{overview['total_registry_events']}`")
-    lines.append(f"- Unique tickers touched by manifests: `{overview['unique_ticker_count']}`")
-    lines.append(f"- Status counts: `{json.dumps(overview['status_counts'], sort_keys=True)}`")
-    lines.append(f"- Strategy set counts: `{json.dumps(overview['strategy_set_counts'], sort_keys=True)}`")
-    lines.append(f"- Selection profile counts: `{json.dumps(overview['selection_profile_counts'], sort_keys=True)}`")
-    if overview["git_ref_counts"]:
-        lines.append(f"- Observed code refs: `{json.dumps(overview['git_ref_counts'], sort_keys=True)}`")
+    lines.append("## Fleet Summary")
+    lines.append(f"- Total runs: `{fleet_summary['total_runs']}`")
+    lines.append(f"- Total registry events: `{fleet_summary['total_registry_events']}`")
+    lines.append(f"- Active runs: `{fleet_summary['active_count']}`")
+    lines.append(f"- Completed runs: `{fleet_summary['completed_count']}`")
+    lines.append(f"- Attention count: `{fleet_summary['attention_count']}`")
+    lines.append(f"- Unique tickers touched by manifests: `{fleet_summary['unique_ticker_count']}`")
+    lines.append(f"- Latest event at: `{fleet_summary['latest_event_at_iso']}`")
+    lines.append(f"- Status counts: `{json.dumps(fleet_summary['status_counts'], sort_keys=True)}`")
+    lines.append(f"- Strategy set counts: `{json.dumps(fleet_summary['strategy_set_counts'], sort_keys=True)}`")
+    lines.append(f"- Selection profile counts: `{json.dumps(fleet_summary['selection_profile_counts'], sort_keys=True)}`")
+    if fleet_summary["git_ref_counts"]:
+        lines.append(f"- Observed code refs: `{json.dumps(fleet_summary['git_ref_counts'], sort_keys=True)}`")
     lines.append("")
 
-    lines.append("## Recent Runs")
-    if not overview["recent_runs"]:
-        lines.append("- No runs found.")
+    lines.append("## Needs Attention")
+    if not attention:
+        lines.append("- No runs currently need attention.")
     else:
-        for row in overview["recent_runs"]:
+        for row in attention:
             lines.append(
-                f"- `{row['run_id']}` | `{row['status']}` | `{row['strategy_set']}` / `{row['selection_profile']}` | "
-                f"{', '.join(row['tickers']) or '(no tickers)'} | `{row['effective_updated_at_iso']}`"
+                f"- `{row['run_id']}` | `{row['status']}` | issue codes: `{', '.join(row['issue_codes']) or 'none'}` | "
+                f"{row['message'] or '(no message)'}"
             )
     lines.append("")
 
-    lines.append("## Attention Queue")
-    if not overview["attention_runs"]:
-        lines.append("- No runs currently need attention.")
+    lines.append("## Active Runs")
+    if not active_runs:
+        lines.append("- No active runs.")
     else:
-        for row in overview["attention_runs"]:
-            warning_text = ", ".join(row["warnings"]) if row["warnings"] else "none"
-            message_text = row["message"] or "(no message)"
-            lines.append(f"- `{row['run_id']}` | `{row['status']}` | warnings: `{warning_text}` | {message_text}")
+        for row in active_runs:
+            progress = row["progress"]
+            lines.append(
+                f"- `{row['run_id']}` | `{row['strategy_set']}` / `{row['selection_profile']}` | "
+                f"{', '.join(row['tickers'])} | progress `{progress['completed']}/{progress['total']}` completed, "
+                f"`{progress['running']}` running, `{progress['failed']}` failed, `{progress['reused']}` reused"
+            )
     lines.append("")
 
-    lines.append("## Run Details")
-    if not run_rows:
-        lines.append("- No run rows available.")
+    lines.append("## Recent Completed Runs")
+    if not completed_runs:
+        lines.append("- No completed runs.")
     else:
-        for row in sorted(run_rows, key=lambda item: parse_iso_timestamp(item.get("effective_updated_at_iso")) or datetime.min, reverse=True):
-            lines.append(f"### `{row['run_id']}`")
-            lines.append(f"- Status: `{row['status']}`")
-            lines.append(f"- Strategy set: `{row['strategy_set']}`")
-            lines.append(f"- Selection profile: `{row['selection_profile']}`")
-            lines.append(f"- Tickers: `{', '.join(row['tickers']) or '(none)'}`")
-            lines.append(f"- Timing profiles: `{', '.join(row['timing_profiles']) or '(none)'}`")
-            lines.append(f"- Research dir: `{row['research_dir']}`")
-            lines.append(f"- Updated: `{row['effective_updated_at_iso']}`")
-            lines.append(f"- Ticker state counts: `{json.dumps(row['ticker_state_counts'], sort_keys=True)}`")
-            if row["shared_account_final_equity"] is not None:
+        for row in completed_runs[:10]:
+            result = row["result"]
+            shared_account = result.get("shared_account")
+            lines.append(
+                f"- `{row['run_id']}` | `{row['strategy_set']}` / `{row['selection_profile']}` | "
+                f"{', '.join(row['tickers'])} | completed `{row['completed_at_iso']}`"
+            )
+            if shared_account and shared_account.get("final_equity") is not None:
                 lines.append(
-                    f"- Shared-account result: final equity `{row['shared_account_final_equity']:.2f}`, "
-                    f"return `{row['shared_account_total_return_pct']:.2f}%`, "
-                    f"max drawdown `{row['shared_account_max_drawdown_pct']:.2f}%`"
+                    f"  shared-account final equity `{shared_account['final_equity']:.2f}`, "
+                    f"return `{shared_account['total_return_pct']:.2f}%`, "
+                    f"max drawdown `{shared_account['max_drawdown_pct']:.2f}%`, "
+                    f"trades `{shared_account['trade_count']}`"
                 )
-            lines.append(f"- Git refs: `{', '.join(row['git_refs']) or '(none recorded)'}`")
-            lines.append(f"- Manifest path: `{row['manifest_path'] or '(none)'}`")
-            if row["warnings"]:
-                lines.append(f"- Warnings: `{', '.join(row['warnings'])}`")
-            if row["message"]:
-                lines.append(f"- Message: {row['message']}")
-            lines.append("")
+    lines.append("")
+
+    lines.append("## Program / Lane Groups")
+    if not program_groups:
+        lines.append("- No grouped program roots detected yet.")
+    else:
+        for group in program_groups:
+            lines.append(f"- `{group['program_root']}`")
+            for lane in group["lane_runs"]:
+                lines.append(f"  run `{lane['run_id']}` | `{lane['status']}` | `{lane['research_dir']}`")
+    lines.append("")
+
+    lines.append("## Open These Files Next")
+    if not next_files:
+        lines.append("- No prioritized files found.")
+    else:
+        for path in next_files:
+            lines.append(f"- `{path}`")
     return "\n".join(lines).rstrip() + "\n"
 
 
@@ -386,7 +547,79 @@ def main() -> None:
         run_rows.append(row)
         ticker_rows.extend(per_ticker_rows)
 
-    overview = build_overview(run_rows, registry_events)
+    fleet_summary = build_fleet_summary(run_rows, registry_events)
+    active_runs: list[dict[str, Any]] = []
+    completed_runs: list[dict[str, Any]] = []
+    attention: list[dict[str, Any]] = []
+    attention_rows: list[dict[str, Any]] = []
+
+    for row in sorted(run_rows, key=lambda item: parse_iso_timestamp(item.get("effective_updated_at_iso")) or datetime.min, reverse=True):
+        files = build_file_map(row)
+        progress = progress_snapshot(row)
+        issue_codes = issue_codes_for_run(row, files)
+        active_record = {
+            "run_id": row["run_id"],
+            "status": row["status"],
+            "strategy_set": row["strategy_set"],
+            "selection_profile": row["selection_profile"],
+            "tickers": row["tickers"],
+            "progress": progress,
+            "message": row["message"],
+            "updated_at_iso": row["effective_updated_at_iso"],
+            "research_dir": row["research_dir"],
+            "files": files,
+        }
+        completed_record = {
+            "run_id": row["run_id"],
+            "completed_at_iso": row["effective_updated_at_iso"],
+            "strategy_set": row["strategy_set"],
+            "selection_profile": row["selection_profile"],
+            "tickers": row["tickers"],
+            "research_dir": row["research_dir"],
+            "result": {
+                "successful_tickers": row["successful_tickers"],
+                "failed_tickers": row["failed_tickers"],
+                "shared_account": {
+                    "final_equity": row["shared_account_final_equity"],
+                    "total_return_pct": row["shared_account_total_return_pct"],
+                    "max_drawdown_pct": row["shared_account_max_drawdown_pct"],
+                    "trade_count": None,
+                },
+                "qqq_only": {
+                    "final_equity": row["qqq_only_final_equity"],
+                },
+            },
+            "files": files,
+        }
+        attention_record = {
+            "run_id": row["run_id"],
+            "status": row["status"],
+            "issue_codes": issue_codes,
+            "message": row["message"],
+            "updated_at_iso": row["effective_updated_at_iso"],
+            "research_dir": row["research_dir"],
+            "files": files,
+        }
+
+        if row["status"] in {"running", "pending"}:
+            active_runs.append(active_record)
+        if row["status"] == "completed":
+            completed_runs.append(completed_record)
+        if row["status"] in {"running", "pending", "failed", "cancelled"} or issue_codes:
+            attention.append(attention_record)
+            attention_rows.append(
+                {
+                    "run_id": row["run_id"],
+                    "status": row["status"],
+                    "issue_codes": issue_codes,
+                    "message": row["message"],
+                    "updated_at_iso": row["effective_updated_at_iso"],
+                    "research_dir": row["research_dir"],
+                }
+            )
+
+    program_groups = build_program_groups(run_rows)
+    next_files = open_next_files(attention, active_runs, completed_runs)
     payload = {
         "generated_at_iso": datetime.now().astimezone().isoformat(),
         "inputs": {
@@ -395,7 +628,13 @@ def main() -> None:
             "manifest_count": len(manifest_paths),
             "registry_event_count": len(registry_events),
         },
-        "overview": overview,
+        "fleet_summary": fleet_summary,
+        "overview": fleet_summary,
+        "attention": attention,
+        "active_runs": active_runs,
+        "completed_runs": completed_runs,
+        "program_groups": program_groups,
+        "open_next_files": next_files,
         "runs": run_rows,
         "ticker_states": ticker_rows,
     }
@@ -403,8 +642,16 @@ def main() -> None:
     write_json(report_dir / "run_registry_report.json", payload)
     write_csv(report_dir / "run_registry_runs.csv", run_rows)
     write_csv(report_dir / "run_registry_ticker_states.csv", ticker_rows)
+    write_csv(report_dir / "run_registry_attention.csv", attention_rows)
     (report_dir / "run_registry_report.md").write_text(
-        render_markdown(overview=overview, run_rows=run_rows),
+        render_markdown(
+            fleet_summary=fleet_summary,
+            attention=attention,
+            active_runs=active_runs,
+            completed_runs=completed_runs,
+            program_groups=program_groups,
+            next_files=next_files,
+        ),
         encoding="utf-8",
     )
     print(f"wrote run-registry report to {report_dir}")

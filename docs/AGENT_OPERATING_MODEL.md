@@ -220,5 +220,6 @@
 - Reporting outputs:
   - `run_registry_report.json`
   - `run_registry_report.md`
+  - `run_registry_attention.csv`
   - `run_registry_runs.csv`
   - `run_registry_ticker_states.csv`
