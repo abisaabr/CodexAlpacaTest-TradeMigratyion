@@ -3,7 +3,8 @@ param(
     [string]$PythonExe = "",
     [int]$PollSeconds = 15,
     [switch]$Execute,
-    [switch]$Wait
+    [switch]$Wait,
+    [switch]$SkipValidation
 )
 
 $ErrorActionPreference = "Stop"
@@ -23,6 +24,27 @@ if ([string]::IsNullOrWhiteSpace($PythonExe)) {
 }
 
 $statusPath = Join-Path (Split-Path -Parent $packFile) "launch_status.json"
+$validationPath = Join-Path (Split-Path -Parent $packFile) "pack_validation.json"
+$validatorPath = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) "validate_agent_wave_pack.py"
+
+if (-not $SkipValidation) {
+    if (-not (Test-Path $validatorPath)) {
+        throw "pack validator not found: $validatorPath"
+    }
+    & $PythonExe $validatorPath --pack-json $packFile --report-path $validationPath | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        [ordered]@{
+            pack_path = $packFile
+            phase = "preflight_failed"
+            updated_at = (Get-Date).ToString("o")
+            execute = [bool]$Execute
+            wait = [bool]$Wait
+            validation_path = $validationPath
+            rows = @()
+        } | ConvertTo-Json -Depth 8 | Set-Content -Path $statusPath
+        throw "launch pack validation failed: $validationPath"
+    }
+}
 
 function Write-Status {
     param(
@@ -35,6 +57,7 @@ function Write-Status {
         updated_at = (Get-Date).ToString("o")
         execute = [bool]$Execute
         wait = [bool]$Wait
+        validation_path = if (Test-Path $validationPath) { $validationPath } else { $null }
         rows = $Rows
     } | ConvertTo-Json -Depth 8 | Set-Content -Path $statusPath
 }

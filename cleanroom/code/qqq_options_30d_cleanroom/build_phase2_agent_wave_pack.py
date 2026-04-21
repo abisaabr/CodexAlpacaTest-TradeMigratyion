@@ -118,9 +118,10 @@ def select_phase2_agent(operating_model: dict[str, Any], lane: dict[str, Any]) -
     ]
     if exact_matches:
         return exact_matches[0]
-    if deep_dive_agents:
-        return deep_dive_agents[0]
-    raise ValueError("No deep_dive agent found in the operating model")
+    raise ValueError(
+        f"No deep_dive agent matches strategy_set={strategy_set!r} "
+        f"selection_profile={selection_profile!r}"
+    )
 
 
 def build_overlap_summary(lanes: list[dict[str, Any]]) -> dict[str, Any]:

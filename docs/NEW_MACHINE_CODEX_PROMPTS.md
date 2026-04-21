@@ -47,6 +47,7 @@ Treat qqq_options_30d_cleanroom as the research workspace. Verify that the clean
 - build_agent_operating_model.py
 - build_agent_wave_launch_pack.py
 - build_phase2_agent_wave_pack.py
+- validate_agent_wave_pack.py
 - run_core_strategy_expansion_overnight.py
 - launch_down_choppy_program.ps1
 - launch_down_choppy_family_wave.ps1
@@ -79,9 +80,9 @@ Each large batch should leave behind a `run_manifest.json` inside its `research_
 
 Before assigning subagents for a new large wave, refresh the current operating model with `build_agent_operating_model.py` and use `docs/AGENT_OPERATING_MODEL.md` as the source of truth for role ownership, handoff artifacts, and the rule that only the Promotion Steward may write the live manifest.
 
-Before executing Phase 1 discovery, use `build_agent_wave_launch_pack.py` to generate an exact launch pack from the current operating model plus the current coverage-ranked plan, then use `launch_agent_wave.ps1` against that pack so lane commands, logs, and research directories stay reproducible. For a breadth-first discovery wave, prefer `--refresh-coverage --allocation-mode breadth --coverage-top-ready-per-lane 40` so the four lanes spread across more unique ready symbols instead of reusing the same small cohort.
+Before executing Phase 1 discovery, use `build_agent_wave_launch_pack.py` to generate an exact launch pack from the current operating model plus the current coverage-ranked plan, then use `launch_agent_wave.ps1` against that pack so lane commands, logs, and research directories stay reproducible. `launch_agent_wave.ps1` should run `validate_agent_wave_pack.py` automatically so missing ready datasets, mismatched command args, duplicate output paths, or governance drift fail before any lane starts. For a breadth-first discovery wave, prefer `--refresh-coverage --allocation-mode breadth --coverage-top-ready-per-lane 40` so the four lanes spread across more unique ready symbols instead of reusing the same small cohort.
 
-After `build_family_wave_shortlist.py` generates `phase2_plan.json`, build a second exact launch pack with `build_phase2_agent_wave_pack.py` and run that pack through `launch_agent_wave.ps1` for the exhaustive follow-up lanes. That keeps the shortlist thresholds, wave lineage, logs, research directories, and agent ownership reproducible instead of relying on ad hoc `phase2_commands.ps1` execution.
+After `build_family_wave_shortlist.py` generates `phase2_plan.json`, build a second exact launch pack with `build_phase2_agent_wave_pack.py` and run that pack through `launch_agent_wave.ps1` for the exhaustive follow-up lanes. That keeps the shortlist thresholds, wave lineage, logs, research directories, and agent ownership reproducible instead of relying on ad hoc `phase2_commands.ps1` execution, and it should fail fast if the Phase 2 agent mapping no longer matches the operating model exactly.
 
 At the end, report:
 - what tournament lane is running now

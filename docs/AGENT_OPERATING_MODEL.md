@@ -18,6 +18,7 @@
 - Checkpoint reuse is allowed only when the run signature still matches.
 - Build a phase-specific launch pack with `build_agent_wave_launch_pack.py` before starting a large discovery wave, then use `launch_agent_wave.ps1` so execution follows the generated pack instead of ad hoc commands.
 - After `build_family_wave_shortlist.py` produces `phase2_plan.json`, build a second exact pack with `build_phase2_agent_wave_pack.py` and run it through `launch_agent_wave.ps1` so the exhaustive follow-up lanes keep the same provenance, logs, and single-writer governance.
+- `launch_agent_wave.ps1` should run `validate_agent_wave_pack.py` automatically before either dry-run or execution so missing ready datasets, broken command args, duplicate paths, or governance drift fail fast.
 - For speed-first discovery, prefer `build_agent_wave_launch_pack.py --refresh-coverage --allocation-mode breadth --coverage-top-ready-per-lane 40` so the four Phase 1 lanes draw from a deeper ready universe and minimize cross-lane ticker overlap.
 
 ## Agent Roles
