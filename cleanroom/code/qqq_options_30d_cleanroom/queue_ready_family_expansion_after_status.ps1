@@ -6,6 +6,7 @@ param(
     [string[]]$Tickers,
     [string]$SelectionProfile = "balanced",
     [int]$ShardSize = 0,
+    [int]$MaxParallelShards = 1,
     [int]$PollSeconds = 60,
     [int]$TimeoutMinutes = 720
 )
@@ -35,7 +36,13 @@ $promotionPath = Join-Path $scriptRoot "wait_and_sync_live_manifest.ps1"
 $logsDir = Join-Path $researchPath "logs"
 $statusPath = Join-Path $researchPath "queued_familyexp_status.json"
 $logPath = Join-Path $logsDir "queued_familyexp.log"
-$deadline = (Get-Date).AddMinutes($TimeoutMinutes)
+$deadline =
+    if ($TimeoutMinutes -gt 0) {
+        (Get-Date).AddMinutes($TimeoutMinutes)
+    }
+    else {
+        $null
+    }
 
 New-Item -ItemType Directory -Force -Path $researchPath | Out-Null
 New-Item -ItemType Directory -Force -Path $logsDir | Out-Null
@@ -63,6 +70,7 @@ function Write-Status {
         repo_dir = $repoPath
         ready_base_dir = $readyBasePath
         selection_profile = $SelectionProfile
+        max_parallel_shards = $MaxParallelShards
         tickers = $Tickers
     }
     if ($Shards.Count -gt 0) {
@@ -113,7 +121,7 @@ function Invoke-FamilyExpansionShard {
         --ready-base-dir $readyBasePath `
         --research-dir $shardResearchPath `
         --strategy-set "family_expansion" `
-        --selection-profile $SelectionProfile
+        --selection-profile $SelectionProfile | Out-Null
 
     if ($LASTEXITCODE -ne 0) {
         Write-Log "Shard $ShardIndex/$ShardCount failed with exit code $LASTEXITCODE."
@@ -133,7 +141,7 @@ function Invoke-FamilyExpansionShard {
         -RepoDir $repoPath `
         -Tickers $ShardTickers `
         -PollSeconds 10 `
-        -TimeoutMinutes 60
+        -TimeoutMinutes 60 | Out-Null
 
     if ($LASTEXITCODE -ne 0) {
         Write-Log "Shard $ShardIndex/$ShardCount promotion failed with exit code $LASTEXITCODE."
@@ -172,10 +180,125 @@ function Build-Shards {
     return $shards
 }
 
+function Start-FamilyExpansionShardJob {
+    param(
+        [string[]]$ShardTickers,
+        [int]$ShardIndex,
+        [int]$ShardCount
+    )
+
+    $shardSuffix = "{0:D2}_{1}" -f $ShardIndex, ($ShardTickers -join "_")
+    $shardResearchPath =
+        if ($ShardCount -gt 1) {
+            Join-Path $researchPath ("shards\" + $shardSuffix)
+        }
+        else {
+            $researchPath
+        }
+    New-Item -ItemType Directory -Force -Path $shardResearchPath | Out-Null
+    Write-Log "Queueing family-expansion shard job $ShardIndex/$ShardCount for $($ShardTickers -join ', ')"
+
+    $job = Start-Job -ScriptBlock {
+        param(
+            [string]$LauncherPath,
+            [string]$PromotionPath,
+            [string]$ReadyBasePath,
+            [string]$RepoPath,
+            [string]$ShardResearchPath,
+            [string[]]$ShardTickers,
+            [string]$SelectionProfile,
+            [int]$ShardIndex,
+            [int]$ShardCount
+        )
+
+        $ErrorActionPreference = "Stop"
+
+        function Acquire-PromotionLock {
+            param([string]$LockPath)
+            while ($true) {
+                try {
+                    New-Item -ItemType Directory -Path $LockPath -ErrorAction Stop | Out-Null
+                    return
+                }
+                catch {
+                    Start-Sleep -Seconds 5
+                }
+            }
+        }
+
+        $result = [ordered]@{
+            shard_index = $ShardIndex
+            tickers = $ShardTickers
+            research_dir = $ShardResearchPath
+            phase = "failed"
+            stage = "research"
+            exit_code = 1
+        }
+
+        & python $LauncherPath `
+            --tickers ($ShardTickers -join ",") `
+            --ready-base-dir $ReadyBasePath `
+            --research-dir $ShardResearchPath `
+            --strategy-set "family_expansion" `
+            --selection-profile $SelectionProfile | Out-Null
+
+        if ($LASTEXITCODE -ne 0) {
+            $result.exit_code = $LASTEXITCODE
+            return [pscustomobject]$result
+        }
+
+        $lockPath = Join-Path $RepoPath ".codex_manifest_promotion_lock"
+        Acquire-PromotionLock -LockPath $lockPath
+        try {
+            & powershell -ExecutionPolicy Bypass -File $PromotionPath `
+                -ResearchDir $ShardResearchPath `
+                -RepoDir $RepoPath `
+                -Tickers $ShardTickers `
+                -PollSeconds 10 `
+                -TimeoutMinutes 60 | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                $result.stage = "promotion"
+                $result.exit_code = $LASTEXITCODE
+                return [pscustomobject]$result
+            }
+        }
+        finally {
+            if (Test-Path $lockPath) {
+                Remove-Item -Recurse -Force $lockPath
+            }
+        }
+
+        $result.phase = "completed"
+        $result.stage = "completed"
+        $result.exit_code = 0
+        return [pscustomobject]$result
+    } -ArgumentList @(
+        $launcherPath,
+        $promotionPath,
+        $readyBasePath,
+        $repoPath,
+        $shardResearchPath,
+        $ShardTickers,
+        $SelectionProfile,
+        $ShardIndex,
+        $ShardCount
+    )
+
+    return [pscustomobject]@{
+        job = $job
+        shard_index = $ShardIndex
+        tickers = $ShardTickers
+        research_dir = $shardResearchPath
+    }
+}
+
 Write-Log "Waiting for upstream status file $waitStatusFile"
 Write-Status -Phase "waiting" -Message "Waiting for the upstream tournament and promotion flow to complete."
 
-while ((Get-Date) -lt $deadline) {
+while ($true) {
+    if ($deadline -ne $null -and (Get-Date) -ge $deadline) {
+        break
+    }
     $phase = Get-WaitPhase
     if ($phase -eq "completed") {
         Write-Log "Upstream status file reports completed."
@@ -202,29 +325,102 @@ $allShardResults = @()
 Write-Log "Launching queued family-expansion tournament for $($Tickers -join ', ') in $shardCount shard(s)."
 Write-Status -Phase "running_family_expansion" -Message "Launching queued family-expansion tournament." -Shards $allShardResults
 
-for ($shardIndex = 0; $shardIndex -lt $shardCount; $shardIndex++) {
-    $result = Invoke-FamilyExpansionShard -ShardTickers $shards[$shardIndex] -ShardIndex ($shardIndex + 1) -ShardCount $shardCount
-    $allShardResults += $result
+if ($MaxParallelShards -le 1 -or $shardCount -le 1) {
+    for ($shardIndex = 0; $shardIndex -lt $shardCount; $shardIndex++) {
+        $result = Invoke-FamilyExpansionShard -ShardTickers $shards[$shardIndex] -ShardIndex ($shardIndex + 1) -ShardCount $shardCount
+        $allShardResults += $result
 
-    $successfulTickers = @(
-        $allShardResults |
-            Where-Object { $_.phase -eq "completed" } |
-            ForEach-Object { $_.tickers } |
-            ForEach-Object { $_ }
-    )
-    $failedTickers = @(
-        $allShardResults |
-            Where-Object { $_.phase -ne "completed" } |
-            ForEach-Object { $_.tickers } |
-            ForEach-Object { $_ }
-    )
+        $successfulTickers = @(
+            $allShardResults |
+                Where-Object { $_.phase -eq "completed" } |
+                ForEach-Object { $_.tickers } |
+                ForEach-Object { $_ }
+        )
+        $failedTickers = @(
+            $allShardResults |
+                Where-Object { $_.phase -ne "completed" } |
+                ForEach-Object { $_.tickers } |
+                ForEach-Object { $_ }
+        )
 
-    Write-Status `
-        -Phase "running_family_expansion" `
-        -Message "Processed $($shardIndex + 1) of $shardCount family-expansion shard(s)." `
-        -Shards $allShardResults `
-        -SuccessfulTickers $successfulTickers `
-        -FailedTickers $failedTickers
+        Write-Status `
+            -Phase "running_family_expansion" `
+            -Message "Processed $($shardIndex + 1) of $shardCount family-expansion shard(s)." `
+            -Shards $allShardResults `
+            -SuccessfulTickers $successfulTickers `
+            -FailedTickers $failedTickers
+    }
+}
+else {
+    $activeJobs = @()
+    $nextShardIndex = 0
+
+    while ($nextShardIndex -lt $shardCount -or $activeJobs.Count -gt 0) {
+        while ($nextShardIndex -lt $shardCount -and $activeJobs.Count -lt $MaxParallelShards) {
+            $activeJobs += Start-FamilyExpansionShardJob `
+                -ShardTickers $shards[$nextShardIndex] `
+                -ShardIndex ($nextShardIndex + 1) `
+                -ShardCount $shardCount
+            $nextShardIndex += 1
+        }
+
+        $jobsToWait = @($activeJobs | ForEach-Object { $_.job })
+        if (-not $jobsToWait) {
+            break
+        }
+        Wait-Job -Job $jobsToWait -Any -Timeout $PollSeconds | Out-Null
+
+        $stillActive = @()
+        foreach ($entry in $activeJobs) {
+            if ($entry.job.State -in @("Completed", "Failed", "Stopped")) {
+                $result = Receive-Job -Job $entry.job -Wait -AutoRemoveJob
+                if ($result -is [System.Array]) {
+                    $result = $result[-1]
+                }
+                if ($null -eq $result) {
+                    $result = [pscustomobject]@{
+                        shard_index = $entry.shard_index
+                        tickers = $entry.tickers
+                        research_dir = $entry.research_dir
+                        phase = "failed"
+                        stage = "unknown"
+                        exit_code = 99
+                    }
+                }
+                $allShardResults += $result
+                if ($result.phase -eq "completed") {
+                    Write-Log "Parallel shard $($result.shard_index)/$shardCount completed successfully."
+                }
+                else {
+                    Write-Log "Parallel shard $($result.shard_index)/$shardCount failed during $($result.stage) with exit code $($result.exit_code)."
+                }
+            }
+            else {
+                $stillActive += $entry
+            }
+        }
+        $activeJobs = $stillActive
+
+        $successfulTickers = @(
+            $allShardResults |
+                Where-Object { $_.phase -eq "completed" } |
+                ForEach-Object { $_.tickers } |
+                ForEach-Object { $_ }
+        )
+        $failedTickers = @(
+            $allShardResults |
+                Where-Object { $_.phase -ne "completed" } |
+                ForEach-Object { $_.tickers } |
+                ForEach-Object { $_ }
+        )
+
+        Write-Status `
+            -Phase "running_family_expansion" `
+            -Message "Processed $($allShardResults.Count) of $shardCount family-expansion shard(s)." `
+            -Shards $allShardResults `
+            -SuccessfulTickers $successfulTickers `
+            -FailedTickers $failedTickers
+    }
 }
 
 $completedShards = @($allShardResults | Where-Object { $_.phase -eq "completed" })
@@ -279,3 +475,4 @@ Write-Status `
     -SuccessfulTickers $successfulTickers `
     -FailedTickers $failedTickers
 exit 0
+

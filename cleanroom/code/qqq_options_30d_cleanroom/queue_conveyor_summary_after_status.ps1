@@ -30,7 +30,13 @@ $summaryScriptPath = Join-Path $scriptRoot "summarize_tournament_conveyor.py"
 $logsDir = Join-Path $summaryDir "logs"
 $statusPath = Join-Path $summaryDir "summary_queue_status.json"
 $logPath = Join-Path $logsDir "summary_queue.log"
-$deadline = (Get-Date).AddMinutes($TimeoutMinutes)
+$deadline =
+    if ($TimeoutMinutes -gt 0) {
+        (Get-Date).AddMinutes($TimeoutMinutes)
+    }
+    else {
+        $null
+    }
 
 New-Item -ItemType Directory -Force -Path $summaryDir | Out-Null
 New-Item -ItemType Directory -Force -Path $logsDir | Out-Null
@@ -76,7 +82,10 @@ function Get-WaitPhase {
 Write-Log "Waiting for final conveyor status file $waitStatusFile"
 Write-Status -Phase "waiting" -Message "Waiting for the final tournament conveyor wave to finish."
 
-while ((Get-Date) -lt $deadline) {
+while ($true) {
+    if ($deadline -ne $null -and (Get-Date) -ge $deadline) {
+        break
+    }
     $phase = Get-WaitPhase
     if ($phase -eq "completed") {
         Write-Log "Final conveyor wave completed successfully."
@@ -118,3 +127,4 @@ if ($LASTEXITCODE -ne 0) {
 Write-Log "Consolidated conveyor summary completed successfully."
 Write-Status -Phase "completed" -Message "Consolidated tournament conveyor summary completed."
 exit 0
+
