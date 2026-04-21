@@ -1335,7 +1335,20 @@ def select_leg(
     enriched["delta_distance"] = (enriched["delta"] - leg.target_delta).abs()
     enriched = enriched.sort_values(["delta_distance", "trade_count", "volume"], ascending=[True, False, False]).reset_index(drop=True)
     chosen = enriched.iloc[0]
-    fill_price = buy_fill(float(chosen["close"])) if leg.side == "long" else sell_fill(float(chosen["close"]))
+    execution_context = {
+        "trade_count": float(chosen["trade_count"]) if pd.notna(chosen["trade_count"]) else 0.0,
+        "volume": float(chosen["volume"]) if pd.notna(chosen["volume"]) else 0.0,
+        "has_trade_bar": bool(chosen["has_trade_bar"]),
+        "is_synthetic_bar": bool(chosen["is_synthetic_bar"]),
+        "session_has_any_trade": bool(chosen["session_has_any_trade"]),
+        "minute_index": int(minute_index),
+        "vwap": float(chosen["vwap"]) if pd.notna(chosen["vwap"]) else float(chosen["close"]),
+    }
+    fill_price = (
+        buy_fill(float(chosen["close"]), context=execution_context)
+        if leg.side == "long"
+        else sell_fill(float(chosen["close"]), context=execution_context)
+    )
     return {
         "symbol": str(chosen["symbol"]),
         "option_type": leg.option_type,
@@ -1350,17 +1363,28 @@ def select_leg(
         "gamma": float(chosen["gamma"]),
         "theta": float(chosen["theta"]),
         "vega": float(chosen["vega"]),
+        "entry_trade_count": execution_context["trade_count"],
+        "entry_volume": execution_context["volume"],
+        "entry_has_trade_bar": execution_context["has_trade_bar"],
+        "entry_is_synthetic_bar": execution_context["is_synthetic_bar"],
+        "entry_session_has_any_trade": execution_context["session_has_any_trade"],
+        "entry_vwap": execution_context["vwap"],
+        "entry_minute_index": execution_context["minute_index"],
     }
 
 
-def price_series(price_index: pd.DataFrame, trade_date: date, symbol: str) -> pd.Series | None:
+def price_frame(price_index: pd.DataFrame, trade_date: date, symbol: str) -> pd.DataFrame | None:
     try:
         frame = price_index.loc[(trade_date, symbol)]
     except KeyError:
         return None
     if isinstance(frame, pd.Series):
         frame = frame.to_frame().T
-    return frame["close"]
+    frame = frame.reset_index(drop=True)
+    if "minute_index" not in frame.columns:
+        return None
+    frame = frame.sort_values("minute_index").reset_index(drop=True)
+    return frame.set_index("minute_index", drop=False)
 
 
 def generate_candidate_trades(
@@ -1415,14 +1439,14 @@ def generate_candidate_trades(
             entry_raw_net_premium = combo_entry_raw_net_premium(legs)
             max_loss_per_combo, max_profit_per_combo = estimate_combo_bounds(legs=legs, entry_net_premium=entry_net_premium)
 
-            symbol_paths: dict[str, pd.Series] = {}
+            symbol_frames: dict[str, pd.DataFrame] = {}
             for leg in legs:
-                series = price_series(price_index=price_index, trade_date=ctx.trade_date, symbol=str(leg["symbol"]))
-                if series is None:
-                    symbol_paths = {}
+                frame = price_frame(price_index=price_index, trade_date=ctx.trade_date, symbol=str(leg["symbol"]))
+                if frame is None or frame.empty:
+                    symbol_frames = {}
                     break
-                symbol_paths[str(leg["symbol"])] = series
-            if not symbol_paths:
+                symbol_frames[str(leg["symbol"])] = frame
+            if not symbol_frames:
                 continue
 
             target_dollars = abs(entry_net_premium) * 100.0 * strategy.profit_target_multiple
@@ -1434,20 +1458,45 @@ def generate_candidate_trades(
             exit_raw_cash_per_combo = 0.0
             net_pnl_per_combo = 0.0
             exit_prices_raw: list[float] | None = None
+            exit_contexts: list[dict[str, object]] | None = None
 
             for idx in range(entry_idx + 1, hard_exit_idx + 1):
                 current_prices: list[float] = []
+                current_exit_contexts: list[dict[str, object]] = []
                 available = True
                 for leg in legs:
-                    raw_price = symbol_paths[str(leg["symbol"])].get(idx)
+                    symbol_frame = symbol_frames[str(leg["symbol"])]
+                    if idx not in symbol_frame.index:
+                        available = False
+                        break
+                    bar = symbol_frame.loc[idx]
+                    if isinstance(bar, pd.DataFrame):
+                        bar = bar.iloc[0]
+                    raw_price = bar.get("close")
                     if pd.isna(raw_price):
                         available = False
                         break
                     current_prices.append(float(raw_price))
+                    current_exit_contexts.append(
+                        {
+                            "trade_count": float(bar["trade_count"]) if pd.notna(bar.get("trade_count")) else 0.0,
+                            "volume": float(bar["volume"]) if pd.notna(bar.get("volume")) else 0.0,
+                            "has_trade_bar": bool(bar.get("has_trade_bar", False)),
+                            "is_synthetic_bar": bool(bar.get("is_synthetic_bar", False)),
+                            "session_has_any_trade": bool(bar.get("session_has_any_trade", False)),
+                            "minute_index": int(idx),
+                            "vwap": float(bar["vwap"]) if pd.notna(bar.get("vwap")) else float(raw_price),
+                        }
+                    )
                 if not available:
                     continue
 
-                current_exit_cash = close_cashflow(legs=legs, exit_prices_raw=current_prices, quantity=1)
+                current_exit_cash = close_cashflow(
+                    legs=legs,
+                    exit_prices_raw=current_prices,
+                    quantity=1,
+                    exit_contexts=current_exit_contexts,
+                )
                 current_exit_raw_cash = raw_close_cashflow(legs=legs, exit_prices_raw=current_prices, quantity=1)
                 current_net_pnl = entry_cash_per_combo + current_exit_cash - entry_commission_per_combo - exit_commission_per_combo
                 mark_to_market[idx] = current_exit_cash - exit_commission_per_combo
@@ -1459,6 +1508,7 @@ def generate_candidate_trades(
                     exit_raw_cash_per_combo = current_exit_raw_cash
                     net_pnl_per_combo = current_net_pnl
                     exit_prices_raw = list(current_prices)
+                    exit_contexts = list(current_exit_contexts)
                     break
                 if current_net_pnl <= -stop_dollars:
                     exit_idx = idx
@@ -1467,6 +1517,7 @@ def generate_candidate_trades(
                     exit_raw_cash_per_combo = current_exit_raw_cash
                     net_pnl_per_combo = current_net_pnl
                     exit_prices_raw = list(current_prices)
+                    exit_contexts = list(current_exit_contexts)
                     break
 
                 exit_idx = idx
@@ -1474,8 +1525,9 @@ def generate_candidate_trades(
                 exit_raw_cash_per_combo = current_exit_raw_cash
                 net_pnl_per_combo = current_net_pnl
                 exit_prices_raw = list(current_prices)
+                exit_contexts = list(current_exit_contexts)
 
-            if exit_idx is None or exit_prices_raw is None:
+            if exit_idx is None or exit_prices_raw is None or exit_contexts is None:
                 continue
 
             entry_time = ctx.frame.loc[entry_idx, "timestamp_et"]
@@ -1498,8 +1550,12 @@ def generate_candidate_trades(
                 else 0.0
             )
             leg_payload: list[dict[str, object]] = []
-            for leg, exit_price_raw in zip(legs, exit_prices_raw):
-                exit_fill = sell_fill(float(exit_price_raw)) if leg["side"] == "long" else buy_fill(float(exit_price_raw))
+            for leg, exit_price_raw, exit_context in zip(legs, exit_prices_raw, exit_contexts):
+                exit_fill = (
+                    sell_fill(float(exit_price_raw), context=exit_context)
+                    if leg["side"] == "long"
+                    else buy_fill(float(exit_price_raw), context=exit_context)
+                )
                 leg_payload.append(
                     {
                         **leg,
@@ -1507,6 +1563,13 @@ def generate_candidate_trades(
                         "entry_price_fill": round(float(leg["entry_price_fill"]), 4),
                         "exit_price_raw": round(float(exit_price_raw), 4),
                         "exit_price_fill": round(float(exit_fill), 4),
+                        "exit_trade_count": round(float(exit_context["trade_count"]), 4),
+                        "exit_volume": round(float(exit_context["volume"]), 4),
+                        "exit_has_trade_bar": bool(exit_context["has_trade_bar"]),
+                        "exit_is_synthetic_bar": bool(exit_context["is_synthetic_bar"]),
+                        "exit_session_has_any_trade": bool(exit_context["session_has_any_trade"]),
+                        "exit_vwap": round(float(exit_context["vwap"]), 4),
+                        "exit_minute_index": int(exit_context["minute_index"]),
                     }
                 )
             trades.append(

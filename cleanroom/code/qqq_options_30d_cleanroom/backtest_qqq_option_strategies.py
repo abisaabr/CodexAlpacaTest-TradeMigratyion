@@ -16,6 +16,15 @@ COMMISSION_PER_CONTRACT = 0.65
 SLIPPAGE_RATE = 0.01
 MIN_SLIPPAGE = 0.02
 MINUTES_PER_RTH_SESSION = 390
+PREMIUM_BUCKET_SLIPPAGE_MULTIPLIERS = {
+    "<0.15": 2.4,
+    "0.15-0.30": 1.8,
+    "0.30-0.60": 1.35,
+    "0.60-1.00": 1.10,
+    "1.00+": 1.0,
+}
+EARLY_SESSION_MINUTES = 15
+LATE_SESSION_MINUTES = 30
 
 
 def step_label(step: int) -> str:
@@ -31,13 +40,68 @@ def feature_column(dte: int, option_type: str, step: int, feature: str) -> str:
     return f"{slot_label(dte=dte, option_type=option_type, strike_step_distance=step)}_{feature}"
 
 
-def buy_fill(price: float) -> float:
-    slippage = max(MIN_SLIPPAGE, price * SLIPPAGE_RATE)
+def classify_premium_bucket(price: float) -> str:
+    if price < 0.15:
+        return "<0.15"
+    if price < 0.30:
+        return "0.15-0.30"
+    if price < 0.60:
+        return "0.30-0.60"
+    if price < 1.00:
+        return "0.60-1.00"
+    return "1.00+"
+
+
+def estimate_execution_slippage(price: float, context: dict[str, object] | None = None) -> float:
+    context = context or {}
+    base_slippage = max(MIN_SLIPPAGE, price * SLIPPAGE_RATE)
+    premium_multiplier = PREMIUM_BUCKET_SLIPPAGE_MULTIPLIERS[classify_premium_bucket(price)]
+
+    trade_count = float(context.get("trade_count", 0.0) or 0.0)
+    volume = float(context.get("volume", 0.0) or 0.0)
+    has_trade_bar = bool(context.get("has_trade_bar", True))
+    is_synthetic_bar = bool(context.get("is_synthetic_bar", False))
+    session_has_any_trade = bool(context.get("session_has_any_trade", True))
+    minute_index = int(context.get("minute_index", EARLY_SESSION_MINUTES))
+
+    liquidity_multiplier = 1.0
+    if trade_count <= 0:
+        liquidity_multiplier *= 1.45
+    elif trade_count <= 2:
+        liquidity_multiplier *= 1.25
+    elif trade_count >= 10:
+        liquidity_multiplier *= 0.92
+    if volume <= 0:
+        liquidity_multiplier *= 1.35
+    elif volume <= 10:
+        liquidity_multiplier *= 1.15
+    elif volume >= 100:
+        liquidity_multiplier *= 0.95
+
+    session_multiplier = 1.0
+    if minute_index < EARLY_SESSION_MINUTES:
+        session_multiplier *= 1.18
+    elif minute_index >= MINUTES_PER_RTH_SESSION - LATE_SESSION_MINUTES:
+        session_multiplier *= 1.12
+
+    data_quality_multiplier = 1.0
+    if not has_trade_bar:
+        data_quality_multiplier *= 1.35
+    if is_synthetic_bar:
+        data_quality_multiplier *= 1.20
+    if not session_has_any_trade:
+        data_quality_multiplier *= 1.15
+
+    return base_slippage * premium_multiplier * liquidity_multiplier * session_multiplier * data_quality_multiplier
+
+
+def buy_fill(price: float, context: dict[str, object] | None = None) -> float:
+    slippage = estimate_execution_slippage(price, context=context)
     return max(0.01, price + slippage)
 
 
-def sell_fill(price: float) -> float:
-    slippage = max(MIN_SLIPPAGE, price * SLIPPAGE_RATE)
+def sell_fill(price: float, context: dict[str, object] | None = None) -> float:
+    slippage = estimate_execution_slippage(price, context=context)
     return max(0.01, price - slippage)
 
 
@@ -463,6 +527,10 @@ def get_leg_entry_snapshot(
 ) -> dict[str, object] | None:
     close_col = feature_column(dte=dte, option_type=leg.option_type, step=leg.step, feature="close")
     trade_bar_col = feature_column(dte=dte, option_type=leg.option_type, step=leg.step, feature="has_trade_bar")
+    synthetic_col = feature_column(dte=dte, option_type=leg.option_type, step=leg.step, feature="is_synthetic_bar")
+    trade_count_col = feature_column(dte=dte, option_type=leg.option_type, step=leg.step, feature="trade_count")
+    volume_col = feature_column(dte=dte, option_type=leg.option_type, step=leg.step, feature="volume")
+    vwap_col = feature_column(dte=dte, option_type=leg.option_type, step=leg.step, feature="vwap")
     if close_col not in ctx.frame.columns or trade_bar_col not in ctx.frame.columns:
         return None
     close_price = ctx.frame.loc[entry_idx, close_col]
@@ -482,6 +550,12 @@ def get_leg_entry_snapshot(
         "spot_reference": float(metadata["spot_reference"]),
         "entry_price_raw": float(close_price),
         "entry_has_trade_bar": bool(has_trade_bar),
+        "entry_is_synthetic_bar": bool(ctx.frame.loc[entry_idx, synthetic_col]) if synthetic_col in ctx.frame.columns else False,
+        "entry_trade_count": float(ctx.frame.loc[entry_idx, trade_count_col]) if trade_count_col in ctx.frame.columns and pd.notna(ctx.frame.loc[entry_idx, trade_count_col]) else 0.0,
+        "entry_volume": float(ctx.frame.loc[entry_idx, volume_col]) if volume_col in ctx.frame.columns and pd.notna(ctx.frame.loc[entry_idx, volume_col]) else 0.0,
+        "entry_vwap": float(ctx.frame.loc[entry_idx, vwap_col]) if vwap_col in ctx.frame.columns and pd.notna(ctx.frame.loc[entry_idx, vwap_col]) else float(close_price),
+        "entry_minute_index": int(entry_idx),
+        "session_has_any_trade": bool(ctx.frame[trade_bar_col].fillna(False).any()),
     }
 
 
@@ -496,13 +570,20 @@ def open_cashflow(legs: list[dict[str, object]], quantity: int) -> float:
     return total
 
 
-def close_cashflow(legs: list[dict[str, object]], exit_prices_raw: list[float], quantity: int) -> float:
+def close_cashflow(
+    legs: list[dict[str, object]],
+    exit_prices_raw: list[float],
+    quantity: int,
+    exit_contexts: list[dict[str, object]] | None = None,
+) -> float:
     total = 0.0
-    for leg, raw_price in zip(legs, exit_prices_raw):
+    if exit_contexts is None:
+        exit_contexts = [None] * len(legs)
+    for leg, raw_price, context in zip(legs, exit_prices_raw, exit_contexts):
         if leg["side"] == "long":
-            total += sell_fill(raw_price) * 100.0 * quantity
+            total += sell_fill(raw_price, context=context) * 100.0 * quantity
         else:
-            total -= buy_fill(raw_price) * 100.0 * quantity
+            total -= buy_fill(raw_price, context=context) * 100.0 * quantity
     return total
 
 
@@ -598,7 +679,19 @@ def simulate_strategy(
                 skipped_counts["synthetic_entry"] += 1
                 legs = []
                 break
-            fill_price = buy_fill(snapshot["entry_price_raw"]) if snapshot["side"] == "long" else sell_fill(snapshot["entry_price_raw"])
+            entry_execution_context = {
+                "trade_count": snapshot.get("entry_trade_count", 0.0),
+                "volume": snapshot.get("entry_volume", 0.0),
+                "has_trade_bar": snapshot.get("entry_has_trade_bar", True),
+                "is_synthetic_bar": snapshot.get("entry_is_synthetic_bar", False),
+                "session_has_any_trade": snapshot.get("session_has_any_trade", True),
+                "minute_index": snapshot.get("entry_minute_index", entry_idx),
+            }
+            fill_price = (
+                buy_fill(snapshot["entry_price_raw"], context=entry_execution_context)
+                if snapshot["side"] == "long"
+                else sell_fill(snapshot["entry_price_raw"], context=entry_execution_context)
+            )
             snapshot["entry_price_fill"] = fill_price
             legs.append(snapshot)
 
@@ -628,11 +721,13 @@ def simulate_strategy(
         exit_idx: int | None = None
         exit_reason = "time_exit"
         exit_prices_raw: list[float] | None = None
+        exit_contexts: list[dict[str, object]] | None = None
         exit_cash = 0.0
         net_pnl = 0.0
 
         for idx in range(entry_idx + 1, hard_exit_idx + 1):
             current_prices: list[float] = []
+            current_exit_contexts: list[dict[str, object]] = []
             all_available = True
             for leg in legs:
                 raw_price = ctx.frame.loc[idx, str(leg["close_col"])]
@@ -640,16 +735,38 @@ def simulate_strategy(
                     all_available = False
                     break
                 current_prices.append(float(raw_price))
+                trade_bar_col = str(leg["close_col"]).replace("_close", "_has_trade_bar")
+                synthetic_col = str(leg["close_col"]).replace("_close", "_is_synthetic_bar")
+                trade_count_col = str(leg["close_col"]).replace("_close", "_trade_count")
+                volume_col = str(leg["close_col"]).replace("_close", "_volume")
+                vwap_col = str(leg["close_col"]).replace("_close", "_vwap")
+                current_exit_contexts.append(
+                    {
+                        "trade_count": float(ctx.frame.loc[idx, trade_count_col]) if trade_count_col in ctx.frame.columns and pd.notna(ctx.frame.loc[idx, trade_count_col]) else 0.0,
+                        "volume": float(ctx.frame.loc[idx, volume_col]) if volume_col in ctx.frame.columns and pd.notna(ctx.frame.loc[idx, volume_col]) else 0.0,
+                        "has_trade_bar": bool(ctx.frame.loc[idx, trade_bar_col]) if trade_bar_col in ctx.frame.columns else True,
+                        "is_synthetic_bar": bool(ctx.frame.loc[idx, synthetic_col]) if synthetic_col in ctx.frame.columns else False,
+                        "session_has_any_trade": bool(ctx.frame[trade_bar_col].fillna(False).any()) if trade_bar_col in ctx.frame.columns else True,
+                        "minute_index": int(idx),
+                        "vwap": float(ctx.frame.loc[idx, vwap_col]) if vwap_col in ctx.frame.columns and pd.notna(ctx.frame.loc[idx, vwap_col]) else float(raw_price),
+                    }
+                )
             if not all_available:
                 continue
 
-            current_exit_cash = close_cashflow(legs=legs, exit_prices_raw=current_prices, quantity=quantity)
+            current_exit_cash = close_cashflow(
+                legs=legs,
+                exit_prices_raw=current_prices,
+                quantity=quantity,
+                exit_contexts=current_exit_contexts,
+            )
             current_net_pnl = entry_cash + current_exit_cash - commission_total
 
             if current_net_pnl >= target_dollars:
                 exit_idx = idx
                 exit_reason = "profit_target"
                 exit_prices_raw = current_prices
+                exit_contexts = current_exit_contexts
                 exit_cash = current_exit_cash
                 net_pnl = current_net_pnl
                 break
@@ -658,16 +775,18 @@ def simulate_strategy(
                 exit_idx = idx
                 exit_reason = "stop_loss"
                 exit_prices_raw = current_prices
+                exit_contexts = current_exit_contexts
                 exit_cash = current_exit_cash
                 net_pnl = current_net_pnl
                 break
 
             exit_idx = idx
             exit_prices_raw = current_prices
+            exit_contexts = current_exit_contexts
             exit_cash = current_exit_cash
             net_pnl = current_net_pnl
 
-        if exit_idx is None or exit_prices_raw is None:
+        if exit_idx is None or exit_prices_raw is None or exit_contexts is None:
             skipped_counts["missing_exit_prices"] += 1
             equity_curve.append({"strategy": strategy.name, "trade_date": ctx.trade_date, "equity": equity})
             continue
@@ -678,7 +797,7 @@ def simulate_strategy(
         exit_timestamp = ctx.frame.loc[exit_idx, "timestamp_et"]
 
         leg_strings: list[str] = []
-        for leg, exit_price in zip(legs, exit_prices_raw):
+        for leg, exit_price, exit_context in zip(legs, exit_prices_raw, exit_contexts):
             leg_strings.append(
                 json.dumps(
                     {
@@ -690,6 +809,14 @@ def simulate_strategy(
                         "entry_price_raw": round(float(leg["entry_price_raw"]), 4),
                         "entry_price_fill": round(float(leg["entry_price_fill"]), 4),
                         "exit_price_raw": round(float(exit_price), 4),
+                        "exit_price_fill": round(
+                            float(
+                                sell_fill(exit_price, context=exit_context)
+                                if leg["side"] == "long"
+                                else buy_fill(exit_price, context=exit_context)
+                            ),
+                            4,
+                        ),
                     },
                     sort_keys=True,
                 )
@@ -834,7 +961,9 @@ def write_report(
     lines.append("- RTH only: 09:30 to 15:59 America/New_York")
     lines.append("- Incomplete session filtering removes partial days such as 2026-04-10")
     lines.append(f"- Per-contract commission: ${COMMISSION_PER_CONTRACT:.2f} each side")
-    lines.append(f"- Slippage model: {SLIPPAGE_RATE * 100:.1f}% adverse with a ${MIN_SLIPPAGE:.2f} minimum per option leg")
+    lines.append(
+        f"- Slippage model: {SLIPPAGE_RATE * 100:.1f}% adverse with a ${MIN_SLIPPAGE:.2f} base minimum per option leg, scaled by premium bucket, trade count, volume, synthetic bars, and time of day."
+    )
     lines.append(f"- Assumptions JSON: `{assumptions_path.name}`")
     lines.append("")
     lines.append("## Strategy Summary")
@@ -961,6 +1090,10 @@ def main() -> None:
         "commission_per_contract_each_side": COMMISSION_PER_CONTRACT,
         "slippage_rate": SLIPPAGE_RATE,
         "minimum_slippage_per_option": MIN_SLIPPAGE,
+        "premium_bucket_slippage_multipliers": PREMIUM_BUCKET_SLIPPAGE_MULTIPLIERS,
+        "early_session_minutes": EARLY_SESSION_MINUTES,
+        "late_session_minutes": LATE_SESSION_MINUTES,
+        "execution_model": "liquidity_aware_phase1",
         "complete_trade_dates": [ctx.trade_date.isoformat() for ctx in day_contexts],
         "strategies": [
             {
