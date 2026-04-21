@@ -15,6 +15,7 @@
 - Never allow concurrent live-manifest writers.
 - Every large lane must emit run_manifest.json and append to run_registry.jsonl.
 - After a wave or validation pass, build a fresh run-registry packet with `build_run_registry_report.py` so operators can review run status, lineage, ticker completion states, and terminal outcomes without scraping raw JSON by hand.
+- `launch_agent_wave.ps1` and `launch_down_choppy_program.ps1` should refresh a colocated `run_registry_report/` packet automatically so every dry-run, started wave, and completed wave leaves behind an operator-readable audit surface.
 - Promotion requires friction-aware results plus portfolio-context validation.
 - Checkpoint reuse is allowed only when the run signature still matches.
 - Build a phase-specific launch pack with `build_agent_wave_launch_pack.py` before starting a large discovery wave, then use `launch_agent_wave.ps1` so execution follows the generated pack instead of ad hoc commands.

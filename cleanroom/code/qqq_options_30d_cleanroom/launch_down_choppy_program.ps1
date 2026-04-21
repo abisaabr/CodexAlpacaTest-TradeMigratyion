@@ -26,9 +26,12 @@ $familyWaveLauncherPath = Join-Path $scriptRoot "launch_down_choppy_family_wave.
 $shortlistBuilderPath = Join-Path $scriptRoot "build_family_wave_shortlist.py"
 $phase2PackBuilderPath = Join-Path $scriptRoot "build_phase2_agent_wave_pack.py"
 $agentWaveLauncherPath = Join-Path $scriptRoot "launch_agent_wave.ps1"
+$runRegistryReporterPath = Join-Path $scriptRoot "build_run_registry_report.py"
 $defaultCoveragePlannerPath = Join-Path $scriptRoot "build_ticker_family_coverage.py"
 $materializerPath = Join-Path $scriptRoot "materialize_backtester_ready.py"
 $runnerPath = Join-Path $scriptRoot "run_core_strategy_expansion_overnight.py"
+$defaultOutputRoot = Join-Path $scriptRoot "output"
+$defaultRegistryPath = Join-Path $defaultOutputRoot "run_registry.jsonl"
 
 function Write-JsonFile {
     param(
@@ -40,6 +43,32 @@ function Write-JsonFile {
         New-Item -ItemType Directory -Force -Path $directory | Out-Null
     }
     $Payload | ConvertTo-Json -Depth 8 | Set-Content -Path $Path
+}
+
+function Invoke-RunRegistryReport {
+    param(
+        [string]$ReportDir,
+        [string[]]$ManifestRoots
+    )
+    if (-not (Test-Path $runRegistryReporterPath)) {
+        return
+    }
+    $reportArgs = @(
+        $runRegistryReporterPath,
+        "--output-root", $defaultOutputRoot,
+        "--registry-path", $defaultRegistryPath,
+        "--report-dir", $ReportDir
+    )
+    $uniqueRoots = New-Object System.Collections.Generic.HashSet[string]
+    foreach ($root in @($ManifestRoots)) {
+        if (-not [string]::IsNullOrWhiteSpace($root)) {
+            [void]$uniqueRoots.Add([System.IO.Path]::GetFullPath($root))
+        }
+    }
+    foreach ($root in $uniqueRoots) {
+        $reportArgs += @("--manifest-root", $root)
+    }
+    & $PythonExe @reportArgs | Out-Null
 }
 
 function Normalize-ExitCode {
@@ -291,6 +320,7 @@ $phase2Root = Join-Path $programRootPath "phase2"
 $phase2PackRoot = Join-Path $phase2Root "launch_pack"
 $coverageRoot = Join-Path $programRootPath "coverage"
 $logsRoot = Join-Path $programRootPath "logs"
+$runRegistryReportDir = Join-Path $programRootPath "run_registry_report"
 $statusPath = Join-Path $programRootPath "program_status.json"
 $manifestPath = Join-Path $programRootPath "program_manifest.json"
 $phase1StatusPath = Join-Path $programRootPath "phase1_status.json"
@@ -303,6 +333,7 @@ New-Item -ItemType Directory -Force -Path $phase2Root | Out-Null
 New-Item -ItemType Directory -Force -Path $phase2PackRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $coverageRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $logsRoot | Out-Null
+New-Item -ItemType Directory -Force -Path $runRegistryReportDir | Out-Null
 
 if ([string]::IsNullOrWhiteSpace($CoveragePlannerPath)) {
     $CoveragePlannerPath = $defaultCoveragePlannerPath
@@ -436,8 +467,10 @@ if (-not $Execute) {
         updated_at = (Get-Date).ToString("o")
         wave_plan_path = $wavePlanPath
         manifest_path = $manifestPath
+        run_registry_report_dir = $runRegistryReportDir
         next_step = "Run this script again with -Execute to launch discovery, shortlist, and phase-2 exhaustive lanes."
     })
+    Invoke-RunRegistryReport -ReportDir $runRegistryReportDir -ManifestRoots @($programRootPath, $discoveryRoot, $phase2Root)
     Write-Output ($manifest | ConvertTo-Json -Depth 8)
     exit 0
 }
@@ -461,6 +494,7 @@ Write-JsonFile -Path $phase1StatusPath -Payload ([ordered]@{
     updated_at = (Get-Date).ToString("o")
     results = $phase1Results
 })
+Invoke-RunRegistryReport -ReportDir $runRegistryReportDir -ManifestRoots @($programRootPath, $discoveryRoot, $phase2Root)
 
 Write-JsonFile -Path $statusPath -Payload ([ordered]@{
     phase = "phase1_shortlisting"
@@ -524,8 +558,10 @@ if (-not $RunPhase2) {
         updated_at = (Get-Date).ToString("o")
         phase2_plan_path = $phase2PlanPath
         phase2_pack_path = $phase2PackPath
+        run_registry_report_dir = $runRegistryReportDir
         note = "Phase 2 launch disabled."
     })
+    Invoke-RunRegistryReport -ReportDir $runRegistryReportDir -ManifestRoots @($programRootPath, $discoveryRoot, $phase2Root)
     exit 0
 }
 
@@ -537,8 +573,10 @@ if (-not $phase2LanesToRun) {
         updated_at = (Get-Date).ToString("o")
         phase2_plan_path = $phase2PlanPath
         phase2_pack_path = $phase2PackPath
+        run_registry_report_dir = $runRegistryReportDir
         note = "No tickers survived into phase 2."
     })
+    Invoke-RunRegistryReport -ReportDir $runRegistryReportDir -ManifestRoots @($programRootPath, $discoveryRoot, $phase2Root, (Join-Path $phase2Root "lanes"))
     exit 0
 }
 
@@ -576,6 +614,7 @@ Write-JsonFile -Path $phase2StatusPath -Payload ([ordered]@{
     results = $phase2Results
     launch_status_path = $phase2PackStatusPath
 })
+Invoke-RunRegistryReport -ReportDir $runRegistryReportDir -ManifestRoots @($programRootPath, $discoveryRoot, $phase2Root, (Join-Path $phase2Root "lanes"))
 
 Write-JsonFile -Path $statusPath -Payload ([ordered]@{
     phase = "complete"
@@ -586,6 +625,7 @@ Write-JsonFile -Path $statusPath -Payload ([ordered]@{
     phase2_pack_path = $phase2PackPath
     phase1_status_path = $phase1StatusPath
     phase2_status_path = $phase2StatusPath
+    run_registry_report_dir = $runRegistryReportDir
 })
 
 Write-Output (([ordered]@{
@@ -593,4 +633,5 @@ Write-Output (([ordered]@{
     phase1_status_path = $phase1StatusPath
     shortlist_root = $shortlistRoot
     phase2_status_path = $phase2StatusPath
+    run_registry_report_dir = $runRegistryReportDir
 } | ConvertTo-Json -Depth 6))

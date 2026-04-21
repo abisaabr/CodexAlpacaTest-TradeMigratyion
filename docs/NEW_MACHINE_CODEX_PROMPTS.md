@@ -80,6 +80,7 @@ Before launching the next large wave, run build_ticker_family_coverage.py to ref
 Each large batch should leave behind a `run_manifest.json` inside its `research_dir` plus an append-only `run_registry.jsonl` under the cleanroom `output` root. Use those files to verify machine lineage, code lineage, input fingerprints, ticker completion state, and the final shared-account snapshot before trusting or promoting results.
 
 After any large wave or validation pass, run `build_run_registry_report.py` so you have a clean operator packet showing run status, recent runs, attention items, code refs, ticker-state counts, and the exact research directories tied to each `run_id`.
+When you use `launch_agent_wave.ps1` or `launch_down_choppy_program.ps1`, expect them to refresh a sibling `run_registry_report/` directory automatically; inspect that packet before deciding whether a wave is healthy, stuck, or ready for promotion review.
 
 Before assigning subagents for a new large wave, refresh the current operating model with `build_agent_operating_model.py` and use `docs/AGENT_OPERATING_MODEL.md` as the source of truth for role ownership, handoff artifacts, and the rule that only the Promotion Steward may write the live manifest.
 

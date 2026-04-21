@@ -23,9 +23,46 @@ if ([string]::IsNullOrWhiteSpace($PythonExe)) {
     $PythonExe = [string]$pack.python_exe
 }
 
+$scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $statusPath = Join-Path (Split-Path -Parent $packFile) "launch_status.json"
 $validationPath = Join-Path (Split-Path -Parent $packFile) "pack_validation.json"
-$validatorPath = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) "validate_agent_wave_pack.py"
+$runRegistryReportDir = Join-Path (Split-Path -Parent $packFile) "run_registry_report"
+$validatorPath = Join-Path $scriptRoot "validate_agent_wave_pack.py"
+$reporterPath = Join-Path $scriptRoot "build_run_registry_report.py"
+$defaultOutputRoot = Join-Path $scriptRoot "output"
+$defaultRegistryPath = Join-Path $defaultOutputRoot "run_registry.jsonl"
+
+function Invoke-RunRegistryReport {
+    param(
+        [object[]]$Rows
+    )
+    if (-not (Test-Path $reporterPath)) {
+        return
+    }
+
+    $reportArgs = @(
+        $reporterPath,
+        "--output-root", $defaultOutputRoot,
+        "--registry-path", $defaultRegistryPath,
+        "--report-dir", $runRegistryReportDir
+    )
+
+    $manifestRoots = New-Object System.Collections.Generic.HashSet[string]
+    foreach ($row in @($Rows)) {
+        if ($null -eq $row) {
+            continue
+        }
+        $researchDir = [string]$row.research_dir
+        if (-not [string]::IsNullOrWhiteSpace($researchDir)) {
+            [void]$manifestRoots.Add([System.IO.Path]::GetFullPath($researchDir))
+        }
+    }
+    foreach ($manifestRoot in $manifestRoots) {
+        $reportArgs += @("--manifest-root", $manifestRoot)
+    }
+
+    & $PythonExe @reportArgs | Out-Null
+}
 
 if (-not $SkipValidation) {
     if (-not (Test-Path $validatorPath)) {
@@ -58,6 +95,7 @@ function Write-Status {
         execute = [bool]$Execute
         wait = [bool]$Wait
         validation_path = if (Test-Path $validationPath) { $validationPath } else { $null }
+        run_registry_report_dir = if (Test-Path $runRegistryReportDir) { $runRegistryReportDir } else { $null }
         rows = $Rows
     } | ConvertTo-Json -Depth 8 | Set-Content -Path $statusPath
 }
@@ -77,6 +115,7 @@ foreach ($lane in @($pack.lanes)) {
 
 if (-not $Execute) {
     Write-Status -Phase "dry_run" -Rows $planRows
+    Invoke-RunRegistryReport -Rows $planRows
     Write-Output ($planRows | ConvertTo-Json -Depth 8)
     return
 }
@@ -122,6 +161,7 @@ if (-not $Wait) {
         }
     }
     Write-Status -Phase "started" -Rows $statusRows
+    Invoke-RunRegistryReport -Rows $statusRows
     Write-Output ($statusRows | ConvertTo-Json -Depth 8)
     return
 }
@@ -167,4 +207,5 @@ foreach ($row in $processRows) {
 }
 
 Write-Status -Phase "completed" -Rows $finalRows
+Invoke-RunRegistryReport -Rows $finalRows
 Write-Output ($finalRows | ConvertTo-Json -Depth 8)

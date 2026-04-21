@@ -21,6 +21,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-root", default=str(DEFAULT_OUTPUT_ROOT))
     parser.add_argument("--registry-path", default=str(DEFAULT_REGISTRY_PATH))
     parser.add_argument(
+        "--manifest-root",
+        action="append",
+        default=[],
+        help="Additional roots to scan for run_manifest.json files, in addition to --output-root.",
+    )
+    parser.add_argument(
         "--report-dir",
         default=str(DEFAULT_OUTPUT_ROOT / f"run_registry_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}"),
     )
@@ -87,11 +93,15 @@ def load_registry_events(path: Path) -> list[dict[str, Any]]:
     return events
 
 
-def scan_run_manifests(output_root: Path) -> list[Path]:
-    manifests: list[Path] = []
-    for path in output_root.rglob("run_manifest.json"):
-        manifests.append(path)
-    return sorted(manifests)
+def scan_run_manifests(output_root: Path, extra_roots: list[Path]) -> list[Path]:
+    manifests: dict[str, Path] = {}
+    roots = [output_root, *extra_roots]
+    for root in roots:
+        if not root.exists():
+            continue
+        for path in root.rglob("run_manifest.json"):
+            manifests[str(path.resolve())] = path.resolve()
+    return sorted(manifests.values())
 
 
 def descriptor_exists(descriptor: Any) -> bool:
@@ -505,10 +515,11 @@ def main() -> None:
     output_root = Path(args.output_root).resolve()
     registry_path = Path(args.registry_path).resolve()
     report_dir = Path(args.report_dir).resolve()
+    extra_manifest_roots = [Path(value).resolve() for value in args.manifest_root if str(value).strip()]
     report_dir.mkdir(parents=True, exist_ok=True)
 
     registry_events = load_registry_events(registry_path)
-    manifest_paths = scan_run_manifests(output_root)
+    manifest_paths = scan_run_manifests(output_root, extra_manifest_roots)
 
     events_by_run: dict[str, list[dict[str, Any]]] = {}
     for payload in registry_events:
@@ -625,6 +636,7 @@ def main() -> None:
         "inputs": {
             "output_root": str(output_root),
             "registry_path": str(registry_path),
+            "manifest_roots": [str(output_root), *[str(path) for path in extra_manifest_roots]],
             "manifest_count": len(manifest_paths),
             "registry_event_count": len(registry_events),
         },
