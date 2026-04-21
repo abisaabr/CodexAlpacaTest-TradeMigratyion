@@ -32,6 +32,28 @@ $reporterPath = Join-Path $scriptRoot "build_run_registry_report.py"
 $defaultOutputRoot = Join-Path $scriptRoot "output"
 $defaultRegistryPath = Join-Path $defaultOutputRoot "run_registry.jsonl"
 
+function Convert-ArgumentListToCommandLine {
+    param([object[]]$Arguments)
+
+    $tokens = foreach ($argument in @($Arguments)) {
+        $text = [string]$argument
+        if ($text.Length -eq 0) {
+            '""'
+            continue
+        }
+        if ($text -match '[\s"]') {
+            $escaped = $text -replace '(\\*)"', '$1$1\"'
+            $escaped = $escaped -replace '(\\+)$', '$1$1'
+            '"' + $escaped + '"'
+        }
+        else {
+            $text
+        }
+    }
+
+    return ($tokens -join ' ')
+}
+
 function Invoke-RunRegistryReport {
     param(
         [object[]]$Rows
@@ -127,8 +149,9 @@ foreach ($lane in @($pack.lanes)) {
     New-Item -ItemType Directory -Force -Path $researchDir | Out-Null
     New-Item -ItemType Directory -Force -Path $logsDir | Out-Null
 
+    $argumentLine = Convert-ArgumentListToCommandLine -Arguments @($lane.command_args)
     $process = Start-Process -FilePath $PythonExe `
-        -ArgumentList @($lane.command_args) `
+        -ArgumentList $argumentLine `
         -WorkingDirectory (Split-Path -Parent [string]$pack.runner_path) `
         -RedirectStandardOutput ([string]$lane.stdout_path) `
         -RedirectStandardError ([string]$lane.stderr_path) `

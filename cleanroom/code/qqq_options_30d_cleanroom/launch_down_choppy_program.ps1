@@ -81,6 +81,28 @@ function Normalize-ExitCode {
     }
 }
 
+function Convert-ArgumentListToCommandLine {
+    param([object[]]$Arguments)
+
+    $tokens = foreach ($argument in @($Arguments)) {
+        $text = [string]$argument
+        if ($text.Length -eq 0) {
+            '""'
+            continue
+        }
+        if ($text -match '[\s"]') {
+            $escaped = $text -replace '(\\*)"', '$1$1\"'
+            $escaped = $escaped -replace '(\\+)$', '$1$1'
+            '"' + $escaped + '"'
+        }
+        else {
+            $text
+        }
+    }
+
+    return ($tokens -join ' ')
+}
+
 function Start-LaneProcess {
     param(
         [pscustomobject]$Lane,
@@ -113,8 +135,9 @@ function Start-LaneProcess {
         }
     }
 
+    $argumentLine = Convert-ArgumentListToCommandLine -Arguments $args
     $process = Start-Process -FilePath $PythonExe `
-        -ArgumentList $args `
+        -ArgumentList $argumentLine `
         -WorkingDirectory $scriptRoot `
         -RedirectStandardOutput $stdoutPath `
         -RedirectStandardError $stderrPath `

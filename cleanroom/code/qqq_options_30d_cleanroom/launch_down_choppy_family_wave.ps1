@@ -40,6 +40,28 @@ function Invoke-RunRegistryReport {
     & python @reportArgs | Out-Null
 }
 
+function Convert-ArgumentListToCommandLine {
+    param([object[]]$Arguments)
+
+    $tokens = foreach ($argument in @($Arguments)) {
+        $text = [string]$argument
+        if ($text.Length -eq 0) {
+            '""'
+            continue
+        }
+        if ($text -match '[\s"]') {
+            $escaped = $text -replace '(\\*)"', '$1$1\"'
+            $escaped = $escaped -replace '(\\+)$', '$1$1'
+            '"' + $escaped + '"'
+        }
+        else {
+            $text
+        }
+    }
+
+    return ($tokens -join ' ')
+}
+
 $tickers = @(
     Get-ChildItem $readyBasePath -Directory |
         Where-Object { $_.Name -ne "collections" -and (Test-Path (Join-Path $_.FullName "manifest.json")) } |
@@ -143,7 +165,7 @@ Invoke-RunRegistryReport
 
 if ($Execute) {
     foreach ($row in $planRows) {
-        Start-Process -FilePath $PythonExe -ArgumentList @(
+        $argumentLine = Convert-ArgumentListToCommandLine -Arguments @(
             $runnerPath,
             "--tickers", ($tickers -join ","),
             "--ready-base-dir", $readyBasePath,
@@ -151,7 +173,8 @@ if ($Execute) {
             "--strategy-set", $row.strategy_set,
             "--selection-profile", $row.selection_profile,
             "--family-include", $row.family_include
-        ) -WorkingDirectory $scriptRoot
+        )
+        Start-Process -FilePath $PythonExe -ArgumentList $argumentLine -WorkingDirectory $scriptRoot
     }
     Invoke-RunRegistryReport
 }
