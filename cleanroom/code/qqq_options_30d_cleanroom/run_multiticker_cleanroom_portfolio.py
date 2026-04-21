@@ -61,9 +61,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--step-days", type=int, default=DEFAULT_STEP_DAYS)
     parser.add_argument(
         "--strategy-set",
-        choices=("standard", "family_expansion", "down_choppy_only"),
+        choices=("standard", "family_expansion", "down_choppy_only", "down_choppy_exhaustive"),
         default="standard",
-        help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates, and 'down_choppy_only' runs a lean bearish/choppy search surface.",
+        help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates, 'down_choppy_only' runs a lean bearish/choppy search surface, and 'down_choppy_exhaustive' expands bearish/choppy parameter sweeps.",
     )
     parser.add_argument(
         "--continue-on-error",
@@ -127,7 +127,7 @@ def build_timing_profiles(strategy_set: str = "standard") -> tuple[TimingProfile
             condor_minute=60,
         ),
     )
-    if strategy_set == "down_choppy_only":
+    if strategy_set in {"down_choppy_only", "down_choppy_exhaustive"}:
         # Keep the bearish/choppy tournament lean so we can cover more symbols faster.
         return tuple(profile for profile in profiles if profile.name in {"reactive", "fast", "base"})
     return profiles
@@ -272,6 +272,24 @@ def build_selection_grids(
             "top_bear_values": [1, 2, 3],
             "top_choppy_values": [1, 2, 3],
             "min_trade_values": [3, 5, 8],
+            "risk_caps": [0.08, 0.10, 0.12, 0.15],
+        }
+    if strategy_set == "down_choppy_exhaustive":
+        if selection_profile == "down_choppy_focus":
+            return {
+                "thresholds": [0.30, 0.35, 0.40, 0.45, 0.50],
+                "top_bull_values": [0, 1],
+                "top_bear_values": [1, 2, 3, 4],
+                "top_choppy_values": [1, 2, 3],
+                "min_trade_values": [2, 3, 5, 8],
+                "risk_caps": [0.08, 0.10, 0.12, 0.15],
+            }
+        return {
+            "thresholds": [0.30, 0.35, 0.40, 0.45, 0.50],
+            "top_bull_values": [0, 1, 2],
+            "top_bear_values": [1, 2, 3, 4],
+            "top_choppy_values": [1, 2, 3],
+            "min_trade_values": [2, 3, 5, 8],
             "risk_caps": [0.08, 0.10, 0.12, 0.15],
         }
     if selection_profile == "down_choppy_focus":
@@ -500,6 +518,24 @@ def enrich_candidate_trades(trades: pd.DataFrame) -> pd.DataFrame:
     enriched["ticker"] = [item[0] for item in metadata]
     enriched["timing_profile"] = [item[1] for item in metadata]
     enriched["base_strategy"] = [item[2] for item in metadata]
+    if "abs_entry_net_premium" not in enriched.columns and "entry_net_premium" in enriched.columns:
+        enriched["abs_entry_net_premium"] = enriched["entry_net_premium"].abs()
+    if "premium_bucket" not in enriched.columns and "abs_entry_net_premium" in enriched.columns:
+        enriched["premium_bucket"] = [
+            bqp.classify_premium_bucket(float(value))
+            for value in enriched["abs_entry_net_premium"].fillna(0.0)
+        ]
+    if "is_sub_015_premium" not in enriched.columns and "abs_entry_net_premium" in enriched.columns:
+        enriched["is_sub_015_premium"] = enriched["abs_entry_net_premium"] < 0.15
+    if "is_sub_030_premium" not in enriched.columns and "abs_entry_net_premium" in enriched.columns:
+        enriched["is_sub_030_premium"] = enriched["abs_entry_net_premium"] < 0.30
+    if "total_commission_per_combo" not in enriched.columns and {
+        "entry_commission_per_combo",
+        "exit_commission_per_combo",
+    }.issubset(enriched.columns):
+        enriched["total_commission_per_combo"] = (
+            enriched["entry_commission_per_combo"] + enriched["exit_commission_per_combo"]
+        )
     return enriched
 
 
@@ -524,35 +560,108 @@ def family_bucket_for_strategy_family(family: str) -> str:
     return family
 
 
-def summarize_strategy_group_contributions(
+def summarize_group_contributions(
     *,
     trades_df: pd.DataFrame,
-    strategy_map: dict[str, DeltaStrategy] | None,
     group_column: str,
-    group_resolver,
+    group_values: list[str] | None = None,
 ) -> list[dict[str, object]]:
-    if trades_df.empty or not strategy_map:
+    if trades_df.empty or group_column not in trades_df.columns:
         return []
     enriched = trades_df.copy()
-    enriched[group_column] = [
-        group_resolver(strategy_map.get(str(name))) if strategy_map.get(str(name)) is not None else "Unknown"
-        for name in enriched["strategy"].astype(str)
-    ]
+    if group_values is not None:
+        enriched[group_column] = group_values
+    agg_spec: dict[str, tuple[str, str | object]] = {
+        "portfolio_net_pnl": ("portfolio_net_pnl", "sum"),
+        "trade_count": ("portfolio_net_pnl", "size"),
+        "win_rate_pct": ("portfolio_net_pnl", lambda values: (values > 0).mean() * 100.0),
+        "avg_trade_pnl": ("portfolio_net_pnl", "mean"),
+    }
+    if "abs_entry_net_premium" in enriched.columns:
+        agg_spec["avg_entry_premium"] = ("abs_entry_net_premium", "mean")
+        agg_spec["median_entry_premium"] = ("abs_entry_net_premium", "median")
+    if "total_friction_per_combo" in enriched.columns:
+        agg_spec["avg_total_friction_per_combo"] = ("total_friction_per_combo", "mean")
+    if "friction_pct_of_entry_premium" in enriched.columns:
+        agg_spec["avg_friction_pct_of_entry_premium"] = ("friction_pct_of_entry_premium", "mean")
+    if "is_sub_030_premium" in enriched.columns:
+        agg_spec["sub_030_trade_share_pct"] = ("is_sub_030_premium", lambda values: values.mean() * 100.0)
     grouped = (
         enriched.groupby(group_column, as_index=False)
-        .agg(
-            portfolio_net_pnl=("portfolio_net_pnl", "sum"),
-            trade_count=("portfolio_net_pnl", "size"),
-            win_rate_pct=("portfolio_net_pnl", lambda values: (values > 0).mean() * 100.0),
-            avg_trade_pnl=("portfolio_net_pnl", "mean"),
-        )
+        .agg(**agg_spec)
         .sort_values(["portfolio_net_pnl", "trade_count"], ascending=[False, False])
         .reset_index(drop=True)
     )
-    grouped["portfolio_net_pnl"] = grouped["portfolio_net_pnl"].round(2)
-    grouped["win_rate_pct"] = grouped["win_rate_pct"].round(2)
-    grouped["avg_trade_pnl"] = grouped["avg_trade_pnl"].round(2)
+    for column in (
+        "portfolio_net_pnl",
+        "win_rate_pct",
+        "avg_trade_pnl",
+        "avg_entry_premium",
+        "median_entry_premium",
+        "avg_total_friction_per_combo",
+        "avg_friction_pct_of_entry_premium",
+        "sub_030_trade_share_pct",
+    ):
+        if column in grouped.columns:
+            grouped[column] = grouped[column].round(2)
     return grouped.to_dict(orient="records")
+
+
+def build_friction_profile(trades_df: pd.DataFrame) -> dict[str, float | int]:
+    if trades_df.empty:
+        return {
+            "trade_count": 0,
+            "avg_entry_premium": 0.0,
+            "median_entry_premium": 0.0,
+            "avg_total_friction_per_combo": 0.0,
+            "median_total_friction_per_combo": 0.0,
+            "avg_friction_pct_of_entry_premium": 0.0,
+            "median_friction_pct_of_entry_premium": 0.0,
+            "total_commission": 0.0,
+            "total_slippage": 0.0,
+            "total_friction": 0.0,
+            "friction_share_of_total_premium_pct": 0.0,
+            "trade_count_sub_0_15": 0,
+            "trade_count_sub_0_30": 0,
+            "trade_share_sub_0_15_pct": 0.0,
+            "trade_share_sub_0_30_pct": 0.0,
+            "net_pnl_sub_0_15": 0.0,
+            "net_pnl_sub_0_30": 0.0,
+        }
+    quantity = trades_df["quantity"] if "quantity" in trades_df.columns else 1.0
+    premium_series = trades_df["abs_entry_net_premium"] if "abs_entry_net_premium" in trades_df.columns else pd.Series(0.0, index=trades_df.index)
+    total_commission_per_combo = trades_df["total_commission_per_combo"] if "total_commission_per_combo" in trades_df.columns else pd.Series(0.0, index=trades_df.index)
+    total_slippage_per_combo = trades_df["total_slippage_per_combo"] if "total_slippage_per_combo" in trades_df.columns else pd.Series(0.0, index=trades_df.index)
+    total_friction_per_combo = trades_df["total_friction_per_combo"] if "total_friction_per_combo" in trades_df.columns else pd.Series(0.0, index=trades_df.index)
+    friction_pct_series = trades_df["friction_pct_of_entry_premium"] if "friction_pct_of_entry_premium" in trades_df.columns else pd.Series(0.0, index=trades_df.index)
+    pnl_column = "portfolio_net_pnl" if "portfolio_net_pnl" in trades_df.columns else "net_pnl_per_combo"
+    pnl_series = trades_df[pnl_column] if pnl_column in trades_df.columns else pd.Series(0.0, index=trades_df.index)
+    sub_015_mask = trades_df["is_sub_015_premium"] if "is_sub_015_premium" in trades_df.columns else (premium_series < 0.15)
+    sub_030_mask = trades_df["is_sub_030_premium"] if "is_sub_030_premium" in trades_df.columns else (premium_series < 0.30)
+    total_premium_dollars = float((premium_series * 100.0 * quantity).sum())
+    total_commission = float((total_commission_per_combo * quantity).sum())
+    total_slippage = float((total_slippage_per_combo * quantity).sum())
+    total_friction = float((total_friction_per_combo * quantity).sum())
+    trade_count = int(len(trades_df))
+    return {
+        "trade_count": trade_count,
+        "avg_entry_premium": round(float(premium_series.mean()), 4),
+        "median_entry_premium": round(float(premium_series.median()), 4),
+        "avg_total_friction_per_combo": round(float(total_friction_per_combo.mean()), 4),
+        "median_total_friction_per_combo": round(float(total_friction_per_combo.median()), 4),
+        "avg_friction_pct_of_entry_premium": round(float(friction_pct_series.mean()), 2),
+        "median_friction_pct_of_entry_premium": round(float(friction_pct_series.median()), 2),
+        "total_commission": round(total_commission, 2),
+        "total_slippage": round(total_slippage, 2),
+        "total_friction": round(total_friction, 2),
+        "friction_share_of_total_premium_pct": round((total_friction / total_premium_dollars) * 100.0, 2) if total_premium_dollars > 0.0 else 0.0,
+        "trade_count_sub_0_15": int(sub_015_mask.sum()),
+        "trade_count_sub_0_30": int(sub_030_mask.sum()),
+        "trade_share_sub_0_15_pct": round(float(sub_015_mask.mean() * 100.0), 2),
+        "trade_share_sub_0_30_pct": round(float(sub_030_mask.mean() * 100.0), 2),
+        "net_pnl_sub_0_15": round(float(pnl_series[sub_015_mask].sum()), 2),
+        "net_pnl_sub_0_30": round(float(pnl_series[sub_030_mask].sum()), 2),
+    }
 
 
 def attach_family_contributions(
@@ -562,18 +671,36 @@ def attach_family_contributions(
     strategy_map: dict[str, DeltaStrategy] | None,
 ) -> dict[str, object]:
     enriched = dict(summary)
-    enriched["family_contributions"] = summarize_strategy_group_contributions(
+    if trades_df.empty or not strategy_map:
+        enriched["family_contributions"] = []
+        enriched["family_bucket_contributions"] = []
+        enriched["premium_bucket_contributions"] = []
+        enriched["friction_profile"] = build_friction_profile(pd.DataFrame())
+        return enriched
+    trade_strategies = trades_df["strategy"].astype(str)
+    family_values = [
+        strategy_map.get(name).family if strategy_map.get(name) is not None else "Unknown"
+        for name in trade_strategies
+    ]
+    family_bucket_values = [
+        family_bucket_for_strategy_family(strategy_map.get(name).family) if strategy_map.get(name) is not None else "Unknown"
+        for name in trade_strategies
+    ]
+    enriched["family_contributions"] = summarize_group_contributions(
         trades_df=trades_df,
-        strategy_map=strategy_map,
         group_column="family",
-        group_resolver=lambda strategy: strategy.family,
+        group_values=family_values,
     )
-    enriched["family_bucket_contributions"] = summarize_strategy_group_contributions(
+    enriched["family_bucket_contributions"] = summarize_group_contributions(
         trades_df=trades_df,
-        strategy_map=strategy_map,
         group_column="family_bucket",
-        group_resolver=lambda strategy: family_bucket_for_strategy_family(strategy.family),
+        group_values=family_bucket_values,
     )
+    enriched["premium_bucket_contributions"] = summarize_group_contributions(
+        trades_df=trades_df,
+        group_column="premium_bucket",
+    )
+    enriched["friction_profile"] = build_friction_profile(trades_df)
     return enriched
 
 
@@ -581,7 +708,18 @@ def contribution_rows_to_frame(rows: list[dict[str, object]], label_column: str)
     frame = pd.DataFrame(rows)
     if frame.empty:
         return pd.DataFrame(
-            columns=[label_column, "portfolio_net_pnl", "trade_count", "win_rate_pct", "avg_trade_pnl"]
+            columns=[
+                label_column,
+                "portfolio_net_pnl",
+                "trade_count",
+                "win_rate_pct",
+                "avg_trade_pnl",
+                "avg_entry_premium",
+                "median_entry_premium",
+                "avg_total_friction_per_combo",
+                "avg_friction_pct_of_entry_premium",
+                "sub_030_trade_share_pct",
+            ]
         )
     return frame
 
@@ -714,6 +852,8 @@ def select_best_config(
             "strategy_contributions": list(summary.get("strategy_contributions", [])),
             "family_contributions": list(summary.get("family_contributions", [])),
             "family_bucket_contributions": list(summary.get("family_bucket_contributions", [])),
+            "premium_bucket_contributions": list(summary.get("premium_bucket_contributions", [])),
+            "friction_profile": dict(summary.get("friction_profile", {})),
         }
         row.update(build_regime_selection_metrics(selected_rows))
         if best_row is None:
@@ -1063,6 +1203,10 @@ def run_single_ticker_research(
         "family_bucket",
     ).to_csv(research_dir / f"{ticker_lower}_walkforward_frozen_family_bucket_contributions.csv", index=False)
     contribution_rows_to_frame(
+        list(frozen_summary.get("premium_bucket_contributions", [])),
+        "premium_bucket",
+    ).to_csv(research_dir / f"{ticker_lower}_walkforward_frozen_premium_bucket_contributions.csv", index=False)
+    contribution_rows_to_frame(
         list(reoptimized_summary.get("family_contributions", [])),
         "family",
     ).to_csv(research_dir / f"{ticker_lower}_walkforward_reoptimized_family_contributions.csv", index=False)
@@ -1070,6 +1214,10 @@ def run_single_ticker_research(
         list(reoptimized_summary.get("family_bucket_contributions", [])),
         "family_bucket",
     ).to_csv(research_dir / f"{ticker_lower}_walkforward_reoptimized_family_bucket_contributions.csv", index=False)
+    contribution_rows_to_frame(
+        list(reoptimized_summary.get("premium_bucket_contributions", [])),
+        "premium_bucket",
+    ).to_csv(research_dir / f"{ticker_lower}_walkforward_reoptimized_premium_bucket_contributions.csv", index=False)
     (research_dir / f"{ticker_lower}_frozen_config.json").write_text(
         json.dumps(frozen_config, indent=2),
         encoding="utf-8",
@@ -1243,6 +1391,8 @@ def optimize_shared_portfolio(
             "strategy_contributions": list(summary.get("strategy_contributions", [])),
             "family_contributions": list(summary.get("family_contributions", [])),
             "family_bucket_contributions": list(summary.get("family_bucket_contributions", [])),
+            "premium_bucket_contributions": list(summary.get("premium_bucket_contributions", [])),
+            "friction_profile": dict(summary.get("friction_profile", {})),
         }
         if best_summary is None:
             best_summary = row
@@ -1289,6 +1439,11 @@ def build_family_ranking_rows(
                 "trade_count": int(item.get("trade_count", 0)),
                 "win_rate_pct": float(item.get("win_rate_pct", 0.0)),
                 "avg_trade_pnl": float(item.get("avg_trade_pnl", 0.0)),
+                "avg_entry_premium": float(item.get("avg_entry_premium", 0.0)),
+                "median_entry_premium": float(item.get("median_entry_premium", 0.0)),
+                "avg_total_friction_per_combo": float(item.get("avg_total_friction_per_combo", 0.0)),
+                "avg_friction_pct_of_entry_premium": float(item.get("avg_friction_pct_of_entry_premium", 0.0)),
+                "sub_030_trade_share_pct": float(item.get("sub_030_trade_share_pct", 0.0)),
             }
         )
     return rows
@@ -1348,9 +1503,14 @@ def write_master_report(path: Path, payload: dict[str, object]) -> None:
             f"- Relative lift vs QQQ-only: {payload['relative_return_vs_qqq_only_pct']:.2f} percentage points."
         )
     family_rankings = payload.get("family_rankings", {})
+    premium_bucket_rankings = payload.get("premium_bucket_rankings", {})
+    friction_profiles = payload.get("friction_profiles", {})
     shared_buckets = list(family_rankings.get("shared_account_buckets", []))
     qqq_buckets = list(family_rankings.get("qqq_only_buckets", []))
     per_ticker_buckets = list(family_rankings.get("per_ticker_frozen_buckets", []))
+    shared_premium_buckets = list(premium_bucket_rankings.get("shared_account_buckets", []))
+    qqq_premium_buckets = list(premium_bucket_rankings.get("qqq_only_buckets", []))
+    shared_friction = dict(friction_profiles.get("shared_account", {}))
     lines.append("")
     lines.append("## Family Leaders")
     lines.append("")
@@ -1380,6 +1540,38 @@ def write_master_report(path: Path, payload: dict[str, object]) -> None:
         for row in per_ticker_buckets:
             lines.append(
                 f"- `{row['ticker']}` / `{row['family_bucket']}`: ${row['portfolio_net_pnl']:.2f} across {row['trade_count']} trades, win rate {row['win_rate_pct']:.2f}%."
+            )
+    else:
+        lines.append("- none")
+    lines.append("")
+    lines.append("## Friction Profile")
+    lines.append("")
+    if shared_friction:
+        lines.append(
+            f"- Shared median entry premium: ${shared_friction.get('median_entry_premium', 0.0):.4f}; average total friction/combo: ${shared_friction.get('avg_total_friction_per_combo', 0.0):.2f}; sub-$0.30 share: {shared_friction.get('trade_share_sub_0_30_pct', 0.0):.2f}%."
+        )
+        lines.append(
+            f"- Shared total friction paid: ${shared_friction.get('total_friction', 0.0):.2f} on ${shared_friction.get('total_commission', 0.0):.2f} commissions and ${shared_friction.get('total_slippage', 0.0):.2f} slippage."
+        )
+    else:
+        lines.append("- none")
+    lines.append("")
+    lines.append("### Shared Account Premium Buckets")
+    lines.append("")
+    if shared_premium_buckets:
+        for row in shared_premium_buckets:
+            lines.append(
+                f"- `{row['premium_bucket']}`: ${row['portfolio_net_pnl']:.2f} across {row['trade_count']} trades, win rate {row['win_rate_pct']:.2f}%, avg friction {row.get('avg_total_friction_per_combo', 0.0):.2f}."
+            )
+    else:
+        lines.append("- none")
+    lines.append("")
+    lines.append("### QQQ-Only Premium Buckets")
+    lines.append("")
+    if qqq_premium_buckets:
+        for row in qqq_premium_buckets:
+            lines.append(
+                f"- `{row['premium_bucket']}`: ${row['portfolio_net_pnl']:.2f} across {row['trade_count']} trades, win rate {row['win_rate_pct']:.2f}%, avg friction {row.get('avg_total_friction_per_combo', 0.0):.2f}."
             )
     else:
         lines.append("- none")
@@ -1488,6 +1680,8 @@ def main() -> None:
     family_detail_rows: list[dict[str, object]] = []
     family_bucket_rows: list[dict[str, object]] = []
     per_ticker_frozen_bucket_leaders: list[dict[str, object]] = []
+    premium_bucket_rows: list[dict[str, object]] = []
+    per_ticker_frozen_premium_leaders: list[dict[str, object]] = []
     for result in ticker_results:
         summary = result["summary"]
         promoted = summary["promoted"]
@@ -1539,11 +1733,34 @@ def main() -> None:
                 label_key="family_bucket",
             )
         )
+        premium_bucket_rows.extend(
+            build_family_ranking_rows(
+                scope="ticker_frozen",
+                ticker=result["ticker"],
+                summary=summary["frozen_initial"],
+                contribution_key="premium_bucket_contributions",
+                label_key="premium_bucket",
+            )
+        )
+        premium_bucket_rows.extend(
+            build_family_ranking_rows(
+                scope="ticker_reoptimized",
+                ticker=result["ticker"],
+                summary=summary["reoptimized"],
+                contribution_key="premium_bucket_contributions",
+                label_key="premium_bucket",
+            )
+        )
         top_bucket = list(summary["frozen_initial"].get("family_bucket_contributions", []))
         if top_bucket:
             leader = dict(top_bucket[0])
             leader["ticker"] = result["ticker"]
             per_ticker_frozen_bucket_leaders.append(leader)
+        top_premium_bucket = list(summary["frozen_initial"].get("premium_bucket_contributions", []))
+        if top_premium_bucket:
+            leader = dict(top_premium_bucket[0])
+            leader["ticker"] = result["ticker"]
+            per_ticker_frozen_premium_leaders.append(leader)
 
     family_detail_rows.extend(
         build_family_ranking_rows(
@@ -1583,6 +1800,25 @@ def main() -> None:
                 label_key="family_bucket",
             )
         )
+    premium_bucket_rows.extend(
+        build_family_ranking_rows(
+            scope="shared_account",
+            ticker=None,
+            summary=combined_summary,
+            contribution_key="premium_bucket_contributions",
+            label_key="premium_bucket",
+        )
+    )
+    if qqq_summary is not None:
+        premium_bucket_rows.extend(
+            build_family_ranking_rows(
+                scope="qqq_only",
+                ticker="QQQ",
+                summary=qqq_summary,
+                contribution_key="premium_bucket_contributions",
+                label_key="premium_bucket",
+            )
+        )
 
     family_detail_rows = sorted(
         family_detail_rows,
@@ -1594,6 +1830,14 @@ def main() -> None:
     )
     per_ticker_frozen_bucket_leaders = sorted(
         per_ticker_frozen_bucket_leaders,
+        key=lambda row: (-float(row["portfolio_net_pnl"]), -int(row["trade_count"])),
+    )
+    premium_bucket_rows = sorted(
+        premium_bucket_rows,
+        key=lambda row: (row["scope"], -row["portfolio_net_pnl"], -row["trade_count"]),
+    )
+    per_ticker_frozen_premium_leaders = sorted(
+        per_ticker_frozen_premium_leaders,
         key=lambda row: (-float(row["portfolio_net_pnl"]), -int(row["trade_count"])),
     )
 
@@ -1620,6 +1864,19 @@ def main() -> None:
             "qqq_only_buckets": list(qqq_summary.get("family_bucket_contributions", [])) if qqq_summary is not None else [],
             "per_ticker_frozen_buckets": per_ticker_frozen_bucket_leaders,
         },
+        "premium_bucket_rankings": {
+            "shared_account_buckets": list(combined_summary.get("premium_bucket_contributions", [])),
+            "qqq_only_buckets": list(qqq_summary.get("premium_bucket_contributions", [])) if qqq_summary is not None else [],
+            "per_ticker_frozen_buckets": per_ticker_frozen_premium_leaders,
+        },
+        "friction_profiles": {
+            "shared_account": dict(combined_summary.get("friction_profile", {})),
+            "qqq_only": dict(qqq_summary.get("friction_profile", {})) if qqq_summary is not None else None,
+            "per_ticker_frozen": {
+                result["ticker"]: dict(result["summary"]["frozen_initial"].get("friction_profile", {}))
+                for result in ticker_results
+            },
+        },
     }
 
     combined_candidates.to_csv(research_dir / "combined_promoted_candidates.csv", index=False)
@@ -1637,6 +1894,10 @@ def main() -> None:
         list(combined_summary.get("family_bucket_contributions", [])),
         "family_bucket",
     ).to_csv(research_dir / "shared_account_family_bucket_contributions.csv", index=False)
+    contribution_rows_to_frame(
+        list(combined_summary.get("premium_bucket_contributions", [])),
+        "premium_bucket",
+    ).to_csv(research_dir / "shared_account_premium_bucket_contributions.csv", index=False)
     if qqq_summary is not None:
         contribution_rows_to_frame(
             list(qqq_summary.get("family_contributions", [])),
@@ -1646,8 +1907,13 @@ def main() -> None:
             list(qqq_summary.get("family_bucket_contributions", [])),
             "family_bucket",
         ).to_csv(research_dir / "qqq_only_family_bucket_contributions.csv", index=False)
+        contribution_rows_to_frame(
+            list(qqq_summary.get("premium_bucket_contributions", [])),
+            "premium_bucket",
+        ).to_csv(research_dir / "qqq_only_premium_bucket_contributions.csv", index=False)
     pd.DataFrame(family_detail_rows).to_csv(research_dir / "family_rankings.csv", index=False)
     pd.DataFrame(family_bucket_rows).to_csv(research_dir / "family_bucket_rankings.csv", index=False)
+    pd.DataFrame(premium_bucket_rows).to_csv(research_dir / "premium_bucket_rankings.csv", index=False)
     (research_dir / "master_summary.json").write_text(json.dumps(master_payload, indent=2), encoding="utf-8")
     write_master_report(research_dir / "master_report.md", master_payload)
     print(json.dumps(master_payload, indent=2))
@@ -1655,4 +1921,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

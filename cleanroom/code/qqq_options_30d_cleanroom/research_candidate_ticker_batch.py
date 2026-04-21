@@ -70,8 +70,14 @@ def main() -> None:
             promoted = summary["promoted"]
             frozen_family_buckets = list(summary["frozen_initial"].get("family_bucket_contributions", []))
             reoptimized_family_buckets = list(summary["reoptimized"].get("family_bucket_contributions", []))
+            frozen_premium_buckets = list(summary["frozen_initial"].get("premium_bucket_contributions", []))
+            reoptimized_premium_buckets = list(summary["reoptimized"].get("premium_bucket_contributions", []))
+            frozen_friction = dict(summary["frozen_initial"].get("friction_profile", {}))
+            reoptimized_friction = dict(summary["reoptimized"].get("friction_profile", {}))
             top_frozen_bucket = frozen_family_buckets[0] if frozen_family_buckets else {}
             top_reoptimized_bucket = reoptimized_family_buckets[0] if reoptimized_family_buckets else {}
+            top_frozen_premium_bucket = frozen_premium_buckets[0] if frozen_premium_buckets else {}
+            top_reoptimized_premium_bucket = reoptimized_premium_buckets[0] if reoptimized_premium_buckets else {}
             row = {
                 "ticker": ticker.upper(),
                 "status": "ok",
@@ -101,6 +107,16 @@ def main() -> None:
                 "top_frozen_family_bucket_pnl": float(top_frozen_bucket.get("portfolio_net_pnl", 0.0)),
                 "top_reoptimized_family_bucket": str(top_reoptimized_bucket.get("family_bucket", "")),
                 "top_reoptimized_family_bucket_pnl": float(top_reoptimized_bucket.get("portfolio_net_pnl", 0.0)),
+                "top_frozen_premium_bucket": str(top_frozen_premium_bucket.get("premium_bucket", "")),
+                "top_frozen_premium_bucket_pnl": float(top_frozen_premium_bucket.get("portfolio_net_pnl", 0.0)),
+                "top_reoptimized_premium_bucket": str(top_reoptimized_premium_bucket.get("premium_bucket", "")),
+                "top_reoptimized_premium_bucket_pnl": float(top_reoptimized_premium_bucket.get("portfolio_net_pnl", 0.0)),
+                "frozen_median_entry_premium": float(frozen_friction.get("median_entry_premium", 0.0)),
+                "frozen_avg_friction_pct_of_entry_premium": float(frozen_friction.get("avg_friction_pct_of_entry_premium", 0.0)),
+                "frozen_trade_share_sub_0_30_pct": float(frozen_friction.get("trade_share_sub_0_30_pct", 0.0)),
+                "reoptimized_median_entry_premium": float(reoptimized_friction.get("median_entry_premium", 0.0)),
+                "reoptimized_avg_friction_pct_of_entry_premium": float(reoptimized_friction.get("avg_friction_pct_of_entry_premium", 0.0)),
+                "reoptimized_trade_share_sub_0_30_pct": float(reoptimized_friction.get("trade_share_sub_0_30_pct", 0.0)),
             }
             print(
                 json.dumps(
@@ -110,6 +126,8 @@ def main() -> None:
                         "frozen_total_return_pct": row["frozen_total_return_pct"],
                         "frozen_max_drawdown_pct": row["frozen_max_drawdown_pct"],
                         "top_frozen_family_bucket": row["top_frozen_family_bucket"],
+                        "top_frozen_premium_bucket": row["top_frozen_premium_bucket"],
+                        "frozen_trade_share_sub_0_30_pct": row["frozen_trade_share_sub_0_30_pct"],
                         "selected_bull_count": row["selected_bull_count"],
                         "selected_bear_count": row["selected_bear_count"],
                         "selected_choppy_count": row["selected_choppy_count"],

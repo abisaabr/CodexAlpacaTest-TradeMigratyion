@@ -110,6 +110,50 @@ DOWN_CHOPPY_ONLY_STRATEGY_NAMES = {
 }
 
 
+def combo_entry_raw_net_premium(legs: list[dict[str, object]]) -> float:
+    premium = 0.0
+    for leg in legs:
+        price = float(leg["entry_price_raw"])
+        if leg["side"] == "long":
+            premium += price
+        else:
+            premium -= price
+    return premium
+
+
+def raw_open_cashflow(legs: list[dict[str, object]], quantity: int = 1) -> float:
+    total = 0.0
+    for leg in legs:
+        raw_price = float(leg["entry_price_raw"])
+        if leg["side"] == "long":
+            total -= raw_price * 100.0 * quantity
+        else:
+            total += raw_price * 100.0 * quantity
+    return total
+
+
+def raw_close_cashflow(legs: list[dict[str, object]], exit_prices_raw: list[float], quantity: int = 1) -> float:
+    total = 0.0
+    for leg, raw_price in zip(legs, exit_prices_raw):
+        if leg["side"] == "long":
+            total += float(raw_price) * 100.0 * quantity
+        else:
+            total -= float(raw_price) * 100.0 * quantity
+    return total
+
+
+def classify_premium_bucket(abs_entry_premium: float) -> str:
+    if abs_entry_premium < 0.15:
+        return "<0.15"
+    if abs_entry_premium < 0.30:
+        return "0.15-0.30"
+    if abs_entry_premium < 0.60:
+        return "0.30-0.60"
+    if abs_entry_premium < 1.00:
+        return "0.60-1.00"
+    return "1.00+"
+
+
 def build_delta_strategies(
     *,
     include_family_expansion: bool = False,
@@ -815,12 +859,288 @@ def build_delta_strategies(
             ]
         )
 
+    if strategy_set == "down_choppy_exhaustive":
+        strategies = [
+            strategy for strategy in strategies if strategy.name in DOWN_CHOPPY_ONLY_STRATEGY_NAMES
+        ]
+
+        for delta in (0.35, 0.45, 0.55, 0.65):
+            label = int(round(delta * 100))
+            strategies.append(
+                make_strategy(
+                    name=f"orb_long_put_same_day_d{label}",
+                    family="Single-leg long put",
+                    description=f"Buy the same-day put closest to -{delta:.2f} delta on an opening range breakdown.",
+                    dte_mode="same_day",
+                    legs=(DeltaLegTemplate(option_type="put", side="long", target_delta=-delta),),
+                    signal_name="orb_put",
+                    hard_exit_minute=375,
+                    risk_fraction=0.05,
+                    max_contracts=8,
+                    profit_target_multiple=0.50,
+                    stop_loss_multiple=0.35,
+                )
+            )
+
+        for delta in (0.40, 0.60):
+            label = int(round(delta * 100))
+            strategies.append(
+                make_strategy(
+                    name=f"orb_long_put_next_expiry_d{label}",
+                    family="Single-leg long put",
+                    description=f"Buy the next-expiry put closest to -{delta:.2f} delta on an opening range breakdown.",
+                    dte_mode="next_expiry",
+                    legs=(DeltaLegTemplate(option_type="put", side="long", target_delta=-delta),),
+                    signal_name="orb_put",
+                    hard_exit_minute=360,
+                    risk_fraction=0.05,
+                    max_contracts=6,
+                    profit_target_multiple=0.45,
+                    stop_loss_multiple=0.30,
+                )
+            )
+
+        for delta in (0.45, 0.55, 0.65, 0.75):
+            label = int(round(delta * 100))
+            strategies.append(
+                make_strategy(
+                    name=f"trend_long_put_next_expiry_d{label}",
+                    family="Single-leg long put",
+                    description=f"Buy the next-expiry put closest to -{delta:.2f} delta on downside trend continuation.",
+                    dte_mode="next_expiry",
+                    legs=(DeltaLegTemplate(option_type="put", side="long", target_delta=-delta),),
+                    signal_name="trend_put",
+                    hard_exit_minute=360,
+                    risk_fraction=0.05,
+                    max_contracts=6,
+                    profit_target_multiple=0.45,
+                    stop_loss_multiple=0.30,
+                )
+            )
+
+        for name, long_delta, short_delta in (
+            ("bear_put_spread_next_expiry_d45_20", 0.45, 0.20),
+            ("bear_put_spread_next_expiry_d50_25", 0.50, 0.25),
+            ("bear_put_spread_next_expiry_d60_25", 0.60, 0.25),
+            ("bear_put_spread_next_expiry_d65_35", 0.65, 0.35),
+        ):
+            strategies.append(
+                make_strategy(
+                    name=name,
+                    family="Debit put spread",
+                    description=f"Buy a next-expiry bear put spread targeting -{long_delta:.2f} and -{short_delta:.2f} deltas.",
+                    dte_mode="next_expiry",
+                    legs=(
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-long_delta),
+                        DeltaLegTemplate(option_type="put", side="short", target_delta=-short_delta),
+                    ),
+                    signal_name="trend_put",
+                    hard_exit_minute=360,
+                    risk_fraction=0.06,
+                    max_contracts=8,
+                    profit_target_multiple=0.40,
+                    stop_loss_multiple=0.28,
+                )
+            )
+
+        for name, short_delta, wing_delta, dte_mode in (
+            ("bear_call_credit_spread_same_day_d18_08", 0.18, 0.08, "same_day"),
+            ("bear_call_credit_spread_same_day_d22_10", 0.22, 0.10, "same_day"),
+            ("bear_call_credit_spread_same_day_d26_12", 0.26, 0.12, "same_day"),
+            ("bear_call_credit_spread_same_day_d30_15", 0.30, 0.15, "same_day"),
+            ("bear_call_credit_spread_same_day_d40_20", 0.40, 0.20, "same_day"),
+            ("bear_call_credit_spread_next_expiry_d18_08", 0.18, 0.08, "next_expiry"),
+            ("bear_call_credit_spread_next_expiry_d26_12", 0.26, 0.12, "next_expiry"),
+            ("bear_call_credit_spread_next_expiry_d34_15", 0.34, 0.15, "next_expiry"),
+        ):
+            strategies.append(
+                make_strategy(
+                    name=name,
+                    family="Credit call spread",
+                    description=f"Sell a {dte_mode.replace('_', '-')} bear call spread targeting +{short_delta:.2f} and +{wing_delta:.2f} deltas.",
+                    dte_mode=dte_mode,
+                    legs=(
+                        DeltaLegTemplate(option_type="call", side="short", target_delta=short_delta),
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=wing_delta),
+                    ),
+                    signal_name="credit_bear",
+                    hard_exit_minute=360 if dte_mode == "next_expiry" else 380,
+                    risk_fraction=0.05,
+                    max_contracts=8 if dte_mode == "next_expiry" else 10,
+                    profit_target_multiple=0.45 if dte_mode == "next_expiry" else 0.50,
+                    stop_loss_multiple=0.90 if dte_mode == "next_expiry" else 1.00,
+                )
+            )
+
+        for name, short_delta, long_delta in (
+            ("put_backspread_next_expiry_d20_45", 0.20, 0.45),
+            ("put_backspread_next_expiry_d30_55", 0.30, 0.55),
+            ("put_backspread_next_expiry_d40_65", 0.40, 0.65),
+        ):
+            strategies.append(
+                make_strategy(
+                    name=name,
+                    family="Put backspread",
+                    description=f"Buy a next-expiry put backspread with one short -{short_delta:.2f} put against two long -{long_delta:.2f} puts.",
+                    dte_mode="next_expiry",
+                    legs=(
+                        DeltaLegTemplate(option_type="put", side="short", target_delta=-short_delta),
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-long_delta),
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-long_delta),
+                    ),
+                    signal_name="trend_put",
+                    hard_exit_minute=360,
+                    risk_fraction=0.04,
+                    max_contracts=4,
+                    profit_target_multiple=0.65,
+                    stop_loss_multiple=0.30,
+                )
+            )
+
+        for name, short_delta, wing_delta in (
+            ("iron_condor_same_day_d15_06", 0.15, 0.06),
+            ("iron_condor_same_day_d18_08", 0.18, 0.08),
+            ("iron_condor_same_day_d30_12", 0.30, 0.12),
+        ):
+            strategies.append(
+                make_strategy(
+                    name=name,
+                    family="Iron condor",
+                    description=f"Sell a same-day iron condor targeting +/-{short_delta:.2f} shorts and +/-{wing_delta:.2f} wings.",
+                    dte_mode="same_day",
+                    legs=(
+                        DeltaLegTemplate(option_type="call", side="short", target_delta=short_delta),
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=wing_delta),
+                        DeltaLegTemplate(option_type="put", side="short", target_delta=-short_delta),
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-wing_delta),
+                    ),
+                    signal_name="iron_condor",
+                    hard_exit_minute=375,
+                    risk_fraction=0.04,
+                    max_contracts=6,
+                    profit_target_multiple=0.40,
+                    stop_loss_multiple=1.25,
+                )
+            )
+
+        for name, short_delta, wing_delta in (
+            ("iron_butterfly_same_day_d40_15", 0.40, 0.15),
+            ("iron_butterfly_same_day_d60_25", 0.60, 0.25),
+        ):
+            strategies.append(
+                make_strategy(
+                    name=name,
+                    family="Iron butterfly",
+                    description=f"Sell a same-day iron butterfly targeting +/-{short_delta:.2f} shorts and +/-{wing_delta:.2f} wings.",
+                    dte_mode="same_day",
+                    legs=(
+                        DeltaLegTemplate(option_type="call", side="short", target_delta=short_delta),
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=wing_delta),
+                        DeltaLegTemplate(option_type="put", side="short", target_delta=-short_delta),
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=-wing_delta),
+                    ),
+                    signal_name="iron_condor",
+                    hard_exit_minute=360,
+                    risk_fraction=0.04,
+                    max_contracts=5,
+                    profit_target_multiple=0.35,
+                    stop_loss_multiple=1.10,
+                )
+            )
+
+        for name, family, left_delta, body_delta, right_delta in (
+            ("call_butterfly_same_day_d12_24_36", "Call butterfly", 0.12, 0.24, 0.36),
+            ("call_butterfly_same_day_d25_40_55", "Call butterfly", 0.25, 0.40, 0.55),
+            ("put_butterfly_same_day_d12_24_36", "Put butterfly", -0.12, -0.24, -0.36),
+            ("put_butterfly_same_day_d25_40_55", "Put butterfly", -0.25, -0.40, -0.55),
+        ):
+            option_type = "call" if family.startswith("Call") else "put"
+            strategies.append(
+                make_strategy(
+                    name=name,
+                    family=family,
+                    description=f"Sell a same-day {family.lower()} targeting {left_delta:+.2f}, {body_delta:+.2f}, and {right_delta:+.2f} deltas.",
+                    dte_mode="same_day",
+                    legs=(
+                        DeltaLegTemplate(option_type=option_type, side="long", target_delta=left_delta),
+                        DeltaLegTemplate(option_type=option_type, side="short", target_delta=body_delta),
+                        DeltaLegTemplate(option_type=option_type, side="short", target_delta=body_delta),
+                        DeltaLegTemplate(option_type=option_type, side="long", target_delta=right_delta),
+                    ),
+                    signal_name="iron_condor",
+                    hard_exit_minute=360,
+                    risk_fraction=0.04,
+                    max_contracts=5,
+                    profit_target_multiple=0.36,
+                    stop_loss_multiple=0.92,
+                )
+            )
+
+        for name, family, left_delta, body_delta, right_delta, signal_name in (
+            ("broken_wing_put_butterfly_next_expiry_d12_30_55", "Broken-wing put butterfly", -0.12, -0.30, -0.55, "trend_put"),
+            ("broken_wing_put_butterfly_next_expiry_d18_40_65", "Broken-wing put butterfly", -0.18, -0.40, -0.65, "trend_put"),
+            ("broken_wing_call_butterfly_next_expiry_d12_30_55", "Broken-wing call butterfly", 0.12, 0.30, 0.55, "trend_call"),
+            ("broken_wing_call_butterfly_next_expiry_d18_40_65", "Broken-wing call butterfly", 0.18, 0.40, 0.65, "trend_call"),
+        ):
+            option_type = "put" if "put" in family.lower() else "call"
+            strategies.append(
+                make_strategy(
+                    name=name,
+                    family=family,
+                    description=f"Trade a next-expiry {family.lower()} targeting {left_delta:+.2f}, {body_delta:+.2f}, and {right_delta:+.2f} deltas.",
+                    dte_mode="next_expiry",
+                    legs=(
+                        DeltaLegTemplate(option_type=option_type, side="long", target_delta=left_delta),
+                        DeltaLegTemplate(option_type=option_type, side="short", target_delta=body_delta),
+                        DeltaLegTemplate(option_type=option_type, side="short", target_delta=body_delta),
+                        DeltaLegTemplate(option_type=option_type, side="long", target_delta=right_delta),
+                    ),
+                    signal_name=signal_name,
+                    hard_exit_minute=360,
+                    risk_fraction=0.04,
+                    max_contracts=5,
+                    profit_target_multiple=0.45,
+                    stop_loss_multiple=0.55,
+                )
+            )
+
+        for name, dte_mode, call_delta, put_delta, profit_target, stop_loss in (
+            ("long_straddle_same_day_d45", "same_day", 0.45, -0.45, 0.35, 0.25),
+            ("long_straddle_same_day_d55", "same_day", 0.55, -0.55, 0.35, 0.25),
+            ("long_straddle_next_expiry_d45", "next_expiry", 0.45, -0.45, 0.30, 0.22),
+            ("long_strangle_same_day_d30", "same_day", 0.30, -0.30, 0.38, 0.24),
+            ("long_strangle_same_day_d40", "same_day", 0.40, -0.40, 0.38, 0.24),
+            ("long_strangle_next_expiry_d30", "next_expiry", 0.30, -0.30, 0.32, 0.22),
+        ):
+            family = "Long straddle" if "straddle" in name else "Long strangle"
+            strategies.append(
+                make_strategy(
+                    name=name,
+                    family=family,
+                    description=f"Buy a {dte_mode.replace('_', '-')} {family.lower()} targeting {call_delta:+.2f} and {put_delta:+.2f} deltas.",
+                    dte_mode=dte_mode,
+                    legs=(
+                        DeltaLegTemplate(option_type="call", side="long", target_delta=call_delta),
+                        DeltaLegTemplate(option_type="put", side="long", target_delta=put_delta),
+                    ),
+                    signal_name="long_straddle",
+                    hard_exit_minute=210 if dte_mode == "same_day" and family == "Long straddle" else (240 if dte_mode == "same_day" else 300),
+                    risk_fraction=0.04,
+                    max_contracts=5 if dte_mode == "same_day" else 4,
+                    profit_target_multiple=profit_target,
+                    stop_loss_multiple=stop_loss,
+                )
+            )
+
     if strategy_set == "down_choppy_only":
         strategies = [
             strategy for strategy in strategies if strategy.name in DOWN_CHOPPY_ONLY_STRATEGY_NAMES
         ]
 
-    return strategies
+    deduped: dict[str, DeltaStrategy] = {}
+    for strategy in strategies:
+        deduped[strategy.name] = strategy
+    return list(deduped.values())
 
 
 def norm_pdf(value: float) -> float:
@@ -1088,9 +1408,11 @@ def generate_candidate_trades(
                 continue
 
             entry_cash_per_combo = open_cashflow(legs=legs, quantity=1)
+            entry_raw_cash_per_combo = raw_open_cashflow(legs=legs, quantity=1)
             entry_commission_per_combo = COMMISSION_PER_CONTRACT * len(legs)
             exit_commission_per_combo = COMMISSION_PER_CONTRACT * len(legs)
             entry_net_premium = combo_entry_net_premium(legs)
+            entry_raw_net_premium = combo_entry_raw_net_premium(legs)
             max_loss_per_combo, max_profit_per_combo = estimate_combo_bounds(legs=legs, entry_net_premium=entry_net_premium)
 
             symbol_paths: dict[str, pd.Series] = {}
@@ -1109,7 +1431,9 @@ def generate_candidate_trades(
             exit_idx: int | None = None
             exit_reason = "time_exit"
             exit_cash_per_combo = 0.0
+            exit_raw_cash_per_combo = 0.0
             net_pnl_per_combo = 0.0
+            exit_prices_raw: list[float] | None = None
 
             for idx in range(entry_idx + 1, hard_exit_idx + 1):
                 current_prices: list[float] = []
@@ -1124,6 +1448,7 @@ def generate_candidate_trades(
                     continue
 
                 current_exit_cash = close_cashflow(legs=legs, exit_prices_raw=current_prices, quantity=1)
+                current_exit_raw_cash = raw_close_cashflow(legs=legs, exit_prices_raw=current_prices, quantity=1)
                 current_net_pnl = entry_cash_per_combo + current_exit_cash - entry_commission_per_combo - exit_commission_per_combo
                 mark_to_market[idx] = current_exit_cash - exit_commission_per_combo
 
@@ -1131,24 +1456,59 @@ def generate_candidate_trades(
                     exit_idx = idx
                     exit_reason = "profit_target"
                     exit_cash_per_combo = current_exit_cash
+                    exit_raw_cash_per_combo = current_exit_raw_cash
                     net_pnl_per_combo = current_net_pnl
+                    exit_prices_raw = list(current_prices)
                     break
                 if current_net_pnl <= -stop_dollars:
                     exit_idx = idx
                     exit_reason = "stop_loss"
                     exit_cash_per_combo = current_exit_cash
+                    exit_raw_cash_per_combo = current_exit_raw_cash
                     net_pnl_per_combo = current_net_pnl
+                    exit_prices_raw = list(current_prices)
                     break
 
                 exit_idx = idx
                 exit_cash_per_combo = current_exit_cash
+                exit_raw_cash_per_combo = current_exit_raw_cash
                 net_pnl_per_combo = current_net_pnl
+                exit_prices_raw = list(current_prices)
 
-            if exit_idx is None:
+            if exit_idx is None or exit_prices_raw is None:
                 continue
 
             entry_time = ctx.frame.loc[entry_idx, "timestamp_et"]
             exit_time = ctx.frame.loc[exit_idx, "timestamp_et"]
+            abs_entry_net_premium = abs(entry_net_premium)
+            entry_slippage_per_combo = abs(entry_cash_per_combo - entry_raw_cash_per_combo)
+            exit_slippage_per_combo = abs(exit_cash_per_combo - exit_raw_cash_per_combo)
+            total_slippage_per_combo = entry_slippage_per_combo + exit_slippage_per_combo
+            total_commission_per_combo = entry_commission_per_combo + exit_commission_per_combo
+            total_friction_per_combo = total_slippage_per_combo + total_commission_per_combo
+            gross_pnl_per_combo = entry_raw_cash_per_combo + exit_raw_cash_per_combo
+            friction_pct_of_entry_premium = (
+                (total_friction_per_combo / (abs_entry_net_premium * 100.0)) * 100.0
+                if abs_entry_net_premium > 0.0
+                else 0.0
+            )
+            gross_return_on_risk_pct = (
+                (gross_pnl_per_combo / max_loss_per_combo) * 100.0
+                if max_loss_per_combo > 0
+                else 0.0
+            )
+            leg_payload: list[dict[str, object]] = []
+            for leg, exit_price_raw in zip(legs, exit_prices_raw):
+                exit_fill = sell_fill(float(exit_price_raw)) if leg["side"] == "long" else buy_fill(float(exit_price_raw))
+                leg_payload.append(
+                    {
+                        **leg,
+                        "entry_price_raw": round(float(leg["entry_price_raw"]), 4),
+                        "entry_price_fill": round(float(leg["entry_price_fill"]), 4),
+                        "exit_price_raw": round(float(exit_price_raw), 4),
+                        "exit_price_fill": round(float(exit_fill), 4),
+                    }
+                )
             trades.append(
                 {
                     "strategy": strategy.name,
@@ -1164,16 +1524,32 @@ def generate_candidate_trades(
                     "exit_reason": exit_reason,
                     "entry_underlying": round(float(ctx.frame.loc[entry_idx, "qqq_close"]), 4),
                     "exit_underlying": round(float(ctx.frame.loc[exit_idx, "qqq_close"]), 4),
+                    "leg_count": len(legs),
+                    "entry_raw_cash_per_combo": round(entry_raw_cash_per_combo, 4),
                     "entry_cash_per_combo": round(entry_cash_per_combo, 4),
+                    "exit_raw_cash_per_combo": round(exit_raw_cash_per_combo, 4),
                     "exit_cash_per_combo": round(exit_cash_per_combo, 4),
+                    "entry_raw_net_premium": round(entry_raw_net_premium, 4),
+                    "abs_entry_net_premium": round(abs_entry_net_premium, 4),
+                    "premium_bucket": classify_premium_bucket(abs_entry_net_premium),
+                    "is_sub_015_premium": abs_entry_net_premium < 0.15,
+                    "is_sub_030_premium": abs_entry_net_premium < 0.30,
                     "entry_commission_per_combo": round(entry_commission_per_combo, 4),
                     "exit_commission_per_combo": round(exit_commission_per_combo, 4),
+                    "total_commission_per_combo": round(total_commission_per_combo, 4),
+                    "entry_slippage_per_combo": round(entry_slippage_per_combo, 4),
+                    "exit_slippage_per_combo": round(exit_slippage_per_combo, 4),
+                    "total_slippage_per_combo": round(total_slippage_per_combo, 4),
+                    "total_friction_per_combo": round(total_friction_per_combo, 4),
+                    "friction_pct_of_entry_premium": round(friction_pct_of_entry_premium, 4),
+                    "gross_pnl_per_combo": round(gross_pnl_per_combo, 4),
                     "net_pnl_per_combo": round(net_pnl_per_combo, 4),
                     "max_loss_per_combo": round(max_loss_per_combo, 4),
                     "max_profit_per_combo": round(max_profit_per_combo, 4),
+                    "gross_return_on_risk_pct": round(gross_return_on_risk_pct, 4),
                     "return_on_risk_pct": round((net_pnl_per_combo / max_loss_per_combo) * 100.0, 4) if max_loss_per_combo > 0 else 0.0,
                     "holding_minutes": int(exit_idx - entry_idx),
-                    "legs_json": json.dumps(legs, sort_keys=True),
+                    "legs_json": json.dumps(leg_payload, sort_keys=True),
                     "mark_to_market_json": json.dumps(mark_to_market, sort_keys=True),
                 }
             )
@@ -1205,7 +1581,15 @@ def summarize_regimes(trades_df: pd.DataFrame) -> pd.DataFrame:
                 "trade_count",
                 "win_rate_pct",
                 "total_net_pnl_1x",
+                "total_gross_pnl_1x",
+                "total_friction_1x",
                 "avg_net_pnl_1x",
+                "avg_total_friction_1x",
+                "avg_friction_pct_of_entry_premium",
+                "avg_entry_premium",
+                "median_entry_premium",
+                "sub_015_trade_share_pct",
+                "sub_030_trade_share_pct",
                 "avg_return_on_risk_pct",
             ]
         )
@@ -1216,12 +1600,22 @@ def summarize_regimes(trades_df: pd.DataFrame) -> pd.DataFrame:
             trade_count=("net_pnl_per_combo", "size"),
             wins=("net_pnl_per_combo", lambda series: int((series > 0).sum())),
             total_net_pnl_1x=("net_pnl_per_combo", "sum"),
+            total_gross_pnl_1x=("gross_pnl_per_combo", "sum"),
+            total_friction_1x=("total_friction_per_combo", "sum"),
             avg_net_pnl_1x=("net_pnl_per_combo", "mean"),
+            avg_total_friction_1x=("total_friction_per_combo", "mean"),
+            avg_friction_pct_of_entry_premium=("friction_pct_of_entry_premium", "mean"),
+            avg_entry_premium=("abs_entry_net_premium", "mean"),
+            median_entry_premium=("abs_entry_net_premium", "median"),
+            sub_015_trades=("is_sub_015_premium", "sum"),
+            sub_030_trades=("is_sub_030_premium", "sum"),
             avg_return_on_risk_pct=("return_on_risk_pct", "mean"),
         )
     )
     grouped["win_rate_pct"] = (grouped["wins"] / grouped["trade_count"]) * 100.0
-    grouped = grouped.drop(columns=["wins"])
+    grouped["sub_015_trade_share_pct"] = (grouped["sub_015_trades"] / grouped["trade_count"]) * 100.0
+    grouped["sub_030_trade_share_pct"] = (grouped["sub_030_trades"] / grouped["trade_count"]) * 100.0
+    grouped = grouped.drop(columns=["wins", "sub_015_trades", "sub_030_trades"])
     grouped = grouped.sort_values(["regime", "total_net_pnl_1x", "avg_return_on_risk_pct"], ascending=[True, False, False]).reset_index(drop=True)
     return grouped
 
@@ -1471,4 +1865,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
