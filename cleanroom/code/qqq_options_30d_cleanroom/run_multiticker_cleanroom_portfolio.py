@@ -6,6 +6,7 @@ import time
 from dataclasses import dataclass, replace
 from itertools import product
 from pathlib import Path
+import re
 from typing import Any
 
 import pandas as pd
@@ -82,6 +83,16 @@ def build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_SELECTION_PROFILE,
         help="How strongly to bias config selection toward bearish and choppy regime robustness.",
     )
+    parser.add_argument(
+        "--family-include",
+        default="",
+        help="Comma-separated family or family-bucket filters to include, for example 'Credit call spread,credit_spread,long_vol'.",
+    )
+    parser.add_argument(
+        "--family-exclude",
+        default="",
+        help="Comma-separated family or family-bucket filters to exclude.",
+    )
     return parser
 
 
@@ -111,6 +122,8 @@ def build_run_signature(
     initial_train_days: int,
     test_days: int,
     step_days: int,
+    family_include_filters: list[str],
+    family_exclude_filters: list[str],
 ) -> dict[str, object]:
     code_paths = [
         Path(__file__).resolve(),
@@ -123,6 +136,8 @@ def build_run_signature(
         "ticker": ticker.upper(),
         "strategy_set": strategy_set,
         "selection_profile": selection_profile,
+        "family_include_filters": family_include_filters,
+        "family_exclude_filters": family_exclude_filters,
         "timing_profiles": [profile.name for profile in profiles],
         "initial_train_days": int(initial_train_days),
         "test_days": int(test_days),
@@ -358,6 +373,17 @@ def build_timing_profiles(strategy_set: str = "standard") -> tuple[TimingProfile
         # Keep the bearish/choppy tournament lean so we can cover more symbols faster.
         return tuple(profile for profile in profiles if profile.name in {"reactive", "fast", "base"})
     return profiles
+
+
+def normalize_family_token(value: str) -> str:
+    token = re.sub(r"[^a-z0-9]+", "_", value.strip().lower()).strip("_")
+    return token
+
+
+def parse_family_filters(value: str) -> list[str]:
+    if not value.strip():
+        return []
+    return sorted({normalize_family_token(part) for part in value.split(",") if normalize_family_token(part)})
 
 
 def step_label(step: int) -> str:
@@ -717,9 +743,17 @@ def build_strategy_variants(
     profiles: tuple[TimingProfile, ...],
     *,
     strategy_set: str = "standard",
+    family_include_filters: list[str] | None = None,
+    family_exclude_filters: list[str] | None = None,
 ) -> list[DeltaStrategy]:
     variants: list[DeltaStrategy] = []
     for base_strategy in build_delta_strategies(strategy_set=strategy_set):
+        if not strategy_matches_family_filters(
+            base_strategy,
+            family_include_filters=family_include_filters or [],
+            family_exclude_filters=family_exclude_filters or [],
+        ):
+            continue
         for profile in profiles:
             variants.append(
                 replace(
@@ -785,6 +819,30 @@ def family_bucket_for_strategy_family(family: str) -> str:
     if family in {"Long straddle", "Long strangle", "Call backspread", "Put backspread"}:
         return "Long-vol"
     return family
+
+
+def strategy_family_tokens(strategy: DeltaStrategy) -> set[str]:
+    family = strategy.family
+    bucket = family_bucket_for_strategy_family(family)
+    return {
+        normalize_family_token(family),
+        normalize_family_token(bucket),
+        normalize_family_token(strategy.name),
+    }
+
+
+def strategy_matches_family_filters(
+    strategy: DeltaStrategy,
+    *,
+    family_include_filters: list[str],
+    family_exclude_filters: list[str],
+) -> bool:
+    tokens = strategy_family_tokens(strategy)
+    if family_include_filters and not any(token in tokens for token in family_include_filters):
+        return False
+    if family_exclude_filters and any(token in tokens for token in family_exclude_filters):
+        return False
+    return True
 
 
 def summarize_group_contributions(
@@ -1239,6 +1297,8 @@ def run_single_ticker_research(
     profiles: tuple[TimingProfile, ...],
     strategy_set: str,
     selection_profile: str,
+    family_include_filters: list[str],
+    family_exclude_filters: list[str],
 ) -> dict[str, object]:
     ticker_lower = ticker.lower()
     research_dir.mkdir(parents=True, exist_ok=True)
@@ -1275,13 +1335,19 @@ def run_single_ticker_research(
             initial_train_days=initial_train_days,
             test_days=test_days,
             step_days=step_days,
+            family_include_filters=family_include_filters,
+            family_exclude_filters=family_exclude_filters,
         )
 
         strategy_variants = build_strategy_variants(
             ticker_lower,
             profiles,
             strategy_set=strategy_set,
+            family_include_filters=family_include_filters,
+            family_exclude_filters=family_exclude_filters,
         )
+        if not strategy_variants:
+            raise RuntimeError(f"no strategies remain for {ticker.upper()} after family filtering")
         strategy_map = {strategy.name: strategy for strategy in strategy_variants}
 
         candidate_trades = try_load_candidate_checkpoint(
@@ -1615,6 +1681,8 @@ def run_single_ticker_research(
             "strategy_set": strategy_set,
             "selection_profile": selection_profile,
             "timing_profiles": [profile.name for profile in profiles],
+            "family_include_filters": family_include_filters,
+            "family_exclude_filters": family_exclude_filters,
             "frozen_initial_config": frozen_config,
             "reoptimized": reoptimized_summary,
             "frozen_initial": frozen_summary,
@@ -1670,6 +1738,8 @@ def try_load_existing_ticker_result(
     profiles: tuple[TimingProfile, ...],
     strategy_set: str,
     selection_profile: str,
+    family_include_filters: list[str],
+    family_exclude_filters: list[str],
 ) -> dict[str, object] | None:
     ticker_lower = ticker.lower()
     summary_path = research_dir / f"{ticker_lower}_summary.json"
@@ -1688,11 +1758,17 @@ def try_load_existing_ticker_result(
         return None
     if summary.get("selection_profile", DEFAULT_SELECTION_PROFILE) != selection_profile:
         return None
+    if summary.get("family_include_filters", []) != family_include_filters:
+        return None
+    if summary.get("family_exclude_filters", []) != family_exclude_filters:
+        return None
 
     strategy_variants = build_strategy_variants(
         ticker_lower,
         profiles,
         strategy_set=strategy_set,
+        family_include_filters=family_include_filters,
+        family_exclude_filters=family_exclude_filters,
     )
     strategy_map = {strategy.name: strategy for strategy in strategy_variants}
     promoted = summary.get("promoted", {})
@@ -2002,6 +2078,8 @@ def main() -> None:
     research_dir = Path(args.research_dir).resolve()
     tickers = [ticker.strip().lower() for ticker in args.tickers.split(",") if ticker.strip()]
     profiles = build_timing_profiles(args.strategy_set)
+    family_include_filters = parse_family_filters(args.family_include)
+    family_exclude_filters = parse_family_filters(args.family_exclude)
 
     ticker_results: list[dict[str, object]] = []
     failed_tickers: list[dict[str, object]] = []
@@ -2014,6 +2092,8 @@ def main() -> None:
                 profiles=profiles,
                 strategy_set=args.strategy_set,
                 selection_profile=args.selection_profile,
+                family_include_filters=family_include_filters,
+                family_exclude_filters=family_exclude_filters,
             )
             if reused is not None:
                 ticker_results.append(reused)
@@ -2034,6 +2114,8 @@ def main() -> None:
                 profiles=profiles,
                 strategy_set=args.strategy_set,
                 selection_profile=args.selection_profile,
+                family_include_filters=family_include_filters,
+                family_exclude_filters=family_exclude_filters,
             )
         except Exception as exc:
             error_row = {
@@ -2255,6 +2337,8 @@ def main() -> None:
         "tickers": [ticker.upper() for ticker in tickers],
         "strategy_set": args.strategy_set,
         "selection_profile": args.selection_profile,
+        "family_include_filters": family_include_filters,
+        "family_exclude_filters": family_exclude_filters,
         "successful_tickers": [result["ticker"] for result in ticker_results],
         "failed_tickers": failed_tickers,
         "initial_train_days": args.initial_train_days,

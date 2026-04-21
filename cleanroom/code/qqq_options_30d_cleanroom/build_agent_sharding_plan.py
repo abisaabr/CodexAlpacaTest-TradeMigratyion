@@ -112,6 +112,10 @@ def scan_registry_tickers(root: Path) -> list[str]:
         )
 
 
+def normalize_family_arg(value: str) -> str:
+    return "".join(character.lower() if character.isalnum() else "_" for character in value).strip("_")
+
+
 def load_strategy_repo(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
@@ -231,24 +235,42 @@ def build_plan(
                 "agent": "Bear Directional",
                 "strategy_set": "down_choppy_only",
                 "family_focus": ["Single-leg long put", "Debit put spread"],
+                "family_include_filters": [
+                    normalize_family_arg("Single-leg long put"),
+                    normalize_family_arg("Debit put spread"),
+                ],
                 "parallel_workers": 1,
             },
             {
                 "agent": "Bear Premium",
                 "strategy_set": "down_choppy_only",
                 "family_focus": ["Credit call spread", "Iron condor", "Iron butterfly"],
+                "family_include_filters": [
+                    normalize_family_arg("Credit call spread"),
+                    normalize_family_arg("Iron condor"),
+                    normalize_family_arg("Iron butterfly"),
+                ],
                 "parallel_workers": 1,
             },
             {
                 "agent": "Bear Convexity",
                 "strategy_set": "down_choppy_only",
                 "family_focus": ["Put backspread", "Long straddle", "Long strangle"],
+                "family_include_filters": [
+                    normalize_family_arg("Put backspread"),
+                    normalize_family_arg("Long straddle"),
+                    normalize_family_arg("Long strangle"),
+                ],
                 "parallel_workers": 1,
             },
             {
                 "agent": "Butterfly Lab",
                 "strategy_set": "down_choppy_only",
                 "family_focus": ["Put butterfly", "Broken-wing put butterfly"],
+                "family_include_filters": [
+                    normalize_family_arg("Put butterfly"),
+                    normalize_family_arg("Broken-wing put butterfly"),
+                ],
                 "parallel_workers": 1,
             },
         ][: concurrency["lean_parallel_backtests"]],
@@ -370,8 +392,8 @@ def build_plan(
             "cohorts": full_target_cohorts,
             "waves": math.ceil(len(full_target_cohorts) / max(1, concurrency["lean_parallel_backtests"])),
             "notes": [
-                "Today we can shard cleanly by ticker cohort and strategy set.",
-                "If we later add family include/exclude flags, we should shard by family lane as well.",
+                "The runner now supports family include/exclude filters, so agents can own disjoint family lanes.",
+                "Use ticker cohorts plus family-lane filters together for the cleanest parallelization.",
                 "For the full 159-ticker universe, queue all cohorts but keep only the recommended concurrency active at once.",
             ],
         },
@@ -423,6 +445,9 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     for row in payload["agent_layout"]["discovery_agents"]:
         lines.append(
             f"- `{row['agent']}`: `{row['strategy_set']}` on {', '.join(row['family_focus'])}"
+        )
+        lines.append(
+            f"  - family include args: `{','.join(row['family_include_filters'])}`"
         )
     for row in payload["agent_layout"]["deep_dive_agents"]:
         lines.append(f"- `{row['agent']}`: `{row['strategy_set']}` ({row['use_for']})")

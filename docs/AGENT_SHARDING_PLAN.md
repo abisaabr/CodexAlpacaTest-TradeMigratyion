@@ -4,7 +4,7 @@
 
 - Logical CPUs: 16
 - Total RAM: 63.46 GB
-- Free RAM at plan time: 33.90 GB
+- Free RAM at plan time: 35.15 GB
 - Lean parallel backtests: 4
 - Heavy parallel backtests: 2
 - Validation lane concurrency: 1
@@ -41,9 +41,13 @@
 - `Inventory Steward`: Refresh strategy repo, maintain cohort lists, and track family coverage gaps.
 - `Promotion Steward`: Serialize shared-account validation and GitHub live-manifest promotion.
 - `Bear Directional`: `down_choppy_only` on Single-leg long put, Debit put spread
+  - family include args: `single_leg_long_put,debit_put_spread`
 - `Bear Premium`: `down_choppy_only` on Credit call spread, Iron condor, Iron butterfly
+  - family include args: `credit_call_spread,iron_condor,iron_butterfly`
 - `Bear Convexity`: `down_choppy_only` on Put backspread, Long straddle, Long strangle
+  - family include args: `put_backspread,long_straddle,long_strangle`
 - `Butterfly Lab`: `down_choppy_only` on Put butterfly, Broken-wing put butterfly
+  - family include args: `put_butterfly,broken_wing_put_butterfly`
 - `Down/Choppy Exhaustive`: `down_choppy_exhaustive` (Top decile discovery survivors only.)
 - `Balanced Expansion`: `family_expansion` (Balanced benchmark names and cross-regime validation.)
 - `Shared-Account Validator`: Portfolio-level retest before GitHub promotion.
@@ -107,6 +111,6 @@
 
 - Build 12 queued cohorts and run 4 at a time.
 - Total waves: 3
-- Today we can shard cleanly by ticker cohort and strategy set.
-- If we later add family include/exclude flags, we should shard by family lane as well.
+- The runner now supports family include/exclude filters, so agents can own disjoint family lanes.
+- Use ticker cohorts plus family-lane filters together for the cleanest parallelization.
 - For the full 159-ticker universe, queue all cohorts but keep only the recommended concurrency active at once.
