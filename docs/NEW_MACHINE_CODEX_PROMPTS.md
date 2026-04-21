@@ -42,6 +42,8 @@ Open these sibling folders and use them together:
 3. C:\Users\<you>\Downloads\qqq_options_30d_cleanroom
 
 Treat qqq_options_30d_cleanroom as the research workspace. Verify that the cleanroom contains the conveyor scripts:
+- materialize_backtester_ready.py
+- build_ticker_family_coverage.py
 - build_coverage_next_wave_plan.py
 - run_core_strategy_expansion_overnight.py
 - launch_down_choppy_program.ps1
@@ -65,6 +67,8 @@ Then set up and run a chained overnight family-expansion tournament that:
 Use the GitHub live manifest as the source of truth for what is already promoted. Prefer discovery on complete-data symbols that are not already live before retesting live symbols. Keep promotion serialized so only one promotion lane writes the manifest at a time.
 
 Prefer using launch_down_choppy_program.ps1 as the operator entrypoint for the down/choppy program. It should be able to dry-run the full workflow first, then execute the four discovery lanes, build the shortlist, and stage the two exhaustive lanes without manual glue code. When appropriate, have it use the coverage-ranked discovery path so Phase 1 starts from the highest-gap ready symbols instead of the full ready universe.
+
+If the ready universe is smaller than the staged/registry universe, use materialize_backtester_ready.py or the bootstrap path inside launch_down_choppy_program.ps1 to materialize the planner's highest-priority staged/registry symbols into backtester_ready before launching the next discovery wave.
 
 Before launching the next large wave, run build_coverage_next_wave_plan.py to refresh the 159-symbol ticker-family coverage matrix and use its next-wave outputs to choose under-tested families and symbols instead of repeating already-covered combinations.
 

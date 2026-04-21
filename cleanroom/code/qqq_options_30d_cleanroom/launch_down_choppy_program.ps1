@@ -4,6 +4,7 @@ param(
     [string]$PythonExe = "python",
     [switch]$Execute,
     [switch]$RunPhase2 = $true,
+    [switch]$BootstrapReadyUniverse = $true,
     [ValidateSet("full_ready", "coverage_ranked")]
     [string]$DiscoverySource = "full_ready",
     [string]$CoveragePlannerPath = "",
@@ -24,6 +25,7 @@ $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $familyWaveLauncherPath = Join-Path $scriptRoot "launch_down_choppy_family_wave.ps1"
 $shortlistBuilderPath = Join-Path $scriptRoot "build_family_wave_shortlist.py"
 $defaultCoveragePlannerPath = Join-Path $scriptRoot "build_ticker_family_coverage.py"
+$materializerPath = Join-Path $scriptRoot "materialize_backtester_ready.py"
 $runnerPath = Join-Path $scriptRoot "run_core_strategy_expansion_overnight.py"
 
 function Write-JsonFile {
@@ -211,6 +213,71 @@ function Convert-CoveragePlanToWavePlan {
     return $wavePlan
 }
 
+function Get-CoveragePrepTickers {
+    param(
+        [string]$NextWavePlanPath
+    )
+
+    $payload = Get-Content -Path $NextWavePlanPath -Raw | ConvertFrom-Json
+    $laneTemplates =
+        if ($payload.PSObject.Properties.Name -contains "lane_templates") {
+            @($payload.lane_templates)
+        }
+        else {
+            @()
+        }
+
+    $tickers = New-Object System.Collections.Generic.HashSet[string]
+    foreach ($lane in $laneTemplates) {
+        foreach ($bucket in @("staged_materialization", "registry_download")) {
+            $rows =
+                if ($lane.PSObject.Properties.Name -contains $bucket) {
+                    @($lane.$bucket)
+                }
+                else {
+                    @()
+                }
+            foreach ($row in $rows) {
+                $ticker = [string]$row.ticker
+                if (-not [string]::IsNullOrWhiteSpace($ticker)) {
+                    [void]$tickers.Add($ticker.ToUpper())
+                }
+            }
+        }
+    }
+
+    return @($tickers | Sort-Object)
+}
+
+function Invoke-ReadyUniverseBootstrap {
+    param(
+        [string[]]$Tickers,
+        [string]$BootstrapReportDir
+    )
+
+    if (-not $Tickers -or @($Tickers).Count -eq 0) {
+        return [ordered]@{
+            executed = $false
+            exit_code = 0
+            tickers = @()
+            report_dir = $BootstrapReportDir
+        }
+    }
+
+    & $PythonExe $materializerPath `
+        --tickers (@($Tickers) -join ",") `
+        --report-dir $BootstrapReportDir `
+        --only-missing `
+        --update-registry | Out-Null
+
+    return [ordered]@{
+        executed = $true
+        exit_code = $LASTEXITCODE
+        tickers = @($Tickers)
+        report_dir = $BootstrapReportDir
+    }
+}
+
 if ([string]::IsNullOrWhiteSpace($ProgramRoot)) {
     $ProgramRoot = Join-Path $scriptRoot ("output\down_choppy_program_" + (Get-Date -Format "yyyyMMdd_HHmmss"))
 }
@@ -264,6 +331,41 @@ if ($DiscoverySource -eq "coverage_ranked") {
         throw "coverage planner did not create next_wave_plan.json at $nextWavePlanPath"
     }
 
+    $bootstrapCandidates = @(Get-CoveragePrepTickers -NextWavePlanPath $nextWavePlanPath)
+    $bootstrapReportDir = Join-Path $CoverageReportDir "bootstrap_materialization"
+
+    if ($Execute -and $BootstrapReadyUniverse -and @($bootstrapCandidates).Count -gt 0) {
+        Write-JsonFile -Path $statusPath -Payload ([ordered]@{
+            phase = "bootstrap_ready_materialization"
+            execute = $true
+            updated_at = (Get-Date).ToString("o")
+            tickers = $bootstrapCandidates
+            bootstrap_report_dir = $bootstrapReportDir
+        })
+
+        $bootstrapResult = Invoke-ReadyUniverseBootstrap -Tickers $bootstrapCandidates -BootstrapReportDir $bootstrapReportDir
+        if ([int]$bootstrapResult.exit_code -ne 0) {
+            throw "failed to bootstrap ready-universe materialization"
+        }
+
+        & $PythonExe $CoveragePlannerPath --report-dir $CoverageReportDir | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw "failed to regenerate coverage-ranked discovery plan after bootstrap"
+        }
+    }
+    else {
+        $bootstrapResult = [ordered]@{
+            executed = $false
+            exit_code = 0
+            tickers = $bootstrapCandidates
+            report_dir = $bootstrapReportDir
+        }
+    }
+
+    if (-not (Test-Path $nextWavePlanPath)) {
+        throw "coverage planner did not recreate next_wave_plan.json at $nextWavePlanPath"
+    }
+
     $wavePlan = Convert-CoveragePlanToWavePlan -NextWavePlanPath $nextWavePlanPath -DiscoveryRootPath $discoveryRoot
     $wavePlanPath = Join-Path $discoveryRoot "family_wave_plan.json"
     Write-JsonFile -Path $wavePlanPath -Payload $wavePlan
@@ -290,6 +392,7 @@ $manifest = [ordered]@{
     created_at = (Get-Date).ToString("o")
     execute = [bool]$Execute
     run_phase2 = [bool]$RunPhase2
+    bootstrap_ready_universe = [bool]$BootstrapReadyUniverse
     discovery_source = $DiscoverySource
     ready_base_dir = [System.IO.Path]::GetFullPath($ReadyBaseDir)
     discovery_root = $discoveryRoot
@@ -297,6 +400,7 @@ $manifest = [ordered]@{
     phase2_root = $phase2Root
     coverage_report_dir = $CoverageReportDir
     coverage_planner_path = $CoveragePlannerPath
+    materializer_path = $materializerPath
     wave_plan_path = $wavePlanPath
     shortlist_builder_path = $shortlistBuilderPath
     runner_path = $runnerPath
@@ -310,6 +414,14 @@ $manifest = [ordered]@{
         min_trade_count = $MinTradeCount
     }
     discovery_lanes = @($wavePlan)
+}
+if ($DiscoverySource -eq "coverage_ranked") {
+    $manifest.bootstrap = [ordered]@{
+        executed = [bool]$bootstrapResult.executed
+        exit_code = [int]$bootstrapResult.exit_code
+        tickers = @($bootstrapResult.tickers)
+        report_dir = [string]$bootstrapResult.report_dir
+    }
 }
 Write-JsonFile -Path $manifestPath -Payload $manifest
 

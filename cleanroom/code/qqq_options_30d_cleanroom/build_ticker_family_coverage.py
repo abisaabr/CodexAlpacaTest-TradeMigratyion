@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import subprocess
+import sys
 from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -19,6 +21,7 @@ DEFAULT_STRATEGY_REPO_JSON = ROOT / "output" / "strategy_repo_build_strategy_rep
 DEFAULT_READY_BASE_DIR = Path(r"C:\Users\rabisaab\OneDrive - First American Corporation\qqq_options_30d_cleanroom\output\backtester_ready")
 DEFAULT_SECONDARY_OUTPUT = Path(r"C:\Users\rabisaab\OneDrive - First American Corporation\qqq_options_30d_cleanroom\output")
 DEFAULT_REGISTRY_PATH = DEFAULT_SECONDARY_OUTPUT / "backtester_registry.csv"
+DEFAULT_MATERIALIZER = ROOT / "materialize_backtester_ready.py"
 
 
 LANE_TEMPLATES = [
@@ -96,6 +99,32 @@ def scalar_float(value: Any, default: float = 0.0) -> float:
         return float(value)
     except (TypeError, ValueError):
         return default
+
+
+def ensure_strategy_repo_json(path: Path, *, output_root: Path, ready_base_dir: Path) -> Path:
+    if path.exists():
+        return path
+    builder_path = ROOT / "build_strategy_repo.py"
+    report_dir = output_root / "strategy_repo_autobuild_20260421"
+    report_dir.mkdir(parents=True, exist_ok=True)
+    subprocess.run(
+        [
+            sys.executable,
+            str(builder_path),
+            "--output-root",
+            str(output_root),
+            "--ready-base-dir",
+            str(ready_base_dir),
+            "--report-dir",
+            str(report_dir),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+    candidate = report_dir / "strategy_repo.json"
+    if not candidate.exists():
+        raise FileNotFoundError(f"strategy repo autobuild did not produce {candidate}")
+    return candidate
 
 
 def normalize_strategy_repo(path: Path) -> dict[str, Any]:
@@ -501,6 +530,16 @@ def write_markdown(
         lines.append(
             f"- registry download: {', '.join(f'`{row['ticker']}`' for row in lane['registry_download']) if lane['registry_download'] else 'none'}"
         )
+        prep_tickers = sorted(
+            {
+                row["ticker"]
+                for bucket in ("staged_materialization", "registry_download")
+                for row in lane[bucket]
+            }
+        )
+        lines.append(
+            f"- prep/materialize next: {', '.join(f'`{ticker}`' for ticker in prep_tickers) if prep_tickers else 'none'}"
+        )
         lines.append("")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -542,6 +581,38 @@ def build_next_wave_commands(
     return commands
 
 
+def build_materialization_commands(
+    *,
+    next_wave_plan: dict[str, Any],
+    report_dir: Path,
+) -> list[str]:
+    commands: list[str] = []
+    materializer_path = DEFAULT_MATERIALIZER.resolve()
+    for lane in next_wave_plan["lane_templates"]:
+        tickers = sorted(
+            {
+                row["ticker"].lower()
+                for bucket in ("staged_materialization", "registry_download")
+                for row in lane[bucket]
+            }
+        )
+        if not tickers:
+            continue
+        prep_dir = report_dir / "data_prep" / lane["lane_id"]
+        parts = [
+            "python",
+            str(materializer_path),
+            "--tickers",
+            ",".join(tickers),
+            "--report-dir",
+            str(prep_dir.resolve()),
+            "--only-missing",
+            "--update-registry",
+        ]
+        commands.append(" ".join(f'"{part}"' if " " in part else part for part in parts))
+    return commands
+
+
 def main() -> None:
     args = build_parser().parse_args()
     output_root = Path(args.output_root).resolve()
@@ -552,6 +623,11 @@ def main() -> None:
     report_dir = Path(args.report_dir).resolve()
     report_dir.mkdir(parents=True, exist_ok=True)
 
+    strategy_repo_json = ensure_strategy_repo_json(
+        strategy_repo_json,
+        output_root=output_root,
+        ready_base_dir=ready_base_dir,
+    )
     strategy_repo = normalize_strategy_repo(strategy_repo_json)
     run_records = scan_run_records(output_root=output_root, strategy_repo=strategy_repo)
     ready_tickers = set(ticker.upper() for ticker in strategy_repo_builder.ready_tickers(ready_base_dir))
@@ -585,6 +661,10 @@ def main() -> None:
         ready_base_dir=ready_base_dir,
         report_dir=report_dir,
     )
+    next_wave_prep_commands = build_materialization_commands(
+        next_wave_plan=next_wave_plan,
+        report_dir=report_dir,
+    )
 
     payload = {
         "generated_at": datetime.now().isoformat(),
@@ -597,6 +677,7 @@ def main() -> None:
         "ticker_summary": ticker_summary,
         "next_wave_plan": next_wave_plan,
         "next_wave_commands": next_wave_commands,
+        "next_wave_prep_commands": next_wave_prep_commands,
     }
 
     write_json(report_dir / "ticker_family_coverage.json", payload)
@@ -605,6 +686,7 @@ def main() -> None:
     write_csv(report_dir / "ticker_summary.csv", ticker_summary)
     write_json(report_dir / "next_wave_plan.json", next_wave_plan)
     (report_dir / "next_wave_commands.ps1").write_text("\n".join(next_wave_commands), encoding="utf-8")
+    (report_dir / "next_wave_prep_commands.ps1").write_text("\n".join(next_wave_prep_commands), encoding="utf-8")
     write_markdown(
         path=report_dir / "ticker_family_coverage.md",
         coverage_rows=coverage_rows,
