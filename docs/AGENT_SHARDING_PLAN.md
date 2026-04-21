@@ -52,6 +52,8 @@
 - `Balanced Expansion`: `family_expansion` (Balanced benchmark names and cross-regime validation.)
 - `Shared-Account Validator`: Portfolio-level retest before GitHub promotion.
 
+See [AGENT_OPERATING_MODEL.md](./AGENT_OPERATING_MODEL.md) for the stricter ownership model, handoff artifacts, single-writer rules, and agent-by-agent script boundaries.
+
 ## Phased Plan
 
 ### Phase 0 - Inventory Refresh

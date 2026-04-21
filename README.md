@@ -10,6 +10,7 @@ What this repo contains:
 - Cleanroom research scripts
 - The current cleanroom tournament conveyor scripts for chained family-expansion runs
 - Cleanroom run-lineage support so large research batches emit `run_manifest.json` plus an append-only `run_registry.jsonl`
+- Agent-sharding and operating-model docs for running the research conveyor with clear ownership and promotion gates
 - Cleanroom summary outputs without raw option bars
 - Legacy strategy scripts, reports, and CSV research artifacts extracted from archive bundles
 - Setup docs and a restore script for the new machine

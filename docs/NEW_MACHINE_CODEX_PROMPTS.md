@@ -44,6 +44,7 @@ Open these sibling folders and use them together:
 Treat qqq_options_30d_cleanroom as the research workspace. Verify that the cleanroom contains the conveyor scripts:
 - materialize_backtester_ready.py
 - build_ticker_family_coverage.py
+- build_agent_operating_model.py
 - build_coverage_next_wave_plan.py
 - run_core_strategy_expansion_overnight.py
 - launch_down_choppy_program.ps1
@@ -73,6 +74,8 @@ If the ready universe is smaller than the staged/registry universe, use material
 Before launching the next large wave, run build_coverage_next_wave_plan.py to refresh the 159-symbol ticker-family coverage matrix and use its next-wave outputs to choose under-tested families and symbols instead of repeating already-covered combinations.
 
 Each large batch should leave behind a `run_manifest.json` inside its `research_dir` plus an append-only `run_registry.jsonl` under the cleanroom `output` root. Use those files to verify machine lineage, code lineage, input fingerprints, ticker completion state, and the final shared-account snapshot before trusting or promoting results.
+
+Before assigning subagents for a new large wave, refresh the current operating model with `build_agent_operating_model.py` and use `docs/AGENT_OPERATING_MODEL.md` as the source of truth for role ownership, handoff artifacts, and the rule that only the Promotion Steward may write the live manifest.
 
 At the end, report:
 - what tournament lane is running now
