@@ -16,6 +16,7 @@
 - Every large lane must emit run_manifest.json and append to run_registry.jsonl.
 - Promotion requires friction-aware results plus portfolio-context validation.
 - Checkpoint reuse is allowed only when the run signature still matches.
+- Build a phase-specific launch pack with `build_agent_wave_launch_pack.py` before starting a large wave, then use `launch_agent_wave.ps1` so execution follows the generated pack instead of ad hoc commands.
 
 ## Agent Roles
 

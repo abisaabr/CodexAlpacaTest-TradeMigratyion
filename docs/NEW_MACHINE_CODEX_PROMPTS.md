@@ -45,9 +45,11 @@ Treat qqq_options_30d_cleanroom as the research workspace. Verify that the clean
 - materialize_backtester_ready.py
 - build_ticker_family_coverage.py
 - build_agent_operating_model.py
+- build_agent_wave_launch_pack.py
 - run_core_strategy_expansion_overnight.py
 - launch_down_choppy_program.ps1
 - launch_down_choppy_family_wave.ps1
+- launch_agent_wave.ps1
 - build_family_wave_shortlist.py
 - queue_bundle_candidate_batch.py
 - queue_family_expansion_after_quality6.ps1
@@ -75,6 +77,8 @@ Before launching the next large wave, run build_ticker_family_coverage.py to ref
 Each large batch should leave behind a `run_manifest.json` inside its `research_dir` plus an append-only `run_registry.jsonl` under the cleanroom `output` root. Use those files to verify machine lineage, code lineage, input fingerprints, ticker completion state, and the final shared-account snapshot before trusting or promoting results.
 
 Before assigning subagents for a new large wave, refresh the current operating model with `build_agent_operating_model.py` and use `docs/AGENT_OPERATING_MODEL.md` as the source of truth for role ownership, handoff artifacts, and the rule that only the Promotion Steward may write the live manifest.
+
+Before executing Phase 1 discovery, use `build_agent_wave_launch_pack.py` to generate an exact launch pack from the current operating model plus the current coverage-ranked plan, then use `launch_agent_wave.ps1` against that pack so lane commands, logs, and research directories stay reproducible.
 
 At the end, report:
 - what tournament lane is running now
