@@ -60,6 +60,7 @@
 - Max parallel backtests: 0
 - Rebuild strategy coverage after the latest 59+ bundle universe is staged.
 - Separate currently backtester-ready tickers from full staged-but-not-ready tickers.
+- Use `cleanroom/code/qqq_options_30d_cleanroom/build_ticker_family_coverage.py` to build the 159-symbol ticker-family coverage matrix and emit `next_wave_plan.json` / `next_wave_commands.ps1` before starting the next agent wave.
 
 ### Phase 1 - Down/Choppy Discovery
 
