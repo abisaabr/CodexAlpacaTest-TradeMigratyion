@@ -60,6 +60,7 @@
 - Max parallel backtests: 0
 - Rebuild strategy coverage after the latest 59+ bundle universe is staged.
 - Separate currently backtester-ready tickers from full staged-but-not-ready tickers.
+- Use `cleanroom/code/qqq_options_30d_cleanroom/build_coverage_next_wave_plan.py` to generate the ticker-family coverage matrix, family/ticker gap summaries, and the next-wave discovery/exhaustive lane commands before launching another broad sweep.
 - Use `cleanroom/code/qqq_options_30d_cleanroom/build_ticker_family_coverage.py` to build the 159-symbol ticker-family coverage matrix and emit `next_wave_plan.json` / `next_wave_commands.ps1` before starting the next agent wave.
 
 ### Phase 1 - Down/Choppy Discovery
@@ -69,6 +70,7 @@
 - Strategy set: `down_choppy_only`
 - Selection profile: `down_choppy_focus`
 - Promotion mode: `none`
+- Prefer coverage-ranked discovery when possible: run `build_ticker_family_coverage.py` first and seed the four Phase 1 lanes from the highest-gap ready symbols instead of blindly using the full ready universe.
 - Cohorts:
   - `R01`: 8 tickers
   - `R02`: 8 tickers
@@ -87,6 +89,7 @@
 - Use `cleanroom/code/qqq_options_30d_cleanroom/build_family_wave_shortlist.py` after the four discovery lanes finish.
 - The shortlist builder emits one readable markdown report plus `phase2_plan.json` / `phase2_commands.ps1` so the two exhaustive lanes can start without manual ticker triage.
 - Use `cleanroom/code/qqq_options_30d_cleanroom/launch_down_choppy_program.ps1` as the top-level dry-run-safe entrypoint when you want one script to stage discovery, run the shortlist, and launch the two exhaustive follow-up lanes.
+- `launch_down_choppy_program.ps1` also supports `coverage_ranked` discovery mode so the same entrypoint can use `build_ticker_family_coverage.py` before staging Phase 1.
 
 ### Phase 3 - Balanced Cross-Regime Benchmark
 

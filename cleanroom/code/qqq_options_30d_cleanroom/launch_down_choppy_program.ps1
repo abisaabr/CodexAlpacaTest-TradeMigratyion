@@ -4,6 +4,10 @@ param(
     [string]$PythonExe = "python",
     [switch]$Execute,
     [switch]$RunPhase2 = $true,
+    [ValidateSet("full_ready", "coverage_ranked")]
+    [string]$DiscoverySource = "full_ready",
+    [string]$CoveragePlannerPath = "",
+    [string]$CoverageReportDir = "",
     [int]$TopPerLane = 8,
     [int]$MaxPerPhase2Lane = 12,
     [double]$MinReturnPct = 0.0,
@@ -19,6 +23,7 @@ $ErrorActionPreference = "Stop"
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $familyWaveLauncherPath = Join-Path $scriptRoot "launch_down_choppy_family_wave.ps1"
 $shortlistBuilderPath = Join-Path $scriptRoot "build_family_wave_shortlist.py"
+$defaultCoveragePlannerPath = Join-Path $scriptRoot "build_ticker_family_coverage.py"
 $runnerPath = Join-Path $scriptRoot "run_core_strategy_expansion_overnight.py"
 
 function Write-JsonFile {
@@ -163,6 +168,49 @@ function Wait-LaneProcesses {
     return $results
 }
 
+function Convert-CoveragePlanToWavePlan {
+    param(
+        [string]$NextWavePlanPath,
+        [string]$DiscoveryRootPath
+    )
+
+    $payload = Get-Content -Path $NextWavePlanPath -Raw | ConvertFrom-Json
+    $laneTemplates =
+        if ($payload.PSObject.Properties.Name -contains "lane_templates") {
+            @($payload.lane_templates)
+        }
+        else {
+            @()
+        }
+
+    $wavePlan = @()
+    foreach ($lane in $laneTemplates) {
+        $readyRows =
+            if ($lane.PSObject.Properties.Name -contains "ready_discovery") {
+                @($lane.ready_discovery)
+            }
+            else {
+                @()
+            }
+        $tickers = @($readyRows | ForEach-Object { [string]$_.ticker } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+        $families = @($lane.families | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+        $wavePlan += [ordered]@{
+            lane_id = [string]$lane.lane_id
+            description = [string]$lane.description
+            strategy_set = "down_choppy_only"
+            selection_profile = "down_choppy_focus"
+            family_include = (($families | ForEach-Object {
+                        ($_ -replace '[^A-Za-z0-9]+', '_').Trim('_').ToLower()
+                    }) -join ",")
+            tickers = $tickers
+            research_dir = (Join-Path $DiscoveryRootPath ([string]$lane.lane_id))
+            command = ""
+        }
+    }
+
+    return $wavePlan
+}
+
 if ([string]::IsNullOrWhiteSpace($ProgramRoot)) {
     $ProgramRoot = Join-Path $scriptRoot ("output\down_choppy_program_" + (Get-Date -Format "yyyyMMdd_HHmmss"))
 }
@@ -171,6 +219,7 @@ $programRootPath = [System.IO.Path]::GetFullPath($ProgramRoot)
 $discoveryRoot = Join-Path $programRootPath "discovery"
 $shortlistRoot = Join-Path $programRootPath "shortlist"
 $phase2Root = Join-Path $programRootPath "phase2"
+$coverageRoot = Join-Path $programRootPath "coverage"
 $logsRoot = Join-Path $programRootPath "logs"
 $statusPath = Join-Path $programRootPath "program_status.json"
 $manifestPath = Join-Path $programRootPath "program_manifest.json"
@@ -181,7 +230,22 @@ New-Item -ItemType Directory -Force -Path $programRootPath | Out-Null
 New-Item -ItemType Directory -Force -Path $discoveryRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $shortlistRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $phase2Root | Out-Null
+New-Item -ItemType Directory -Force -Path $coverageRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $logsRoot | Out-Null
+
+if ([string]::IsNullOrWhiteSpace($CoveragePlannerPath)) {
+    $CoveragePlannerPath = $defaultCoveragePlannerPath
+}
+else {
+    $CoveragePlannerPath = [System.IO.Path]::GetFullPath($CoveragePlannerPath)
+}
+
+if ([string]::IsNullOrWhiteSpace($CoverageReportDir)) {
+    $CoverageReportDir = $coverageRoot
+}
+else {
+    $CoverageReportDir = [System.IO.Path]::GetFullPath($CoverageReportDir)
+}
 
 Write-JsonFile -Path $statusPath -Payload ([ordered]@{
     phase = "planning"
@@ -189,30 +253,50 @@ Write-JsonFile -Path $statusPath -Payload ([ordered]@{
     updated_at = (Get-Date).ToString("o")
 })
 
-& powershell -NoProfile -ExecutionPolicy Bypass -File $familyWaveLauncherPath `
-    -ReadyBaseDir $ReadyBaseDir `
-    -ResearchRoot $discoveryRoot `
-    -PythonExe $PythonExe | Out-Null
+if ($DiscoverySource -eq "coverage_ranked") {
+    & $PythonExe $CoveragePlannerPath --report-dir $CoverageReportDir | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "failed to generate coverage-ranked discovery plan"
+    }
 
-if ($LASTEXITCODE -ne 0) {
-    throw "failed to generate discovery family-wave plan"
+    $nextWavePlanPath = Join-Path $CoverageReportDir "next_wave_plan.json"
+    if (-not (Test-Path $nextWavePlanPath)) {
+        throw "coverage planner did not create next_wave_plan.json at $nextWavePlanPath"
+    }
+
+    $wavePlan = Convert-CoveragePlanToWavePlan -NextWavePlanPath $nextWavePlanPath -DiscoveryRootPath $discoveryRoot
+    $wavePlanPath = Join-Path $discoveryRoot "family_wave_plan.json"
+    Write-JsonFile -Path $wavePlanPath -Payload $wavePlan
 }
+else {
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $familyWaveLauncherPath `
+        -ReadyBaseDir $ReadyBaseDir `
+        -ResearchRoot $discoveryRoot `
+        -PythonExe $PythonExe | Out-Null
 
-$wavePlanPath = Join-Path $discoveryRoot "family_wave_plan.json"
-if (-not (Test-Path $wavePlanPath)) {
-    throw "family wave plan was not created at $wavePlanPath"
+    if ($LASTEXITCODE -ne 0) {
+        throw "failed to generate discovery family-wave plan"
+    }
+
+    $wavePlanPath = Join-Path $discoveryRoot "family_wave_plan.json"
+    if (-not (Test-Path $wavePlanPath)) {
+        throw "family wave plan was not created at $wavePlanPath"
+    }
+
+    $wavePlan = Get-Content -Path $wavePlanPath -Raw | ConvertFrom-Json
 }
-
-$wavePlan = Get-Content -Path $wavePlanPath -Raw | ConvertFrom-Json
 
 $manifest = [ordered]@{
     created_at = (Get-Date).ToString("o")
     execute = [bool]$Execute
     run_phase2 = [bool]$RunPhase2
+    discovery_source = $DiscoverySource
     ready_base_dir = [System.IO.Path]::GetFullPath($ReadyBaseDir)
     discovery_root = $discoveryRoot
     shortlist_root = $shortlistRoot
     phase2_root = $phase2Root
+    coverage_report_dir = $CoverageReportDir
+    coverage_planner_path = $CoveragePlannerPath
     wave_plan_path = $wavePlanPath
     shortlist_builder_path = $shortlistBuilderPath
     runner_path = $runnerPath
