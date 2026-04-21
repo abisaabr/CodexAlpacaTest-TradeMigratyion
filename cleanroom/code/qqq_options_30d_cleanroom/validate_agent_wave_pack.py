@@ -125,6 +125,25 @@ def validate_pack(pack: dict[str, Any], pack_path: Path) -> dict[str, Any]:
         if source_value and not Path(source_value).exists():
             issues.append(issue("warning", "missing_source_path", f"source path `{source_key}` does not exist", {"source_key": source_key, "path": source_value}))
 
+    build_summary = pack.get("build_summary", {})
+    phase = str(pack.get("phase", ""))
+    if phase == "phase1_discovery":
+        expected_lane_count = int(build_summary.get("expected_lane_count", len(lanes)))
+        built_lane_count = int(build_summary.get("built_lane_count", len(lanes)))
+        if expected_lane_count != len(lanes):
+            issues.append(issue("error", "build_summary_lane_mismatch", "pack build_summary expected_lane_count does not match actual lanes", {"expected": expected_lane_count, "actual": len(lanes)}))
+        if built_lane_count != len(lanes):
+            issues.append(issue("error", "build_summary_built_mismatch", "pack build_summary built_lane_count does not match actual lanes", {"expected": built_lane_count, "actual": len(lanes)}))
+        if len(lanes) == 0:
+            issues.append(issue("error", "empty_phase1_pack", "phase1 discovery pack has no lanes"))
+    if phase == "phase2_exhaustive":
+        planned_lane_count = int(build_summary.get("planned_lane_count", len(lanes)))
+        built_lane_count = int(build_summary.get("built_lane_count", len(lanes)))
+        if built_lane_count != len(lanes):
+            issues.append(issue("error", "phase2_build_summary_built_mismatch", "phase2 pack build_summary built_lane_count does not match actual lanes", {"expected": built_lane_count, "actual": len(lanes)}))
+        if planned_lane_count < len(lanes):
+            issues.append(issue("error", "phase2_build_summary_planned_mismatch", "phase2 pack has more built lanes than planned lanes", {"planned": planned_lane_count, "actual": len(lanes)}))
+
     seen_lane_ids: set[str] = set()
     seen_research_dirs: set[str] = set()
     seen_stdout: set[str] = set()

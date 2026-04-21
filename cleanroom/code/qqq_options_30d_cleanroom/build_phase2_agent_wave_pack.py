@@ -35,6 +35,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--output-dir",
         default=str(DEFAULT_OUTPUT_ROOT / f"phase2_agent_wave_pack_{datetime.now().strftime('%Y%m%d_%H%M%S')}"),
     )
+    parser.add_argument(
+        "--require-explicit-sources",
+        action="store_true",
+        help="Require explicit --phase2-plan-json and --operating-model-json instead of falling back to the latest matching artifacts.",
+    )
     return parser
 
 
@@ -54,6 +59,24 @@ def resolve_latest_json(path: Path, pattern: str) -> Path:
     if not candidates:
         raise FileNotFoundError(f"Could not find {pattern} under {DEFAULT_OUTPUT_ROOT}")
     return candidates[0]
+
+
+def resolve_source_json(
+    *,
+    raw_value: str,
+    pattern: str,
+    require_explicit: bool,
+) -> Path:
+    if raw_value:
+        candidate = Path(raw_value).resolve()
+        if candidate.exists():
+            return candidate
+        if require_explicit:
+            raise FileNotFoundError(f"explicit source path does not exist: {candidate}")
+        return resolve_latest_json(Path(), pattern)
+    if require_explicit:
+        raise FileNotFoundError(f"explicit source path required for {pattern}")
+    return resolve_latest_json(Path(), pattern)
 
 
 def normalize_family_filter(value: str) -> list[str]:
@@ -160,10 +183,14 @@ def build_pack(
 ) -> dict[str, Any]:
     lanes: list[dict[str, Any]] = []
     logs_root = research_root / "logs"
+    nonempty_phase2_lanes = 0
+    empty_phase2_lanes: list[str] = []
     for lane in phase2_plan:
         tickers = [str(ticker).lower() for ticker in lane.get("tickers", []) if str(ticker).strip()]
         if not tickers:
+            empty_phase2_lanes.append(str(lane.get("lane_id", "")))
             continue
+        nonempty_phase2_lanes += 1
         agent = select_phase2_agent(operating_model, lane)
         lane_id = str(lane["lane_id"])
         lane_research_dir = research_root / lane_id
@@ -233,6 +260,12 @@ def build_pack(
             "single_writer_roles": operating_model.get("governance", {}).get("single_writer_roles", []),
             "required_lane_artifacts": operating_model.get("artifacts", {}).get("required_per_lane", []),
         },
+        "build_summary": {
+            "planned_lane_count": len(phase2_plan),
+            "nonempty_phase2_lane_count": nonempty_phase2_lanes,
+            "built_lane_count": len(lanes),
+            "empty_phase2_lanes": empty_phase2_lanes,
+        },
         "overlap_summary": build_overlap_summary(lanes),
         "lanes": lanes,
     }
@@ -293,8 +326,16 @@ def write_readme(path: Path, payload: dict[str, Any]) -> None:
 
 def main() -> None:
     args = build_parser().parse_args()
-    phase2_plan_path = resolve_latest_json(Path(args.phase2_plan_json).resolve() if args.phase2_plan_json else Path(), "phase2_plan.json")
-    operating_model_path = resolve_latest_json(Path(args.operating_model_json).resolve(), "agent_operating_model.json")
+    phase2_plan_path = resolve_source_json(
+        raw_value=str(args.phase2_plan_json),
+        pattern="phase2_plan.json",
+        require_explicit=bool(args.require_explicit_sources),
+    )
+    operating_model_path = resolve_source_json(
+        raw_value=str(args.operating_model_json),
+        pattern="agent_operating_model.json",
+        require_explicit=bool(args.require_explicit_sources),
+    )
     phase2_plan = load_phase2_plan(phase2_plan_path)
     operating_model = load_json(operating_model_path)
     shortlist_path, shortlist_payload = resolve_shortlist_payload(phase2_plan_path, args.shortlist_json)

@@ -60,6 +60,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--output-dir",
         default=str(DEFAULT_OUTPUT_ROOT / f"agent_wave_launch_pack_{datetime.now().strftime('%Y%m%d_%H%M%S')}"),
     )
+    parser.add_argument(
+        "--require-explicit-sources",
+        action="store_true",
+        help="Require explicit --operating-model-json and --coverage-plan-json instead of falling back to the latest matching artifacts.",
+    )
     return parser
 
 
@@ -117,6 +122,24 @@ def resolve_latest_json(path: Path, pattern: str) -> Path:
     if not candidates:
         raise FileNotFoundError(f"Could not find {pattern} under {DEFAULT_OUTPUT_ROOT}")
     return candidates[0]
+
+
+def resolve_source_json(
+    *,
+    raw_value: str,
+    pattern: str,
+    require_explicit: bool,
+) -> Path:
+    if raw_value:
+        candidate = Path(raw_value).resolve()
+        if candidate.exists():
+            return candidate
+        if require_explicit:
+            raise FileNotFoundError(f"explicit source path does not exist: {candidate}")
+        return resolve_latest_json(Path(), pattern)
+    if require_explicit:
+        raise FileNotFoundError(f"explicit source path required for {pattern}")
+    return resolve_latest_json(Path(), pattern)
 
 
 def map_discovery_agents(operating_model: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -274,19 +297,25 @@ def build_pack(
     lanes: list[dict[str, Any]] = []
     logs_root = research_root / "logs"
     templates = list(coverage_plan.get("lane_templates", []))
+    if not templates:
+        raise ValueError("coverage plan has no lane_templates; cannot build a discovery pack")
     lane_assignments, allocation_summary = allocate_lane_tickers(
         templates,
         max_tickers_per_lane=max_tickers_per_lane,
         allocation_mode=allocation_mode,
         shared_benchmark_slots=shared_benchmark_slots,
     )
+    unmapped_lanes: list[str] = []
+    empty_lanes: list[str] = []
     for template in templates:
         family_filters = sorted(lane_filters_from_template(template))
         agent = agent_map.get("|".join(family_filters))
         if agent is None:
+            unmapped_lanes.append(str(template.get("lane_id", "")))
             continue
         tickers = [ticker.lower() for ticker in lane_assignments.get(str(template["lane_id"]), [])]
         if not tickers:
+            empty_lanes.append(str(template.get("lane_id", "")))
             continue
         lane_id = str(template["lane_id"])
         lane_research_dir = research_root / lane_id
@@ -331,6 +360,14 @@ def build_pack(
             }
         )
 
+    if unmapped_lanes or empty_lanes:
+        problems: list[str] = []
+        if unmapped_lanes:
+            problems.append(f"unmapped lanes: {', '.join(unmapped_lanes)}")
+        if empty_lanes:
+            problems.append(f"empty lanes: {', '.join(empty_lanes)}")
+        raise ValueError("cannot build a complete discovery pack; " + "; ".join(problems))
+
     return {
         "generated_at": datetime.now().isoformat(),
         "phase": "phase1_discovery",
@@ -346,6 +383,11 @@ def build_pack(
             "promotion_mode": "none",
             "single_writer_roles": operating_model.get("governance", {}).get("single_writer_roles", []),
             "required_lane_artifacts": operating_model.get("artifacts", {}).get("required_per_lane", []),
+        },
+        "build_summary": {
+            "expected_lane_count": len(templates),
+            "built_lane_count": len(lanes),
+            "allocation_mode": allocation_summary.get("allocation_mode", ""),
         },
         "allocation": allocation_summary,
         "overlap_summary": build_overlap_summary(lanes),
@@ -423,8 +465,16 @@ def write_readme(path: Path, payload: dict[str, Any]) -> None:
 
 def main() -> None:
     args = build_parser().parse_args()
-    operating_model_path = resolve_latest_json(Path(args.operating_model_json).resolve(), "agent_operating_model.json")
-    coverage_plan_path = resolve_latest_json(Path(args.coverage_plan_json).resolve(), "next_wave_plan.json")
+    operating_model_path = resolve_source_json(
+        raw_value=str(args.operating_model_json),
+        pattern="agent_operating_model.json",
+        require_explicit=bool(args.require_explicit_sources),
+    )
+    coverage_plan_path = resolve_source_json(
+        raw_value=str(args.coverage_plan_json),
+        pattern="next_wave_plan.json",
+        require_explicit=bool(args.require_explicit_sources),
+    )
     if args.refresh_coverage:
         coverage_plan_path = refresh_coverage_plan(
             planner_path=Path(args.coverage_planner_path).resolve(),
