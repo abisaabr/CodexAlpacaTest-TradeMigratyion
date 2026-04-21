@@ -1,0 +1,112 @@
+# Agent Sharding Plan
+
+## Machine Profile
+
+- Logical CPUs: 16
+- Total RAM: 63.46 GB
+- Free RAM at plan time: 33.90 GB
+- Lean parallel backtests: 4
+- Heavy parallel backtests: 2
+- Validation lane concurrency: 1
+- Recommended total Codex agents: 8
+
+## Data Universe
+
+- Staged bundle universe: 59 tickers
+- Backtester-ready universe: 31 tickers
+- Registry-symbol universe: 159 tickers
+- Full target universe: 159 tickers
+
+## Strategy Inventory
+
+- Cataloged base strategies: 92
+- Ready ticker count in repo snapshot: 31
+- Researched ticker count in repo snapshot: 41
+
+### Highest-Value Family Gaps
+
+- `Credit call spread`: 13 base strategies, 1 ever selected, 0 ever promoted
+- `Single-leg long put`: 17 base strategies, 7 ever selected, 6 ever promoted
+- `Debit put spread`: 7 base strategies, 0 ever selected, 0 ever promoted
+- `Iron condor`: 6 base strategies, 1 ever selected, 0 ever promoted
+- `Long strangle`: 5 base strategies, 0 ever selected, 0 ever promoted
+- `Put backspread`: 5 base strategies, 0 ever selected, 0 ever promoted
+- `Long straddle`: 5 base strategies, 1 ever selected, 0 ever promoted
+- `Credit put spread`: 5 base strategies, 2 ever selected, 0 ever promoted
+- `Call butterfly`: 4 base strategies, 0 ever selected, 0 ever promoted
+- `Put butterfly`: 4 base strategies, 0 ever selected, 0 ever promoted
+
+## Immediate Agent Layout
+
+- `Inventory Steward`: Refresh strategy repo, maintain cohort lists, and track family coverage gaps.
+- `Promotion Steward`: Serialize shared-account validation and GitHub live-manifest promotion.
+- `Bear Directional`: `down_choppy_only` on Single-leg long put, Debit put spread
+- `Bear Premium`: `down_choppy_only` on Credit call spread, Iron condor, Iron butterfly
+- `Bear Convexity`: `down_choppy_only` on Put backspread, Long straddle, Long strangle
+- `Butterfly Lab`: `down_choppy_only` on Put butterfly, Broken-wing put butterfly
+- `Down/Choppy Exhaustive`: `down_choppy_exhaustive` (Top decile discovery survivors only.)
+- `Balanced Expansion`: `family_expansion` (Balanced benchmark names and cross-regime validation.)
+- `Shared-Account Validator`: Portfolio-level retest before GitHub promotion.
+
+## Phased Plan
+
+### Phase 0 - Inventory Refresh
+
+- Goal: Refresh strategy repo against the broader ticker lake before launching new waves.
+- Max parallel backtests: 0
+- Rebuild strategy coverage after the latest 59+ bundle universe is staged.
+- Separate currently backtester-ready tickers from full staged-but-not-ready tickers.
+
+### Phase 1 - Down/Choppy Discovery
+
+- Goal: Run fast, low-promotion-risk discovery across the currently backtester-ready universe.
+- Max parallel backtests: 4
+- Strategy set: `down_choppy_only`
+- Selection profile: `down_choppy_focus`
+- Promotion mode: `none`
+- Cohorts:
+  - `R01`: 8 tickers
+  - `R02`: 8 tickers
+  - `R03`: 8 tickers
+  - `R04`: 7 tickers
+
+### Phase 2 - Exhaustive Follow-Up
+
+- Goal: Retest only shortlisted tickers/families with the wider down/choppy surface.
+- Max parallel backtests: 2
+- Strategy set: `down_choppy_exhaustive`
+- Selection profile: `down_choppy_focus`
+- Promotion mode: `none`
+- Only pass survivors from Phase 1 with good friction profile and low cheap-premium dependence.
+- Keep shard size smaller than discovery to protect RAM.
+
+### Phase 3 - Balanced Cross-Regime Benchmark
+
+- Goal: Run family_expansion on core symbols and any candidates that look robust beyond down/choppy.
+- Max parallel backtests: 2
+- Strategy set: `family_expansion`
+- Selection profile: `balanced`
+- Promotion mode: `none`
+
+### Phase 4 - Shared-Account Validation
+
+- Goal: Retest winners in portfolio context and reject standalone-only false positives.
+- Max parallel backtests: 1
+- Strategy set: `shared_account_validation`
+- Selection profile: `portfolio_first`
+- Promotion mode: `merge_only`
+
+### Phase 5 - Promotion
+
+- Goal: Serialize GitHub manifest updates so the paper runner never races on live state.
+- Max parallel backtests: 0
+- Exactly one promotion steward.
+- No concurrent manifest writers.
+
+## Full 159-Ticker Queue Shape
+
+- Build 12 queued cohorts and run 4 at a time.
+- Total waves: 3
+- Today we can shard cleanly by ticker cohort and strategy set.
+- If we later add family include/exclude flags, we should shard by family lane as well.
+- For the full 159-ticker universe, queue all cohorts but keep only the recommended concurrency active at once.
