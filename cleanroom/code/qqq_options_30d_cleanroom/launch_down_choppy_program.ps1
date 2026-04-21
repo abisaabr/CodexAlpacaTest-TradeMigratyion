@@ -24,6 +24,8 @@ $ErrorActionPreference = "Stop"
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $familyWaveLauncherPath = Join-Path $scriptRoot "launch_down_choppy_family_wave.ps1"
 $shortlistBuilderPath = Join-Path $scriptRoot "build_family_wave_shortlist.py"
+$phase2PackBuilderPath = Join-Path $scriptRoot "build_phase2_agent_wave_pack.py"
+$agentWaveLauncherPath = Join-Path $scriptRoot "launch_agent_wave.ps1"
 $defaultCoveragePlannerPath = Join-Path $scriptRoot "build_ticker_family_coverage.py"
 $materializerPath = Join-Path $scriptRoot "materialize_backtester_ready.py"
 $runnerPath = Join-Path $scriptRoot "run_core_strategy_expansion_overnight.py"
@@ -286,6 +288,7 @@ $programRootPath = [System.IO.Path]::GetFullPath($ProgramRoot)
 $discoveryRoot = Join-Path $programRootPath "discovery"
 $shortlistRoot = Join-Path $programRootPath "shortlist"
 $phase2Root = Join-Path $programRootPath "phase2"
+$phase2PackRoot = Join-Path $phase2Root "launch_pack"
 $coverageRoot = Join-Path $programRootPath "coverage"
 $logsRoot = Join-Path $programRootPath "logs"
 $statusPath = Join-Path $programRootPath "program_status.json"
@@ -297,6 +300,7 @@ New-Item -ItemType Directory -Force -Path $programRootPath | Out-Null
 New-Item -ItemType Directory -Force -Path $discoveryRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $shortlistRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $phase2Root | Out-Null
+New-Item -ItemType Directory -Force -Path $phase2PackRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $coverageRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $logsRoot | Out-Null
 
@@ -486,13 +490,31 @@ $phase2PlanPath = Join-Path $shortlistRoot "phase2_plan.json"
 if (-not (Test-Path $phase2PlanPath)) {
     throw "phase 2 plan was not created at $phase2PlanPath"
 }
-$phase2Plan = Get-Content -Path $phase2PlanPath -Raw | ConvertFrom-Json
+
+& $PythonExe $phase2PackBuilderPath `
+    --phase2-plan-json $phase2PlanPath `
+    --output-dir $phase2PackRoot `
+    --research-root (Join-Path $phase2Root "lanes") `
+    --runner-path $runnerPath `
+    --ready-base-dir $ReadyBaseDir `
+    --python-exe $PythonExe | Out-Null
+
+if ($LASTEXITCODE -ne 0) {
+    throw "failed to build phase 2 launch pack"
+}
+
+$phase2PackPath = Join-Path $phase2PackRoot "phase2_agent_wave_pack.json"
+if (-not (Test-Path $phase2PackPath)) {
+    throw "phase 2 launch pack was not created at $phase2PackPath"
+}
+$phase2Pack = Get-Content -Path $phase2PackPath -Raw | ConvertFrom-Json
 
 Write-JsonFile -Path $statusPath -Payload ([ordered]@{
     phase = "phase1_shortlisting_complete"
     execute = $true
     updated_at = (Get-Date).ToString("o")
     phase2_plan_path = $phase2PlanPath
+    phase2_pack_path = $phase2PackPath
 })
 
 if (-not $RunPhase2) {
@@ -501,25 +523,23 @@ if (-not $RunPhase2) {
         execute = $true
         updated_at = (Get-Date).ToString("o")
         phase2_plan_path = $phase2PlanPath
+        phase2_pack_path = $phase2PackPath
         note = "Phase 2 launch disabled."
     })
     exit 0
 }
 
-$phase2LanesToRun = @($phase2Plan | Where-Object { @($_.tickers).Count -gt 0 })
+$phase2LanesToRun = @($phase2Pack.lanes)
 if (-not $phase2LanesToRun) {
     Write-JsonFile -Path $statusPath -Payload ([ordered]@{
         phase = "complete_no_phase2_survivors"
         execute = $true
         updated_at = (Get-Date).ToString("o")
         phase2_plan_path = $phase2PlanPath
+        phase2_pack_path = $phase2PackPath
         note = "No tickers survived into phase 2."
     })
     exit 0
-}
-
-foreach ($lane in $phase2LanesToRun) {
-    $lane.research_dir = Join-Path $phase2Root ([string]$lane.lane_id)
 }
 
 Write-JsonFile -Path $statusPath -Payload ([ordered]@{
@@ -527,19 +547,34 @@ Write-JsonFile -Path $statusPath -Payload ([ordered]@{
     execute = $true
     updated_at = (Get-Date).ToString("o")
     phase2_plan_path = $phase2PlanPath
+    phase2_pack_path = $phase2PackPath
 })
 
-$phase2LaneProcesses = @()
-foreach ($lane in $phase2LanesToRun) {
-    $phase2LaneProcesses += Start-LaneProcess -Lane $lane -Label "phase2" -LogsRoot $logsRoot
+& powershell -NoProfile -ExecutionPolicy Bypass -File $agentWaveLauncherPath `
+    -PackPath $phase2PackPath `
+    -PythonExe $PythonExe `
+    -PollSeconds $PollSeconds `
+    -Execute `
+    -Wait | Out-Null
+
+if ($LASTEXITCODE -ne 0) {
+    throw "phase 2 launch pack execution failed"
 }
 
-$phase2Results = Wait-LaneProcesses -LaneProcesses $phase2LaneProcesses -PhaseName "phase2_exhaustive_running" -StatusPath $phase2StatusPath
+$phase2PackStatusPath = Join-Path $phase2PackRoot "launch_status.json"
+$phase2Results =
+    if (Test-Path $phase2PackStatusPath) {
+        (Get-Content -Path $phase2PackStatusPath -Raw | ConvertFrom-Json).rows
+    }
+    else {
+        @()
+    }
 
 Write-JsonFile -Path $phase2StatusPath -Payload ([ordered]@{
     phase = "phase2_exhaustive_complete"
     updated_at = (Get-Date).ToString("o")
     results = $phase2Results
+    launch_status_path = $phase2PackStatusPath
 })
 
 Write-JsonFile -Path $statusPath -Payload ([ordered]@{
@@ -548,6 +583,7 @@ Write-JsonFile -Path $statusPath -Payload ([ordered]@{
     updated_at = (Get-Date).ToString("o")
     wave_plan_path = $wavePlanPath
     phase2_plan_path = $phase2PlanPath
+    phase2_pack_path = $phase2PackPath
     phase1_status_path = $phase1StatusPath
     phase2_status_path = $phase2StatusPath
 })
