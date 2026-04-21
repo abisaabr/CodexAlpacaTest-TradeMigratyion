@@ -4,7 +4,9 @@ param(
     [string]$RepoDir = "C:\Users\rabisaab\OneDrive\CodexAlpaca\downloads_remaining_20260417\folders\codexalpaca_repo",
     [string]$ReadyBaseDir = "C:\Users\rabisaab\OneDrive - First American Corporation\qqq_options_30d_cleanroom\output\backtester_ready",
     [string[]]$Tickers,
+    [string]$StrategySet = "family_expansion",
     [string]$SelectionProfile = "balanced",
+    [string]$PromotionMode = "after_shard",
     [int]$ShardSize = 0,
     [int]$MaxParallelShards = 1,
     [int]$PollSeconds = 60,
@@ -69,7 +71,9 @@ function Write-Status {
         research_dir = $researchPath
         repo_dir = $repoPath
         ready_base_dir = $readyBasePath
+        strategy_set = $StrategySet
         selection_profile = $SelectionProfile
+        promotion_mode = $PromotionMode
         max_parallel_shards = $MaxParallelShards
         tickers = $Tickers
     }
@@ -98,6 +102,16 @@ function Get-WaitPhase {
     }
 }
 
+function Get-TournamentLabel {
+    switch ($StrategySet) {
+        "family_expansion" { return "family-expansion" }
+        "down_choppy_only" { return "down/choppy-only" }
+        default { return ($StrategySet -replace "_", "-") }
+    }
+}
+
+$tournamentLabel = Get-TournamentLabel
+
 function Invoke-FamilyExpansionShard {
     param(
         [string[]]$ShardTickers,
@@ -115,12 +129,12 @@ function Invoke-FamilyExpansionShard {
         }
     New-Item -ItemType Directory -Force -Path $shardResearchPath | Out-Null
 
-    Write-Log "Launching family-expansion shard $ShardIndex/$ShardCount for $($ShardTickers -join ', ')"
+    Write-Log "Launching $tournamentLabel shard $ShardIndex/$ShardCount for $($ShardTickers -join ', ')"
     & python $launcherPath `
         --tickers ($ShardTickers -join ",") `
         --ready-base-dir $readyBasePath `
         --research-dir $shardResearchPath `
-        --strategy-set "family_expansion" `
+        --strategy-set $StrategySet `
         --selection-profile $SelectionProfile | Out-Null
 
     if ($LASTEXITCODE -ne 0) {
@@ -132,6 +146,18 @@ function Invoke-FamilyExpansionShard {
             phase = "failed"
             stage = "research"
             exit_code = $LASTEXITCODE
+        }
+    }
+
+    if ($PromotionMode -eq "none") {
+        Write-Log "Shard $ShardIndex/$ShardCount finished research. Promotion is disabled for this run."
+        return [ordered]@{
+            shard_index = $ShardIndex
+            tickers = $ShardTickers
+            research_dir = $shardResearchPath
+            phase = "completed"
+            stage = "research_only"
+            exit_code = 0
         }
     }
 
@@ -196,7 +222,7 @@ function Start-FamilyExpansionShardJob {
             $researchPath
         }
     New-Item -ItemType Directory -Force -Path $shardResearchPath | Out-Null
-    Write-Log "Queueing family-expansion shard job $ShardIndex/$ShardCount for $($ShardTickers -join ', ')"
+    Write-Log "Queueing $tournamentLabel shard job $ShardIndex/$ShardCount for $($ShardTickers -join ', ')"
 
     $job = Start-Job -ScriptBlock {
         param(
@@ -206,7 +232,9 @@ function Start-FamilyExpansionShardJob {
             [string]$RepoPath,
             [string]$ShardResearchPath,
             [string[]]$ShardTickers,
+            [string]$StrategySet,
             [string]$SelectionProfile,
+            [string]$PromotionMode,
             [int]$ShardIndex,
             [int]$ShardCount
         )
@@ -239,11 +267,18 @@ function Start-FamilyExpansionShardJob {
             --tickers ($ShardTickers -join ",") `
             --ready-base-dir $ReadyBasePath `
             --research-dir $ShardResearchPath `
-            --strategy-set "family_expansion" `
+            --strategy-set $StrategySet `
             --selection-profile $SelectionProfile | Out-Null
 
         if ($LASTEXITCODE -ne 0) {
             $result.exit_code = $LASTEXITCODE
+            return [pscustomobject]$result
+        }
+
+        if ($PromotionMode -eq "none") {
+            $result.phase = "completed"
+            $result.stage = "research_only"
+            $result.exit_code = 0
             return [pscustomobject]$result
         }
 
@@ -279,7 +314,9 @@ function Start-FamilyExpansionShardJob {
         $repoPath,
         $shardResearchPath,
         $ShardTickers,
+        $StrategySet,
         $SelectionProfile,
+        $PromotionMode,
         $ShardIndex,
         $ShardCount
     )
@@ -293,7 +330,7 @@ function Start-FamilyExpansionShardJob {
 }
 
 Write-Log "Waiting for upstream status file $waitStatusFile"
-Write-Status -Phase "waiting" -Message "Waiting for the upstream tournament and promotion flow to complete."
+Write-Status -Phase "waiting" -Message "Waiting for the upstream tournament flow to complete."
 
 while ($true) {
     if ($deadline -ne $null -and (Get-Date) -ge $deadline) {
@@ -305,8 +342,8 @@ while ($true) {
         break
     }
     if ($phase -in @("failed", "blocked")) {
-        Write-Log "Upstream status file reports phase '$phase'. Aborting queued family expansion."
-        Write-Status -Phase "failed" -Message "Upstream tournament failed before this queued family-expansion batch could start."
+        Write-Log "Upstream status file reports phase '$phase'. Aborting queued $tournamentLabel run."
+        Write-Status -Phase "failed" -Message "Upstream tournament failed before this queued $tournamentLabel batch could start."
         exit 2
     }
     Start-Sleep -Seconds $PollSeconds
@@ -322,8 +359,8 @@ $shards = Build-Shards
 $shardCount = $shards.Count
 $allShardResults = @()
 
-Write-Log "Launching queued family-expansion tournament for $($Tickers -join ', ') in $shardCount shard(s)."
-Write-Status -Phase "running_family_expansion" -Message "Launching queued family-expansion tournament." -Shards $allShardResults
+Write-Log "Launching queued $tournamentLabel tournament for $($Tickers -join ', ') in $shardCount shard(s)."
+Write-Status -Phase "running_family_expansion" -Message "Launching queued $tournamentLabel tournament." -Shards $allShardResults
 
 if ($MaxParallelShards -le 1 -or $shardCount -le 1) {
     for ($shardIndex = 0; $shardIndex -lt $shardCount; $shardIndex++) {
@@ -345,7 +382,7 @@ if ($MaxParallelShards -le 1 -or $shardCount -le 1) {
 
         Write-Status `
             -Phase "running_family_expansion" `
-            -Message "Processed $($shardIndex + 1) of $shardCount family-expansion shard(s)." `
+            -Message "Processed $($shardIndex + 1) of $shardCount $tournamentLabel shard(s)." `
             -Shards $allShardResults `
             -SuccessfulTickers $successfulTickers `
             -FailedTickers $failedTickers
@@ -416,7 +453,7 @@ else {
 
         Write-Status `
             -Phase "running_family_expansion" `
-            -Message "Processed $($allShardResults.Count) of $shardCount family-expansion shard(s)." `
+            -Message "Processed $($allShardResults.Count) of $shardCount $tournamentLabel shard(s)." `
             -Shards $allShardResults `
             -SuccessfulTickers $successfulTickers `
             -FailedTickers $failedTickers
@@ -449,10 +486,10 @@ $shardSummaryPath = Join-Path $researchPath "shard_run_summary.json"
 } | ConvertTo-Json -Depth 8 | Set-Content -Path $shardSummaryPath
 
 if ($completedShards.Count -eq 0) {
-    Write-Log "All queued family-expansion shards failed."
+    Write-Log "All queued $tournamentLabel shards failed."
     Write-Status `
         -Phase "failed" `
-        -Message "All queued family-expansion shards failed." `
+        -Message "All queued $tournamentLabel shards failed." `
         -Shards $allShardResults `
         -SuccessfulTickers $successfulTickers `
         -FailedTickers $failedTickers
@@ -461,10 +498,20 @@ if ($completedShards.Count -eq 0) {
 
 $message =
     if ($failedShards.Count -gt 0) {
-        "Queued family-expansion shards completed with partial failures, and successful winners were promoted to GitHub."
+        if ($PromotionMode -eq "none") {
+            "Queued $tournamentLabel shards completed with partial failures. Promotion was skipped for this exploratory run."
+        }
+        else {
+            "Queued $tournamentLabel shards completed with partial failures, and successful winners were promoted to GitHub."
+        }
     }
     else {
-        "Queued family-expansion run completed and winners were promoted to GitHub."
+        if ($PromotionMode -eq "none") {
+            "Queued $tournamentLabel run completed. Promotion was skipped for this exploratory run."
+        }
+        else {
+            "Queued $tournamentLabel run completed and winners were promoted to GitHub."
+        }
     }
 
 Write-Log $message

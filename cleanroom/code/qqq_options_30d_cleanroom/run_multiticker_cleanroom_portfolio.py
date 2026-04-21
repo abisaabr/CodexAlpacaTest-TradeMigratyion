@@ -61,9 +61,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--step-days", type=int, default=DEFAULT_STEP_DAYS)
     parser.add_argument(
         "--strategy-set",
-        choices=("standard", "family_expansion"),
+        choices=("standard", "family_expansion", "down_choppy_only"),
         default="standard",
-        help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates.",
+        help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates, and 'down_choppy_only' runs a lean bearish/choppy search surface.",
     )
     parser.add_argument(
         "--continue-on-error",
@@ -84,8 +84,8 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def build_timing_profiles() -> tuple[TimingProfile, ...]:
-    return (
+def build_timing_profiles(strategy_set: str = "standard") -> tuple[TimingProfile, ...]:
+    profiles = (
         TimingProfile(
             name="reactive",
             orb_window=5,
@@ -127,6 +127,10 @@ def build_timing_profiles() -> tuple[TimingProfile, ...]:
             condor_minute=60,
         ),
     )
+    if strategy_set == "down_choppy_only":
+        # Keep the bearish/choppy tournament lean so we can cover more symbols faster.
+        return tuple(profile for profile in profiles if profile.name in {"reactive", "fast", "base"})
+    return profiles
 
 
 def step_label(step: int) -> str:
@@ -248,7 +252,28 @@ def score_drawdown(total_return_pct: float, max_drawdown_pct: float) -> float:
     return total_return_pct / abs(max_drawdown_pct)
 
 
-def build_selection_grids(selection_profile: str) -> dict[str, list[float] | list[int]]:
+def build_selection_grids(
+    selection_profile: str,
+    strategy_set: str = "standard",
+) -> dict[str, list[float] | list[int]]:
+    if strategy_set == "down_choppy_only":
+        if selection_profile == "down_choppy_focus":
+            return {
+                "thresholds": [0.35, 0.40, 0.45, 0.50],
+                "top_bull_values": [0, 1],
+                "top_bear_values": [1, 2, 3],
+                "top_choppy_values": [1, 2, 3],
+                "min_trade_values": [3, 5, 8],
+                "risk_caps": [0.08, 0.10, 0.12],
+            }
+        return {
+            "thresholds": [0.35, 0.40, 0.45, 0.50],
+            "top_bull_values": [0, 1, 2],
+            "top_bear_values": [1, 2, 3],
+            "top_choppy_values": [1, 2, 3],
+            "min_trade_values": [3, 5, 8],
+            "risk_caps": [0.08, 0.10, 0.12, 0.15],
+        }
     if selection_profile == "down_choppy_focus":
         return {
             "thresholds": REGIME_THRESHOLD_GRID,
@@ -449,7 +474,7 @@ def build_strategy_variants(
     strategy_set: str = "standard",
 ) -> list[DeltaStrategy]:
     variants: list[DeltaStrategy] = []
-    for base_strategy in build_delta_strategies(include_family_expansion=(strategy_set == "family_expansion")):
+    for base_strategy in build_delta_strategies(strategy_set=strategy_set):
         for profile in profiles:
             variants.append(
                 replace(
@@ -919,7 +944,7 @@ def run_single_ticker_research(
     if not folds:
         raise RuntimeError(f"no folds built for {ticker.upper()}")
     regime_summary = summarize_regimes(candidate_trades)
-    selection_grids = build_selection_grids(selection_profile)
+    selection_grids = build_selection_grids(selection_profile, strategy_set)
     train_dates = set(folds[0]["train_dates"])
     frozen_config = select_best_config(
         candidate_trades=subset_trades(candidate_trades, train_dates),
@@ -1374,7 +1399,7 @@ def main() -> None:
     output_dir = Path(args.output_dir).resolve()
     research_dir = Path(args.research_dir).resolve()
     tickers = [ticker.strip().lower() for ticker in args.tickers.split(",") if ticker.strip()]
-    profiles = build_timing_profiles()
+    profiles = build_timing_profiles(args.strategy_set)
 
     ticker_results: list[dict[str, object]] = []
     failed_tickers: list[dict[str, object]] = []
@@ -1630,3 +1655,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

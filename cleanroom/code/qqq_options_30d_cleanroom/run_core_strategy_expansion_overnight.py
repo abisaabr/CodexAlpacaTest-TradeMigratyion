@@ -74,9 +74,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--strategy-set",
-        choices=("standard", "family_expansion"),
+        choices=("standard", "family_expansion", "down_choppy_only"),
         default="standard",
-        help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates.",
+        help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates, and 'down_choppy_only' runs a lean bearish/choppy tournament surface.",
     )
     parser.add_argument(
         "--selection-profile",
@@ -309,3 +309,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

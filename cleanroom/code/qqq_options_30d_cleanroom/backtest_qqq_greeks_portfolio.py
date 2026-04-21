@@ -76,7 +76,49 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def build_delta_strategies(*, include_family_expansion: bool = False) -> list[DeltaStrategy]:
+DOWN_CHOPPY_ONLY_STRATEGY_NAMES = {
+    "orb_long_put_same_day",
+    "orb_long_put_same_day_d40",
+    "orb_long_put_same_day_d60",
+    "orb_long_put_next_expiry",
+    "trend_long_put_next_expiry",
+    "trend_long_put_next_expiry_d50",
+    "trend_long_put_next_expiry_d70",
+    "bear_put_spread_next_expiry",
+    "bear_put_spread_next_expiry_tight",
+    "bear_put_spread_next_expiry_wide",
+    "bear_call_credit_spread_same_day",
+    "bear_call_credit_spread_same_day_conservative",
+    "bear_call_credit_spread_same_day_aggressive",
+    "bear_call_credit_spread_next_expiry",
+    "bear_call_credit_spread_next_expiry_conservative",
+    "put_backspread_next_expiry",
+    "put_backspread_next_expiry_aggressive",
+    "broken_wing_put_butterfly_next_expiry",
+    "long_straddle_same_day",
+    "long_straddle_next_expiry",
+    "long_strangle_same_day",
+    "long_strangle_next_expiry",
+    "iron_condor_same_day",
+    "iron_condor_same_day_conservative",
+    "iron_condor_same_day_aggressive",
+    "iron_butterfly_same_day",
+    "call_butterfly_same_day",
+    "put_butterfly_same_day",
+    "call_butterfly_same_day_conservative",
+    "put_butterfly_same_day_conservative",
+}
+
+
+def build_delta_strategies(
+    *,
+    include_family_expansion: bool = False,
+    strategy_set: str | None = None,
+) -> list[DeltaStrategy]:
+    if strategy_set is None:
+        strategy_set = "family_expansion" if include_family_expansion else "standard"
+    include_family_expansion = strategy_set in {"family_expansion", "down_choppy_only"}
+
     def make_strategy(
         *,
         name: str,
@@ -773,6 +815,11 @@ def build_delta_strategies(*, include_family_expansion: bool = False) -> list[De
             ]
         )
 
+    if strategy_set == "down_choppy_only":
+        strategies = [
+            strategy for strategy in strategies if strategy.name in DOWN_CHOPPY_ONLY_STRATEGY_NAMES
+        ]
+
     return strategies
 
 
@@ -1424,3 +1471,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
