@@ -37,9 +37,13 @@ foreach ($tickerArg in $Tickers) {
 $Tickers = $normalizedTickers
 $launcherPath = Join-Path $scriptRoot "run_core_strategy_expansion_overnight.py"
 $promotionPath = Join-Path $scriptRoot "wait_and_sync_live_manifest.ps1"
+$runRegistryReporterPath = Join-Path $scriptRoot "build_run_registry_report.py"
+$defaultOutputRoot = Join-Path $scriptRoot "output"
+$defaultRegistryPath = Join-Path $defaultOutputRoot "run_registry.jsonl"
 $logsDir = Join-Path $researchPath "logs"
 $statusPath = Join-Path $researchPath "queued_familyexp_status.json"
 $logPath = Join-Path $logsDir "queued_familyexp.log"
+$runRegistryReportDir = Join-Path $researchPath "run_registry_report"
 $deadline =
     if ($TimeoutMinutes -gt 0) {
         (Get-Date).AddMinutes($TimeoutMinutes)
@@ -50,6 +54,7 @@ $deadline =
 
 New-Item -ItemType Directory -Force -Path $researchPath | Out-Null
 New-Item -ItemType Directory -Force -Path $logsDir | Out-Null
+New-Item -ItemType Directory -Force -Path $runRegistryReportDir | Out-Null
 
 function Write-Log {
     param([string]$Message)
@@ -80,6 +85,7 @@ function Write-Status {
         promotion_mode = $PromotionMode
         max_parallel_shards = $MaxParallelShards
         tickers = $Tickers
+        run_registry_report_dir = $runRegistryReportDir
     }
     if ($Shards.Count -gt 0) {
         $payload.shards = $Shards
@@ -91,6 +97,24 @@ function Write-Status {
         $payload.failed_tickers = $FailedTickers
     }
     $payload | ConvertTo-Json -Depth 8 | Set-Content -Path $statusPath
+}
+
+function Invoke-RunRegistryReport {
+    if (-not (Test-Path $runRegistryReporterPath)) {
+        return
+    }
+    $reportArgs = @(
+        $runRegistryReporterPath,
+        "--output-root", $defaultOutputRoot,
+        "--registry-path", $defaultRegistryPath,
+        "--report-dir", $runRegistryReportDir,
+        "--manifest-root", $researchPath
+    )
+    $shardsDir = Join-Path $researchPath "shards"
+    if (Test-Path $shardsDir) {
+        $reportArgs += @("--manifest-root", $shardsDir)
+    }
+    & python @reportArgs | Out-Null
 }
 
 function Get-WaitPhase {
@@ -357,6 +381,7 @@ function Start-FamilyExpansionShardJob {
 
 Write-Log "Waiting for upstream status file $waitStatusFile"
 Write-Status -Phase "waiting" -Message "Waiting for the upstream tournament flow to complete."
+Invoke-RunRegistryReport
 
 while ($true) {
     if ($deadline -ne $null -and (Get-Date) -ge $deadline) {
@@ -370,6 +395,7 @@ while ($true) {
     if ($phase -in @("failed", "blocked")) {
         Write-Log "Upstream status file reports phase '$phase'. Aborting queued $tournamentLabel run."
         Write-Status -Phase "failed" -Message "Upstream tournament failed before this queued $tournamentLabel batch could start."
+        Invoke-RunRegistryReport
         exit 2
     }
     Start-Sleep -Seconds $PollSeconds
@@ -378,6 +404,7 @@ while ($true) {
 if ((Get-WaitPhase) -ne "completed") {
     Write-Log "Timed out waiting for upstream completion."
     Write-Status -Phase "failed" -Message "Timed out waiting for the upstream tournament to complete."
+    Invoke-RunRegistryReport
     exit 3
 }
 
@@ -387,6 +414,7 @@ $allShardResults = @()
 
 Write-Log "Launching queued $tournamentLabel tournament for $($Tickers -join ', ') in $shardCount shard(s)."
 Write-Status -Phase "running_family_expansion" -Message "Launching queued $tournamentLabel tournament." -Shards $allShardResults
+Invoke-RunRegistryReport
 
 if ($MaxParallelShards -le 1 -or $shardCount -le 1) {
     for ($shardIndex = 0; $shardIndex -lt $shardCount; $shardIndex++) {
@@ -412,6 +440,7 @@ if ($MaxParallelShards -le 1 -or $shardCount -le 1) {
             -Shards $allShardResults `
             -SuccessfulTickers $successfulTickers `
             -FailedTickers $failedTickers
+        Invoke-RunRegistryReport
     }
 }
 else {
@@ -483,6 +512,7 @@ else {
             -Shards $allShardResults `
             -SuccessfulTickers $successfulTickers `
             -FailedTickers $failedTickers
+        Invoke-RunRegistryReport
     }
 }
 
@@ -519,6 +549,7 @@ if ($completedShards.Count -eq 0) {
         -Shards $allShardResults `
         -SuccessfulTickers $successfulTickers `
         -FailedTickers $failedTickers
+    Invoke-RunRegistryReport
     exit 4
 }
 
@@ -547,4 +578,5 @@ Write-Status `
     -Shards $allShardResults `
     -SuccessfulTickers $successfulTickers `
     -FailedTickers $failedTickers
+Invoke-RunRegistryReport
 exit 0

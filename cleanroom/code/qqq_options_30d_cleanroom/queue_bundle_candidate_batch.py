@@ -13,6 +13,9 @@ import pandas as pd
 
 
 ROOT = Path(__file__).resolve().parent
+RUN_REGISTRY_REPORTER = ROOT / "build_run_registry_report.py"
+DEFAULT_OUTPUT_ROOT = ROOT / "output"
+DEFAULT_RUN_REGISTRY_PATH = DEFAULT_OUTPUT_ROOT / "run_registry.jsonl"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -99,6 +102,28 @@ def stage_ticker_bundle(
     }
 
 
+def invoke_run_registry_report(*, research_dir: Path) -> None:
+    if not RUN_REGISTRY_REPORTER.exists():
+        return
+    report_dir = research_dir / "run_registry_report"
+    subprocess.run(
+        [
+            sys.executable,
+            str(RUN_REGISTRY_REPORTER),
+            "--output-root",
+            str(DEFAULT_OUTPUT_ROOT),
+            "--registry-path",
+            str(DEFAULT_RUN_REGISTRY_PATH),
+            "--report-dir",
+            str(report_dir),
+            "--manifest-root",
+            str(research_dir),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+
+
 def main() -> None:
     args = build_parser().parse_args()
     tickers = [ticker.strip().lower() for ticker in args.tickers.split(",") if ticker.strip()]
@@ -136,6 +161,7 @@ def main() -> None:
         status_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
         with log_path.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(payload, indent=2) + "\n")
+        invoke_run_registry_report(research_dir=research_dir)
         raise SystemExit(2)
 
     if workspace_dir.exists():
@@ -177,6 +203,7 @@ def main() -> None:
     status_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     with log_path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(payload, indent=2) + "\n")
+    invoke_run_registry_report(research_dir=research_dir)
 
 
 if __name__ == "__main__":
