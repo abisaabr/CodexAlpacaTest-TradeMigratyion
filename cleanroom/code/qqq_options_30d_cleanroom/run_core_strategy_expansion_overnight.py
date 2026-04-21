@@ -79,6 +79,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates.",
     )
     parser.add_argument(
+        "--selection-profile",
+        choices=("balanced", "down_choppy_focus"),
+        default="balanced",
+        help="How strongly to bias config selection toward bearish and choppy robustness.",
+    )
+    parser.add_argument(
         "--force-redownload",
         action="store_true",
         help="Redownload even when all required inputs already exist.",
@@ -275,6 +281,8 @@ def main() -> None:
             str(research_dir),
             "--strategy-set",
             str(args.strategy_set),
+            "--selection-profile",
+            str(args.selection_profile),
             "--continue-on-error",
         ],
         env=env,
@@ -285,6 +293,7 @@ def main() -> None:
     payload = {
         "tickers": [ticker.upper() for ticker in tickers],
         "strategy_set": str(args.strategy_set),
+        "selection_profile": str(args.selection_profile),
         "research_dir": str(research_dir),
         "summary_path": str(summary_path),
         "report_path": str(research_dir / "master_report.md"),

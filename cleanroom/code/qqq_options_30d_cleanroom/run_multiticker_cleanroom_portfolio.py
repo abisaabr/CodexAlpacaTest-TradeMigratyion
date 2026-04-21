@@ -30,6 +30,7 @@ DEFAULT_STARTING_EQUITY = 25_000.0
 DEFAULT_INITIAL_TRAIN_DAYS = 126
 DEFAULT_TEST_DAYS = 21
 DEFAULT_STEP_DAYS = 21
+DEFAULT_SELECTION_PROFILE = "balanced"
 REGIME_THRESHOLD_GRID = [0.30, 0.35, 0.40, 0.45, 0.50, 0.55]
 TOP_BULL_GRID = [1, 2, 3, 4]
 TOP_BEAR_GRID = [1, 2, 3, 4]
@@ -73,6 +74,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--reuse-completed-tickers",
         action="store_true",
         help="Reuse existing per-ticker artifacts in the research directory when they match the requested strategy/timing setup.",
+    )
+    parser.add_argument(
+        "--selection-profile",
+        choices=("balanced", "down_choppy_focus"),
+        default=DEFAULT_SELECTION_PROFILE,
+        help="How strongly to bias config selection toward bearish and choppy regime robustness.",
     )
     return parser
 
@@ -239,6 +246,50 @@ def score_drawdown(total_return_pct: float, max_drawdown_pct: float) -> float:
     if max_drawdown_pct >= 0.0:
         return total_return_pct if total_return_pct > 0.0 else 0.0
     return total_return_pct / abs(max_drawdown_pct)
+
+
+def build_selection_grids(selection_profile: str) -> dict[str, list[float] | list[int]]:
+    if selection_profile == "down_choppy_focus":
+        return {
+            "thresholds": REGIME_THRESHOLD_GRID,
+            "top_bull_values": [1, 2, 3],
+            "top_bear_values": [2, 3, 4],
+            "top_choppy_values": [1, 2, 3],
+            "min_trade_values": [3, 5, 8, 10],
+            "risk_caps": [0.08, 0.10, 0.12, 0.15],
+        }
+    return {
+        "thresholds": REGIME_THRESHOLD_GRID,
+        "top_bull_values": TOP_BULL_GRID,
+        "top_bear_values": TOP_BEAR_GRID,
+        "top_choppy_values": TOP_CHOPPY_GRID,
+        "min_trade_values": MIN_TRADE_GRID,
+        "risk_caps": RISK_CAP_GRID,
+    }
+
+
+def build_regime_selection_metrics(selected_rows: pd.DataFrame) -> dict[str, float | int]:
+    metrics: dict[str, float | int] = {
+        "bull_trade_count": 0,
+        "bear_trade_count": 0,
+        "choppy_trade_count": 0,
+        "bull_net_pnl": 0.0,
+        "bear_net_pnl": 0.0,
+        "choppy_net_pnl": 0.0,
+    }
+    if selected_rows.empty:
+        metrics["down_choppy_trade_count"] = 0
+        metrics["down_choppy_net_pnl"] = 0.0
+        return metrics
+
+    for regime in ("bull", "bear", "choppy"):
+        subset = selected_rows[selected_rows["regime"] == regime]
+        metrics[f"{regime}_trade_count"] = int(subset["trade_count"].sum()) if not subset.empty else 0
+        metrics[f"{regime}_net_pnl"] = float(subset["total_net_pnl_1x"].sum()) if not subset.empty else 0.0
+
+    metrics["down_choppy_trade_count"] = int(metrics["bear_trade_count"]) + int(metrics["choppy_trade_count"])
+    metrics["down_choppy_net_pnl"] = float(metrics["bear_net_pnl"]) + float(metrics["choppy_net_pnl"])
+    return metrics
 
 
 def empty_summary(starting_equity: float, risk_cap: float) -> dict[str, object]:
@@ -564,6 +615,7 @@ def select_best_config(
     top_choppy_values: list[int],
     min_trade_values: list[int],
     risk_caps: list[float],
+    selection_profile: str,
 ) -> dict[str, object]:
     best_row: dict[str, object] | None = None
     cache_by_threshold: dict[float, tuple[pd.DataFrame, pd.DataFrame]] = {}
@@ -618,6 +670,7 @@ def select_best_config(
             "top_bull": top_bull,
             "top_bear": top_bear,
             "top_choppy": top_choppy,
+            "selection_profile": selection_profile,
             "min_regime_trades": min_regime_trades,
             "risk_cap": risk_cap,
             "selected_bull": list(selected["bull"]),
@@ -637,23 +690,48 @@ def select_best_config(
             "family_contributions": list(summary.get("family_contributions", [])),
             "family_bucket_contributions": list(summary.get("family_bucket_contributions", [])),
         }
+        row.update(build_regime_selection_metrics(selected_rows))
         if best_row is None:
             best_row = row
             continue
-        current_tuple = (
-            row["total_return_pct"] > 0.0,
-            row["portfolio_trade_count"] >= 10,
-            row["calmar_like"],
-            row["final_equity"],
-            row["portfolio_trade_count"],
-        )
-        best_tuple = (
-            best_row["total_return_pct"] > 0.0,
-            best_row["portfolio_trade_count"] >= 10,
-            best_row["calmar_like"],
-            best_row["final_equity"],
-            best_row["portfolio_trade_count"],
-        )
+        if selection_profile == "down_choppy_focus":
+            current_tuple = (
+                row["total_return_pct"] > 0.0,
+                row["bear_trade_count"] > 0,
+                row["choppy_trade_count"] > 0,
+                row["down_choppy_net_pnl"] > 0.0,
+                row["down_choppy_trade_count"] >= 6,
+                row["down_choppy_net_pnl"],
+                row["calmar_like"],
+                row["final_equity"],
+                row["portfolio_trade_count"],
+            )
+            best_tuple = (
+                best_row["total_return_pct"] > 0.0,
+                best_row["bear_trade_count"] > 0,
+                best_row["choppy_trade_count"] > 0,
+                best_row["down_choppy_net_pnl"] > 0.0,
+                best_row["down_choppy_trade_count"] >= 6,
+                best_row["down_choppy_net_pnl"],
+                best_row["calmar_like"],
+                best_row["final_equity"],
+                best_row["portfolio_trade_count"],
+            )
+        else:
+            current_tuple = (
+                row["total_return_pct"] > 0.0,
+                row["portfolio_trade_count"] >= 10,
+                row["calmar_like"],
+                row["final_equity"],
+                row["portfolio_trade_count"],
+            )
+            best_tuple = (
+                best_row["total_return_pct"] > 0.0,
+                best_row["portfolio_trade_count"] >= 10,
+                best_row["calmar_like"],
+                best_row["final_equity"],
+                best_row["portfolio_trade_count"],
+            )
         if current_tuple > best_tuple:
             best_row = row
     if best_row is None:
@@ -768,6 +846,7 @@ def run_single_ticker_research(
     step_days: int,
     profiles: tuple[TimingProfile, ...],
     strategy_set: str,
+    selection_profile: str,
 ) -> dict[str, object]:
     ticker_lower = ticker.lower()
     research_dir.mkdir(parents=True, exist_ok=True)
@@ -840,17 +919,19 @@ def run_single_ticker_research(
     if not folds:
         raise RuntimeError(f"no folds built for {ticker.upper()}")
     regime_summary = summarize_regimes(candidate_trades)
+    selection_grids = build_selection_grids(selection_profile)
     train_dates = set(folds[0]["train_dates"])
     frozen_config = select_best_config(
         candidate_trades=subset_trades(candidate_trades, train_dates),
         day_return_map=day_return_map,
         strategy_map=strategy_map,
-        thresholds=REGIME_THRESHOLD_GRID,
-        top_bull_values=TOP_BULL_GRID,
-        top_bear_values=TOP_BEAR_GRID,
-        top_choppy_values=TOP_CHOPPY_GRID,
-        min_trade_values=MIN_TRADE_GRID,
-        risk_caps=RISK_CAP_GRID,
+        thresholds=selection_grids["thresholds"],
+        top_bull_values=selection_grids["top_bull_values"],
+        top_bear_values=selection_grids["top_bear_values"],
+        top_choppy_values=selection_grids["top_choppy_values"],
+        min_trade_values=selection_grids["min_trade_values"],
+        risk_caps=selection_grids["risk_caps"],
+        selection_profile=selection_profile,
     )
 
     reopt_trade_frames: list[pd.DataFrame] = []
@@ -865,12 +946,13 @@ def run_single_ticker_research(
             candidate_trades=subset_trades(candidate_trades, set(fold["train_dates"])),
             day_return_map=day_return_map,
             strategy_map=strategy_map,
-            thresholds=REGIME_THRESHOLD_GRID,
-            top_bull_values=TOP_BULL_GRID,
-            top_bear_values=TOP_BEAR_GRID,
-            top_choppy_values=TOP_CHOPPY_GRID,
-            min_trade_values=MIN_TRADE_GRID,
-            risk_caps=RISK_CAP_GRID,
+            thresholds=selection_grids["thresholds"],
+            top_bull_values=selection_grids["top_bull_values"],
+            top_bear_values=selection_grids["top_bear_values"],
+            top_choppy_values=selection_grids["top_choppy_values"],
+            min_trade_values=selection_grids["min_trade_values"],
+            risk_caps=selection_grids["risk_caps"],
+            selection_profile=selection_profile,
         )
         reopt_trades, reopt_equity, reopt_summary, _ = evaluate_config(
             candidate_trades=candidate_trades,
@@ -978,6 +1060,7 @@ def run_single_ticker_research(
         "day_count": len(ordered_trade_dates),
         "candidate_trade_count": int(len(candidate_trades)),
         "strategy_set": strategy_set,
+        "selection_profile": selection_profile,
         "timing_profiles": [profile.name for profile in profiles],
         "frozen_initial_config": frozen_config,
         "reoptimized": reoptimized_summary,
@@ -1003,6 +1086,7 @@ def try_load_existing_ticker_result(
     research_dir: Path,
     profiles: tuple[TimingProfile, ...],
     strategy_set: str,
+    selection_profile: str,
 ) -> dict[str, object] | None:
     ticker_lower = ticker.lower()
     summary_path = research_dir / f"{ticker_lower}_summary.json"
@@ -1018,6 +1102,8 @@ def try_load_existing_ticker_result(
     if summary.get("timing_profiles") != expected_profiles:
         return None
     if summary.get("strategy_set", "standard") != strategy_set:
+        return None
+    if summary.get("selection_profile", DEFAULT_SELECTION_PROFILE) != selection_profile:
         return None
 
     strategy_variants = build_strategy_variants(
@@ -1194,6 +1280,7 @@ def write_master_report(path: Path, payload: dict[str, object]) -> None:
     lines.append(
         f"- Training window: {payload['initial_train_days']} days, test window: {payload['test_days']} days, step: {payload['step_days']} days."
     )
+    lines.append(f"- Selection profile: {payload.get('selection_profile', DEFAULT_SELECTION_PROFILE)}")
     lines.append(
         f"- Successful tickers: {', '.join(payload.get('successful_tickers', [])) if payload.get('successful_tickers') else 'none'}"
     )
@@ -1299,6 +1386,7 @@ def main() -> None:
                 research_dir=research_dir,
                 profiles=profiles,
                 strategy_set=args.strategy_set,
+                selection_profile=args.selection_profile,
             )
             if reused is not None:
                 ticker_results.append(reused)
@@ -1318,6 +1406,7 @@ def main() -> None:
                 step_days=args.step_days,
                 profiles=profiles,
                 strategy_set=args.strategy_set,
+                selection_profile=args.selection_profile,
             )
         except Exception as exc:
             error_row = {
@@ -1452,11 +1541,11 @@ def main() -> None:
         )
     family_bucket_rows.extend(
         build_family_ranking_rows(
-            scope="shared_account",
-            ticker=None,
-            summary=combined_summary,
-            contribution_key="family_bucket_contributions",
-            label_key="family_bucket",
+                scope="shared_account",
+                ticker=None,
+                summary=combined_summary,
+                contribution_key="family_bucket_contributions",
+                label_key="family_bucket",
         )
     )
     if qqq_summary is not None:
@@ -1486,6 +1575,7 @@ def main() -> None:
     master_payload = {
         "tickers": [ticker.upper() for ticker in tickers],
         "strategy_set": args.strategy_set,
+        "selection_profile": args.selection_profile,
         "successful_tickers": [result["ticker"] for result in ticker_results],
         "failed_tickers": failed_tickers,
         "initial_train_days": args.initial_train_days,

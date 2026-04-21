@@ -4,6 +4,7 @@ param(
     [string]$RepoDir = "C:\Users\rabisaab\OneDrive\CodexAlpaca\downloads_remaining_20260417\folders\codexalpaca_repo",
     [string]$ReadyBaseDir = "C:\Users\rabisaab\OneDrive - First American Corporation\qqq_options_30d_cleanroom\output\backtester_ready",
     [string[]]$Tickers,
+    [string]$SelectionProfile = "balanced",
     [int]$ShardSize = 0,
     [int]$PollSeconds = 60,
     [int]$TimeoutMinutes = 720
@@ -61,6 +62,7 @@ function Write-Status {
         research_dir = $researchPath
         repo_dir = $repoPath
         ready_base_dir = $readyBasePath
+        selection_profile = $SelectionProfile
         tickers = $Tickers
     }
     if ($Shards.Count -gt 0) {
@@ -110,7 +112,8 @@ function Invoke-FamilyExpansionShard {
         --tickers ($ShardTickers -join ",") `
         --ready-base-dir $readyBasePath `
         --research-dir $shardResearchPath `
-        --strategy-set "family_expansion"
+        --strategy-set "family_expansion" `
+        --selection-profile $SelectionProfile
 
     if ($LASTEXITCODE -ne 0) {
         Write-Log "Shard $ShardIndex/$ShardCount failed with exit code $LASTEXITCODE."
