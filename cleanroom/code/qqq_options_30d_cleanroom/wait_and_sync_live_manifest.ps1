@@ -116,10 +116,11 @@ if (-not (Test-TournamentReady)) {
 
 & python $exporterPath --research-dir $researchPath
 if ($LASTEXITCODE -ne 0) {
-    Write-Log "Exporter failed with exit code $LASTEXITCODE."
+    $exportExitCode = $LASTEXITCODE
+    Write-Log "Exporter failed with exit code $exportExitCode."
     Write-Status -Phase "failed" -Message "Exporter failed."
     Invoke-RunRegistryReport
-    exit $LASTEXITCODE
+    exit $exportExitCode
 }
 Write-Log "Exporter completed successfully."
 
@@ -127,19 +128,21 @@ Write-Status -Phase "syncing" -Message "Syncing promoted strategies into the liv
 Invoke-RunRegistryReport
 & python $syncScriptPath --source $promotedYamlPath --merge-base current
 if ($LASTEXITCODE -ne 0) {
-    Write-Log "Live manifest sync failed with exit code $LASTEXITCODE."
+    $syncExitCode = $LASTEXITCODE
+    Write-Log "Live manifest sync failed with exit code $syncExitCode."
     Write-Status -Phase "failed" -Message "Live manifest sync failed."
     Invoke-RunRegistryReport
-    exit $LASTEXITCODE
+    exit $syncExitCode
 }
 Write-Log "Live manifest sync completed successfully."
 
 & python $syncScriptPath --validate-only
 if ($LASTEXITCODE -ne 0) {
-    Write-Log "Live manifest validation failed with exit code $LASTEXITCODE."
+    $validateExitCode = $LASTEXITCODE
+    Write-Log "Live manifest validation failed with exit code $validateExitCode."
     Write-Status -Phase "failed" -Message "Live manifest validation failed."
     Invoke-RunRegistryReport
-    exit $LASTEXITCODE
+    exit $validateExitCode
 }
 Write-Log "Live manifest validation completed successfully."
 

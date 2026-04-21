@@ -27,9 +27,13 @@ $coreFamilyStatusFile = [System.IO.Path]::GetFullPath($CoreFamilyStatusPath)
 $ready6StatusFile = [System.IO.Path]::GetFullPath($Ready6StatusPath)
 $ready4StatusFile = [System.IO.Path]::GetFullPath($Ready4StatusPath)
 $summaryScriptPath = Join-Path $scriptRoot "summarize_tournament_conveyor.py"
+$runRegistryReporterPath = Join-Path $scriptRoot "build_run_registry_report.py"
+$defaultOutputRoot = Join-Path $scriptRoot "output"
+$defaultRegistryPath = Join-Path $defaultOutputRoot "run_registry.jsonl"
 $logsDir = Join-Path $summaryDir "logs"
 $statusPath = Join-Path $summaryDir "summary_queue_status.json"
 $logPath = Join-Path $logsDir "summary_queue.log"
+$runRegistryReportDir = Join-Path $summaryDir "run_registry_report"
 $deadline =
     if ($TimeoutMinutes -gt 0) {
         (Get-Date).AddMinutes($TimeoutMinutes)
@@ -40,6 +44,7 @@ $deadline =
 
 New-Item -ItemType Directory -Force -Path $summaryDir | Out-Null
 New-Item -ItemType Directory -Force -Path $logsDir | Out-Null
+New-Item -ItemType Directory -Force -Path $runRegistryReportDir | Out-Null
 
 function Write-Log {
     param([string]$Message)
@@ -62,8 +67,28 @@ function Write-Status {
         core_family_research_dir = $coreFamilyPath
         ready6_research_dir = $ready6Path
         ready4_research_dir = $ready4Path
+        run_registry_report_dir = $runRegistryReportDir
     }
     $payload | ConvertTo-Json | Set-Content -Path $statusPath
+}
+
+function Invoke-RunRegistryReport {
+    if (-not (Test-Path $runRegistryReporterPath)) {
+        return
+    }
+    $reportArgs = @(
+        $runRegistryReporterPath,
+        "--output-root", $defaultOutputRoot,
+        "--registry-path", $defaultRegistryPath,
+        "--report-dir", $runRegistryReportDir,
+        "--manifest-root", $summaryDir
+    )
+    foreach ($manifestRoot in @($quality6Path, $coreFamilyPath, $ready6Path, $ready4Path)) {
+        if (Test-Path $manifestRoot) {
+            $reportArgs += @("--manifest-root", $manifestRoot)
+        }
+    }
+    & python @reportArgs | Out-Null
 }
 
 function Get-WaitPhase {
@@ -81,6 +106,7 @@ function Get-WaitPhase {
 
 Write-Log "Waiting for final conveyor status file $waitStatusFile"
 Write-Status -Phase "waiting" -Message "Waiting for the final tournament conveyor wave to finish."
+Invoke-RunRegistryReport
 
 while ($true) {
     if ($deadline -ne $null -and (Get-Date) -ge $deadline) {
@@ -101,11 +127,13 @@ while ($true) {
 if (-not (Test-Path $waitStatusFile)) {
     Write-Log "Timed out waiting for the final status file to appear."
     Write-Status -Phase "failed" -Message "Timed out waiting for the final conveyor status file."
+    Invoke-RunRegistryReport
     exit 3
 }
 
 Write-Log "Launching consolidated conveyor summary."
 Write-Status -Phase "summarizing" -Message "Building a consolidated summary across the tournament conveyor."
+Invoke-RunRegistryReport
 
 & python $summaryScriptPath `
     --output-dir $summaryDir `
@@ -119,12 +147,15 @@ Write-Status -Phase "summarizing" -Message "Building a consolidated summary acro
     --status-file "ready4_discovery=$ready4StatusFile"
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Log "Summary generation failed with exit code $LASTEXITCODE."
+    $summaryExitCode = $LASTEXITCODE
+    Write-Log "Summary generation failed with exit code $summaryExitCode."
     Write-Status -Phase "failed" -Message "Consolidated summary generation failed."
-    exit $LASTEXITCODE
+    Invoke-RunRegistryReport
+    exit $summaryExitCode
 }
 
 Write-Log "Consolidated conveyor summary completed successfully."
 Write-Status -Phase "completed" -Message "Consolidated tournament conveyor summary completed."
+Invoke-RunRegistryReport
 exit 0
 

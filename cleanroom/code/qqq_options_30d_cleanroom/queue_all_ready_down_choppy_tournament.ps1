@@ -20,6 +20,9 @@ $ErrorActionPreference = "Stop"
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $queueScriptPath = Join-Path $scriptRoot "queue_ready_family_expansion_after_status.ps1"
+$runRegistryReporterPath = Join-Path $scriptRoot "build_run_registry_report.py"
+$defaultOutputRoot = Join-Path $scriptRoot "output"
+$defaultRegistryPath = Join-Path $defaultOutputRoot "run_registry.jsonl"
 $readyBasePath = [System.IO.Path]::GetFullPath($ReadyBaseDir)
 $waitStatusFile = [System.IO.Path]::GetFullPath($WaitStatusPath)
 $repoPath = [System.IO.Path]::GetFullPath($RepoDir)
@@ -70,6 +73,22 @@ if (-not $availableTickers) {
 }
 
 New-Item -ItemType Directory -Force -Path $researchPath | Out-Null
+$runRegistryReportDir = Join-Path $researchPath "run_registry_report"
+New-Item -ItemType Directory -Force -Path $runRegistryReportDir | Out-Null
+
+function Invoke-RunRegistryReport {
+    if (-not (Test-Path $runRegistryReporterPath)) {
+        return
+    }
+    $reportArgs = @(
+        $runRegistryReporterPath,
+        "--output-root", $defaultOutputRoot,
+        "--registry-path", $defaultRegistryPath,
+        "--report-dir", $runRegistryReportDir,
+        "--manifest-root", $researchPath
+    )
+    & python @reportArgs | Out-Null
+}
 
 $launchMetadata = [ordered]@{
     created_at = (Get-Date).ToString("o")
@@ -85,23 +104,37 @@ $launchMetadata = [ordered]@{
     shard_size = $ShardSize
     max_parallel_shards = $MaxParallelShards
     tickers = $availableTickers
+    run_registry_report_dir = $runRegistryReportDir
 }
 $launchMetadata | ConvertTo-Json -Depth 6 | Set-Content -Path (Join-Path $researchPath "launch_request.json")
+Invoke-RunRegistryReport
 
-& powershell -NoProfile -ExecutionPolicy Bypass -File $queueScriptPath `
-    -WaitStatusPath $waitStatusFile `
-    -ResearchDir $researchPath `
-    -RepoDir $repoPath `
-    -ReadyBaseDir $readyBasePath `
-    -Tickers ($availableTickers -join ",") `
-    -StrategySet $StrategySet `
-    -SelectionProfile $SelectionProfile `
-    -FamilyInclude $FamilyInclude `
-    -FamilyExclude $FamilyExclude `
-    -PromotionMode $PromotionMode `
-    -ShardSize $ShardSize `
-    -MaxParallelShards $MaxParallelShards `
-    -PollSeconds $PollSeconds `
-    -TimeoutMinutes $TimeoutMinutes
+$queueArgs = @(
+    "-NoProfile",
+    "-ExecutionPolicy", "Bypass",
+    "-File", $queueScriptPath,
+    "-WaitStatusPath", $waitStatusFile,
+    "-ResearchDir", $researchPath,
+    "-RepoDir", $repoPath,
+    "-ReadyBaseDir", $readyBasePath,
+    "-Tickers", ($availableTickers -join ","),
+    "-StrategySet", $StrategySet,
+    "-SelectionProfile", $SelectionProfile,
+    "-PromotionMode", $PromotionMode,
+    "-ShardSize", $ShardSize,
+    "-MaxParallelShards", $MaxParallelShards,
+    "-PollSeconds", $PollSeconds,
+    "-TimeoutMinutes", $TimeoutMinutes
+)
+if (-not [string]::IsNullOrWhiteSpace($FamilyInclude)) {
+    $queueArgs += @("-FamilyInclude", $FamilyInclude)
+}
+if (-not [string]::IsNullOrWhiteSpace($FamilyExclude)) {
+    $queueArgs += @("-FamilyExclude", $FamilyExclude)
+}
 
-exit $LASTEXITCODE
+& powershell @queueArgs
+
+$queueExitCode = $LASTEXITCODE
+Invoke-RunRegistryReport
+exit $queueExitCode

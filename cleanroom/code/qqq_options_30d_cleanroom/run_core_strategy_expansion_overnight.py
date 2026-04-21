@@ -15,9 +15,11 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent
 DEFAULT_TICKERS = ("qqq", "spy", "iwm", "nvda", "tsla")
 DEFAULT_OUTPUT_DIR = ROOT / "output"
+DEFAULT_RUN_REGISTRY_PATH = DEFAULT_OUTPUT_DIR / "run_registry.jsonl"
 DEFAULT_READY_BASE_DIR = Path(
     r"C:\Users\rabisaab\OneDrive - First American Corporation\qqq_options_30d_cleanroom\output\backtester_ready"
 )
+RUN_REGISTRY_REPORTER = ROOT / "build_run_registry_report.py"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -157,6 +159,28 @@ def run_command(command: list[str], *, env: dict[str, str], log_path: Path) -> N
         subprocess.run(command, cwd=ROOT, env=env, check=True, stdout=handle, stderr=handle, text=True)
 
 
+def invoke_run_registry_report(*, research_dir: Path) -> None:
+    if not RUN_REGISTRY_REPORTER.exists():
+        return
+    report_dir = research_dir / "run_registry_report"
+    subprocess.run(
+        [
+            sys.executable,
+            str(RUN_REGISTRY_REPORTER),
+            "--output-root",
+            str(DEFAULT_OUTPUT_DIR),
+            "--registry-path",
+            str(DEFAULT_RUN_REGISTRY_PATH),
+            "--report-dir",
+            str(report_dir),
+            "--manifest-root",
+            str(research_dir),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+
+
 def repair_parquet_from_csv(parquet_path: Path, csv_path: Path) -> bool:
     if not csv_path.exists():
         return False
@@ -269,59 +293,62 @@ def main() -> None:
     workspace_output_dir.mkdir(parents=True, exist_ok=True)
     args.output_dir = str(workspace_output_dir)
 
-    prep_rows: list[dict[str, object]] = []
-    for ticker in tickers:
-        prep = ensure_ticker_inputs(ticker=ticker, args=args, env=env, log_dir=log_dir)
-        prep_rows.append(prep)
-        print(json.dumps({"phase": "prepared", **prep}), flush=True)
+    try:
+        prep_rows: list[dict[str, object]] = []
+        for ticker in tickers:
+            prep = ensure_ticker_inputs(ticker=ticker, args=args, env=env, log_dir=log_dir)
+            prep_rows.append(prep)
+            print(json.dumps({"phase": "prepared", **prep}), flush=True)
 
-    prep_path = research_dir / "prep_summary.json"
-    prep_path.write_text(json.dumps(prep_rows, indent=2), encoding="utf-8")
+        prep_path = research_dir / "prep_summary.json"
+        prep_path.write_text(json.dumps(prep_rows, indent=2), encoding="utf-8")
 
-    research_log = log_dir / "research.log"
-    tournament_command = [
-        sys.executable,
-        str(ROOT / "run_multiticker_cleanroom_portfolio.py"),
-        "--tickers",
-        ",".join(tickers),
-        "--output-dir",
-        str(workspace_output_dir),
-        "--research-dir",
-        str(research_dir),
-        "--strategy-set",
-        str(args.strategy_set),
-        "--selection-profile",
-        str(args.selection_profile),
-        "--continue-on-error",
-    ]
-    if args.family_include.strip():
-        tournament_command.extend(["--family-include", str(args.family_include)])
-    if args.family_exclude.strip():
-        tournament_command.extend(["--family-exclude", str(args.family_exclude)])
-    run_command(
-        tournament_command,
-        env=env,
-        log_path=research_log,
-    )
+        research_log = log_dir / "research.log"
+        tournament_command = [
+            sys.executable,
+            str(ROOT / "run_multiticker_cleanroom_portfolio.py"),
+            "--tickers",
+            ",".join(tickers),
+            "--output-dir",
+            str(workspace_output_dir),
+            "--research-dir",
+            str(research_dir),
+            "--strategy-set",
+            str(args.strategy_set),
+            "--selection-profile",
+            str(args.selection_profile),
+            "--continue-on-error",
+        ]
+        if args.family_include.strip():
+            tournament_command.extend(["--family-include", str(args.family_include)])
+        if args.family_exclude.strip():
+            tournament_command.extend(["--family-exclude", str(args.family_exclude)])
+        run_command(
+            tournament_command,
+            env=env,
+            log_path=research_log,
+        )
 
-    summary_path = research_dir / "master_summary.json"
-    payload = {
-        "tickers": [ticker.upper() for ticker in tickers],
-        "strategy_set": str(args.strategy_set),
-        "selection_profile": str(args.selection_profile),
-        "family_include_filters": str(args.family_include),
-        "family_exclude_filters": str(args.family_exclude),
-        "research_dir": str(research_dir),
-        "summary_path": str(summary_path),
-        "report_path": str(research_dir / "master_report.md"),
-        "family_rankings_path": str(research_dir / "family_rankings.csv"),
-        "family_bucket_rankings_path": str(research_dir / "family_bucket_rankings.csv"),
-        "workspace_output_dir": str(workspace_output_dir),
-        "prep_summary_path": str(prep_path),
-        "completed_at_epoch": time.time(),
-    }
-    (research_dir / "overnight_run_summary.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    print(json.dumps(payload, indent=2))
+        summary_path = research_dir / "master_summary.json"
+        payload = {
+            "tickers": [ticker.upper() for ticker in tickers],
+            "strategy_set": str(args.strategy_set),
+            "selection_profile": str(args.selection_profile),
+            "family_include_filters": str(args.family_include),
+            "family_exclude_filters": str(args.family_exclude),
+            "research_dir": str(research_dir),
+            "summary_path": str(summary_path),
+            "report_path": str(research_dir / "master_report.md"),
+            "family_rankings_path": str(research_dir / "family_rankings.csv"),
+            "family_bucket_rankings_path": str(research_dir / "family_bucket_rankings.csv"),
+            "workspace_output_dir": str(workspace_output_dir),
+            "prep_summary_path": str(prep_path),
+            "completed_at_epoch": time.time(),
+        }
+        (research_dir / "overnight_run_summary.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        print(json.dumps(payload, indent=2))
+    finally:
+        invoke_run_registry_report(research_dir=research_dir)
 
 
 if __name__ == "__main__":

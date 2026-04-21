@@ -9,6 +9,9 @@ $ErrorActionPreference = "Stop"
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $runnerPath = Join-Path $scriptRoot "run_core_strategy_expansion_overnight.py"
+$runRegistryReporterPath = Join-Path $scriptRoot "build_run_registry_report.py"
+$defaultOutputRoot = Join-Path $scriptRoot "output"
+$defaultRegistryPath = Join-Path $defaultOutputRoot "run_registry.jsonl"
 $readyBasePath = [System.IO.Path]::GetFullPath($ReadyBaseDir)
 
 if (-not (Test-Path $readyBasePath)) {
@@ -20,6 +23,22 @@ if ([string]::IsNullOrWhiteSpace($ResearchRoot)) {
 }
 $researchRootPath = [System.IO.Path]::GetFullPath($ResearchRoot)
 New-Item -ItemType Directory -Force -Path $researchRootPath | Out-Null
+$runRegistryReportDir = Join-Path $researchRootPath "run_registry_report"
+New-Item -ItemType Directory -Force -Path $runRegistryReportDir | Out-Null
+
+function Invoke-RunRegistryReport {
+    if (-not (Test-Path $runRegistryReporterPath)) {
+        return
+    }
+    $reportArgs = @(
+        $runRegistryReporterPath,
+        "--output-root", $defaultOutputRoot,
+        "--registry-path", $defaultRegistryPath,
+        "--report-dir", $runRegistryReportDir,
+        "--manifest-root", $researchRootPath
+    )
+    & python @reportArgs | Out-Null
+}
 
 $tickers = @(
     Get-ChildItem $readyBasePath -Directory |
@@ -120,6 +139,7 @@ foreach ($row in $planRows) {
 }
 
 $readme -join "`r`n" | Set-Content -Path $readmePath
+Invoke-RunRegistryReport
 
 if ($Execute) {
     foreach ($row in $planRows) {
@@ -133,6 +153,7 @@ if ($Execute) {
             "--family-include", $row.family_include
         ) -WorkingDirectory $scriptRoot
     }
+    Invoke-RunRegistryReport
 }
 
 Write-Output ($planRows | ConvertTo-Json -Depth 6)
