@@ -45,6 +45,7 @@ Treat qqq_options_30d_cleanroom as the research workspace. Verify that the clean
 - materialize_backtester_ready.py
 - build_ticker_family_coverage.py
 - build_agent_operating_model.py
+- build_run_registry_report.py
 - build_agent_wave_launch_pack.py
 - build_phase2_agent_wave_pack.py
 - validate_agent_wave_pack.py
@@ -77,6 +78,8 @@ If the ready universe is smaller than the staged/registry universe, use material
 Before launching the next large wave, run build_ticker_family_coverage.py to refresh the 159-symbol ticker-family coverage matrix and use its `next_wave_plan.json` / `next_wave_commands.ps1` outputs to choose under-tested families and symbols instead of repeating already-covered combinations.
 
 Each large batch should leave behind a `run_manifest.json` inside its `research_dir` plus an append-only `run_registry.jsonl` under the cleanroom `output` root. Use those files to verify machine lineage, code lineage, input fingerprints, ticker completion state, and the final shared-account snapshot before trusting or promoting results.
+
+After any large wave or validation pass, run `build_run_registry_report.py` so you have a clean operator packet showing run status, recent runs, attention items, code refs, ticker-state counts, and the exact research directories tied to each `run_id`.
 
 Before assigning subagents for a new large wave, refresh the current operating model with `build_agent_operating_model.py` and use `docs/AGENT_OPERATING_MODEL.md` as the source of truth for role ownership, handoff artifacts, and the rule that only the Promotion Steward may write the live manifest.
 

@@ -14,6 +14,7 @@
 - Parallelize discovery and prep, serialize validation and promotion.
 - Never allow concurrent live-manifest writers.
 - Every large lane must emit run_manifest.json and append to run_registry.jsonl.
+- After a wave or validation pass, build a fresh run-registry packet with `build_run_registry_report.py` so operators can review run status, lineage, ticker completion states, and terminal outcomes without scraping raw JSON by hand.
 - Promotion requires friction-aware results plus portfolio-context validation.
 - Checkpoint reuse is allowed only when the run signature still matches.
 - Build a phase-specific launch pack with `build_agent_wave_launch_pack.py` before starting a large discovery wave, then use `launch_agent_wave.ps1` so execution follows the generated pack instead of ad hoc commands.
@@ -169,8 +170,10 @@
 - Parallelism: `1`
 - Writes live state: `false`
 - Scripts: `build_family_wave_shortlist.py, summarize_tournament_conveyor.py, build_agent_operating_model.py`
+- Scripts: `build_family_wave_shortlist.py, summarize_tournament_conveyor.py, build_agent_operating_model.py, build_run_registry_report.py`
 - Inputs: lane summaries, family rankings, friction profiles, run manifests
 - Outputs: family_wave_shortlist.md, phase2_plan.json, tournament_conveyor_summary.json, promotion review packet
+- Outputs: family_wave_shortlist.md, phase2_plan.json, tournament_conveyor_summary.json, promotion review packet, run_registry_report.md
 - Success gate: Reports must separate discovery, exhaustive, validation, and promotion-ready winners.
 - Hands off to: Shared-Account Validator, Promotion Steward
 - Notes: This lane turns raw results into decision artifacts and keeps auditability readable.
@@ -214,3 +217,8 @@
   - `promoted_strategies.yaml`
   - `shared-account comparison`
   - `current live manifest snapshot`
+- Reporting outputs:
+  - `run_registry_report.json`
+  - `run_registry_report.md`
+  - `run_registry_runs.csv`
+  - `run_registry_ticker_states.csv`
