@@ -1427,7 +1427,9 @@ def price_frame(price_index: pd.DataFrame, trade_date: date, symbol: str) -> pd.
         return None
     if isinstance(frame, pd.Series):
         frame = frame.to_frame().T
-    frame = frame.reset_index(drop=True)
+    frame = frame.reset_index()
+    if "minute_index" not in frame.columns and "index" in frame.columns:
+        frame = frame.rename(columns={"index": "minute_index"})
     if "minute_index" not in frame.columns:
         return None
     frame = frame.sort_values("minute_index").reset_index(drop=True)

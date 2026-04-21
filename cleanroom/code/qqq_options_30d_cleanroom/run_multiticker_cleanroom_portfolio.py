@@ -46,6 +46,7 @@ TOP_BEAR_GRID = [1, 2, 3, 4]
 TOP_CHOPPY_GRID = [0, 1, 2]
 MIN_TRADE_GRID = [2, 3, 5, 8, 10]
 RISK_CAP_GRID = [0.08, 0.10, 0.12, 0.15, 0.18, 0.20]
+EMPTY_EQUITY_CURVE_COLUMNS = ("trade_date", "minute_index", "equity")
 
 
 @dataclass(frozen=True)
@@ -422,6 +423,22 @@ def write_phase_status(
     write_json(path, payload)
 
 
+def empty_equity_curve_df() -> pd.DataFrame:
+    return pd.DataFrame(columns=list(EMPTY_EQUITY_CURVE_COLUMNS))
+
+
+def read_candidate_trades_csv(path: Path, *, expected_trade_count: int | None = None) -> pd.DataFrame:
+    if expected_trade_count is not None and int(expected_trade_count) == 0:
+        return bqp.empty_candidate_trades_df()
+    try:
+        trades = pd.read_csv(path)
+    except pd.errors.EmptyDataError:
+        return bqp.empty_candidate_trades_df()
+    if trades.empty and len(trades.columns) == 0:
+        return bqp.empty_candidate_trades_df()
+    return trades
+
+
 def try_load_candidate_checkpoint(
     *,
     paths: dict[str, Path],
@@ -436,7 +453,10 @@ def try_load_candidate_checkpoint(
         return None
     if not run_signature_matches(checkpoint.get("run_signature"), run_signature):
         return None
-    return pd.read_csv(candidate_trades_path)
+    return read_candidate_trades_csv(
+        candidate_trades_path,
+        expected_trade_count=checkpoint.get("candidate_trade_count"),
+    )
 
 
 def write_candidate_checkpoint(
@@ -1434,11 +1454,11 @@ def evaluate_config(
     )
     if filtered.empty or not strategies:
         return (
-            pd.DataFrame(),
-            pd.DataFrame(),
+            filtered.iloc[0:0].copy(),
+            empty_equity_curve_df(),
             attach_family_contributions(
                 summary=empty_summary(starting_equity, float(config["risk_cap"])),
-                trades_df=pd.DataFrame(),
+                trades_df=filtered.iloc[0:0].copy(),
                 strategy_map=strategy_map,
             ),
             filtered,
@@ -1840,10 +1860,14 @@ def run_single_ticker_research(
                 frozen_current_equity=frozen_current_equity,
             )
 
-        reopt_trades_df = pd.concat(reopt_trade_frames, ignore_index=True) if reopt_trade_frames else pd.DataFrame()
-        reopt_equity_df = pd.concat(reopt_equity_frames, ignore_index=True) if reopt_equity_frames else pd.DataFrame()
-        frozen_trades_df = pd.concat(frozen_trade_frames, ignore_index=True) if frozen_trade_frames else pd.DataFrame()
-        frozen_equity_df = pd.concat(frozen_equity_frames, ignore_index=True) if frozen_equity_frames else pd.DataFrame()
+        reopt_trade_frames = [frame for frame in reopt_trade_frames if not frame.empty]
+        reopt_equity_frames = [frame for frame in reopt_equity_frames if not frame.empty]
+        frozen_trade_frames = [frame for frame in frozen_trade_frames if not frame.empty]
+        frozen_equity_frames = [frame for frame in frozen_equity_frames if not frame.empty]
+        reopt_trades_df = pd.concat(reopt_trade_frames, ignore_index=True) if reopt_trade_frames else bqp.empty_candidate_trades_df()
+        reopt_equity_df = pd.concat(reopt_equity_frames, ignore_index=True) if reopt_equity_frames else empty_equity_curve_df()
+        frozen_trades_df = pd.concat(frozen_trade_frames, ignore_index=True) if frozen_trade_frames else bqp.empty_candidate_trades_df()
+        frozen_equity_df = pd.concat(frozen_equity_frames, ignore_index=True) if frozen_equity_frames else empty_equity_curve_df()
         frozen_summary = summarize_run(
             trades_df=frozen_trades_df,
             equity_df=frozen_equity_df,
@@ -2000,11 +2024,15 @@ def try_load_existing_ticker_result(
     if any(name not in strategy_map for name in selected_names):
         return None
 
-    candidate_trades = pd.read_csv(candidate_trades_path)
+    candidate_trades = read_candidate_trades_csv(candidate_trades_path)
     regime_summary = (
-        pd.read_csv(regime_summary_path)
-        if regime_summary_path.exists()
-        else summarize_regimes(candidate_trades)
+        summarize_regimes(candidate_trades)
+        if not regime_summary_path.exists()
+        else (
+            pd.read_csv(regime_summary_path)
+            if regime_summary_path.stat().st_size > 0
+            else summarize_regimes(candidate_trades)
+        )
     )
     wide = load_wide_data_for_ticker(wide_path, ticker_lower)
     ordered_trade_dates, day_return_map = build_day_return_map(wide=wide)

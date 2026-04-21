@@ -232,3 +232,14 @@ foreach ($row in $processRows) {
 Write-Status -Phase "completed" -Rows $finalRows
 Invoke-RunRegistryReport -Rows $finalRows
 Write-Output ($finalRows | ConvertTo-Json -Depth 8)
+
+$failedRows = @(
+    $finalRows | Where-Object {
+        ([int]$_.exit_code) -ne 0 -or (-not [bool]$_.has_master_summary)
+    }
+)
+if ($failedRows.Count -gt 0) {
+    $failedLaneIds = @($failedRows | ForEach-Object { [string]$_.lane_id })
+    Write-Error ("one or more agent-wave lanes failed or did not write master_summary.json: " + ($failedLaneIds -join ", "))
+    exit 2
+}

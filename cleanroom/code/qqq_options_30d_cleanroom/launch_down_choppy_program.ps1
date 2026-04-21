@@ -512,6 +512,23 @@ foreach ($lane in $wavePlan) {
 
 $phase1Results = Wait-LaneProcesses -LaneProcesses $phase1LaneProcesses -PhaseName "phase1_discovery_running" -StatusPath $phase1StatusPath
 
+$failedPhase1Rows = @(
+    $phase1Results | Where-Object {
+        ([int]$_.exit_code) -ne 0 -or (-not [bool]$_.has_master_summary)
+    }
+)
+if ($failedPhase1Rows.Count -gt 0) {
+    $failedLaneIds = @($failedPhase1Rows | ForEach-Object { [string]$_.lane_id })
+    Write-JsonFile -Path $phase1StatusPath -Payload ([ordered]@{
+        phase = "phase1_discovery_failed"
+        updated_at = (Get-Date).ToString("o")
+        failed_lane_ids = $failedLaneIds
+        results = $phase1Results
+    })
+    Invoke-RunRegistryReport -ReportDir $runRegistryReportDir -ManifestRoots @($programRootPath, $discoveryRoot, $phase2Root)
+    throw ("phase 1 discovery lanes failed or exited without master_summary.json: " + ($failedLaneIds -join ", "))
+}
+
 Write-JsonFile -Path $phase1StatusPath -Payload ([ordered]@{
     phase = "phase1_discovery_complete"
     updated_at = (Get-Date).ToString("o")
