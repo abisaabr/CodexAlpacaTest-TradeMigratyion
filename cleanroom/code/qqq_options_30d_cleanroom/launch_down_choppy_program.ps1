@@ -358,6 +358,38 @@ New-Item -ItemType Directory -Force -Path $coverageRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $logsRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $runRegistryReportDir | Out-Null
 
+trap {
+    $failureMessage =
+        if ($_.Exception -and -not [string]::IsNullOrWhiteSpace([string]$_.Exception.Message)) {
+            [string]$_.Exception.Message
+        }
+        else {
+            [string]$_
+        }
+    if (-not [string]::IsNullOrWhiteSpace($statusPath)) {
+        Write-JsonFile -Path $statusPath -Payload ([ordered]@{
+            phase = "failed"
+            execute = [bool]$Execute
+            updated_at = (Get-Date).ToString("o")
+            message = $failureMessage
+            wave_plan_path = if (Test-Path variable:wavePlanPath) { $wavePlanPath } else { $null }
+            phase1_status_path = $phase1StatusPath
+            phase2_status_path = $phase2StatusPath
+            run_registry_report_dir = $runRegistryReportDir
+        })
+    }
+    if (-not [string]::IsNullOrWhiteSpace($runRegistryReportDir)) {
+        Invoke-RunRegistryReport -ReportDir $runRegistryReportDir -ManifestRoots @(
+            $programRootPath,
+            $discoveryRoot,
+            $phase2Root,
+            (Join-Path $phase2Root "lanes")
+        )
+    }
+    Write-Error $failureMessage
+    exit 2
+}
+
 if ([string]::IsNullOrWhiteSpace($CoveragePlannerPath)) {
     $CoveragePlannerPath = $defaultCoveragePlannerPath
 }
