@@ -78,7 +78,7 @@ Each large batch should leave behind a `run_manifest.json` inside its `research_
 
 Before assigning subagents for a new large wave, refresh the current operating model with `build_agent_operating_model.py` and use `docs/AGENT_OPERATING_MODEL.md` as the source of truth for role ownership, handoff artifacts, and the rule that only the Promotion Steward may write the live manifest.
 
-Before executing Phase 1 discovery, use `build_agent_wave_launch_pack.py` to generate an exact launch pack from the current operating model plus the current coverage-ranked plan, then use `launch_agent_wave.ps1` against that pack so lane commands, logs, and research directories stay reproducible.
+Before executing Phase 1 discovery, use `build_agent_wave_launch_pack.py` to generate an exact launch pack from the current operating model plus the current coverage-ranked plan, then use `launch_agent_wave.ps1` against that pack so lane commands, logs, and research directories stay reproducible. For a breadth-first discovery wave, prefer `--refresh-coverage --allocation-mode breadth --coverage-top-ready-per-lane 40` so the four lanes spread across more unique ready symbols instead of reusing the same small cohort.
 
 At the end, report:
 - what tournament lane is running now

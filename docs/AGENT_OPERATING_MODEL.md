@@ -17,6 +17,7 @@
 - Promotion requires friction-aware results plus portfolio-context validation.
 - Checkpoint reuse is allowed only when the run signature still matches.
 - Build a phase-specific launch pack with `build_agent_wave_launch_pack.py` before starting a large wave, then use `launch_agent_wave.ps1` so execution follows the generated pack instead of ad hoc commands.
+- For speed-first discovery, prefer `build_agent_wave_launch_pack.py --refresh-coverage --allocation-mode breadth --coverage-top-ready-per-lane 40` so the four Phase 1 lanes draw from a deeper ready universe and minimize cross-lane ticker overlap.
 
 ## Agent Roles
 

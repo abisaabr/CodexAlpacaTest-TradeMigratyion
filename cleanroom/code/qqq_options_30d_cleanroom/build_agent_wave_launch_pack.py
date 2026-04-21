@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import argparse
+import collections
 import json
+import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -13,6 +16,7 @@ DEFAULT_READY_BASE_DIR = Path(
     r"C:\Users\rabisaab\OneDrive - First American Corporation\qqq_options_30d_cleanroom\output\backtester_ready"
 )
 DEFAULT_RUNNER_PATH = ROOT / "run_core_strategy_expansion_overnight.py"
+DEFAULT_COVERAGE_PLANNER_PATH = ROOT / "build_ticker_family_coverage.py"
 DEFAULT_OPERATING_MODEL_JSON = ROOT / "output" / "agent_operating_model_20260421_main" / "agent_operating_model.json"
 DEFAULT_COVERAGE_PLAN_JSON = ROOT / "output" / "ticker_family_coverage_20260421_post_materialize_wave3" / "next_wave_plan.json"
 
@@ -25,8 +29,29 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--coverage-plan-json", default=str(DEFAULT_COVERAGE_PLAN_JSON))
     parser.add_argument("--ready-base-dir", default=str(DEFAULT_READY_BASE_DIR))
     parser.add_argument("--runner-path", default=str(DEFAULT_RUNNER_PATH))
+    parser.add_argument("--coverage-planner-path", default=str(DEFAULT_COVERAGE_PLANNER_PATH))
     parser.add_argument("--python-exe", default="python")
     parser.add_argument("--max-tickers-per-lane", type=int, default=8)
+    parser.add_argument(
+        "--allocation-mode",
+        choices=("benchmark", "breadth", "hybrid"),
+        default="hybrid",
+        help="benchmark keeps each lane's top-ranked symbols, breadth minimizes cross-lane overlap, hybrid keeps a small shared benchmark core then fills breadth-first.",
+    )
+    parser.add_argument(
+        "--shared-benchmark-slots",
+        type=int,
+        default=2,
+        help="When allocation-mode=hybrid, number of shared benchmark symbols to keep in every lane before breadth-first filling.",
+    )
+    parser.add_argument(
+        "--refresh-coverage",
+        action="store_true",
+        help="Regenerate the coverage-ranked plan before building the launch pack.",
+    )
+    parser.add_argument("--coverage-top-ready-per-lane", type=int, default=24)
+    parser.add_argument("--coverage-top-staged-per-lane", type=int, default=8)
+    parser.add_argument("--coverage-top-registry-per-lane", type=int, default=8)
     parser.add_argument(
         "--research-root",
         default=str(DEFAULT_OUTPUT_ROOT / f"phase1_agent_wave_{datetime.now().strftime('%Y%m%d_%H%M%S')}"),
@@ -49,6 +74,40 @@ def normalize_family_token(value: str) -> str:
 
 def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def refresh_coverage_plan(
+    *,
+    planner_path: Path,
+    report_dir: Path,
+    ready_base_dir: Path,
+    top_ready_per_lane: int,
+    top_staged_per_lane: int,
+    top_registry_per_lane: int,
+) -> Path:
+    report_dir.mkdir(parents=True, exist_ok=True)
+    subprocess.run(
+        [
+            sys.executable,
+            str(planner_path),
+            "--ready-base-dir",
+            str(ready_base_dir),
+            "--report-dir",
+            str(report_dir),
+            "--top-ready-per-lane",
+            str(top_ready_per_lane),
+            "--top-staged-per-lane",
+            str(top_staged_per_lane),
+            "--top-registry-per-lane",
+            str(top_registry_per_lane),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+    plan_path = report_dir / "next_wave_plan.json"
+    if not plan_path.exists():
+        raise FileNotFoundError(f"coverage refresh did not produce {plan_path}")
+    return plan_path
 
 
 def resolve_latest_json(path: Path, pattern: str) -> Path:
@@ -84,6 +143,121 @@ def build_command_text(python_exe: str, command_args: list[str]) -> str:
     return " ".join(parts)
 
 
+def score_shared_benchmark_tickers(
+    templates: list[dict[str, Any]],
+    *,
+    max_rank_window: int,
+) -> list[str]:
+    frequency: collections.Counter[str] = collections.Counter()
+    rank_totals: dict[str, int] = {}
+    for template in templates:
+        for rank, row in enumerate(list(template.get("ready_discovery", []))[:max_rank_window], start=1):
+            ticker = str(row.get("ticker", "")).upper()
+            if not ticker:
+                continue
+            frequency[ticker] += 1
+            rank_totals[ticker] = rank_totals.get(ticker, 0) + rank
+    scored = sorted(
+        frequency,
+        key=lambda ticker: (-frequency[ticker], rank_totals.get(ticker, 999999), ticker),
+    )
+    return scored
+
+
+def allocate_lane_tickers(
+    templates: list[dict[str, Any]],
+    *,
+    max_tickers_per_lane: int,
+    allocation_mode: str,
+    shared_benchmark_slots: int,
+) -> tuple[dict[str, list[str]], dict[str, Any]]:
+    lane_candidates: dict[str, list[str]] = {}
+    for template in templates:
+        lane_candidates[str(template["lane_id"])] = [
+            str(row.get("ticker", "")).upper()
+            for row in template.get("ready_discovery", [])
+            if str(row.get("ticker", "")).strip()
+        ]
+
+    if allocation_mode == "benchmark":
+        assigned = {
+            lane_id: candidates[:max_tickers_per_lane]
+            for lane_id, candidates in lane_candidates.items()
+        }
+        return assigned, {
+            "allocation_mode": allocation_mode,
+            "shared_benchmark_tickers": [],
+        }
+
+    shared_benchmark: list[str] = []
+    if allocation_mode == "hybrid" and shared_benchmark_slots > 0:
+        ranked = score_shared_benchmark_tickers(templates, max_rank_window=max_tickers_per_lane)
+        shared_benchmark = ranked[:shared_benchmark_slots]
+
+    assigned: dict[str, list[str]] = {lane_id: [] for lane_id in lane_candidates}
+    globally_assigned: set[str] = set()
+
+    if shared_benchmark:
+        for lane_id, candidates in lane_candidates.items():
+            for ticker in shared_benchmark:
+                if ticker in candidates and len(assigned[lane_id]) < max_tickers_per_lane:
+                    assigned[lane_id].append(ticker)
+
+    while True:
+        progress = False
+        for lane_id, candidates in lane_candidates.items():
+            if len(assigned[lane_id]) >= max_tickers_per_lane:
+                continue
+            for ticker in candidates:
+                if ticker in assigned[lane_id]:
+                    continue
+                if ticker in globally_assigned:
+                    continue
+                assigned[lane_id].append(ticker)
+                globally_assigned.add(ticker)
+                progress = True
+                break
+        if not progress:
+            break
+
+    for lane_id, candidates in lane_candidates.items():
+        if len(assigned[lane_id]) >= max_tickers_per_lane:
+            continue
+        for ticker in candidates:
+            if ticker in assigned[lane_id]:
+                continue
+            assigned[lane_id].append(ticker)
+            if len(assigned[lane_id]) >= max_tickers_per_lane:
+                break
+
+    return assigned, {
+        "allocation_mode": allocation_mode,
+        "shared_benchmark_tickers": shared_benchmark,
+    }
+
+
+def build_overlap_summary(lanes: list[dict[str, Any]]) -> dict[str, Any]:
+    counter: collections.Counter[str] = collections.Counter()
+    lane_map: dict[str, list[str]] = {}
+    for lane in lanes:
+        tickers = [str(ticker).upper() for ticker in lane["tickers"]]
+        lane_map[str(lane["lane_id"])] = tickers
+        counter.update(tickers)
+    overlapping = {
+        ticker: count
+        for ticker, count in sorted(counter.items(), key=lambda item: (-item[1], item[0]))
+        if count > 1
+    }
+    return {
+        "unique_ticker_count": len(counter),
+        "total_lane_slots": sum(counter.values()),
+        "overlap_ticker_count": len(overlapping),
+        "overlap_share_pct": round((len(overlapping) / len(counter)) * 100.0, 2) if counter else 0.0,
+        "overlapping_tickers": overlapping,
+        "lane_tickers": lane_map,
+    }
+
+
 def build_pack(
     *,
     operating_model: dict[str, Any],
@@ -92,18 +266,26 @@ def build_pack(
     runner_path: Path,
     python_exe: str,
     max_tickers_per_lane: int,
+    allocation_mode: str,
+    shared_benchmark_slots: int,
     research_root: Path,
 ) -> dict[str, Any]:
     agent_map = map_discovery_agents(operating_model)
     lanes: list[dict[str, Any]] = []
     logs_root = research_root / "logs"
-    for template in coverage_plan.get("lane_templates", []):
+    templates = list(coverage_plan.get("lane_templates", []))
+    lane_assignments, allocation_summary = allocate_lane_tickers(
+        templates,
+        max_tickers_per_lane=max_tickers_per_lane,
+        allocation_mode=allocation_mode,
+        shared_benchmark_slots=shared_benchmark_slots,
+    )
+    for template in templates:
         family_filters = sorted(lane_filters_from_template(template))
         agent = agent_map.get("|".join(family_filters))
         if agent is None:
             continue
-        ready_rows = list(template.get("ready_discovery", []))[:max_tickers_per_lane]
-        tickers = [str(row["ticker"]).lower() for row in ready_rows if str(row.get("ticker", "")).strip()]
+        tickers = [ticker.lower() for ticker in lane_assignments.get(str(template["lane_id"]), [])]
         if not tickers:
             continue
         lane_id = str(template["lane_id"])
@@ -157,6 +339,7 @@ def build_pack(
         "ready_base_dir": str(ready_base_dir),
         "research_root": str(research_root),
         "source_operating_model": operating_model.get("source_plan_path", ""),
+        "source_coverage_plan_path": str(coverage_plan.get("_source_plan_path", "")),
         "source_coverage_generated_at": coverage_plan.get("generated_at", ""),
         "governance": {
             "writes_live_state": False,
@@ -164,6 +347,8 @@ def build_pack(
             "single_writer_roles": operating_model.get("governance", {}).get("single_writer_roles", []),
             "required_lane_artifacts": operating_model.get("artifacts", {}).get("required_per_lane", []),
         },
+        "allocation": allocation_summary,
+        "overlap_summary": build_overlap_summary(lanes),
         "lanes": lanes,
     }
 
@@ -189,10 +374,35 @@ def write_readme(path: Path, payload: dict[str, Any]) -> None:
         f"- Ready base dir: `{payload['ready_base_dir']}`",
         f"- Research root: `{payload['research_root']}`",
         f"- Promotion mode: `{payload['governance']['promotion_mode']}`",
+        f"- Allocation mode: `{payload['allocation']['allocation_mode']}`",
         "",
         "## Lanes",
         "",
     ]
+    shared = payload["allocation"].get("shared_benchmark_tickers", [])
+    if shared:
+        lines.extend(
+            [
+                "## Shared Benchmark Core",
+                "",
+                f"- {', '.join(shared)}",
+                "",
+            ]
+        )
+    overlap = payload["overlap_summary"]
+    lines.extend(
+        [
+            "## Overlap Summary",
+            "",
+            f"- Unique ticker count: `{overlap['unique_ticker_count']}`",
+            f"- Total lane slots: `{overlap['total_lane_slots']}`",
+            f"- Overlap ticker count: `{overlap['overlap_ticker_count']}`",
+            f"- Overlap share: `{overlap['overlap_share_pct']}`%",
+            "",
+            "## Lanes",
+            "",
+        ]
+    )
     for lane in payload["lanes"]:
         lines.append(f"- `{lane['lane_id']}` / `{lane['agent']}`")
         lines.append(f"  - tickers: {', '.join(lane['tickers'])}")
@@ -215,8 +425,18 @@ def main() -> None:
     args = build_parser().parse_args()
     operating_model_path = resolve_latest_json(Path(args.operating_model_json).resolve(), "agent_operating_model.json")
     coverage_plan_path = resolve_latest_json(Path(args.coverage_plan_json).resolve(), "next_wave_plan.json")
+    if args.refresh_coverage:
+        coverage_plan_path = refresh_coverage_plan(
+            planner_path=Path(args.coverage_planner_path).resolve(),
+            report_dir=Path(args.output_dir).resolve() / "coverage_refresh",
+            ready_base_dir=Path(args.ready_base_dir).resolve(),
+            top_ready_per_lane=int(args.coverage_top_ready_per_lane),
+            top_staged_per_lane=int(args.coverage_top_staged_per_lane),
+            top_registry_per_lane=int(args.coverage_top_registry_per_lane),
+        )
     operating_model = load_json(operating_model_path)
     coverage_plan = load_json(coverage_plan_path)
+    coverage_plan["_source_plan_path"] = str(coverage_plan_path)
 
     output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -229,6 +449,8 @@ def main() -> None:
         runner_path=Path(args.runner_path).resolve(),
         python_exe=args.python_exe,
         max_tickers_per_lane=int(args.max_tickers_per_lane),
+        allocation_mode=args.allocation_mode,
+        shared_benchmark_slots=int(args.shared_benchmark_slots),
         research_root=research_root,
     )
     write_json(output_dir / "agent_wave_launch_pack.json", payload)
