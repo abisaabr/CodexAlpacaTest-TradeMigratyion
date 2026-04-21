@@ -74,15 +74,25 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--strategy-set",
-        choices=("standard", "family_expansion", "down_choppy_only"),
+        choices=("standard", "family_expansion", "down_choppy_only", "down_choppy_exhaustive"),
         default="standard",
-        help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates, and 'down_choppy_only' runs a lean bearish/choppy tournament surface.",
+        help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates, 'down_choppy_only' runs a lean bearish/choppy tournament surface, and 'down_choppy_exhaustive' expands bearish/choppy parameter sweeps.",
     )
     parser.add_argument(
         "--selection-profile",
         choices=("balanced", "down_choppy_focus"),
         default="balanced",
         help="How strongly to bias config selection toward bearish and choppy robustness.",
+    )
+    parser.add_argument(
+        "--family-include",
+        default="",
+        help="Optional comma-separated family filters passed through to the tournament runner.",
+    )
+    parser.add_argument(
+        "--family-exclude",
+        default="",
+        help="Optional comma-separated family filters passed through to the tournament runner.",
     )
     parser.add_argument(
         "--force-redownload",
@@ -181,7 +191,12 @@ def ensure_ticker_inputs(
     if ready_base_dir is not None and ready_base_dir.exists():
         staged = stage_ready_ticker(ready_base_dir=ready_base_dir, ticker=ticker, paths=paths)
 
-    if args.force_redownload or not required_inputs_present(paths):
+    needs_download = args.force_redownload or not required_inputs_present(paths)
+    if needs_download:
+        required_env = ["ALPACA_API_KEY", "ALPACA_SECRET_KEY", "ALPACA_API_BASE_URL"]
+        missing = [name for name in required_env if not env.get(name)]
+        if missing:
+            raise RuntimeError(f"missing environment variables for download path: {missing}")
         run_command(
             [
                 sys.executable,
@@ -244,11 +259,6 @@ def main() -> None:
         ]
     ).rstrip(os.pathsep)
 
-    required_env = ["ALPACA_API_KEY", "ALPACA_SECRET_KEY", "ALPACA_API_BASE_URL"]
-    missing = [name for name in required_env if not env.get(name)]
-    if missing:
-        raise RuntimeError(f"missing environment variables: {missing}")
-
     research_dir = Path(args.research_dir).resolve()
     research_dir.mkdir(parents=True, exist_ok=True)
     log_dir = research_dir / "logs"
@@ -269,22 +279,27 @@ def main() -> None:
     prep_path.write_text(json.dumps(prep_rows, indent=2), encoding="utf-8")
 
     research_log = log_dir / "research.log"
+    tournament_command = [
+        sys.executable,
+        str(ROOT / "run_multiticker_cleanroom_portfolio.py"),
+        "--tickers",
+        ",".join(tickers),
+        "--output-dir",
+        str(workspace_output_dir),
+        "--research-dir",
+        str(research_dir),
+        "--strategy-set",
+        str(args.strategy_set),
+        "--selection-profile",
+        str(args.selection_profile),
+        "--continue-on-error",
+    ]
+    if args.family_include.strip():
+        tournament_command.extend(["--family-include", str(args.family_include)])
+    if args.family_exclude.strip():
+        tournament_command.extend(["--family-exclude", str(args.family_exclude)])
     run_command(
-        [
-            sys.executable,
-            str(ROOT / "run_multiticker_cleanroom_portfolio.py"),
-            "--tickers",
-            ",".join(tickers),
-            "--output-dir",
-            str(workspace_output_dir),
-            "--research-dir",
-            str(research_dir),
-            "--strategy-set",
-            str(args.strategy_set),
-            "--selection-profile",
-            str(args.selection_profile),
-            "--continue-on-error",
-        ],
+        tournament_command,
         env=env,
         log_path=research_log,
     )
@@ -294,6 +309,8 @@ def main() -> None:
         "tickers": [ticker.upper() for ticker in tickers],
         "strategy_set": str(args.strategy_set),
         "selection_profile": str(args.selection_profile),
+        "family_include_filters": str(args.family_include),
+        "family_exclude_filters": str(args.family_exclude),
         "research_dir": str(research_dir),
         "summary_path": str(summary_path),
         "report_path": str(research_dir / "master_report.md"),
@@ -309,4 +326,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

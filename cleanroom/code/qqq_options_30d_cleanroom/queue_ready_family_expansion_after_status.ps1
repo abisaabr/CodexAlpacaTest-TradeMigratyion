@@ -6,6 +6,8 @@ param(
     [string[]]$Tickers,
     [string]$StrategySet = "family_expansion",
     [string]$SelectionProfile = "balanced",
+    [string]$FamilyInclude = "",
+    [string]$FamilyExclude = "",
     [string]$PromotionMode = "after_shard",
     [int]$ShardSize = 0,
     [int]$MaxParallelShards = 1,
@@ -73,6 +75,8 @@ function Write-Status {
         ready_base_dir = $readyBasePath
         strategy_set = $StrategySet
         selection_profile = $SelectionProfile
+        family_include = $FamilyInclude
+        family_exclude = $FamilyExclude
         promotion_mode = $PromotionMode
         max_parallel_shards = $MaxParallelShards
         tickers = $Tickers
@@ -130,12 +134,21 @@ function Invoke-FamilyExpansionShard {
     New-Item -ItemType Directory -Force -Path $shardResearchPath | Out-Null
 
     Write-Log "Launching $tournamentLabel shard $ShardIndex/$ShardCount for $($ShardTickers -join ', ')"
-    & python $launcherPath `
-        --tickers ($ShardTickers -join ",") `
-        --ready-base-dir $readyBasePath `
-        --research-dir $shardResearchPath `
-        --strategy-set $StrategySet `
-        --selection-profile $SelectionProfile | Out-Null
+    $launchArgs = @(
+        $launcherPath,
+        "--tickers", ($ShardTickers -join ","),
+        "--ready-base-dir", $readyBasePath,
+        "--research-dir", $shardResearchPath,
+        "--strategy-set", $StrategySet,
+        "--selection-profile", $SelectionProfile
+    )
+    if (-not [string]::IsNullOrWhiteSpace($FamilyInclude)) {
+        $launchArgs += @("--family-include", $FamilyInclude)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($FamilyExclude)) {
+        $launchArgs += @("--family-exclude", $FamilyExclude)
+    }
+    & python @launchArgs | Out-Null
 
     if ($LASTEXITCODE -ne 0) {
         Write-Log "Shard $ShardIndex/$ShardCount failed with exit code $LASTEXITCODE."
@@ -234,6 +247,8 @@ function Start-FamilyExpansionShardJob {
             [string[]]$ShardTickers,
             [string]$StrategySet,
             [string]$SelectionProfile,
+            [string]$FamilyInclude,
+            [string]$FamilyExclude,
             [string]$PromotionMode,
             [int]$ShardIndex,
             [int]$ShardCount
@@ -263,12 +278,21 @@ function Start-FamilyExpansionShardJob {
             exit_code = 1
         }
 
-        & python $LauncherPath `
-            --tickers ($ShardTickers -join ",") `
-            --ready-base-dir $ReadyBasePath `
-            --research-dir $ShardResearchPath `
-            --strategy-set $StrategySet `
-            --selection-profile $SelectionProfile | Out-Null
+        $launchArgs = @(
+            $LauncherPath,
+            "--tickers", ($ShardTickers -join ","),
+            "--ready-base-dir", $ReadyBasePath,
+            "--research-dir", $ShardResearchPath,
+            "--strategy-set", $StrategySet,
+            "--selection-profile", $SelectionProfile
+        )
+        if (-not [string]::IsNullOrWhiteSpace($FamilyInclude)) {
+            $launchArgs += @("--family-include", $FamilyInclude)
+        }
+        if (-not [string]::IsNullOrWhiteSpace($FamilyExclude)) {
+            $launchArgs += @("--family-exclude", $FamilyExclude)
+        }
+        & python @launchArgs | Out-Null
 
         if ($LASTEXITCODE -ne 0) {
             $result.exit_code = $LASTEXITCODE
@@ -316,6 +340,8 @@ function Start-FamilyExpansionShardJob {
         $ShardTickers,
         $StrategySet,
         $SelectionProfile,
+        $FamilyInclude,
+        $FamilyExclude,
         $PromotionMode,
         $ShardIndex,
         $ShardCount
@@ -522,4 +548,3 @@ Write-Status `
     -SuccessfulTickers $successfulTickers `
     -FailedTickers $failedTickers
 exit 0
-

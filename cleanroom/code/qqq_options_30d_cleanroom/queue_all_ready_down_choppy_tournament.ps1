@@ -5,6 +5,11 @@ param(
     [string]$ResearchDir = "",
     [string[]]$IncludeTickers = @(),
     [string[]]$ExcludeTickers = @(),
+    [string]$StrategySet = "down_choppy_only",
+    [string]$SelectionProfile = "down_choppy_focus",
+    [string]$FamilyInclude = "",
+    [string]$FamilyExclude = "",
+    [string]$PromotionMode = "none",
     [int]$ShardSize = 1,
     [int]$MaxParallelShards = 3,
     [int]$PollSeconds = 60,
@@ -20,7 +25,7 @@ $waitStatusFile = [System.IO.Path]::GetFullPath($WaitStatusPath)
 $repoPath = [System.IO.Path]::GetFullPath($RepoDir)
 
 if ([string]::IsNullOrWhiteSpace($ResearchDir)) {
-    $defaultName = "candidate_batch_research_{0}_downchop_allready_sharded" -f (Get-Date -Format "yyyyMMdd")
+    $defaultName = "candidate_batch_research_{0}_{1}_allready_sharded" -f (Get-Date -Format "yyyyMMdd"), $StrategySet
     $researchPath = Join-Path $scriptRoot ("output\" + $defaultName)
 }
 else {
@@ -72,9 +77,11 @@ $launchMetadata = [ordered]@{
     ready_base_dir = $readyBasePath
     repo_dir = $repoPath
     research_dir = $researchPath
-    strategy_set = "down_choppy_only"
-    selection_profile = "down_choppy_focus"
-    promotion_mode = "none"
+    strategy_set = $StrategySet
+    selection_profile = $SelectionProfile
+    family_include = $FamilyInclude
+    family_exclude = $FamilyExclude
+    promotion_mode = $PromotionMode
     shard_size = $ShardSize
     max_parallel_shards = $MaxParallelShards
     tickers = $availableTickers
@@ -87,13 +94,14 @@ $launchMetadata | ConvertTo-Json -Depth 6 | Set-Content -Path (Join-Path $resear
     -RepoDir $repoPath `
     -ReadyBaseDir $readyBasePath `
     -Tickers ($availableTickers -join ",") `
-    -StrategySet "down_choppy_only" `
-    -SelectionProfile "down_choppy_focus" `
-    -PromotionMode "none" `
+    -StrategySet $StrategySet `
+    -SelectionProfile $SelectionProfile `
+    -FamilyInclude $FamilyInclude `
+    -FamilyExclude $FamilyExclude `
+    -PromotionMode $PromotionMode `
     -ShardSize $ShardSize `
     -MaxParallelShards $MaxParallelShards `
     -PollSeconds $PollSeconds `
     -TimeoutMinutes $TimeoutMinutes
 
 exit $LASTEXITCODE
-
