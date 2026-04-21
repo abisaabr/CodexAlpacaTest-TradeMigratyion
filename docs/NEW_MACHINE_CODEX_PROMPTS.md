@@ -83,6 +83,7 @@ After any large wave or validation pass, run `build_run_registry_report.py` so y
 When you use `launch_agent_wave.ps1` or `launch_down_choppy_program.ps1`, expect them to refresh a sibling `run_registry_report/` directory automatically; inspect that packet before deciding whether a wave is healthy, stuck, or ready for promotion review.
 The follow-on queue and promotion watcher scripts should do the same on blocked, failed, and completed transitions, so you can inspect a fresh `run_registry_report/` packet even when a queued handoff stops before a full wave ever launches.
 The same expectation now applies to direct launchers and orchestrators like `launch_down_choppy_family_wave.ps1` and `run_core_strategy_expansion_overnight.py`, so ad hoc program runs still leave behind the same audit packet.
+Once a down/choppy program finishes, use `queue_live_book_validation_after_program.ps1` or `validate_program_live_book.py` to turn the completed program root into an incremental shared-account review packet before touching the live manifest.
 
 Before assigning subagents for a new large wave, refresh the current operating model with `build_agent_operating_model.py` and use `docs/AGENT_OPERATING_MODEL.md` as the source of truth for role ownership, handoff artifacts, and the rule that only the Promotion Steward may write the live manifest.
 
