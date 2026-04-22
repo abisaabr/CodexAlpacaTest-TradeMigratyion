@@ -14,6 +14,7 @@ What this repo contains:
 - A machine-readable tournament profile handoff packet so the nightly operator can resolve the active cycle from execution posture instead of prompt drift
 - A machine-readable execution calibration registry for feeding paper-runner fill, guardrail, and loss evidence back into the research/control planes
 - A concise execution calibration handoff packet so nightly operators can act on posture and policy guidance instead of raw execution metrics alone
+- A runner execution upgrade handoff and Codex prompt for applying current paper-runner improvements on the new machine
 - An institutional operating blueprint for machine roles, automation boundaries, and champion/challenger governance
 - A nightly operator playbook and prompt for running the full research-to-handoff cycle
 - A top-level nightly operator entrypoint for governed overnight research-to-handoff execution

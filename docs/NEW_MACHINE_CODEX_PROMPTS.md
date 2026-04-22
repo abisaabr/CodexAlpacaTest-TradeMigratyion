@@ -161,3 +161,38 @@ Run one full nightly research cycle that:
 
 Prefer using `cleanroom/code/qqq_options_30d_cleanroom/launch_nightly_operator_cycle.ps1` as the top-level entrypoint. Treat GitHub-backed docs and packets as the source of truth. Keep discovery parallel, keep production decisions serialized, and treat any lane without `master_summary.json` as failed. Let the nightly operator resolve the tournament profile in `auto` mode unless I explicitly ask for a different executable profile.
 ```
+
+## 9. Apply The Current Runner Execution Upgrades
+
+```text
+Open these sibling folders and use them together:
+
+1. C:\Users\<you>\Downloads\codexalpaca_repo
+2. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs/INSTITUTIONAL_OPERATING_BLUEPRINT.md
+- docs/RUNNER_EXECUTION_UPGRADE_HANDOFF.md
+
+Then, in C:\Users\<you>\Downloads\codexalpaca_repo, act as the execution-plane Codex operator and bring the paper runner up to the current execution baseline.
+
+Fetch `origin/codex/qqq-paper-portfolio`, verify whether commits `50764cf` and `4292514` are present, and if not, integrate them deliberately from that branch without changing unrelated strategy logic or risk settings.
+
+Verify that the runner now includes:
+- combo-native Alpaca `mleg` entry and exit routing in `alpaca_lab/multi_ticker_portfolio/trader.py`
+- Alpaca-aligned option fee modeling in the same file
+
+Then run:
+- `python -m pytest -q`
+
+At the end, report:
+- whether the runner now supports true multi-leg combo execution
+- whether the fee model is aligned with Alpaca's current options fee posture
+- whether the full suite is green
+- whether the machine is safe to keep using as the execution-plane paper runner
+
+Hard rules:
+- do not modify the live manifest
+- do not start trading
+- do not change strategy selection or risk policy in this step
+```
