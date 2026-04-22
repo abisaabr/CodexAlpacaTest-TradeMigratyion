@@ -9,6 +9,8 @@ Preferred entrypoint:
 
 Before assigning agent work, refresh and inspect:
 - `docs/AGENT_GOVERNANCE.md`
+- `docs/EXECUTION_CALIBRATION_REGISTRY.md`
+- `docs/execution_calibration/execution_calibration_registry.md`
 - `docs/agent_governance/agent_governance_registry.md`
 - `docs/TOURNAMENT_PROFILE_REGISTRY.md`
 - `docs/tournament_profiles/tournament_profile_registry.md`
@@ -23,9 +25,10 @@ It is written for the current two-machine setup:
 Every night, the system should do four things well:
 
 1. refresh the family and coverage view
-2. run the highest-value challenger research
-3. validate challenger results against the champion book
-4. leave behind a clear morning packet without auto-mutating production
+2. refresh execution evidence from the paper runner
+3. run the highest-value challenger research
+4. validate challenger results against the champion book
+5. leave behind a clear morning packet without auto-mutating production
 
 ## Core Rule
 
@@ -42,6 +45,8 @@ Owner:
 - Inventory Steward
 
 Required outputs:
+- `execution_calibration_registry.json`
+- `execution_calibration_registry.md`
 - `strategy_family_registry.json`
 - `strategy_family_registry.md`
 - `strategy_family_handoff.json`
@@ -49,6 +54,7 @@ Required outputs:
 - refreshed ticker coverage outputs
 
 Tasks:
+- refresh the execution calibration registry from the paper runner
 - refresh the formal family registry
 - refresh the family handoff packet
 - refresh ticker-family coverage
@@ -60,6 +66,7 @@ Tasks:
 
 Go / no-go:
 - do not launch discovery until family and coverage surfaces are current
+- do not launch discovery if the execution calibration packet shows a telemetry or guardrail issue that should change fill assumptions first
 
 ### Phase 0.5: Data Prep
 
@@ -196,6 +203,7 @@ The new machine should not become the sole source of strategy invention yet.
 ## Recommended Nightly Artifacts Checklist
 
 Before signing off on a nightly run, confirm:
+- execution calibration refreshed
 - family registry refreshed
 - family handoff refreshed
 - coverage refreshed

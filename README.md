@@ -11,6 +11,7 @@ What this repo contains:
 - A formal GitHub-backed strategy-family registry for cataloging family coverage, live-book overlay, and next research priorities
 - A machine-readable agent governance registry for split axis, machine ownership, and production-state permissions
 - A machine-readable tournament profile registry for approved active and planned institutional research cycles
+- A machine-readable execution calibration registry for feeding paper-runner fill, guardrail, and loss evidence back into the research/control planes
 - An institutional operating blueprint for machine roles, automation boundaries, and champion/challenger governance
 - A nightly operator playbook and prompt for running the full research-to-handoff cycle
 - A top-level nightly operator entrypoint for governed overnight research-to-handoff execution

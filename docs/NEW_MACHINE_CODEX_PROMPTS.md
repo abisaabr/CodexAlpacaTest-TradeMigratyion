@@ -34,6 +34,7 @@ Verify that this machine now owns the multi-ticker portfolio lease, that the pap
 
 Before using the prompts below for ongoing research or runner operations, read `docs/INSTITUTIONAL_OPERATING_BLUEPRINT.md` so the machine stays aligned with the project's research / control / execution-plane split and champion/challenger governance.
 Before assigning or changing agent work, also read `docs/AGENT_GOVERNANCE.md` so discovery stays split by family cohort, exhaustive follow-up stays split by ticker bundle, and live-book mutation stays with the single-writer steward.
+Before choosing or running a major nightly cycle, also read `docs/EXECUTION_CALIBRATION_REGISTRY.md` so current paper-runner fill, guardrail, and loss evidence can feed the next research run instead of being ignored.
 Before choosing a nightly research cycle, also read `docs/TOURNAMENT_PROFILE_REGISTRY.md` so the machine uses an approved active tournament profile instead of inventing a new one from scratch.
 
 ## 6. Run The Family-Expansion Tournament Conveyor
@@ -148,6 +149,7 @@ Operate under:
 - docs/AGENT_OPERATING_MODEL.md
 
 Run one full nightly research cycle that:
+- refreshes the execution calibration registry from paper-runner evidence
 - refreshes the family registry and family handoff packet
 - refreshes coverage
 - materializes missing priority symbols when needed

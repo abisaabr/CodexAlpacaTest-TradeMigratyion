@@ -1,6 +1,7 @@
 param(
     [string]$CycleRoot = "",
     [string]$ProgramRoot = "",
+    [string]$RunnerRepoRoot = "",
     [string]$ReadyBaseDir = "",
     [string]$LiveManifestPath = "",
     [string]$PaperRunnerGatePath = "",
@@ -27,6 +28,7 @@ $ErrorActionPreference = "Stop"
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $scriptRoot "..\..\.."))
 $workspaceRoot = Split-Path -Parent $repoRoot
+$siblingRunnerRepoRoot = Join-Path $workspaceRoot "codexalpaca_repo"
 $siblingCleanroomRoot = Join-Path $workspaceRoot "qqq_options_30d_cleanroom"
 $siblingOutputRoot = Join-Path $siblingCleanroomRoot "output"
 $oneDriveOutputRoot = "C:\Users\rabisaab\OneDrive - First American Corporation\qqq_options_30d_cleanroom\output"
@@ -37,6 +39,7 @@ $fallbackLiveManifestPath = "C:\Users\rabisaab\OneDrive\CodexAlpaca\downloads_re
 
 $familyRegistryBuilderPath = Join-Path $scriptRoot "build_strategy_family_registry.py"
 $familyHandoffBuilderPath = Join-Path $scriptRoot "build_strategy_family_handoff.py"
+$executionCalibrationBuilderPath = Join-Path $scriptRoot "build_execution_calibration_registry.py"
 $tournamentProfileBuilderPath = Join-Path $scriptRoot "build_tournament_profile_registry.py"
 $coverageBuilderPath = Join-Path $scriptRoot "build_ticker_family_coverage.py"
 $programLauncherPath = Join-Path $scriptRoot "launch_down_choppy_program.ps1"
@@ -131,6 +134,7 @@ function Write-Status {
         updated_at = (Get-Date).ToString("o")
         cycle_root = $cycleRootPath
         program_root = $programRootPath
+        execution_calibration_dir = $executionCalibrationRoot
         family_refresh_dir = $familyRefreshRoot
         tournament_profile_dir = $tournamentProfileRoot
         coverage_refresh_dir = $coverageRefreshRoot
@@ -249,8 +253,16 @@ else {
     $ReadyBaseDir = [System.IO.Path]::GetFullPath($ReadyBaseDir)
 }
 
+if ([string]::IsNullOrWhiteSpace($RunnerRepoRoot)) {
+    $RunnerRepoRoot = Resolve-PreferredPath -Candidates @($siblingRunnerRepoRoot) -Fallback $siblingRunnerRepoRoot
+}
+else {
+    $RunnerRepoRoot = [System.IO.Path]::GetFullPath($RunnerRepoRoot)
+}
+
 if ([string]::IsNullOrWhiteSpace($LiveManifestPath)) {
-    $LiveManifestPath = Resolve-PreferredPath -Candidates @($siblingLiveManifestPath, $fallbackLiveManifestPath) -Fallback $siblingLiveManifestPath
+    $runnerLiveManifestPath = Join-Path $RunnerRepoRoot "config\strategy_manifests\multi_ticker_portfolio_live.yaml"
+    $LiveManifestPath = Resolve-PreferredPath -Candidates @($runnerLiveManifestPath, $siblingLiveManifestPath, $fallbackLiveManifestPath) -Fallback $runnerLiveManifestPath
 }
 else {
     $LiveManifestPath = [System.IO.Path]::GetFullPath($LiveManifestPath)
@@ -283,6 +295,7 @@ if ([string]::IsNullOrWhiteSpace($PaperRunnerTargetDate)) {
 }
 
 $familyRefreshRoot = Join-Path $cycleRootPath "family_refresh"
+$executionCalibrationRoot = Join-Path $cycleRootPath "execution_calibration"
 $tournamentProfileRoot = Join-Path $cycleRootPath "tournament_profiles"
 $coverageRefreshRoot = Join-Path $cycleRootPath "coverage_refresh"
 $runRegistryReportDir = Join-Path $cycleRootPath "run_registry_report"
@@ -305,6 +318,7 @@ $morningHandoffJsonPath = Join-Path $morningHandoffRoot "live_book_morning_hando
 
 New-Item -ItemType Directory -Force -Path $cycleRootPath | Out-Null
 New-Item -ItemType Directory -Force -Path $programRootPath | Out-Null
+New-Item -ItemType Directory -Force -Path $executionCalibrationRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $familyRefreshRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $tournamentProfileRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $coverageRefreshRoot | Out-Null
@@ -316,6 +330,7 @@ $cycleManifest = [ordered]@{
     execute = [bool]$Execute
     repo_root = $repoRoot
     workspace_root = $workspaceRoot
+    runner_repo_root = $RunnerRepoRoot
     cycle_root = $cycleRootPath
     program_root = $programRootPath
     research_output_root = $researchOutputRoot
@@ -338,6 +353,7 @@ $cycleManifest = [ordered]@{
         min_trade_count = $MinTradeCount
     }
     control_plane = [ordered]@{
+        execution_calibration_builder = $executionCalibrationBuilderPath
         family_registry_builder = $familyRegistryBuilderPath
         family_handoff_builder = $familyHandoffBuilderPath
         tournament_profile_builder = $tournamentProfileBuilderPath
@@ -376,6 +392,20 @@ trap {
     )
     Write-Error $failureMessage
     exit 2
+}
+
+Write-Status -Phase "refreshing_execution_calibration" -Message "Refreshing the execution calibration registry from paper-runner artifacts."
+
+$executionCalibrationArgs = @(
+    "--runner-repo-root", $RunnerRepoRoot,
+    "--reports-root", (Join-Path $RunnerRepoRoot "reports\multi_ticker_portfolio"),
+    "--report-dir", $executionCalibrationRoot
+)
+Invoke-PythonStep -ScriptPath $executionCalibrationBuilderPath -Arguments $executionCalibrationArgs -FailureMessage "Failed to refresh execution calibration registry."
+
+$executionCalibrationJsonPath = Join-Path $executionCalibrationRoot "execution_calibration_registry.json"
+if (-not (Test-Path $executionCalibrationJsonPath)) {
+    throw "Execution calibration registry JSON was not created at $executionCalibrationJsonPath"
 }
 
 Write-Status -Phase "refreshing_tournament_profiles" -Message "Refreshing the tournament profile registry."
@@ -466,6 +496,7 @@ if (-not $Execute) {
     Invoke-RunRegistryReport -ReportDir $runRegistryReportDir -ManifestRoots @($cycleRootPath, $programRootPath)
 
     Write-Status -Phase "planned" -Message "Nightly operator cycle planned successfully." -Extra @{
+        execution_calibration_json = $executionCalibrationJsonPath
         family_registry_json = $familyRegistryJsonPath
         family_handoff_json = $familyHandoffJsonPath
         tournament_profile_json = $tournamentProfileJsonPath
@@ -575,6 +606,7 @@ $finalPayload = [ordered]@{
     cycle_root = $cycleRootPath
     program_root = $programRootPath
     program_phase = $programPhase
+    execution_calibration_json = $executionCalibrationJsonPath
     family_registry_json = $familyRegistryJsonPath
     family_handoff_json = $familyHandoffJsonPath
     tournament_profile_json = $tournamentProfileJsonPath
@@ -607,6 +639,7 @@ $finalPayload = [ordered]@{
 Write-JsonFile -Path $handoffPath -Payload $finalPayload
 
 Write-Status -Phase "completed" -Message "Nightly operator cycle completed successfully." -Extra @{
+        execution_calibration_json = $executionCalibrationJsonPath
         family_registry_json = $familyRegistryJsonPath
         family_handoff_json = $familyHandoffJsonPath
         tournament_profile_json = $tournamentProfileJsonPath
