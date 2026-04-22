@@ -39,7 +39,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--strategy-set",
         default="auto",
-        choices=("auto", "standard", "family_expansion"),
+        choices=("auto", "standard", "family_expansion", "down_choppy_only", "down_choppy_exhaustive"),
         help="Strategy universe to reconstruct. 'auto' reads strategy_set from master_summary.json when available.",
     )
     parser.add_argument(
@@ -83,7 +83,7 @@ def _detect_strategy_set(research_dir: Path, requested: str) -> str:
         return "standard"
     payload = _load_summary(master_summary_path)
     strategy_set = payload.get("strategy_set")
-    if strategy_set in {"standard", "family_expansion"}:
+    if strategy_set in {"standard", "family_expansion", "down_choppy_only", "down_choppy_exhaustive"}:
         return str(strategy_set)
     return "standard"
 
