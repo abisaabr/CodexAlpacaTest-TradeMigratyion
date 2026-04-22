@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T10:38:14.878747",
+  "generated_at": "2026-04-22T11:02:56.909348",
   "source_operating_model_json": "embedded_fallback_operating_model",
   "institutional_rules": [
     "Discovery should be assigned by family cohort to avoid overlap and improve frontier coverage.",
@@ -109,6 +109,51 @@
       "prohibited_actions": [
         "write_live_manifest",
         "approve_production_changes"
+      ]
+    },
+    {
+      "agent": "Execution Calibration Steward",
+      "plane": "control",
+      "lane_type": "control_plane",
+      "split_axis": "execution_feedback",
+      "parallelism": 1,
+      "strategy_set": "",
+      "selection_profile": "",
+      "family_include_filters": [],
+      "automation_level": "autonomous",
+      "approval_level": "packet_only",
+      "preferred_machine_now": "either_machine",
+      "preferred_machine_target": "new_machine",
+      "writes_live_state": false,
+      "may_launch_backtests": false,
+      "may_edit_strategy_code": false,
+      "may_materialize_data": false,
+      "may_write_live_manifest": false,
+      "may_update_runner_gate": false,
+      "may_publish_review_packets": true,
+      "scripts": [
+        "build_execution_calibration_registry.py",
+        "build_execution_calibration_handoff.py"
+      ],
+      "inputs": [
+        "paper-runner reports",
+        "reconciliation events",
+        "session state"
+      ],
+      "outputs": [
+        "execution_calibration_registry.json",
+        "execution_calibration_handoff.json"
+      ],
+      "success_gate": "Execution evidence and posture are refreshed before major research profile or scoring decisions.",
+      "handoff_to": [
+        "Strategy Family Steward",
+        "Reporting Steward"
+      ],
+      "notes": "Owns the feedback loop from the execution plane back into research and nightly operator policy.",
+      "prohibited_actions": [
+        "write_live_manifest",
+        "approve_production_changes",
+        "override_execution_evidence_without_packet"
       ]
     },
     {
@@ -617,6 +662,9 @@
     ],
     "family_taxonomy": [
       "Strategy Family Steward"
+    ],
+    "execution_feedback": [
+      "Execution Calibration Steward"
     ],
     "data_readiness": [
       "Data Prep Steward"

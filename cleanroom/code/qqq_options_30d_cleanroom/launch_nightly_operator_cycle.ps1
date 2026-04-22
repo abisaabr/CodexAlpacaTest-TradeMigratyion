@@ -40,6 +40,7 @@ $fallbackLiveManifestPath = "C:\Users\rabisaab\OneDrive\CodexAlpaca\downloads_re
 $familyRegistryBuilderPath = Join-Path $scriptRoot "build_strategy_family_registry.py"
 $familyHandoffBuilderPath = Join-Path $scriptRoot "build_strategy_family_handoff.py"
 $executionCalibrationBuilderPath = Join-Path $scriptRoot "build_execution_calibration_registry.py"
+$executionCalibrationHandoffBuilderPath = Join-Path $scriptRoot "build_execution_calibration_handoff.py"
 $tournamentProfileBuilderPath = Join-Path $scriptRoot "build_tournament_profile_registry.py"
 $coverageBuilderPath = Join-Path $scriptRoot "build_ticker_family_coverage.py"
 $programLauncherPath = Join-Path $scriptRoot "launch_down_choppy_program.ps1"
@@ -135,6 +136,13 @@ function Write-Status {
         cycle_root = $cycleRootPath
         program_root = $programRootPath
         execution_calibration_dir = $executionCalibrationRoot
+        execution_calibration_handoff_json =
+            if (Test-Path $executionCalibrationHandoffJsonPath) {
+                $executionCalibrationHandoffJsonPath
+            }
+            else {
+                ""
+            }
         family_refresh_dir = $familyRefreshRoot
         tournament_profile_dir = $tournamentProfileRoot
         coverage_refresh_dir = $coverageRefreshRoot
@@ -308,6 +316,7 @@ $morningHandoffRoot = Join-Path $reviewRoot "morning_handoff"
 $statusPath = Join-Path $cycleRootPath "nightly_operator_cycle_status.json"
 $manifestPath = Join-Path $cycleRootPath "nightly_operator_cycle_manifest.json"
 $handoffPath = Join-Path $cycleRootPath "nightly_operator_cycle_handoff.json"
+$executionCalibrationHandoffJsonPath = Join-Path $executionCalibrationRoot "execution_calibration_handoff.json"
 $programStatusPath = Join-Path $programRootPath "program_status.json"
 $phase2PackPath = Join-Path $programRootPath "phase2\launch_pack\phase2_agent_wave_pack.json"
 $phase2PackStatusPath = Join-Path $programRootPath "phase2\launch_pack\launch_status.json"
@@ -354,6 +363,7 @@ $cycleManifest = [ordered]@{
     }
     control_plane = [ordered]@{
         execution_calibration_builder = $executionCalibrationBuilderPath
+        execution_calibration_handoff_builder = $executionCalibrationHandoffBuilderPath
         family_registry_builder = $familyRegistryBuilderPath
         family_handoff_builder = $familyHandoffBuilderPath
         tournament_profile_builder = $tournamentProfileBuilderPath
@@ -406,6 +416,18 @@ Invoke-PythonStep -ScriptPath $executionCalibrationBuilderPath -Arguments $execu
 $executionCalibrationJsonPath = Join-Path $executionCalibrationRoot "execution_calibration_registry.json"
 if (-not (Test-Path $executionCalibrationJsonPath)) {
     throw "Execution calibration registry JSON was not created at $executionCalibrationJsonPath"
+}
+
+Write-Status -Phase "refreshing_execution_calibration_handoff" -Message "Refreshing the execution calibration steward handoff."
+
+$executionCalibrationHandoffArgs = @(
+    "--registry-json", $executionCalibrationJsonPath,
+    "--report-dir", $executionCalibrationRoot
+)
+Invoke-PythonStep -ScriptPath $executionCalibrationHandoffBuilderPath -Arguments $executionCalibrationHandoffArgs -FailureMessage "Failed to refresh execution calibration handoff."
+
+if (-not (Test-Path $executionCalibrationHandoffJsonPath)) {
+    throw "Execution calibration handoff JSON was not created at $executionCalibrationHandoffJsonPath"
 }
 
 Write-Status -Phase "refreshing_tournament_profiles" -Message "Refreshing the tournament profile registry."
@@ -497,6 +519,7 @@ if (-not $Execute) {
 
     Write-Status -Phase "planned" -Message "Nightly operator cycle planned successfully." -Extra @{
         execution_calibration_json = $executionCalibrationJsonPath
+        execution_calibration_handoff_json = $executionCalibrationHandoffJsonPath
         family_registry_json = $familyRegistryJsonPath
         family_handoff_json = $familyHandoffJsonPath
         tournament_profile_json = $tournamentProfileJsonPath
@@ -607,6 +630,7 @@ $finalPayload = [ordered]@{
     program_root = $programRootPath
     program_phase = $programPhase
     execution_calibration_json = $executionCalibrationJsonPath
+    execution_calibration_handoff_json = $executionCalibrationHandoffJsonPath
     family_registry_json = $familyRegistryJsonPath
     family_handoff_json = $familyHandoffJsonPath
     tournament_profile_json = $tournamentProfileJsonPath
@@ -640,6 +664,7 @@ Write-JsonFile -Path $handoffPath -Payload $finalPayload
 
 Write-Status -Phase "completed" -Message "Nightly operator cycle completed successfully." -Extra @{
         execution_calibration_json = $executionCalibrationJsonPath
+        execution_calibration_handoff_json = $executionCalibrationHandoffJsonPath
         family_registry_json = $familyRegistryJsonPath
         family_handoff_json = $familyHandoffJsonPath
         tournament_profile_json = $tournamentProfileJsonPath

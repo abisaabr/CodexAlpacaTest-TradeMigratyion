@@ -11,6 +11,7 @@ Before assigning agent work, refresh and inspect:
 - `docs/AGENT_GOVERNANCE.md`
 - `docs/EXECUTION_CALIBRATION_REGISTRY.md`
 - `docs/execution_calibration/execution_calibration_registry.md`
+- `docs/execution_calibration/execution_calibration_handoff.md`
 - `docs/agent_governance/agent_governance_registry.md`
 - `docs/TOURNAMENT_PROFILE_REGISTRY.md`
 - `docs/tournament_profiles/tournament_profile_registry.md`
@@ -47,6 +48,8 @@ Owner:
 Required outputs:
 - `execution_calibration_registry.json`
 - `execution_calibration_registry.md`
+- `execution_calibration_handoff.json`
+- `execution_calibration_handoff.md`
 - `strategy_family_registry.json`
 - `strategy_family_registry.md`
 - `strategy_family_handoff.json`
@@ -55,6 +58,7 @@ Required outputs:
 
 Tasks:
 - refresh the execution calibration registry from the paper runner
+- refresh the execution calibration handoff packet so the nightly cycle has a machine-readable posture and policy recommendation
 - refresh the formal family registry
 - refresh the family handoff packet
 - refresh ticker-family coverage

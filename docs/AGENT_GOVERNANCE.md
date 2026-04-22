@@ -21,6 +21,8 @@ The governance registry makes three institutional decisions explicit:
 - exhaustive validators are split by `ticker_bundle`
 - production decisions stay with a single `live_book` writer
 
+It also makes execution feedback explicit by naming the `Execution Calibration Steward` as the packet-only owner of paper-runner fill, guardrail, and loss evidence before major nightly profile choices.
+
 It also captures:
 
 - which machine should prefer each role now versus later

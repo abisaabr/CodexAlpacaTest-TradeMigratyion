@@ -61,6 +61,27 @@ This registry turns the operating model into machine-readable governance.
 - Prohibited actions: `write_live_manifest`, `approve_production_changes`
 - Notes: Single owner of family taxonomy and family-priority labels.
 
+### Execution Calibration Steward
+
+- Plane: `control`
+- Lane type: `control_plane`
+- Split axis: `execution_feedback`
+- Automation level: `autonomous`
+- Approval level: `packet_only`
+- Preferred machine now: `either_machine`
+- Preferred machine target: `new_machine`
+- Writes live state: `false`
+- May launch backtests: `false`
+- May edit strategy code: `false`
+- May materialize data: `false`
+- May write live manifest: `false`
+- May update runner gate: `false`
+- May publish review packets: `true`
+- Success gate: Execution evidence and posture are refreshed before major research profile or scoring decisions.
+- Hands off to: Strategy Family Steward, Reporting Steward
+- Prohibited actions: `write_live_manifest`, `approve_production_changes`, `override_execution_evidence_without_packet`
+- Notes: Owns the feedback loop from the execution plane back into research and nightly operator policy.
+
 ### Data Prep Steward
 
 - Plane: `research`

@@ -9,6 +9,8 @@ Generated artifacts:
 - `docs/execution_calibration/execution_calibration_registry.json`
 - `docs/execution_calibration/execution_calibration_registry.md`
 - `docs/execution_calibration/execution_calibration_registry.csv`
+- `docs/execution_calibration/execution_calibration_handoff.json`
+- `docs/execution_calibration/execution_calibration_handoff.md`
 
 ## Objective
 
@@ -35,6 +37,11 @@ Refresh this registry before major nightly research cycles so the operator can:
 - spot loss clusters that deserve challenger pressure
 - keep guardrail behavior visible in the control plane
 
+Then build the execution calibration handoff so the nightly operator has a concise policy posture, not just raw metrics.
+
+Primary handoff builder:
+- `cleanroom/code/qqq_options_30d_cleanroom/build_execution_calibration_handoff.py`
+
 ## Important Limitation
 
 The current runner artifacts are much stronger on entry-side calibration than exit-side slippage calibration.
@@ -49,6 +56,7 @@ The registry should surface that limitation clearly instead of pretending we hav
 
 ```powershell
 python "C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\cleanroom\code\qqq_options_30d_cleanroom\build_execution_calibration_registry.py"
+python "C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\cleanroom\code\qqq_options_30d_cleanroom\build_execution_calibration_handoff.py"
 ```
 
 If the runner repo is not in the default sibling location, pass it explicitly:
