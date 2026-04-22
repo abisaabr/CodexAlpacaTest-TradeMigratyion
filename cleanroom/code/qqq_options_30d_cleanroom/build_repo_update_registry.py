@@ -39,6 +39,7 @@ class RepoSpec:
     remote: str
     branch: str
     required_commits: tuple[str, ...] = ()
+    ignore_dirty_prefixes: tuple[str, ...] = ()
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -98,6 +99,16 @@ def classify_repo_status(
     return "up_to_date"
 
 
+def normalize_status_path(line: str) -> str:
+    text = line.strip()
+    if len(text) < 4:
+        return ""
+    path = text[3:].strip()
+    if " -> " in path:
+        path = path.split(" -> ", 1)[1].strip()
+    return path.replace("\\", "/")
+
+
 def build_repo_result(spec: RepoSpec, *, skip_fetch: bool) -> dict[str, Any]:
     repo_exists = spec.path.exists()
     result: dict[str, Any] = {
@@ -130,7 +141,17 @@ def build_repo_result(spec: RepoSpec, *, skip_fetch: bool) -> dict[str, Any]:
     remote_head_sha = git_output(spec.path, "rev-parse", remote_ref) or ""
     remote_ref_exists = bool(remote_head_sha)
     status_porcelain = git_output(spec.path, "status", "--porcelain") or ""
-    dirty_lines = [line for line in status_porcelain.splitlines() if line.strip()]
+    dirty_lines = []
+    for line in status_porcelain.splitlines():
+        if not line.strip():
+            continue
+        normalized_path = normalize_status_path(line)
+        if normalized_path and any(
+            normalized_path.startswith(prefix.rstrip("/\\") + "/") or normalized_path == prefix.rstrip("/\\")
+            for prefix in spec.ignore_dirty_prefixes
+        ):
+            continue
+        dirty_lines.append(line)
     dirty = bool(dirty_lines)
 
     ahead_count = 0
@@ -224,6 +245,7 @@ def build_payload(
             path=control_plane_root,
             remote="origin",
             branch="main",
+            ignore_dirty_prefixes=("docs/repo_updates",),
         ),
         RepoSpec(
             name="execution_repo",

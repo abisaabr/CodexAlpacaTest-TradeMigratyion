@@ -53,6 +53,8 @@ Run this check:
 
 Treat the handoff as the machine-readable answer to whether update work is required or whether the machine is current enough to proceed unchanged.
 
+The control-plane cleanliness check intentionally ignores changes under `docs/repo_updates/` so the update-control layer does not flag its own freshly regenerated packet as drift.
+
 ## Important Rule
 
 Do not mix repo-update work with live-manifest mutation.
