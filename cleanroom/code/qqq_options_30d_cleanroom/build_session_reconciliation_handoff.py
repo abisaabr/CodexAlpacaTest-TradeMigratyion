@@ -35,8 +35,10 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
     caution_recent = any(str(row.get("trust_tier")) == "caution" for row in recent_trade_sessions)
     broker_order_gap = bool((payload.get("data_quality") or {}).get("missing_broker_order_audit_dates"))
     broker_activity_gap = bool((payload.get("data_quality") or {}).get("missing_broker_activity_audit_dates"))
+    broker_cashflow_gap = bool((payload.get("data_quality") or {}).get("missing_broker_cashflow_comparison_dates"))
     residual_positions = int(summary.get("ending_broker_position_count_total", 0) or 0) > 0
     economics_delta = float(summary.get("realized_reconciliation_delta_abs_total", 0.0) or 0.0) > 0.05
+    broker_economics_delta = int(summary.get("broker_local_cashflow_delta_review_required_count", 0) or 0) > 0
     mismatch_pressure = (
         int(summary.get("broker_status_mismatch_count_total", 0) or 0) > 0
         or int(summary.get("local_order_without_broker_match_count_total", 0) or 0) > 0
@@ -50,9 +52,9 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
         or int(summary.get("forced_exit_failure_count_total", 0) or 0) > 0
     )
 
-    if review_required_recent or residual_positions or economics_delta:
+    if review_required_recent or residual_positions or economics_delta or broker_economics_delta:
         posture = "review_required"
-    elif caution_recent or broker_order_gap or broker_activity_gap or mismatch_pressure or partial_fill_pressure or cleanup_pressure:
+    elif caution_recent or broker_order_gap or broker_activity_gap or broker_cashflow_gap or mismatch_pressure or partial_fill_pressure or cleanup_pressure:
         posture = "caution"
     else:
         posture = "stable"
@@ -79,8 +81,10 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
             "caution_recent": caution_recent,
             "broker_order_audit_gap": broker_order_gap,
             "broker_activity_audit_gap": broker_activity_gap,
+            "broker_cashflow_comparison_gap": broker_cashflow_gap,
             "residual_positions": residual_positions,
             "economics_delta": economics_delta,
+            "broker_economics_delta": broker_economics_delta,
             "mismatch_pressure": mismatch_pressure,
             "partial_fill_pressure": partial_fill_pressure,
             "cleanup_pressure": cleanup_pressure,
@@ -111,6 +115,10 @@ def policy_recommendations(payload: dict[str, Any], posture: dict[str, Any]) -> 
         operator_actions.append("Treat broker-order audit coverage as incomplete and avoid over-trusting clean local order logs alone.")
     if flags.get("broker_activity_audit_gap"):
         operator_actions.append("Treat broker account-activity coverage as incomplete and avoid over-trusting local fill telemetry alone.")
+    if flags.get("broker_cashflow_comparison_gap"):
+        operator_actions.append("Treat broker/local economics reconciliation as incomplete and avoid letting broker-audited sessions loosen research policy until cashflow comparison is available.")
+    if flags.get("broker_economics_delta"):
+        operator_actions.append("Do not let broker/local cashflow drift sessions relax slippage, fill-capacity, or promotion posture until the economics mismatch is explained.")
     if flags.get("mismatch_pressure"):
         operator_actions.append("Inspect order-state and activity mismatches before using combo-heavy sessions to relax fill or cleanup assumptions.")
     if flags.get("partial_fill_pressure"):

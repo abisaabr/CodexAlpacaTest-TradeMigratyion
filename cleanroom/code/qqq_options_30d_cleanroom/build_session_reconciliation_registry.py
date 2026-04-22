@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import csv
 import json
 from datetime import datetime
@@ -27,6 +28,7 @@ DEFAULT_RUNNER_REPO_ROOT = first_existing_path(
 )
 DEFAULT_REPORTS_ROOT = DEFAULT_RUNNER_REPO_ROOT / "reports" / "multi_ticker_portfolio" / "runs"
 DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "session_reconciliation"
+CONTRACT_MULTIPLIER = 100.0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -95,6 +97,100 @@ def sum_float_field(rows: list[dict[str, str]], field: str) -> float:
     return total
 
 
+def parse_legs(value: Any) -> list[Any]:
+    if isinstance(value, list):
+        return value
+    text = str(value or "").strip()
+    if not text:
+        return []
+    try:
+        parsed = json.loads(text)
+    except json.JSONDecodeError:
+        try:
+            parsed = ast.literal_eval(text)
+        except (SyntaxError, ValueError):
+            return []
+    return parsed if isinstance(parsed, list) else []
+
+
+def build_local_cashflow_summary(completed_rows: list[dict[str, str]]) -> dict[str, Any]:
+    entry_gross_total = 0.0
+    exit_gross_total = 0.0
+    gross_cashflow_total = 0.0
+    net_cashflow_total = 0.0
+    fee_total = 0.0
+    compatible_trade_count = 0
+    incompatible_trade_count = 0
+
+    for row in completed_rows:
+        quantity = parse_int(row.get("quantity"))
+        entry_fill_price = parse_float(row.get("entry_fill_price"))
+        exit_fill_price = parse_float(row.get("exit_fill_price"))
+        if quantity is None or entry_fill_price is None or exit_fill_price is None:
+            incompatible_trade_count += 1
+            continue
+
+        leg_count = len(parse_legs(row.get("legs")))
+        entry_gross = -entry_fill_price * CONTRACT_MULTIPLIER * quantity
+        exit_cashflow_sign = -1.0 if leg_count > 1 else 1.0
+        exit_gross = exit_cashflow_sign * exit_fill_price * CONTRACT_MULTIPLIER * quantity
+        total_fees = (parse_float(row.get("entry_total_fees")) or 0.0) + (parse_float(row.get("exit_total_fees")) or 0.0)
+
+        entry_gross_total += entry_gross
+        exit_gross_total += exit_gross
+        gross_cashflow_total += entry_gross + exit_gross
+        net_cashflow_total += entry_gross + exit_gross - total_fees
+        fee_total += total_fees
+        compatible_trade_count += 1
+
+    return {
+        "local_entry_gross_cashflow_total": round_float(entry_gross_total),
+        "local_exit_gross_cashflow_total": round_float(exit_gross_total),
+        "local_gross_cashflow_total": round_float(gross_cashflow_total),
+        "local_net_cashflow_total": round_float(net_cashflow_total),
+        "local_total_fees": round_float(fee_total),
+        "local_cashflow_compatible_trade_count": compatible_trade_count,
+        "local_cashflow_incompatible_trade_count": incompatible_trade_count,
+    }
+
+
+def build_broker_activity_cashflow_summary(broker_activity_rows: list[dict[str, str]]) -> dict[str, Any]:
+    cashflow_total = 0.0
+    comparable_activity_count = 0
+    incompatible_activity_count = 0
+
+    for row in broker_activity_rows:
+        quantity = parse_float(row.get("qty"))
+        price = parse_float(row.get("price"))
+        side = str(row.get("side") or "").strip().lower()
+        if quantity is None or price is None or side not in {"buy", "sell"}:
+            incompatible_activity_count += 1
+            continue
+
+        signed_cashflow = price * quantity * CONTRACT_MULTIPLIER
+        if side == "buy":
+            signed_cashflow *= -1.0
+        cashflow_total += signed_cashflow
+        comparable_activity_count += 1
+
+    return {
+        "broker_activity_cashflow_total": round_float(cashflow_total),
+        "broker_cashflow_comparable_activity_count": comparable_activity_count,
+        "broker_cashflow_incompatible_activity_count": incompatible_activity_count,
+    }
+
+
+def broker_cashflow_tolerance(
+    *,
+    local_gross_cashflow_total: float,
+    broker_activity_cashflow_total: float,
+    comparable_activity_count: int,
+) -> float:
+    gross_reference = max(abs(local_gross_cashflow_total), abs(broker_activity_cashflow_total))
+    tolerance = max(1.0, 0.25 * max(comparable_activity_count, 1), 0.0005 * gross_reference)
+    return round_float(tolerance) or 1.0
+
+
 def determine_session_kind(summary_payload: dict[str, Any]) -> str:
     completed_trade_count = int(summary_payload.get("completed_trade_count", 0) or 0)
     entry_submission_count = int(summary_payload.get("entry_submission_count", 0) or 0)
@@ -124,11 +220,15 @@ def session_reasons(summary_payload: dict[str, Any], session: dict[str, Any]) ->
         review_required.append("completed_trade_count_delta")
     if traded and session["realized_reconciliation_delta_abs"] > 0.05:
         review_required.append("realized_pnl_delta")
+    if traded and session["broker_local_cashflow_comparable"] and session["broker_local_cashflow_delta_abs"] > session["broker_local_cashflow_tolerance"]:
+        review_required.append("broker_local_cashflow_delta")
 
     if traded and not session["broker_order_audit_available"]:
         caution.append("broker_order_audit_gap")
     if traded and not session["broker_activity_audit_available"]:
         caution.append("broker_activity_audit_gap")
+    if traded and session["broker_activity_audit_available"] and not session["broker_local_cashflow_comparable"]:
+        caution.append("broker_local_cashflow_not_comparable")
     if traded and session["broker_status_mismatch_count"] > 0:
         caution.append("broker_status_mismatch")
     if traded and session["local_order_without_broker_match_count"] > 0:
@@ -173,8 +273,10 @@ def quality_score(review_required: list[str], caution: list[str], session: dict[
         "forced_exit_failures": 25,
         "realized_pnl_delta": 20,
         "completed_trade_count_delta": 15,
+        "broker_local_cashflow_delta": 15,
         "broker_order_audit_gap": 10,
         "broker_activity_audit_gap": 10,
+        "broker_local_cashflow_not_comparable": 10,
         "broker_status_mismatch": 10,
         "local_order_without_broker_match": 10,
         "unexpected_broker_order": 10,
@@ -212,6 +314,8 @@ def build_session_row(run_dir: Path) -> dict[str, Any]:
     broker_order_audit_rows = load_csv_rows(broker_order_audit_path)
     broker_activity_rows = load_csv_rows(broker_activity_path)
     ending_position_rows = load_csv_rows(ending_positions_path)
+    local_cashflow_summary = build_local_cashflow_summary(completed_rows)
+    broker_cashflow_summary = build_broker_activity_cashflow_summary(broker_activity_rows)
 
     cleanup_summary = dict(summary_payload.get("end_of_day_cleanup") or {})
     session_kind = determine_session_kind(summary_payload)
@@ -225,6 +329,28 @@ def build_session_row(run_dir: Path) -> dict[str, Any]:
 
     broker_partially_filled_order_count = int(summary_payload.get("broker_partially_filled_order_count", 0) or 0)
     broker_activity_partial_fill_count = int(summary_payload.get("broker_partial_fill_activity_count", 0) or 0)
+    local_gross_cashflow_total = float(local_cashflow_summary["local_gross_cashflow_total"] or 0.0)
+    broker_activity_cashflow_total = float(broker_cashflow_summary["broker_activity_cashflow_total"] or 0.0)
+    broker_local_cashflow_comparable = bool(
+        broker_activity_rows
+        and local_cashflow_summary["local_cashflow_compatible_trade_count"] > 0
+        and broker_cashflow_summary["broker_cashflow_comparable_activity_count"] > 0
+    )
+    broker_local_cashflow_delta = (
+        broker_activity_cashflow_total - local_gross_cashflow_total
+        if broker_local_cashflow_comparable
+        else None
+    )
+    broker_local_cashflow_delta_abs = abs(broker_local_cashflow_delta) if broker_local_cashflow_delta is not None else None
+    broker_local_cashflow_tolerance = (
+        broker_cashflow_tolerance(
+            local_gross_cashflow_total=local_gross_cashflow_total,
+            broker_activity_cashflow_total=broker_activity_cashflow_total,
+            comparable_activity_count=int(broker_cashflow_summary["broker_cashflow_comparable_activity_count"]),
+        )
+        if broker_local_cashflow_comparable
+        else None
+    )
 
     session = {
         "trade_date": str(summary_payload.get("trade_date") or run_dir.name),
@@ -242,6 +368,7 @@ def build_session_row(run_dir: Path) -> dict[str, Any]:
         "completed_trade_net_pnl_total": round_float(completed_trade_net_pnl_total),
         "realized_reconciliation_delta": round_float(realized_reconciliation_delta),
         "realized_reconciliation_delta_abs": round_float(abs(realized_reconciliation_delta)) or 0.0,
+        **local_cashflow_summary,
         "shutdown_reconciled": bool(summary_payload.get("shutdown_reconciled", False)),
         "guardrail_fire_count": int(summary_payload.get("guardrail_fire_count", 0) or 0),
         "guardrail_manual_review_count": int(summary_payload.get("guardrail_manual_review_count", 0) or 0),
@@ -258,6 +385,11 @@ def build_session_row(run_dir: Path) -> dict[str, Any]:
         "local_filled_order_without_activity_match_count": int(
             summary_payload.get("local_filled_order_without_activity_match_count", 0) or 0
         ),
+        **broker_cashflow_summary,
+        "broker_local_cashflow_comparable": broker_local_cashflow_comparable,
+        "broker_local_cashflow_delta": round_float(broker_local_cashflow_delta),
+        "broker_local_cashflow_delta_abs": round_float(broker_local_cashflow_delta_abs),
+        "broker_local_cashflow_tolerance": round_float(broker_local_cashflow_tolerance),
         "broker_partially_filled_order_count": broker_partially_filled_order_count,
         "broker_activity_partial_fill_count": broker_activity_partial_fill_count,
         "partial_fill_count": broker_partially_filled_order_count + broker_activity_partial_fill_count,
@@ -296,6 +428,9 @@ def flatten_sessions_for_csv(sessions: list[dict[str, Any]]) -> list[dict[str, A
                 "completed_trade_net_pnl_total": session["completed_trade_net_pnl_total"],
                 "realized_reconciliation_delta": session["realized_reconciliation_delta"],
                 "shutdown_reconciled": session["shutdown_reconciled"],
+                "local_gross_cashflow_total": session["local_gross_cashflow_total"],
+                "local_net_cashflow_total": session["local_net_cashflow_total"],
+                "local_total_fees": session["local_total_fees"],
                 "guardrail_fire_count": session["guardrail_fire_count"],
                 "guardrail_manual_review_count": session["guardrail_manual_review_count"],
                 "broker_order_audit_available": session["broker_order_audit_available"],
@@ -307,6 +442,10 @@ def flatten_sessions_for_csv(sessions: list[dict[str, Any]]) -> list[dict[str, A
                 "local_filled_order_without_activity_match_count": session[
                     "local_filled_order_without_activity_match_count"
                 ],
+                "broker_activity_cashflow_total": session["broker_activity_cashflow_total"],
+                "broker_local_cashflow_comparable": session["broker_local_cashflow_comparable"],
+                "broker_local_cashflow_delta": session["broker_local_cashflow_delta"],
+                "broker_local_cashflow_tolerance": session["broker_local_cashflow_tolerance"],
                 "partial_fill_count": session["partial_fill_count"],
                 "ending_broker_position_count": session["ending_broker_position_count"],
                 "forced_exit_failure_count": session["forced_exit_failure_count"],
@@ -349,9 +488,13 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Review-required sessions: `{summary['review_required_session_count']}`")
     lines.append(f"- Sessions with broker-order audit: `{summary['broker_order_audit_session_count']}`")
     lines.append(f"- Sessions with broker-activity audit: `{summary['broker_activity_audit_session_count']}`")
+    lines.append(f"- Sessions with broker/local cashflow comparison: `{summary['broker_cashflow_comparable_session_count']}`")
     lines.append(f"- Residual broker positions: `{summary['ending_broker_position_count_total']}`")
     lines.append(
         f"- Mean absolute realized reconciliation delta: `{summary['realized_reconciliation_delta_abs_mean']}`"
+    )
+    lines.append(
+        f"- Mean absolute broker/local cashflow delta: `{summary['broker_local_cashflow_delta_abs_mean']}`"
     )
     lines.append("")
     lines.append("## Institutional Findings")
@@ -388,6 +531,9 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     )
     lines.append(
         f"- Missing broker-activity audit on traded sessions: `{', '.join(data_quality['missing_broker_activity_audit_dates']) or 'none'}`"
+    )
+    lines.append(
+        f"- Missing broker/local cashflow comparison on broker-audited traded sessions: `{', '.join(data_quality['missing_broker_cashflow_comparison_dates']) or 'none'}`"
     )
     lines.append("")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -426,6 +572,13 @@ def build_findings(summary: dict[str, Any], data_quality: dict[str, Any]) -> lis
                 "message": f"`{summary['broker_activity_unmatched_count_total']}` unmatched broker activity row(s) and `{summary['local_filled_order_without_activity_match_count_total']}` local fill(s) without activity match were observed.",
             }
         )
+    if summary["broker_local_cashflow_delta_review_required_count"] > 0:
+        findings.append(
+            {
+                "type": "broker_local_economics_drift",
+                "message": f"`{summary['broker_local_cashflow_delta_review_required_count']}` session(s) showed broker/local cashflow drift above tolerance and should not automatically steer research policy.",
+            }
+        )
     if data_quality["missing_broker_order_audit_dates"]:
         findings.append(
             {
@@ -438,6 +591,13 @@ def build_findings(summary: dict[str, Any], data_quality: dict[str, Any]) -> lis
             {
                 "type": "broker_activity_audit_gap",
                 "message": f"Broker-activity audit is missing for traded session(s): `{', '.join(data_quality['missing_broker_activity_audit_dates'])}`.",
+            }
+        )
+    if data_quality["missing_broker_cashflow_comparison_dates"]:
+        findings.append(
+            {
+                "type": "broker_local_cashflow_comparison_gap",
+                "message": f"Broker/local cashflow comparison was not available for broker-audited traded session(s): `{', '.join(data_quality['missing_broker_cashflow_comparison_dates'])}`.",
             }
         )
     return findings
@@ -479,11 +639,26 @@ def main() -> None:
         for row in traded_sessions
         if not row["broker_activity_audit_available"]
     ]
+    missing_broker_cashflow_comparison_dates = [
+        row["trade_date"]
+        for row in traded_sessions
+        if row["broker_activity_audit_available"] and not row["broker_local_cashflow_comparable"]
+    ]
 
     realized_reconciliation_deltas = [row["realized_reconciliation_delta_abs"] for row in traded_sessions]
     realized_reconciliation_delta_abs_mean = (
         round_float(sum(realized_reconciliation_deltas) / len(realized_reconciliation_deltas))
         if realized_reconciliation_deltas
+        else 0.0
+    )
+    broker_local_cashflow_deltas = [
+        float(row["broker_local_cashflow_delta_abs"])
+        for row in traded_sessions
+        if row["broker_local_cashflow_delta_abs"] is not None
+    ]
+    broker_local_cashflow_delta_abs_mean = (
+        round_float(sum(broker_local_cashflow_deltas) / len(broker_local_cashflow_deltas))
+        if broker_local_cashflow_deltas
         else 0.0
     )
 
@@ -501,6 +676,9 @@ def main() -> None:
             "shutdown_reconciled_session_count": sum(1 for row in sessions if row["shutdown_reconciled"]),
             "broker_order_audit_session_count": sum(1 for row in sessions if row["broker_order_audit_available"]),
             "broker_activity_audit_session_count": sum(1 for row in sessions if row["broker_activity_audit_available"]),
+            "broker_cashflow_comparable_session_count": sum(
+                1 for row in sessions if row["broker_local_cashflow_comparable"]
+            ),
             "completed_trade_count_total": sum(int(row["completed_trade_count"]) for row in sessions),
             "broker_status_mismatch_count_total": sum(int(row["broker_status_mismatch_count"]) for row in sessions),
             "local_order_without_broker_match_count_total": sum(
@@ -526,10 +704,16 @@ def main() -> None:
                 sum(float(row["realized_reconciliation_delta_abs"]) for row in sessions)
             ),
             "realized_reconciliation_delta_abs_mean": realized_reconciliation_delta_abs_mean,
+            "broker_local_cashflow_delta_abs_total": round_float(sum(broker_local_cashflow_deltas)),
+            "broker_local_cashflow_delta_abs_mean": broker_local_cashflow_delta_abs_mean,
+            "broker_local_cashflow_delta_review_required_count": sum(
+                1 for row in sessions if "broker_local_cashflow_delta" in row["review_required_reasons"]
+            ),
         },
         "data_quality": {
             "missing_broker_order_audit_dates": missing_broker_order_audit_dates,
             "missing_broker_activity_audit_dates": missing_broker_activity_audit_dates,
+            "missing_broker_cashflow_comparison_dates": missing_broker_cashflow_comparison_dates,
         },
         "sessions": sessions_sorted,
     }

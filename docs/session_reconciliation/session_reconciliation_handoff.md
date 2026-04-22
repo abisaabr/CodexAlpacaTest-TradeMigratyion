@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T14:32:10.854123`
+- Generated at: `2026-04-22T14:46:18.483175`
 - Posture: `caution`
 - Evidence strength: `limited`
 
@@ -12,8 +12,10 @@
 - `caution_recent`: `true`
 - `broker_order_audit_gap`: `true`
 - `broker_activity_audit_gap`: `true`
+- `broker_cashflow_comparison_gap`: `false`
 - `residual_positions`: `false`
 - `economics_delta`: `false`
+- `broker_economics_delta`: `false`
 - `mismatch_pressure`: `false`
 - `partial_fill_pressure`: `false`
 - `cleanup_pressure`: `false`

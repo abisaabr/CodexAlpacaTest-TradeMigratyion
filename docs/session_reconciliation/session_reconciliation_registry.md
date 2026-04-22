@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T14:32:10.854123`
+- Generated at: `2026-04-22T14:46:18.483175`
 - Sessions scanned: `3`
 - Trade sessions: `1`
 - Trusted trade sessions: `0`
@@ -10,8 +10,10 @@
 - Review-required sessions: `0`
 - Sessions with broker-order audit: `0`
 - Sessions with broker-activity audit: `0`
+- Sessions with broker/local cashflow comparison: `0`
 - Residual broker positions: `0`
 - Mean absolute realized reconciliation delta: `0.0`
+- Mean absolute broker/local cashflow delta: `0.0`
 
 ## Institutional Findings
 
@@ -30,4 +32,5 @@
 
 - Missing broker-order audit on traded sessions: `2026-04-16`
 - Missing broker-activity audit on traded sessions: `2026-04-16`
+- Missing broker/local cashflow comparison on broker-audited traded sessions: `none`
 
