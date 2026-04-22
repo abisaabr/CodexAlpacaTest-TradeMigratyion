@@ -119,6 +119,16 @@ function Test-LaneProcessRunning {
     return $null -ne (Get-Process -Id $pidValue -ErrorAction SilentlyContinue)
 }
 
+function Summarize-LaneRows {
+    param([object[]]$Rows)
+    $runningRows = @($Rows | Where-Object { Test-LaneProcessRunning $_ })
+    $runningLaneIds = @($runningRows | ForEach-Object { [string]$_.lane_id })
+    return [ordered]@{
+        running_count = $runningRows.Count
+        running_lane_ids = $runningLaneIds
+    }
+}
+
 Write-Log "Waiting for phase 2 launch pack completion in $packRoot"
 Write-Status -Phase "waiting" -Message "Waiting for the Phase 2 launch pack to reach a terminal state."
 Invoke-RunRegistryReport
@@ -151,7 +161,12 @@ while ((Get-Date) -lt $deadline) {
     if ($phase -in @("started", "running")) {
         $rows = @($launchPayload.rows)
         if ($rows.Count -gt 0) {
+            $laneSummary = Summarize-LaneRows $rows
             $runningRows = @($rows | Where-Object { Test-LaneProcessRunning $_ })
+            if ($laneSummary.running_count -gt 0) {
+                $laneText = if ($laneSummary.running_lane_ids.Count -gt 0) { $laneSummary.running_lane_ids -join ", " } else { "active lanes" }
+                Write-Status -Phase "phase2_running" -Message ("Phase 2 lanes still running: " + $laneText)
+            }
             if ($runningRows.Count -eq 0) {
                 $failedRows = @(
                     $rows | Where-Object {

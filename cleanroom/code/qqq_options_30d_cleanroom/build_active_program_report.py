@@ -87,6 +87,88 @@ def load_status(path: Path) -> dict[str, Any]:
     return payload if isinstance(payload, dict) else {}
 
 
+def effective_followon_statuses(
+    *,
+    validation_status: dict[str, Any],
+    review_status: dict[str, Any],
+    resume_followon_status: dict[str, Any],
+    lane_source: str,
+) -> tuple[dict[str, str], dict[str, str]]:
+    validation_effective = {
+        "phase": str(validation_status.get("phase", "")),
+        "message": str(validation_status.get("message", "")),
+        "updated_at_iso": str(validation_status.get("updated_at", "")),
+    }
+    review_effective = {
+        "phase": str(review_status.get("phase", "")),
+        "message": str(review_status.get("message", "")),
+        "updated_at_iso": str(review_status.get("updated_at", "")),
+    }
+
+    resume_phase = str(resume_followon_status.get("phase", ""))
+    resume_message = str(resume_followon_status.get("message", ""))
+    resume_updated = str(resume_followon_status.get("updated_at", ""))
+
+    if lane_source == "phase2_launch_pack" and resume_phase:
+        if resume_phase in {"waiting", "phase2_running"}:
+            validation_effective = {
+                "phase": "pending_resume",
+                "message": resume_message or "Resumed Phase 2 path is still running before validation starts.",
+                "updated_at_iso": resume_updated,
+            }
+            review_effective = {
+                "phase": "pending_resume",
+                "message": "Waiting for resumed validation to finish before hardening review starts.",
+                "updated_at_iso": resume_updated,
+            }
+        elif resume_phase == "validating":
+            validation_effective = {
+                "phase": "validating",
+                "message": resume_message or "Running live-book validation from the resumed Phase 2 path.",
+                "updated_at_iso": resume_updated,
+            }
+            review_effective = {
+                "phase": "pending_resume",
+                "message": "Waiting for resumed validation to finish before hardening review starts.",
+                "updated_at_iso": resume_updated,
+            }
+        elif resume_phase == "reviewing":
+            validation_effective = {
+                "phase": "completed_resume",
+                "message": "Validation completed through the resumed Phase 2 path.",
+                "updated_at_iso": resume_updated,
+            }
+            review_effective = {
+                "phase": "reviewing",
+                "message": resume_message or "Building the hardening review from the resumed Phase 2 path.",
+                "updated_at_iso": resume_updated,
+            }
+        elif resume_phase == "completed":
+            validation_effective = {
+                "phase": "completed_resume",
+                "message": "Validation completed through the resumed Phase 2 path.",
+                "updated_at_iso": resume_updated,
+            }
+            review_effective = {
+                "phase": "completed_resume",
+                "message": "Hardening review completed through the resumed Phase 2 path.",
+                "updated_at_iso": resume_updated,
+            }
+        elif resume_phase == "failed":
+            validation_effective = {
+                "phase": "failed_resume",
+                "message": resume_message or "Resumed Phase 2 follow-on failed.",
+                "updated_at_iso": resume_updated,
+            }
+            review_effective = {
+                "phase": "failed_resume",
+                "message": "Resumed Phase 2 follow-on failed before hardening review could complete.",
+                "updated_at_iso": resume_updated,
+            }
+
+    return validation_effective, review_effective
+
+
 def summarize_phase_statuses(research_dir: Path) -> dict[str, Any]:
     phase_files = sorted(research_dir.glob("*_phase_status.json"))
     rows: list[dict[str, Any]] = []
@@ -235,6 +317,13 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
         if launch_phase:
             program_phase = f"phase2_resumed:{launch_phase}"
 
+    validation_effective, review_effective = effective_followon_statuses(
+        validation_status=validation_status,
+        review_status=review_status,
+        resume_followon_status=resume_followon_status,
+        lane_source=lane_source,
+    )
+
     summarized_lanes = [summarize_lane(dict(row), stale_cutoff=stale_cutoff) for row in lane_rows if isinstance(row, dict)]
     attention_items: list[dict[str, Any]] = []
     for lane in summarized_lanes:
@@ -259,16 +348,8 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
         "phase1_status_path": existing_path(program_root / "phase1_status.json"),
         "phase2_status_path": existing_path(program_root / "phase2_status.json"),
         "phase2_launch_status_path": existing_path(program_root / "phase2" / "launch_pack" / "launch_status.json"),
-        "validation_status": {
-            "phase": str(validation_status.get("phase", "")),
-            "message": str(validation_status.get("message", "")),
-            "updated_at_iso": str(validation_status.get("updated_at", "")),
-        },
-        "hardening_review_status": {
-            "phase": str(review_status.get("phase", "")),
-            "message": str(review_status.get("message", "")),
-            "updated_at_iso": str(review_status.get("updated_at", "")),
-        },
+        "validation_status": validation_effective,
+        "hardening_review_status": review_effective,
         "phase2_resume_followon_status": {
             "phase": str(resume_followon_status.get("phase", "")),
             "message": str(resume_followon_status.get("message", "")),
