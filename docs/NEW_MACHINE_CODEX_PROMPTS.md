@@ -130,3 +130,30 @@ Summarize:
 
 Then recommend the next 2-4 tournaments to run, and map those families into the current lane system when possible. Do not modify the live manifest and do not auto-promote strategies.
 ```
+
+## 8. Run The Full Nightly Operator Cycle
+
+```text
+Open these sibling folders and use them together:
+
+1. C:\Users\<you>\Downloads\codexalpaca_repo
+2. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+3. C:\Users\<you>\Downloads\qqq_options_30d_cleanroom
+
+Operate under:
+- docs/INSTITUTIONAL_OPERATING_BLUEPRINT.md
+- docs/NIGHTLY_OPERATOR_PLAYBOOK.md
+- docs/AGENT_OPERATING_MODEL.md
+
+Run one full nightly research cycle that:
+- refreshes the family registry and family handoff packet
+- refreshes coverage
+- materializes missing priority symbols when needed
+- runs the next discovery wave
+- runs exhaustive follow-up on survivors
+- runs shared-account validation
+- builds hardening review, replacement plan, and morning handoff packets
+- keeps the live manifest unchanged unless a reviewed approval step happens
+
+Treat GitHub-backed docs and packets as the source of truth. Keep discovery parallel, keep production decisions serialized, and treat any lane without `master_summary.json` as failed.
+```

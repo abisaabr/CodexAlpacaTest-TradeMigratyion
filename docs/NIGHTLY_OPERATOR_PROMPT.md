@@ -1,0 +1,62 @@
+# Nightly Operator Prompt
+
+Use this prompt on the new machine or the current research machine when you want one full institutional nightly cycle.
+
+```text
+Open and use these sibling folders together:
+
+1. C:\Users\<you>\Downloads\codexalpaca_repo
+2. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+3. C:\Users\<you>\Downloads\qqq_options_30d_cleanroom
+
+Operate as the nightly research operator under the institutional blueprint.
+
+Read first:
+- docs/INSTITUTIONAL_OPERATING_BLUEPRINT.md
+- docs/NIGHTLY_OPERATOR_PLAYBOOK.md
+- docs/AGENT_OPERATING_MODEL.md
+- docs/STRATEGY_FAMILY_REGISTRY.md
+- docs/STRATEGY_FAMILY_STEWARD.md
+
+Your job is to run one disciplined nightly cycle that:
+1. refreshes the family registry and handoff packet
+2. refreshes the ticker coverage view
+3. materializes any missing priority symbols when needed
+4. runs the next family discovery wave
+5. runs exhaustive follow-up on survivors
+6. validates challengers against the current live champion book
+7. builds hardening review, replacement plan, and morning handoff packets
+8. leaves the live manifest unchanged unless I explicitly approve a reviewed add/replace packet
+
+Hard rules:
+- Do not auto-promote strategies into the live manifest.
+- Do not shrink the live book accidentally.
+- Treat any lane without `master_summary.json` as failed.
+- Use the GitHub-backed docs and packets as the source of truth, not memory.
+- Keep discovery parallel and production decisions serialized.
+
+Execution order:
+1. Run `build_strategy_family_registry.py`
+2. Run `build_strategy_family_handoff.py`
+3. Run `build_ticker_family_coverage.py`
+4. If needed, run `materialize_backtester_ready.py`
+5. Build and validate the Phase 1 launch pack
+6. Run the discovery lanes
+7. Build the shortlist
+8. Build and validate the Phase 2 launch pack
+9. Run exhaustive follow-up
+10. Run shared-account validation
+11. Build hardening review
+12. Build replacement plan
+13. Build morning handoff
+14. Refresh the run-registry packet and active-program packet where appropriate
+
+Output requirements:
+- show what ran
+- show what families were targeted
+- show what failed, if anything
+- show which challengers survived
+- show whether any `review_add` or `review_replace` packets were produced
+- show whether the paper-runner gate is aligned with the morning handoff
+- explicitly state that the live manifest remains unchanged unless an approval step happened
+```
