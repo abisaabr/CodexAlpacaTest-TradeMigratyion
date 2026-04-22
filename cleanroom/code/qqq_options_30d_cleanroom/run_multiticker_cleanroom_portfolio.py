@@ -1154,7 +1154,17 @@ def build_friction_profile(trades_df: pd.DataFrame) -> dict[str, float | int]:
             "median_friction_pct_of_entry_premium": 0.0,
             "total_broker_commission": 0.0,
             "total_regulatory_fees": 0.0,
+            "total_orf_fees": 0.0,
+            "total_occ_clearing_fees": 0.0,
+            "total_cat_fees": 0.0,
+            "total_taf_fees": 0.0,
             "total_fees": 0.0,
+            "broker_commission_share_of_total_fees_pct": 0.0,
+            "regulatory_fee_share_of_total_fees_pct": 0.0,
+            "orf_share_of_total_fees_pct": 0.0,
+            "occ_clearing_share_of_total_fees_pct": 0.0,
+            "cat_share_of_total_fees_pct": 0.0,
+            "taf_share_of_total_fees_pct": 0.0,
             "total_commission": 0.0,
             "total_slippage": 0.0,
             "total_friction": 0.0,
@@ -1178,6 +1188,26 @@ def build_friction_profile(trades_df: pd.DataFrame) -> dict[str, float | int]:
         if "total_regulatory_fees_per_combo" in trades_df.columns
         else pd.Series(0.0, index=trades_df.index)
     )
+    total_orf_fees_per_combo = (
+        trades_df["total_orf_fees_per_combo"]
+        if "total_orf_fees_per_combo" in trades_df.columns
+        else pd.Series(0.0, index=trades_df.index)
+    )
+    total_occ_clearing_fees_per_combo = (
+        trades_df["total_occ_clearing_fees_per_combo"]
+        if "total_occ_clearing_fees_per_combo" in trades_df.columns
+        else pd.Series(0.0, index=trades_df.index)
+    )
+    total_cat_fees_per_combo = (
+        trades_df["total_cat_fees_per_combo"]
+        if "total_cat_fees_per_combo" in trades_df.columns
+        else pd.Series(0.0, index=trades_df.index)
+    )
+    total_taf_fees_per_combo = (
+        trades_df["total_taf_fees_per_combo"]
+        if "total_taf_fees_per_combo" in trades_df.columns
+        else pd.Series(0.0, index=trades_df.index)
+    )
     total_fees_per_combo = (
         trades_df["total_fees_per_combo"]
         if "total_fees_per_combo" in trades_df.columns
@@ -1196,6 +1226,10 @@ def build_friction_profile(trades_df: pd.DataFrame) -> dict[str, float | int]:
     total_premium_dollars = float((premium_series * 100.0 * quantity).sum())
     total_broker_commission = float((total_broker_commission_per_combo * quantity).sum())
     total_regulatory_fees = float((total_regulatory_fees_per_combo * quantity).sum())
+    total_orf_fees = float((total_orf_fees_per_combo * quantity).sum())
+    total_occ_clearing_fees = float((total_occ_clearing_fees_per_combo * quantity).sum())
+    total_cat_fees = float((total_cat_fees_per_combo * quantity).sum())
+    total_taf_fees = float((total_taf_fees_per_combo * quantity).sum())
     total_fees = float((total_fees_per_combo * quantity).sum())
     total_commission = float((total_commission_per_combo * quantity).sum())
     total_slippage = float((total_slippage_per_combo * quantity).sum())
@@ -1213,7 +1247,17 @@ def build_friction_profile(trades_df: pd.DataFrame) -> dict[str, float | int]:
         "median_friction_pct_of_entry_premium": round(float(friction_pct_series.median()), 2),
         "total_broker_commission": round(total_broker_commission, 2),
         "total_regulatory_fees": round(total_regulatory_fees, 2),
+        "total_orf_fees": round(total_orf_fees, 2),
+        "total_occ_clearing_fees": round(total_occ_clearing_fees, 2),
+        "total_cat_fees": round(total_cat_fees, 2),
+        "total_taf_fees": round(total_taf_fees, 2),
         "total_fees": round(total_fees, 2),
+        "broker_commission_share_of_total_fees_pct": round((total_broker_commission / total_fees) * 100.0, 2) if total_fees > 0.0 else 0.0,
+        "regulatory_fee_share_of_total_fees_pct": round((total_regulatory_fees / total_fees) * 100.0, 2) if total_fees > 0.0 else 0.0,
+        "orf_share_of_total_fees_pct": round((total_orf_fees / total_fees) * 100.0, 2) if total_fees > 0.0 else 0.0,
+        "occ_clearing_share_of_total_fees_pct": round((total_occ_clearing_fees / total_fees) * 100.0, 2) if total_fees > 0.0 else 0.0,
+        "cat_share_of_total_fees_pct": round((total_cat_fees / total_fees) * 100.0, 2) if total_fees > 0.0 else 0.0,
+        "taf_share_of_total_fees_pct": round((total_taf_fees / total_fees) * 100.0, 2) if total_fees > 0.0 else 0.0,
         "total_commission": round(total_commission, 2),
         "total_slippage": round(total_slippage, 2),
         "total_friction": round(total_friction, 2),
@@ -2334,7 +2378,12 @@ def write_master_report(path: Path, payload: dict[str, object]) -> None:
             f"- Shared median entry premium: ${shared_friction.get('median_entry_premium', 0.0):.4f}; average total friction/combo: ${shared_friction.get('avg_total_friction_per_combo', 0.0):.2f}; sub-$0.30 share: {shared_friction.get('trade_share_sub_0_30_pct', 0.0):.2f}%."
         )
         lines.append(
-            f"- Shared total friction paid: ${shared_friction.get('total_friction', 0.0):.2f} on ${shared_friction.get('total_commission', 0.0):.2f} commissions and ${shared_friction.get('total_slippage', 0.0):.2f} slippage."
+            f"- Shared total friction paid: ${shared_friction.get('total_friction', 0.0):.2f} on ${shared_friction.get('total_fees', shared_friction.get('total_commission', 0.0)):.2f} fees and ${shared_friction.get('total_slippage', 0.0):.2f} slippage."
+        )
+        lines.append(
+            f"- Fee mix: regulatory ${shared_friction.get('total_regulatory_fees', 0.0):.2f} ({shared_friction.get('regulatory_fee_share_of_total_fees_pct', 0.0):.2f}%), "
+            f"ORF ${shared_friction.get('total_orf_fees', 0.0):.2f}, OCC ${shared_friction.get('total_occ_clearing_fees', 0.0):.2f}, "
+            f"CAT ${shared_friction.get('total_cat_fees', 0.0):.2f}, TAF ${shared_friction.get('total_taf_fees', 0.0):.2f}."
         )
     else:
         lines.append("- none")

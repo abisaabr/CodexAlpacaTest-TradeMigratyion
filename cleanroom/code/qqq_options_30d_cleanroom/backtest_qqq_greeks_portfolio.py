@@ -139,6 +139,18 @@ CANDIDATE_TRADE_COLUMNS = (
     "entry_regulatory_fees_per_combo",
     "exit_regulatory_fees_per_combo",
     "total_regulatory_fees_per_combo",
+    "entry_orf_fees_per_combo",
+    "exit_orf_fees_per_combo",
+    "total_orf_fees_per_combo",
+    "entry_occ_clearing_fees_per_combo",
+    "exit_occ_clearing_fees_per_combo",
+    "total_occ_clearing_fees_per_combo",
+    "entry_cat_fees_per_combo",
+    "exit_cat_fees_per_combo",
+    "total_cat_fees_per_combo",
+    "entry_taf_fees_per_combo",
+    "exit_taf_fees_per_combo",
+    "total_taf_fees_per_combo",
     "entry_total_fees_per_combo",
     "exit_total_fees_per_combo",
     "total_fees_per_combo",
@@ -1503,6 +1515,20 @@ def generate_candidate_trades(
             total_regulatory_fees_per_combo = (
                 entry_regulatory_fees_per_combo + exit_regulatory_fees_per_combo
             )
+            entry_orf_fees_per_combo = entry_fee_breakdown.orf_fee
+            exit_orf_fees_per_combo = exit_fee_breakdown.orf_fee
+            total_orf_fees_per_combo = entry_orf_fees_per_combo + exit_orf_fees_per_combo
+            entry_occ_clearing_fees_per_combo = entry_fee_breakdown.occ_clearing_fee
+            exit_occ_clearing_fees_per_combo = exit_fee_breakdown.occ_clearing_fee
+            total_occ_clearing_fees_per_combo = (
+                entry_occ_clearing_fees_per_combo + exit_occ_clearing_fees_per_combo
+            )
+            entry_cat_fees_per_combo = entry_fee_breakdown.cat_fee
+            exit_cat_fees_per_combo = exit_fee_breakdown.cat_fee
+            total_cat_fees_per_combo = entry_cat_fees_per_combo + exit_cat_fees_per_combo
+            entry_taf_fees_per_combo = entry_fee_breakdown.taf_fee
+            exit_taf_fees_per_combo = exit_fee_breakdown.taf_fee
+            total_taf_fees_per_combo = entry_taf_fees_per_combo + exit_taf_fees_per_combo
             entry_total_fees_per_combo = entry_fee_breakdown.total_fees
             exit_total_fees_per_combo = exit_fee_breakdown.total_fees
             total_fees_per_combo = entry_total_fees_per_combo + exit_total_fees_per_combo
@@ -1682,6 +1708,18 @@ def generate_candidate_trades(
                     "entry_regulatory_fees_per_combo": round(entry_regulatory_fees_per_combo, 4),
                     "exit_regulatory_fees_per_combo": round(exit_regulatory_fees_per_combo, 4),
                     "total_regulatory_fees_per_combo": round(total_regulatory_fees_per_combo, 4),
+                    "entry_orf_fees_per_combo": round(entry_orf_fees_per_combo, 4),
+                    "exit_orf_fees_per_combo": round(exit_orf_fees_per_combo, 4),
+                    "total_orf_fees_per_combo": round(total_orf_fees_per_combo, 4),
+                    "entry_occ_clearing_fees_per_combo": round(entry_occ_clearing_fees_per_combo, 4),
+                    "exit_occ_clearing_fees_per_combo": round(exit_occ_clearing_fees_per_combo, 4),
+                    "total_occ_clearing_fees_per_combo": round(total_occ_clearing_fees_per_combo, 4),
+                    "entry_cat_fees_per_combo": round(entry_cat_fees_per_combo, 4),
+                    "exit_cat_fees_per_combo": round(exit_cat_fees_per_combo, 4),
+                    "total_cat_fees_per_combo": round(total_cat_fees_per_combo, 4),
+                    "entry_taf_fees_per_combo": round(entry_taf_fees_per_combo, 4),
+                    "exit_taf_fees_per_combo": round(exit_taf_fees_per_combo, 4),
+                    "total_taf_fees_per_combo": round(total_taf_fees_per_combo, 4),
                     "entry_total_fees_per_combo": round(entry_total_fees_per_combo, 4),
                     "exit_total_fees_per_combo": round(exit_total_fees_per_combo, 4),
                     "total_fees_per_combo": round(total_fees_per_combo, 4),
