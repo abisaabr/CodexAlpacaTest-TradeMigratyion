@@ -213,14 +213,27 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
     program_status = load_status(program_root / "program_status.json")
     phase1_status = load_status(program_root / "phase1_status.json")
     phase2_status = load_status(program_root / "phase2_status.json")
+    phase2_launch_status = load_status(program_root / "phase2" / "launch_pack" / "launch_status.json")
     validation_status = load_status(program_root / "live_book_validation" / "validation_followon_status.json")
     review_status = load_status(
         program_root / "live_book_validation" / "hardening_review" / "hardening_review_followon_status.json"
     )
+    resume_followon_status = load_status(program_root / "phase2_resume_followon_status.json")
 
+    lane_source = "phase1"
     lane_rows = phase1_status.get("lanes") if isinstance(phase1_status.get("lanes"), list) else []
     if not lane_rows:
         lane_rows = phase2_status.get("lanes") if isinstance(phase2_status.get("lanes"), list) else []
+        lane_source = "phase2"
+    if isinstance(phase2_launch_status.get("rows"), list) and phase2_launch_status.get("rows"):
+        lane_rows = phase2_launch_status.get("rows")
+        lane_source = "phase2_launch_pack"
+
+    program_phase = str(program_status.get("phase", ""))
+    if lane_source == "phase2_launch_pack":
+        launch_phase = str(phase2_launch_status.get("phase", ""))
+        if launch_phase:
+            program_phase = f"phase2_resumed:{launch_phase}"
 
     summarized_lanes = [summarize_lane(dict(row), stale_cutoff=stale_cutoff) for row in lane_rows if isinstance(row, dict)]
     attention_items: list[dict[str, Any]] = []
@@ -239,11 +252,13 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
     return {
         "generated_at": iso_or_blank(now),
         "program_root": str(program_root),
-        "program_phase": str(program_status.get("phase", "")),
+        "program_phase": program_phase,
         "program_updated_at_iso": str(program_status.get("updated_at", "")),
         "stale_minutes": stale_minutes,
+        "lane_source": lane_source,
         "phase1_status_path": existing_path(program_root / "phase1_status.json"),
         "phase2_status_path": existing_path(program_root / "phase2_status.json"),
+        "phase2_launch_status_path": existing_path(program_root / "phase2" / "launch_pack" / "launch_status.json"),
         "validation_status": {
             "phase": str(validation_status.get("phase", "")),
             "message": str(validation_status.get("message", "")),
@@ -253,6 +268,11 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
             "phase": str(review_status.get("phase", "")),
             "message": str(review_status.get("message", "")),
             "updated_at_iso": str(review_status.get("updated_at", "")),
+        },
+        "phase2_resume_followon_status": {
+            "phase": str(resume_followon_status.get("phase", "")),
+            "message": str(resume_followon_status.get("message", "")),
+            "updated_at_iso": str(resume_followon_status.get("updated_at", "")),
         },
         "lane_count": len(summarized_lanes),
         "running_lane_count": sum(1 for lane in summarized_lanes if lane.get("process_running") is True),
@@ -269,6 +289,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         f"- Program root: `{payload['program_root']}`",
         f"- Program phase: `{payload['program_phase']}`",
         f"- Program updated: `{payload['program_updated_at_iso']}`",
+        f"- Lane source: `{payload['lane_source']}`",
         f"- Lane count: `{payload['lane_count']}`",
         f"- Running lanes: `{payload['running_lane_count']}`",
         f"- Attention items: `{payload['attention_count']}`",
@@ -277,6 +298,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         "",
         f"- Validation: `{payload['validation_status']['phase']}` | {payload['validation_status']['message']}",
         f"- Hardening review: `{payload['hardening_review_status']['phase']}` | {payload['hardening_review_status']['message']}",
+        f"- Phase 2 resume watcher: `{payload['phase2_resume_followon_status']['phase']}` | {payload['phase2_resume_followon_status']['message']}",
         "",
         "## Lanes",
         "",
