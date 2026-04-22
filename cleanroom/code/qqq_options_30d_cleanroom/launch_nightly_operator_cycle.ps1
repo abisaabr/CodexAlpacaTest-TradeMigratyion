@@ -54,6 +54,8 @@ $tournamentUnlockWorkplanBuilderPath = Join-Path $scriptRoot "build_tournament_u
 $tournamentUnlockWorkplanHandoffBuilderPath = Join-Path $scriptRoot "build_tournament_unlock_workplan_handoff.py"
 $executionEvidenceContractBuilderPath = Join-Path $scriptRoot "build_execution_evidence_contract.py"
 $executionEvidenceContractHandoffBuilderPath = Join-Path $scriptRoot "build_execution_evidence_contract_handoff.py"
+$overnightPhasedPlanBuilderPath = Join-Path $scriptRoot "build_overnight_phased_plan.py"
+$overnightPhasedPlanHandoffBuilderPath = Join-Path $scriptRoot "build_overnight_phased_plan_handoff.py"
 $coverageBuilderPath = Join-Path $scriptRoot "build_ticker_family_coverage.py"
 $defaultProgramLauncherPath = Join-Path $scriptRoot "launch_down_choppy_program.ps1"
 $validatorPath = Join-Path $scriptRoot "validate_program_live_book.py"
@@ -198,6 +200,14 @@ function Write-Status {
         execution_evidence_contract_handoff_json =
             if (Test-Path $executionEvidenceContractHandoffJsonPath) {
                 $executionEvidenceContractHandoffJsonPath
+            }
+            else {
+                ""
+            }
+        overnight_plan_dir = $overnightPlanRoot
+        overnight_plan_handoff_json =
+            if (Test-Path $overnightPlanHandoffJsonPath) {
+                $overnightPlanHandoffJsonPath
             }
             else {
                 ""
@@ -360,6 +370,7 @@ $executionCalibrationRoot = Join-Path $cycleRootPath "execution_calibration"
 $tournamentProfileRoot = Join-Path $cycleRootPath "tournament_profiles"
 $tournamentUnlockRoot = Join-Path $cycleRootPath "tournament_unlocks"
 $executionEvidenceRoot = Join-Path $cycleRootPath "execution_evidence"
+$overnightPlanRoot = Join-Path $cycleRootPath "overnight_plan"
 $coverageRefreshRoot = Join-Path $cycleRootPath "coverage_refresh"
 $runRegistryReportDir = Join-Path $cycleRootPath "run_registry_report"
 $activeProgramReportDir = Join-Path $cycleRootPath "active_program_report"
@@ -379,6 +390,8 @@ $tournamentUnlockWorkplanJsonPath = Join-Path $tournamentUnlockRoot "tournament_
 $tournamentUnlockWorkplanHandoffJsonPath = Join-Path $tournamentUnlockRoot "tournament_unlock_workplan_handoff.json"
 $executionEvidenceContractJsonPath = Join-Path $executionEvidenceRoot "execution_evidence_contract.json"
 $executionEvidenceContractHandoffJsonPath = Join-Path $executionEvidenceRoot "execution_evidence_contract_handoff.json"
+$overnightPlanJsonPath = Join-Path $overnightPlanRoot "overnight_phased_plan.json"
+$overnightPlanHandoffJsonPath = Join-Path $overnightPlanRoot "overnight_phased_plan_handoff.json"
 $programStatusPath = Join-Path $programRootPath "program_status.json"
 $phase2PackPath = Join-Path $programRootPath "phase2\launch_pack\phase2_agent_wave_pack.json"
 $phase2PackStatusPath = Join-Path $programRootPath "phase2\launch_pack\launch_status.json"
@@ -401,6 +414,7 @@ New-Item -ItemType Directory -Force -Path $familyRefreshRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $tournamentProfileRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $tournamentUnlockRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $executionEvidenceRoot | Out-Null
+New-Item -ItemType Directory -Force -Path $overnightPlanRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $coverageRefreshRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $runRegistryReportDir | Out-Null
 New-Item -ItemType Directory -Force -Path $activeProgramReportDir | Out-Null
@@ -444,6 +458,8 @@ $cycleManifest = [ordered]@{
         family_handoff_builder = $familyHandoffBuilderPath
         tournament_profile_builder = $tournamentProfileBuilderPath
         tournament_profile_handoff_builder = $tournamentProfileHandoffBuilderPath
+        overnight_plan_builder = $overnightPhasedPlanBuilderPath
+        overnight_plan_handoff_builder = $overnightPhasedPlanHandoffBuilderPath
         coverage_builder = $coverageBuilderPath
         program_launcher = $defaultProgramLauncherPath
         validator = $validatorPath
@@ -719,9 +735,42 @@ if (-not (Test-Path $executionEvidenceContractHandoffJsonPath)) {
     throw "Execution evidence contract handoff JSON was not created at $executionEvidenceContractHandoffJsonPath"
 }
 
+$cycleManifest.execution_evidence_contract_json = $executionEvidenceContractJsonPath
+$cycleManifest.execution_evidence_contract_handoff_json = $executionEvidenceContractHandoffJsonPath
+Write-JsonFile -Path $manifestPath -Payload $cycleManifest
+
+Write-Status -Phase "refreshing_overnight_phased_plan" -Message "Refreshing the governed overnight phased plan from repo update, unlock, workplan, and execution evidence packets."
+
+$overnightPhasedPlanArgs = @(
+    "--repo-update-handoff-json", (Join-Path $repoRoot "docs\repo_updates\repo_update_handoff.json"),
+    "--unlock-handoff-json", $tournamentUnlockHandoffJsonPath,
+    "--workplan-handoff-json", $tournamentUnlockWorkplanHandoffJsonPath,
+    "--execution-evidence-handoff-json", $executionEvidenceContractHandoffJsonPath,
+    "--report-dir", $overnightPlanRoot
+)
+Invoke-PythonStep -ScriptPath $overnightPhasedPlanBuilderPath -Arguments $overnightPhasedPlanArgs -FailureMessage "Failed to refresh overnight phased plan."
+
+if (-not (Test-Path $overnightPlanJsonPath)) {
+    throw "Overnight phased plan JSON was not created at $overnightPlanJsonPath"
+}
+
+Write-Status -Phase "refreshing_overnight_phased_plan_handoff" -Message "Refreshing the overnight phased plan handoff."
+
+$overnightPhasedPlanHandoffArgs = @(
+    "--plan-json", $overnightPlanJsonPath,
+    "--report-dir", $overnightPlanRoot
+)
+Invoke-PythonStep -ScriptPath $overnightPhasedPlanHandoffBuilderPath -Arguments $overnightPhasedPlanHandoffArgs -FailureMessage "Failed to refresh overnight phased plan handoff."
+
+if (-not (Test-Path $overnightPlanHandoffJsonPath)) {
+    throw "Overnight phased plan handoff JSON was not created at $overnightPlanHandoffJsonPath"
+}
+
 $cycleManifest.tournament_unlock_handoff_json = $tournamentUnlockHandoffJsonPath
 $cycleManifest.tournament_unlock_workplan_handoff_json = $tournamentUnlockWorkplanHandoffJsonPath
 $cycleManifest.execution_evidence_contract_handoff_json = $executionEvidenceContractHandoffJsonPath
+$cycleManifest.overnight_phased_plan_json = $overnightPlanJsonPath
+$cycleManifest.overnight_phased_plan_handoff_json = $overnightPlanHandoffJsonPath
 Write-JsonFile -Path $manifestPath -Payload $cycleManifest
 
 Write-Status -Phase "refreshing_family_registry" -Message "Refreshing the strategy family registry."

@@ -31,6 +31,9 @@ Before assigning agent work, refresh and inspect:
 - `docs/EXECUTION_EVIDENCE_CONTRACT.md`
 - `docs/execution_evidence/execution_evidence_contract.md`
 - `docs/execution_evidence/execution_evidence_contract_handoff.md`
+- `docs/OVERNIGHT_PHASED_PLAN.md`
+- `docs/overnight_plan/overnight_phased_plan.md`
+- `docs/overnight_plan/overnight_phased_plan_handoff.md`
 
 It is written for the current two-machine setup:
 - current research machine = primary research plane
@@ -46,6 +49,8 @@ Every night, the system should do four things well:
 3. run the highest-value challenger research
 4. validate challenger results against the champion book
 5. leave behind a clear morning packet without auto-mutating production
+
+The overnight phased plan is the operator-facing glue between those goals and the current control-plane state. Rebuild it after repo update control, unlock/workplan refresh, and execution evidence refresh so both machines act from the same governed night plan.
 
 ## Core Rule
 

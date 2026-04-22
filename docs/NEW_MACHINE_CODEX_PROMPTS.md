@@ -41,6 +41,7 @@ Before choosing a nightly research cycle, also read `docs/TOURNAMENT_PROFILE_REG
 Before choosing or escalating to a more aggressive nightly research cycle, also read `docs/TOURNAMENT_UNLOCK_REGISTRY.md` and inspect `docs/tournament_unlocks/tournament_unlock_handoff.md` so the machine can explain exactly what evidence or implementation work still blocks the next profile tier.
 Before deciding what the new machine should do next, also read `docs/TOURNAMENT_UNLOCK_WORKPLAN.md` and inspect `docs/tournament_unlocks/tournament_unlock_workplan_handoff.md` so the execution plane follows the current evidence mission instead of improvising one.
 Before trying to produce the next trusted paper session, also read `docs/EXECUTION_EVIDENCE_CONTRACT.md` and inspect `docs/execution_evidence/execution_evidence_contract_handoff.md` so the machine knows exactly what the next session must leave behind to count as unlock-worthy evidence.
+Before starting an overnight mission, also read `docs/OVERNIGHT_PHASED_PLAN.md` and inspect `docs/overnight_plan/overnight_phased_plan_handoff.md` so the new machine can align itself with tonight's current unlocked profile, execution evidence mission, and by-morning success definition instead of improvising its own night plan.
 Do not treat a planned or executable profile as automatically safe to activate just because it is listed in the registry; also respect the profile's execution evidence floor, broker-audit requirements, and exit-telemetry requirements from the current tournament profile handoff.
 
 ## 6. Run The Family-Expansion Tournament Conveyor
@@ -213,7 +214,7 @@ Hard rules:
 - do not change strategy selection or risk policy in this step
 ```
 
-## 11. Refresh Post-Session Reconciliation And Execution Policy
+## 10. Refresh Post-Session Reconciliation And Execution Policy
 
 ```text
 Open these sibling folders and use them together:
@@ -260,7 +261,35 @@ Hard rules:
 - do not commit raw trade logs or raw session exhaust
 ```
 
-## 10. Check GitHub Updates Before Open Or Nightly Work
+## 11. Review Tonight's Overnight Mission
+
+```text
+Open these sibling folders and use them together:
+
+1. C:\Users\<you>\Downloads\codexalpaca_repo
+2. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs/OVERNIGHT_PHASED_PLAN.md
+- docs/EXECUTION_EVIDENCE_CONTRACT.md
+- docs/TOURNAMENT_UNLOCK_WORKPLAN.md
+
+Then act as the overnight execution steward for the new machine.
+
+1. Refresh:
+   - `docs/overnight_plan/overnight_phased_plan_handoff.md`
+   - `docs/execution_evidence/execution_evidence_contract_handoff.md`
+   - `docs/tournament_unlocks/tournament_unlock_workplan_handoff.md`
+2. Report:
+   - the current unlocked profile that must remain in use tonight
+   - the current execution-plane overnight mission
+   - the exact next-session evidence artifacts tonight's paper session must leave behind
+   - what must remain blocked tonight
+   - the by-morning success definition
+3. Do not modify the live manifest, do not change risk policy, and do not start trading in this step.
+```
+
+## 12. Check GitHub Updates Before Open Or Nightly Work
 
 ```text
 Open these sibling folders and use them together:
@@ -298,7 +327,7 @@ Hard rules:
 - do not change strategy selection or risk policy in this step
 ```
 
-## 12. Report Which Tournament Profiles Are Actually Unlocked
+## 13. Report Which Tournament Profiles Are Actually Unlocked
 
 ```text
 Open these sibling folders and use them together:
@@ -325,7 +354,7 @@ Then act as the Tournament Policy Steward for the new machine.
 3. Do not start trading, do not modify the live manifest, and do not change strategy or risk policy in this step.
 ```
 
-## 13. Report What Unlocks The Next Tournament Tier
+## 14. Report What Unlocks The Next Tournament Tier
 
 ```text
 Open these sibling folders and use them together:
@@ -355,7 +384,7 @@ Then act as the Tournament Unlock Steward for the new machine.
 3. Do not start trading, do not modify the live manifest, and do not change strategy or risk policy in this step.
 ```
 
-## 14. Run The Current Execution Evidence Mission
+## 15. Run The Current Execution Evidence Mission
 
 ```text
 Open these sibling folders and use them together:
