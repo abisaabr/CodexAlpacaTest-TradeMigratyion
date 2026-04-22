@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T17:46:24.708340",
+  "generated_at": "2026-04-22T17:53:45.335842",
   "registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_calibration\\execution_calibration_registry.json",
   "posture": {
     "overall_execution_posture": "caution",
@@ -17,7 +17,9 @@
       "broker_order_audit_gap": true,
       "broker_activity_audit_gap": true,
       "runner_unlock_baseline_gap": true
-    }
+    },
+    "trusted_unlock_session_count": 0,
+    "trusted_runner_unlock_baseline_session_count": 0
   },
   "policy": {
     "entry_penalty_mode": "raised",

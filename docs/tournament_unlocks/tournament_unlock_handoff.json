@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T17:46:25.445401",
+  "generated_at": "2026-04-22T17:53:46.036913",
   "registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_registry.json",
   "current_resolved_profile": "down_choppy_coverage_ranked",
   "execution_posture": "caution",
@@ -20,10 +20,11 @@
       "activation_state": "policy_blocked",
       "recommendation_level": "recommended_but_not_yet_unlocked",
       "resolved_now": false,
-      "current_score": -628,
-      "unmet_requirement_count": 3,
+      "current_score": -878,
+      "unmet_requirement_count": 4,
       "blocker_codes": [
         "execution_evidence_floor",
+        "unlock_session_count_floor",
         "broker_order_audit_coverage",
         "broker_activity_audit_coverage"
       ],
@@ -34,6 +35,13 @@
           "category": "evidence",
           "current": "no_recent_trade_sessions",
           "required": "entry_and_reconciliation"
+        },
+        {
+          "blocker_code": "unlock_session_count_floor",
+          "summary": "Current trusted unlock-grade session count `0` is below this profile's floor `1`.",
+          "category": "evidence",
+          "current": "0",
+          "required": "1"
         },
         {
           "blocker_code": "broker_order_audit_coverage",
@@ -54,6 +62,12 @@
         {
           "objective_code": "upgrade_execution_evidence_to_entry_and_reconciliation",
           "summary": "Upgrade execution evidence from `no_recent_trade_sessions` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
+          "category": "evidence",
+          "priority": 1
+        },
+        {
+          "objective_code": "land_1_trusted_unlock_sessions",
+          "summary": "Land at least `1` fresh trusted unlock-grade session(s) before activating this profile.",
           "category": "evidence",
           "priority": 1
         },
@@ -74,6 +88,8 @@
       "execution_window": "first_30_minutes",
       "execution_risk_tier": "conservative",
       "minimum_execution_evidence_strength": "entry_and_reconciliation",
+      "minimum_trusted_unlock_session_count": 1,
+      "current_trusted_unlock_session_count": 0,
       "preferred_machine_now": "current_research_machine",
       "preferred_machine_target": "new_machine",
       "trusted_learning_scope": "trusted_and_cautious_sessions",
@@ -89,6 +105,7 @@
         "execution handoff explicitly recommends this profile (+100)",
         "posture caution favors conservative risk tier (+15)",
         "current execution evidence `no_recent_trade_sessions` is below the profile floor `entry_and_reconciliation` (-250)",
+        "trusted unlock-grade session count `0` is below this profile's floor `1` (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
         "elevated entry friction penalizes low sensitivity (-0)",
@@ -103,10 +120,11 @@
       "activation_state": "policy_blocked",
       "recommendation_level": "blocked",
       "resolved_now": false,
-      "current_score": -763,
-      "unmet_requirement_count": 3,
+      "current_score": -1013,
+      "unmet_requirement_count": 4,
       "blocker_codes": [
         "execution_evidence_floor",
+        "unlock_session_count_floor",
         "broker_order_audit_coverage",
         "broker_activity_audit_coverage"
       ],
@@ -117,6 +135,13 @@
           "category": "evidence",
           "current": "no_recent_trade_sessions",
           "required": "entry_and_reconciliation"
+        },
+        {
+          "blocker_code": "unlock_session_count_floor",
+          "summary": "Current trusted unlock-grade session count `0` is below this profile's floor `1`.",
+          "category": "evidence",
+          "current": "0",
+          "required": "1"
         },
         {
           "blocker_code": "broker_order_audit_coverage",
@@ -141,6 +166,12 @@
           "priority": 1
         },
         {
+          "objective_code": "land_1_trusted_unlock_sessions",
+          "summary": "Land at least `1` fresh trusted unlock-grade session(s) before activating this profile.",
+          "category": "evidence",
+          "priority": 1
+        },
+        {
           "objective_code": "land_trusted_broker_order_audit_sessions",
           "summary": "Land fresh trusted paper sessions with broker-order audit coverage so broker-audited profiles can activate.",
           "category": "audit",
@@ -157,6 +188,8 @@
       "execution_window": "all_day",
       "execution_risk_tier": "moderate",
       "minimum_execution_evidence_strength": "entry_and_reconciliation",
+      "minimum_trusted_unlock_session_count": 1,
+      "current_trusted_unlock_session_count": 0,
       "preferred_machine_now": "current_research_machine",
       "preferred_machine_target": "either_machine",
       "trusted_learning_scope": "trusted_and_cautious_sessions",
@@ -182,6 +215,7 @@
       "evaluation_reasons": [
         "posture caution favors moderate risk tier (+5)",
         "current execution evidence `no_recent_trade_sessions` is below the profile floor `entry_and_reconciliation` (-250)",
+        "trusted unlock-grade session count `0` is below this profile's floor `1` (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
         "elevated entry friction penalizes medium sensitivity (-10)",
@@ -195,10 +229,11 @@
       "activation_state": "policy_blocked",
       "recommendation_level": "blocked",
       "resolved_now": false,
-      "current_score": -1420,
-      "unmet_requirement_count": 5,
+      "current_score": -1670,
+      "unmet_requirement_count": 6,
       "blocker_codes": [
         "execution_evidence_floor",
+        "unlock_session_count_floor",
         "risk_tier_cap",
         "broker_order_audit_coverage",
         "broker_activity_audit_coverage",
@@ -211,6 +246,13 @@
           "category": "evidence",
           "current": "no_recent_trade_sessions",
           "required": "broad"
+        },
+        {
+          "blocker_code": "unlock_session_count_floor",
+          "summary": "Current trusted unlock-grade session count `0` is below this profile's floor `2`.",
+          "category": "evidence",
+          "current": "0",
+          "required": "2"
         },
         {
           "blocker_code": "risk_tier_cap",
@@ -249,6 +291,12 @@
           "priority": 1
         },
         {
+          "objective_code": "land_2_trusted_unlock_sessions",
+          "summary": "Land at least `2` fresh trusted unlock-grade session(s) before activating this profile.",
+          "category": "evidence",
+          "priority": 1
+        },
+        {
           "objective_code": "raise_execution_risk_ceiling_to_aggressive",
           "summary": "Improve execution posture and trusted evidence enough to raise the activation ceiling from `moderate` to `aggressive`.",
           "category": "policy",
@@ -277,6 +325,8 @@
       "execution_window": "first_30_minutes",
       "execution_risk_tier": "aggressive",
       "minimum_execution_evidence_strength": "broad",
+      "minimum_trusted_unlock_session_count": 2,
+      "current_trusted_unlock_session_count": 0,
       "preferred_machine_now": "current_research_machine",
       "preferred_machine_target": "new_machine",
       "trusted_learning_scope": "trusted_and_cautious_sessions",
@@ -293,6 +343,7 @@
         "posture caution favors aggressive risk tier (-15)",
         "current execution evidence `no_recent_trade_sessions` is below the profile floor `broad` (-250)",
         "current execution policy caps profile risk at `moderate`, below this profile's `aggressive` tier (-250)",
+        "trusted unlock-grade session count `0` is below this profile's floor `2` (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires reliable exit telemetry, but the current execution posture still flags an exit-telemetry gap (-250)",
@@ -309,10 +360,11 @@
       "activation_state": "policy_blocked",
       "recommendation_level": "blocked",
       "resolved_now": false,
-      "current_score": -1420,
-      "unmet_requirement_count": 5,
+      "current_score": -1670,
+      "unmet_requirement_count": 6,
       "blocker_codes": [
         "execution_evidence_floor",
+        "unlock_session_count_floor",
         "risk_tier_cap",
         "broker_order_audit_coverage",
         "broker_activity_audit_coverage",
@@ -325,6 +377,13 @@
           "category": "evidence",
           "current": "no_recent_trade_sessions",
           "required": "broad"
+        },
+        {
+          "blocker_code": "unlock_session_count_floor",
+          "summary": "Current trusted unlock-grade session count `0` is below this profile's floor `2`.",
+          "category": "evidence",
+          "current": "0",
+          "required": "2"
         },
         {
           "blocker_code": "risk_tier_cap",
@@ -363,6 +422,12 @@
           "priority": 1
         },
         {
+          "objective_code": "land_2_trusted_unlock_sessions",
+          "summary": "Land at least `2` fresh trusted unlock-grade session(s) before activating this profile.",
+          "category": "evidence",
+          "priority": 1
+        },
+        {
           "objective_code": "raise_execution_risk_ceiling_to_aggressive",
           "summary": "Improve execution posture and trusted evidence enough to raise the activation ceiling from `moderate` to `aggressive`.",
           "category": "policy",
@@ -391,6 +456,8 @@
       "execution_window": "first_30_minutes",
       "execution_risk_tier": "aggressive",
       "minimum_execution_evidence_strength": "broad",
+      "minimum_trusted_unlock_session_count": 2,
+      "current_trusted_unlock_session_count": 0,
       "preferred_machine_now": "current_research_machine",
       "preferred_machine_target": "new_machine",
       "trusted_learning_scope": "trusted_and_cautious_sessions",
@@ -414,6 +481,7 @@
         "posture caution favors aggressive risk tier (-15)",
         "current execution evidence `no_recent_trade_sessions` is below the profile floor `broad` (-250)",
         "current execution policy caps profile risk at `moderate`, below this profile's `aggressive` tier (-250)",
+        "trusted unlock-grade session count `0` is below this profile's floor `2` (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires reliable exit telemetry, but the current execution posture still flags an exit-telemetry gap (-250)",
@@ -433,6 +501,13 @@
       "affected_profile_count": 2
     },
     {
+      "objective_code": "land_1_trusted_unlock_sessions",
+      "summary": "Land at least `1` fresh trusted unlock-grade session(s) before activating this profile.",
+      "category": "evidence",
+      "priority": 1,
+      "affected_profile_count": 2
+    },
+    {
       "objective_code": "land_trusted_broker_order_audit_sessions",
       "summary": "Land fresh trusted paper sessions with broker-order audit coverage so broker-audited profiles can activate.",
       "category": "audit",
@@ -445,21 +520,14 @@
       "category": "audit",
       "priority": 1,
       "affected_profile_count": 4
-    },
-    {
-      "objective_code": "upgrade_execution_evidence_to_broad",
-      "summary": "Upgrade execution evidence from `no_recent_trade_sessions` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts.",
-      "category": "evidence",
-      "priority": 1,
-      "affected_profile_count": 2
     }
   ],
   "operator_actions": [
     "Run `down_choppy_coverage_ranked` while higher-tier profiles remain blocked by execution evidence or implementation gates.",
     "Keep `down_choppy_full_ready` as fallback executable profiles, not the default nightly choice.",
     "Upgrade execution evidence from `no_recent_trade_sessions` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
+    "Land at least `1` fresh trusted unlock-grade session(s) before activating this profile.",
     "Land fresh trusted paper sessions with broker-order audit coverage so broker-audited profiles can activate.",
-    "Land fresh trusted paper sessions with broker account-activity audit coverage so broker-audited profiles can activate.",
-    "Upgrade execution evidence from `no_recent_trade_sessions` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts."
+    "Land fresh trusted paper sessions with broker account-activity audit coverage so broker-audited profiles can activate."
   ]
 }

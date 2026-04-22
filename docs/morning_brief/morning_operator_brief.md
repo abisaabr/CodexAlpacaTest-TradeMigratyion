@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T17:46:26.987460`
+- Generated at: `2026-04-22T17:53:47.361344`
 - Morning decision posture: `keep_blocked_profiles_blocked`
 - Current unlocked profile: `down_choppy_coverage_ranked`
 - Repo update status: `ready`
@@ -70,9 +70,9 @@
 
 ## Nearest Unlock Targets
 
-- `opening_30m_premium_defense`: policy_blocked via execution_evidence_floor, broker_order_audit_coverage, broker_activity_audit_coverage
-- `balanced_family_expansion_benchmark`: policy_blocked via execution_evidence_floor, broker_order_audit_coverage, broker_activity_audit_coverage
-- `opening_30m_convexity_butterfly`: policy_blocked via execution_evidence_floor, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry
+- `opening_30m_premium_defense`: policy_blocked via execution_evidence_floor, unlock_session_count_floor, broker_order_audit_coverage, broker_activity_audit_coverage
+- `balanced_family_expansion_benchmark`: policy_blocked via execution_evidence_floor, unlock_session_count_floor, broker_order_audit_coverage, broker_activity_audit_coverage
+- `opening_30m_convexity_butterfly`: policy_blocked via execution_evidence_floor, unlock_session_count_floor, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry
 
 ## By-Morning Success
 

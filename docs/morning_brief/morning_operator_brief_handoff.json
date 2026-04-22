@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T17:46:26.987460",
+  "generated_at": "2026-04-22T17:53:47.361344",
   "brief_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\morning_brief\\morning_operator_brief.json",
   "morning_decision_posture": "keep_blocked_profiles_blocked",
   "current_unlocked_profile": "down_choppy_coverage_ranked",
@@ -38,6 +38,7 @@
       "activation_state": "policy_blocked",
       "blocker_codes": [
         "execution_evidence_floor",
+        "unlock_session_count_floor",
         "broker_order_audit_coverage",
         "broker_activity_audit_coverage"
       ]
@@ -47,6 +48,7 @@
       "activation_state": "policy_blocked",
       "blocker_codes": [
         "execution_evidence_floor",
+        "unlock_session_count_floor",
         "broker_order_audit_coverage",
         "broker_activity_audit_coverage"
       ]
@@ -56,6 +58,7 @@
       "activation_state": "policy_blocked",
       "blocker_codes": [
         "execution_evidence_floor",
+        "unlock_session_count_floor",
         "risk_tier_cap",
         "broker_order_audit_coverage",
         "broker_activity_audit_coverage",

@@ -111,8 +111,10 @@ def build_profile_unlock_row(
 
     general_evidence_strength = str(execution_posture.get("evidence_strength") or "no_recent_trade_sessions")
     unlock_evidence_strength = str(execution_posture.get("unlock_evidence_strength") or "no_recent_trade_sessions")
+    trusted_unlock_session_count = int(execution_posture.get("trusted_unlock_session_count") or 0)
     current_max_risk_tier = str(execution_policy.get("max_execution_risk_tier") or "moderate")
     required_evidence_strength = str(profile.get("minimum_execution_evidence_strength") or "limited_entry_only")
+    minimum_trusted_unlock_session_count = int(profile.get("minimum_trusted_unlock_session_count", 0) or 0)
     current_evidence_strength = (
         unlock_evidence_strength
         if bool(profile.get("requires_broker_order_audit_coverage")) or bool(profile.get("requires_broker_activity_audit_coverage"))
@@ -154,6 +156,24 @@ def build_profile_unlock_row(
             _objective(
                 f"upgrade_execution_evidence_to_{required_evidence_strength}",
                 f"Upgrade execution evidence from `{current_evidence_strength}` to at least `{required_evidence_strength}` through fresh trusted paper sessions and reconciliation artifacts.",
+                category="evidence",
+            )
+        )
+
+    if trusted_unlock_session_count < minimum_trusted_unlock_session_count:
+        blockers.append(
+            _blocker(
+                "unlock_session_count_floor",
+                f"Current trusted unlock-grade session count `{trusted_unlock_session_count}` is below this profile's floor `{minimum_trusted_unlock_session_count}`.",
+                category="evidence",
+                current=str(trusted_unlock_session_count),
+                required=str(minimum_trusted_unlock_session_count),
+            )
+        )
+        objectives.append(
+            _objective(
+                f"land_{minimum_trusted_unlock_session_count}_trusted_unlock_sessions",
+                f"Land at least `{minimum_trusted_unlock_session_count}` fresh trusted unlock-grade session(s) before activating this profile.",
                 category="evidence",
             )
         )
@@ -277,6 +297,8 @@ def build_profile_unlock_row(
         "execution_window": profile.get("execution_window"),
         "execution_risk_tier": profile.get("execution_risk_tier"),
         "minimum_execution_evidence_strength": required_evidence_strength,
+        "minimum_trusted_unlock_session_count": minimum_trusted_unlock_session_count,
+        "current_trusted_unlock_session_count": trusted_unlock_session_count,
         "preferred_machine_now": profile.get("preferred_machine_now"),
         "preferred_machine_target": profile.get("preferred_machine_target"),
         "trusted_learning_scope": session_policy.get("trusted_learning_scope"),
@@ -334,6 +356,9 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         lines.append(f"- Session focus: `{row['session_focus']}`")
         lines.append(f"- Risk tier: `{row['execution_risk_tier']}`")
         lines.append(f"- Minimum evidence strength: `{row['minimum_execution_evidence_strength']}`")
+        lines.append(
+            f"- Trusted unlock sessions: current `{row['current_trusted_unlock_session_count']}`, required `{row['minimum_trusted_unlock_session_count']}`"
+        )
         lines.append(f"- Preferred machine now: `{row['preferred_machine_now']}`")
         lines.append(f"- Preferred machine target: `{row['preferred_machine_target']}`")
         blocker_text = ", ".join(list(row.get("blocker_codes") or [])) or "none"

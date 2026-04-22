@@ -125,6 +125,8 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
             "broker_activity_audit_gap": broker_activity_audit_gap,
             "runner_unlock_baseline_gap": runner_unlock_baseline_gap,
         },
+        "trusted_unlock_session_count": trusted_full_audit_bundle_sessions,
+        "trusted_runner_unlock_baseline_session_count": trusted_runner_unlock_baseline_sessions,
     }
 
 
@@ -252,6 +254,10 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Posture: `{posture['overall_execution_posture']}`")
     lines.append(f"- Evidence strength: `{posture['evidence_strength']}`")
     lines.append(f"- Unlock evidence strength: `{posture['unlock_evidence_strength']}`")
+    lines.append(f"- Trusted unlock-grade sessions: `{posture['trusted_unlock_session_count']}`")
+    lines.append(
+        f"- Trusted runner-baseline sessions: `{posture['trusted_runner_unlock_baseline_session_count']}`"
+    )
     lines.append("")
     lines.append("## Flags")
     lines.append("")

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T17:46:26.987460",
+  "generated_at": "2026-04-22T17:53:47.361344",
   "repo_update_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\repo_updates\\repo_update_handoff.json",
   "session_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\session_reconciliation\\session_reconciliation_handoff.json",
   "execution_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_calibration\\execution_calibration_handoff.json",
@@ -37,6 +37,7 @@
       "activation_state": "policy_blocked",
       "blocker_codes": [
         "execution_evidence_floor",
+        "unlock_session_count_floor",
         "broker_order_audit_coverage",
         "broker_activity_audit_coverage"
       ]
@@ -46,6 +47,7 @@
       "activation_state": "policy_blocked",
       "blocker_codes": [
         "execution_evidence_floor",
+        "unlock_session_count_floor",
         "broker_order_audit_coverage",
         "broker_activity_audit_coverage"
       ]
@@ -55,6 +57,7 @@
       "activation_state": "policy_blocked",
       "blocker_codes": [
         "execution_evidence_floor",
+        "unlock_session_count_floor",
         "risk_tier_cap",
         "broker_order_audit_coverage",
         "broker_activity_audit_coverage",

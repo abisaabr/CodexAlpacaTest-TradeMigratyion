@@ -26,6 +26,7 @@ The tournament profile registry tells us **how** to search for it:
 - which entrypoint is valid today
 - whether the profile is active, partial, or planned
 - what execution evidence floor a profile requires before activation
+- how many trusted unlock-grade sessions a profile requires before activation
 - whether broker-order audit coverage, broker-activity audit coverage, or exit telemetry are required before activation
 - how execution posture should bias or downgrade profile choice
 - how discovery and validation should be split

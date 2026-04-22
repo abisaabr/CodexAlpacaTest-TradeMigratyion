@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T17:46:25.862022`
+- Generated at: `2026-04-22T17:53:46.374928`
 - Current unlocked profile: `down_choppy_coverage_ranked`
 - Available but not preferred: `down_choppy_full_ready`
 
@@ -29,6 +29,6 @@
 
 ## Completion Gates
 
-- `opening_30m_premium_defense`: clear `execution_evidence_floor, broker_order_audit_coverage, broker_activity_audit_coverage` via `upgrade_execution_evidence_to_entry_and_reconciliation, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
-- `balanced_family_expansion_benchmark`: clear `execution_evidence_floor, broker_order_audit_coverage, broker_activity_audit_coverage` via `upgrade_execution_evidence_to_entry_and_reconciliation, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
-- `opening_30m_convexity_butterfly`: clear `execution_evidence_floor, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry` via `upgrade_execution_evidence_to_broad, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`
+- `opening_30m_premium_defense`: clear `execution_evidence_floor, unlock_session_count_floor, broker_order_audit_coverage, broker_activity_audit_coverage` via `upgrade_execution_evidence_to_entry_and_reconciliation, land_1_trusted_unlock_sessions, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
+- `balanced_family_expansion_benchmark`: clear `execution_evidence_floor, unlock_session_count_floor, broker_order_audit_coverage, broker_activity_audit_coverage` via `upgrade_execution_evidence_to_entry_and_reconciliation, land_1_trusted_unlock_sessions, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
+- `opening_30m_convexity_butterfly`: clear `execution_evidence_floor, unlock_session_count_floor, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry` via `upgrade_execution_evidence_to_broad, land_2_trusted_unlock_sessions, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`

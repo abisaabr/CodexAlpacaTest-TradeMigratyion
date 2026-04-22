@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T17:46:25.862022",
+  "generated_at": "2026-04-22T17:53:46.374928",
   "unlock_registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_registry.json",
   "unlock_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_handoff.json",
   "current_unlocked_profile": "down_choppy_coverage_ranked",
@@ -48,11 +48,13 @@
       "activation_state": "policy_blocked",
       "required_clearances": [
         "execution_evidence_floor",
+        "unlock_session_count_floor",
         "broker_order_audit_coverage",
         "broker_activity_audit_coverage"
       ],
       "next_unlock_objectives": [
         "upgrade_execution_evidence_to_entry_and_reconciliation",
+        "land_1_trusted_unlock_sessions",
         "land_trusted_broker_order_audit_sessions",
         "land_trusted_broker_activity_audit_sessions"
       ]
@@ -62,11 +64,13 @@
       "activation_state": "policy_blocked",
       "required_clearances": [
         "execution_evidence_floor",
+        "unlock_session_count_floor",
         "broker_order_audit_coverage",
         "broker_activity_audit_coverage"
       ],
       "next_unlock_objectives": [
         "upgrade_execution_evidence_to_entry_and_reconciliation",
+        "land_1_trusted_unlock_sessions",
         "land_trusted_broker_order_audit_sessions",
         "land_trusted_broker_activity_audit_sessions"
       ]
@@ -76,6 +80,7 @@
       "activation_state": "policy_blocked",
       "required_clearances": [
         "execution_evidence_floor",
+        "unlock_session_count_floor",
         "risk_tier_cap",
         "broker_order_audit_coverage",
         "broker_activity_audit_coverage",
@@ -83,6 +88,7 @@
       ],
       "next_unlock_objectives": [
         "upgrade_execution_evidence_to_broad",
+        "land_2_trusted_unlock_sessions",
         "raise_execution_risk_ceiling_to_aggressive",
         "land_trusted_broker_order_audit_sessions",
         "land_trusted_broker_activity_audit_sessions",

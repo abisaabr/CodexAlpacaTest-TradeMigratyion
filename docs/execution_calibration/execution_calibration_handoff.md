@@ -2,10 +2,12 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T17:46:24.708340`
+- Generated at: `2026-04-22T17:53:45.335842`
 - Posture: `caution`
 - Evidence strength: `limited_entry_only`
 - Unlock evidence strength: `no_recent_trade_sessions`
+- Trusted unlock-grade sessions: `0`
+- Trusted runner-baseline sessions: `0`
 
 ## Flags
 
