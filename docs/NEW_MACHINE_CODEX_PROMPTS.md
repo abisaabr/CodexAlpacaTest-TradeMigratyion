@@ -155,5 +155,5 @@ Run one full nightly research cycle that:
 - builds hardening review, replacement plan, and morning handoff packets
 - keeps the live manifest unchanged unless a reviewed approval step happens
 
-Treat GitHub-backed docs and packets as the source of truth. Keep discovery parallel, keep production decisions serialized, and treat any lane without `master_summary.json` as failed.
+Prefer using `cleanroom/code/qqq_options_30d_cleanroom/launch_nightly_operator_cycle.ps1` as the top-level entrypoint. Treat GitHub-backed docs and packets as the source of truth. Keep discovery parallel, keep production decisions serialized, and treat any lane without `master_summary.json` as failed.
 ```

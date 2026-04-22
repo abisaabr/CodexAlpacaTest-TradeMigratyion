@@ -51,6 +51,8 @@ Execution order:
 13. Build morning handoff
 14. Refresh the run-registry packet and active-program packet where appropriate
 
+Prefer using `cleanroom/code/qqq_options_30d_cleanroom/launch_nightly_operator_cycle.ps1` as the top-level entrypoint when it is available, so the cycle is executed as one governed operator flow instead of a loose sequence of manual steps. If you need to inspect or repair a phase, do that surgically, then return to the top-level cycle.
+
 Output requirements:
 - show what ran
 - show what families were targeted

@@ -1,5 +1,7 @@
 param(
     [string]$ReadyBaseDir = "C:\Users\rabisaab\OneDrive - First American Corporation\qqq_options_30d_cleanroom\output\backtester_ready",
+    [string]$SecondaryOutputDir = "",
+    [string]$RegistryPath = "",
     [string]$ProgramRoot = "",
     [string]$PythonExe = "python",
     [switch]$Execute,
@@ -321,6 +323,8 @@ function Invoke-ReadyUniverseBootstrap {
     & $PythonExe $materializerPath `
         --tickers (@($Tickers) -join ",") `
         --report-dir $BootstrapReportDir `
+        --ready-base-dir $ReadyBaseDir `
+        --registry-path $RegistryPath `
         --only-missing `
         --update-registry | Out-Null
 
@@ -404,6 +408,20 @@ else {
     $CoverageReportDir = [System.IO.Path]::GetFullPath($CoverageReportDir)
 }
 
+if ([string]::IsNullOrWhiteSpace($SecondaryOutputDir)) {
+    $SecondaryOutputDir = Split-Path -Parent $ReadyBaseDir
+}
+else {
+    $SecondaryOutputDir = [System.IO.Path]::GetFullPath($SecondaryOutputDir)
+}
+
+if ([string]::IsNullOrWhiteSpace($RegistryPath)) {
+    $RegistryPath = Join-Path $SecondaryOutputDir "backtester_registry.csv"
+}
+else {
+    $RegistryPath = [System.IO.Path]::GetFullPath($RegistryPath)
+}
+
 Write-JsonFile -Path $statusPath -Payload ([ordered]@{
     phase = "planning"
     execute = [bool]$Execute
@@ -411,7 +429,12 @@ Write-JsonFile -Path $statusPath -Payload ([ordered]@{
 })
 
 if ($DiscoverySource -eq "coverage_ranked") {
-    & $PythonExe $CoveragePlannerPath --report-dir $CoverageReportDir | Out-Null
+    & $PythonExe $CoveragePlannerPath `
+        --report-dir $CoverageReportDir `
+        --output-root $SecondaryOutputDir `
+        --ready-base-dir $ReadyBaseDir `
+        --secondary-output-dir $SecondaryOutputDir `
+        --registry-path $RegistryPath | Out-Null
     if ($LASTEXITCODE -ne 0) {
         throw "failed to generate coverage-ranked discovery plan"
     }
@@ -438,7 +461,12 @@ if ($DiscoverySource -eq "coverage_ranked") {
             throw "failed to bootstrap ready-universe materialization"
         }
 
-        & $PythonExe $CoveragePlannerPath --report-dir $CoverageReportDir | Out-Null
+        & $PythonExe $CoveragePlannerPath `
+            --report-dir $CoverageReportDir `
+            --output-root $SecondaryOutputDir `
+            --ready-base-dir $ReadyBaseDir `
+            --secondary-output-dir $SecondaryOutputDir `
+            --registry-path $RegistryPath | Out-Null
         if ($LASTEXITCODE -ne 0) {
             throw "failed to regenerate coverage-ranked discovery plan after bootstrap"
         }
@@ -490,6 +518,8 @@ $manifest = [ordered]@{
     phase2_root = $phase2Root
     coverage_report_dir = $CoverageReportDir
     coverage_planner_path = $CoveragePlannerPath
+    secondary_output_dir = $SecondaryOutputDir
+    registry_path = $RegistryPath
     materializer_path = $materializerPath
     wave_plan_path = $wavePlanPath
     shortlist_builder_path = $shortlistBuilderPath
