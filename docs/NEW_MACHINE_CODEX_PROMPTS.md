@@ -294,3 +294,29 @@ Hard rules:
 - do not start trading
 - do not change strategy selection or risk policy in this step
 ```
+
+## 12. Report Which Tournament Profiles Are Actually Unlocked
+
+```text
+Open these sibling folders and use them together:
+
+1. C:\Users\<you>\Downloads\codexalpaca_repo
+2. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs/EXECUTION_CALIBRATION_REGISTRY.md
+- docs/TOURNAMENT_PROFILE_REGISTRY.md
+
+Then act as the Tournament Policy Steward for the new machine.
+
+1. Refresh:
+   - `docs/execution_calibration/execution_calibration_handoff.md`
+   - `docs/tournament_profiles/tournament_profile_handoff.md`
+2. Report:
+   - which tournament profile is allowed tonight
+   - which executable profiles are available but not preferred
+   - which planned or partial profiles are still policy-blocked
+   - the specific missing evidence or audit gates blocking each higher-risk profile
+   - what the new machine needs to produce next so those blocked profiles can be reconsidered
+3. Do not start trading, do not modify the live manifest, and do not change strategy or risk policy in this step.
+```
