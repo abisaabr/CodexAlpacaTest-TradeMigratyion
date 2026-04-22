@@ -289,6 +289,7 @@ def build_validation_payload(
     live_manifest_summary: dict[str, Any],
     output_dir: Path,
     shortlist_context: dict[str, Any],
+    candidate_source_json: Path | None = None,
 ) -> dict[str, Any]:
     improved_rows = [row for row in incremental_rows if str(row.get("improved", "")).strip().lower() == "true"]
     improved_tickers = [str(row.get("candidate", "")).upper() for row in improved_rows if row.get("candidate")]
@@ -316,9 +317,12 @@ def build_validation_payload(
         "shortlist_context": shortlist_context,
         "note": note,
         "live_manifest": live_manifest_summary,
+        "validation_output_dir": str(output_dir),
+        "validation_json": str(output_dir / "live_book_validation.json"),
         "incremental_results_csv": str(output_dir / "incremental_results.csv"),
         "combo_results_csv": str(output_dir / "combo_results.csv"),
         "validation_report_md": str(output_dir / "live_book_validation.md"),
+        "candidate_source_json": str(candidate_source_json) if candidate_source_json is not None else "",
     }
 
 
@@ -420,6 +424,7 @@ def main() -> None:
     eval_script = Path(args.eval_script).resolve()
     incremental_rows: list[dict[str, str]] = []
     combo_rows: list[dict[str, str]] = []
+    candidate_source_json: Path | None = None
     if candidates:
         candidate_source_json = output_dir / "validation_candidate_sources.json"
         write_json(candidate_source_json, candidate_source_map)
@@ -443,6 +448,7 @@ def main() -> None:
         live_manifest_summary=live_manifest_summary,
         output_dir=output_dir,
         shortlist_context=shortlist_context,
+        candidate_source_json=candidate_source_json,
     )
 
     json_path = output_dir / "live_book_validation.json"

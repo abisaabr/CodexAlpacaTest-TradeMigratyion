@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parent
 
 def default_live_manifest_path() -> Path:
     candidates = [
-        Path(r"C:\Users\rabisaab\Downloads\codexalpaca_repo\config\strategy_manifests\multi_ticker_portfolio_live.yaml"),
+        ROOT.parent / "codexalpaca_repo" / "config" / "strategy_manifests" / "multi_ticker_portfolio_live.yaml",
         Path(r"C:\Users\rabisaab\OneDrive\CodexAlpaca\downloads_remaining_20260417\folders\codexalpaca_repo\config\strategy_manifests\multi_ticker_portfolio_live.yaml"),
     ]
     for candidate in candidates:
@@ -60,7 +60,12 @@ def parse_best_combo_tickers(best_combo: dict[str, Any] | None) -> list[str]:
     return [token.strip().upper() for token in raw.split(",") if token.strip()]
 
 
-def build_payload(validation_payload: dict[str, Any], live_manifest: dict[str, Any]) -> dict[str, Any]:
+def build_payload(
+    validation_payload: dict[str, Any],
+    live_manifest: dict[str, Any],
+    *,
+    validation_dir: Path,
+) -> dict[str, Any]:
     improved = [str(ticker).upper() for ticker in validation_payload.get("improved_candidates", []) if str(ticker).strip()]
     best_combo_tickers = parse_best_combo_tickers(validation_payload.get("best_combo"))
     recommended = best_combo_tickers or improved
@@ -93,9 +98,29 @@ def build_payload(validation_payload: dict[str, Any], live_manifest: dict[str, A
         else "No manifest changes were applied. This packet is for review-driven live-book hardening only."
     )
 
+    validation_dir_value = str(validation_payload.get("validation_output_dir", "") or str(validation_dir))
+    validation_json_value = str(
+        validation_payload.get("validation_json", "") or str(validation_dir / "live_book_validation.json")
+    )
+    validation_report_md_value = str(
+        validation_payload.get("validation_report_md", "") or str(validation_dir / "live_book_validation.md")
+    )
+    candidate_source_json_value = str(
+        validation_payload.get("candidate_source_json", "")
+        or (
+            str(validation_dir / "validation_candidate_sources.json")
+            if (validation_dir / "validation_candidate_sources.json").exists()
+            else ""
+        )
+    )
     return {
         "generated_at": validation_payload.get("generated_at"),
-        "validation_dir": validation_payload.get("validation_report_md", ""),
+        "validation_dir": validation_dir_value,
+        "validation_json": validation_json_value,
+        "validation_report_md": validation_report_md_value,
+        "validation_basis": str(validation_payload.get("validation_basis", "")),
+        "candidate_source": str(validation_payload.get("candidate_source", "")),
+        "candidate_source_json": candidate_source_json_value,
         "validation_candidate_count": int(validation_payload.get("candidate_count", 0) or 0),
         "no_candidate_validation": no_candidate_validation,
         "live_manifest": live_manifest,
@@ -112,6 +137,8 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines = [
         "# Live Book Hardening Review",
         "",
+        f"- Validation basis: `{payload['validation_basis']}`",
+        f"- Candidate source: `{payload['candidate_source']}`",
         f"- Live strategies: `{payload['live_manifest']['strategy_count']}`",
         f"- Live tickers: `{payload['live_manifest']['underlying_count']}`",
         f"- Validation candidate count: `{payload['validation_candidate_count']}`",
@@ -161,8 +188,12 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
             "## Notes",
             "",
             f"- {payload['note']}",
+            f"- Validation dir: `{payload['validation_dir']}`",
+            f"- Validation report: `{payload['validation_report_md']}`",
         ]
     )
+    if payload.get("candidate_source_json"):
+        lines.append(f"- Candidate source manifest: `{payload['candidate_source_json']}`")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -174,7 +205,7 @@ def main() -> None:
 
     validation_payload = load_json(validation_dir / "live_book_validation.json")
     live_manifest = load_live_manifest(Path(args.live_manifest).resolve())
-    payload = build_payload(validation_payload, live_manifest)
+    payload = build_payload(validation_payload, live_manifest, validation_dir=validation_dir)
 
     json_path = output_dir / "live_book_hardening_review.json"
     md_path = output_dir / "live_book_hardening_review.md"
