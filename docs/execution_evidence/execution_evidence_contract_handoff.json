@@ -1,0 +1,44 @@
+{
+  "generated_at": "2026-04-22T15:29:21.838070",
+  "contract_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_evidence\\execution_evidence_contract.json",
+  "current_unlocked_profile": "down_choppy_coverage_ranked",
+  "contract_status": "gapped",
+  "latest_traded_session_date": "2026-04-16",
+  "required_next_session_artifacts": [
+    "broker-order audit",
+    "broker account-activity audit",
+    "ending broker-position snapshot",
+    "shutdown reconciliation",
+    "completed trade table with broker/local economics comparison"
+  ],
+  "immediate_gaps": [
+    {
+      "check_id": "broker_order_audit",
+      "summary": "Broker-order audit coverage must be present in the session bundle.",
+      "required": "broker_order_audit_available = true",
+      "current": false,
+      "passed": false
+    },
+    {
+      "check_id": "broker_activity_audit",
+      "summary": "Broker account-activity audit coverage must be present in the session bundle.",
+      "required": "broker_activity_audit_available = true",
+      "current": false,
+      "passed": false
+    },
+    {
+      "check_id": "broker_local_cashflow_comparable",
+      "summary": "Broker/local economics comparison must be available when broker activity audit exists.",
+      "required": "broker_local_cashflow_comparable = true",
+      "current": false,
+      "passed": false
+    },
+    {
+      "check_id": "evidence_strength_progress",
+      "summary": "Execution evidence should improve beyond `limited_entry_only` for the nearest unlock target.",
+      "required": "execution_evidence_strength != limited_entry_only",
+      "current": "limited_entry_only",
+      "passed": false
+    }
+  ]
+}

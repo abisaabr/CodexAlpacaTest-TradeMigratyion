@@ -1,0 +1,113 @@
+{
+  "generated_at": "2026-04-22T15:29:21.838070",
+  "workplan_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_workplan.json",
+  "session_registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\session_reconciliation\\session_reconciliation_registry.json",
+  "session_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\session_reconciliation\\session_reconciliation_handoff.json",
+  "execution_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_calibration\\execution_calibration_handoff.json",
+  "current_unlocked_profile": "down_choppy_coverage_ranked",
+  "execution_mission_title": "Produce the next trusted broker-audited execution evidence package.",
+  "latest_traded_session_date": "2026-04-16",
+  "contract_status": "gapped",
+  "checks": [
+    {
+      "check_id": "traded_session_exists",
+      "summary": "A traded paper-runner session must exist for the session to teach research anything.",
+      "required": "session_kind = traded",
+      "current": "traded",
+      "passed": true
+    },
+    {
+      "check_id": "shutdown_reconciled",
+      "summary": "The session must complete shutdown reconciliation cleanly.",
+      "required": "shutdown_reconciled = true",
+      "current": true,
+      "passed": true
+    },
+    {
+      "check_id": "trust_tier_not_review_required",
+      "summary": "The session must not be review-required.",
+      "required": "trust_tier in {trusted, caution}",
+      "current": "caution",
+      "passed": true
+    },
+    {
+      "check_id": "broker_order_audit",
+      "summary": "Broker-order audit coverage must be present in the session bundle.",
+      "required": "broker_order_audit_available = true",
+      "current": false,
+      "passed": false
+    },
+    {
+      "check_id": "broker_activity_audit",
+      "summary": "Broker account-activity audit coverage must be present in the session bundle.",
+      "required": "broker_activity_audit_available = true",
+      "current": false,
+      "passed": false
+    },
+    {
+      "check_id": "ending_positions_flat",
+      "summary": "Residual broker positions must be zero at the end of the session.",
+      "required": "ending_broker_position_count = 0",
+      "current": 0,
+      "passed": true
+    },
+    {
+      "check_id": "broker_local_cashflow_comparable",
+      "summary": "Broker/local economics comparison must be available when broker activity audit exists.",
+      "required": "broker_local_cashflow_comparable = true",
+      "current": false,
+      "passed": false
+    },
+    {
+      "check_id": "completed_trade_count_positive",
+      "summary": "The session must contain at least one completed trade to improve execution evidence beyond idle status.",
+      "required": "completed_trade_count > 0",
+      "current": 5,
+      "passed": true
+    },
+    {
+      "check_id": "review_scope_preserved",
+      "summary": "Trusted learning scope must remain at least `trusted_and_cautious_sessions` after the session refresh.",
+      "required": "trusted_learning_scope in {trusted_and_cautious_sessions, all_recent_sessions}",
+      "current": "trusted_and_cautious_sessions",
+      "passed": true
+    },
+    {
+      "check_id": "evidence_strength_progress",
+      "summary": "Execution evidence should improve beyond `limited_entry_only` for the nearest unlock target.",
+      "required": "execution_evidence_strength != limited_entry_only",
+      "current": "limited_entry_only",
+      "passed": false
+    }
+  ],
+  "failed_checks": [
+    {
+      "check_id": "broker_order_audit",
+      "summary": "Broker-order audit coverage must be present in the session bundle.",
+      "required": "broker_order_audit_available = true",
+      "current": false,
+      "passed": false
+    },
+    {
+      "check_id": "broker_activity_audit",
+      "summary": "Broker account-activity audit coverage must be present in the session bundle.",
+      "required": "broker_activity_audit_available = true",
+      "current": false,
+      "passed": false
+    },
+    {
+      "check_id": "broker_local_cashflow_comparable",
+      "summary": "Broker/local economics comparison must be available when broker activity audit exists.",
+      "required": "broker_local_cashflow_comparable = true",
+      "current": false,
+      "passed": false
+    },
+    {
+      "check_id": "evidence_strength_progress",
+      "summary": "Execution evidence should improve beyond `limited_entry_only` for the nearest unlock target.",
+      "required": "execution_evidence_strength != limited_entry_only",
+      "current": "limited_entry_only",
+      "passed": false
+    }
+  ]
+}

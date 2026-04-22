@@ -40,6 +40,7 @@ Before choosing or running a major nightly cycle, also read `docs/EXECUTION_CALI
 Before choosing a nightly research cycle, also read `docs/TOURNAMENT_PROFILE_REGISTRY.md` and inspect `docs/tournament_profiles/tournament_profile_handoff.md` so the machine uses an approved executable tournament profile that is also aligned with the current execution posture.
 Before choosing or escalating to a more aggressive nightly research cycle, also read `docs/TOURNAMENT_UNLOCK_REGISTRY.md` and inspect `docs/tournament_unlocks/tournament_unlock_handoff.md` so the machine can explain exactly what evidence or implementation work still blocks the next profile tier.
 Before deciding what the new machine should do next, also read `docs/TOURNAMENT_UNLOCK_WORKPLAN.md` and inspect `docs/tournament_unlocks/tournament_unlock_workplan_handoff.md` so the execution plane follows the current evidence mission instead of improvising one.
+Before trying to produce the next trusted paper session, also read `docs/EXECUTION_EVIDENCE_CONTRACT.md` and inspect `docs/execution_evidence/execution_evidence_contract_handoff.md` so the machine knows exactly what the next session must leave behind to count as unlock-worthy evidence.
 Do not treat a planned or executable profile as automatically safe to activate just because it is listed in the registry; also respect the profile's execution evidence floor, broker-audit requirements, and exit-telemetry requirements from the current tournament profile handoff.
 
 ## 6. Run The Family-Expansion Tournament Conveyor
@@ -379,6 +380,7 @@ Then act as the execution-plane mission operator for the new machine.
 3. Report:
    - the current unlocked profile that should remain in use
    - the current execution-plane evidence mission
+   - the execution evidence contract for the next trusted session
    - the exact artifacts the next trusted session must leave behind
    - the completion gates that would let the control plane reconsider the next blocked profile
 4. Do not modify the live manifest, do not change strategy or risk policy, and do not start trading in this step.

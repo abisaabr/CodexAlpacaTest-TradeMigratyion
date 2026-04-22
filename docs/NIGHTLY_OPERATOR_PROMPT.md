@@ -20,6 +20,7 @@ Read first:
 - docs/TOURNAMENT_PROFILE_REGISTRY.md
 - docs/TOURNAMENT_UNLOCK_REGISTRY.md
 - docs/TOURNAMENT_UNLOCK_WORKPLAN.md
+- docs/EXECUTION_EVIDENCE_CONTRACT.md
 - docs/NIGHTLY_OPERATOR_PLAYBOOK.md
 - docs/AGENT_OPERATING_MODEL.md
 - docs/STRATEGY_FAMILY_REGISTRY.md
@@ -32,14 +33,15 @@ Your job is to run one disciplined nightly cycle that:
 4. refreshes the tournament profile registry and tournament profile handoff, respecting execution evidence floors and audit gates before activating more aggressive or opening-window profiles
 5. refreshes the tournament unlock registry and tournament unlock handoff so the machine can explain what evidence or implementation work still blocks the next profile tier
 6. refreshes the tournament unlock workplan and workplan handoff so the research plane and execution plane each get one explicit next mission
-7. refreshes the family registry and handoff packet
-8. refreshes the ticker coverage view
-9. materializes any missing priority symbols when needed
-10. runs the next family discovery wave
-11. runs exhaustive follow-up on survivors
-12. validates challengers against the current live champion book
-13. builds hardening review, replacement plan, and morning handoff packets
-14. leaves the live manifest unchanged unless I explicitly approve a reviewed add/replace packet
+7. refreshes the execution evidence contract and contract handoff so the next trusted paper session has an explicit acceptance checklist
+8. refreshes the family registry and handoff packet
+9. refreshes the ticker coverage view
+10. materializes any missing priority symbols when needed
+11. runs the next family discovery wave
+12. runs exhaustive follow-up on survivors
+13. validates challengers against the current live champion book
+14. builds hardening review, replacement plan, and morning handoff packets
+15. leaves the live manifest unchanged unless I explicitly approve a reviewed add/replace packet
 
 Hard rules:
 - Do not auto-promote strategies into the live manifest.
@@ -60,25 +62,28 @@ Execution order:
 9. Run `build_tournament_unlock_handoff.py`
 10. Run `build_tournament_unlock_workplan.py`
 11. Run `build_tournament_unlock_workplan_handoff.py`
-12. Run `build_strategy_family_registry.py`
-13. Run `build_strategy_family_handoff.py`
-14. Run `build_ticker_family_coverage.py`
-15. If needed, run `materialize_backtester_ready.py`
-16. Build and validate the Phase 1 launch pack
-17. Run the discovery lanes
-18. Build the shortlist
-19. Build and validate the Phase 2 launch pack
-20. Run exhaustive follow-up
-21. Run shared-account validation
-22. Build hardening review
-23. Build replacement plan
-24. Build morning handoff
-25. Refresh the run-registry packet and active-program packet where appropriate
+12. Run `build_execution_evidence_contract.py`
+13. Run `build_execution_evidence_contract_handoff.py`
+14. Run `build_strategy_family_registry.py`
+15. Run `build_strategy_family_handoff.py`
+16. Run `build_ticker_family_coverage.py`
+17. If needed, run `materialize_backtester_ready.py`
+18. Build and validate the Phase 1 launch pack
+19. Run the discovery lanes
+20. Build the shortlist
+21. Build and validate the Phase 2 launch pack
+22. Run exhaustive follow-up
+23. Run shared-account validation
+24. Build hardening review
+25. Build replacement plan
+26. Build morning handoff
+27. Refresh the run-registry packet and active-program packet where appropriate
 
 Prefer using `cleanroom/code/qqq_options_30d_cleanroom/launch_nightly_operator_cycle.ps1` as the top-level entrypoint when it is available, so the cycle is executed as one governed operator flow instead of a loose sequence of manual steps. If you need to inspect or repair a phase, do that surgically, then return to the top-level cycle.
 Use the tournament profile registry and tournament profile handoff together so the machine resolves the nightly cycle from approved executable profiles plus current execution posture, instead of treating profile choice as a static prompt default.
 Use the tournament unlock registry and tournament unlock handoff to explain what evidence or implementation work still blocks the next profile tier, instead of inferring unlock conditions from scattered reasons or score penalties.
 Use the tournament unlock workplan and workplan handoff to keep the next research-plane mission and the next execution-plane evidence mission separate and explicit.
+Use the execution evidence contract and contract handoff to make the next paper-runner session pass or fail against a concrete acceptance checklist instead of a vague telemetry goal.
 
 Output requirements:
 - show what ran

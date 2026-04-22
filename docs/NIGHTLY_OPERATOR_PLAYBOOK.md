@@ -28,6 +28,9 @@ Before assigning agent work, refresh and inspect:
 - `docs/TOURNAMENT_UNLOCK_WORKPLAN.md`
 - `docs/tournament_unlocks/tournament_unlock_workplan.md`
 - `docs/tournament_unlocks/tournament_unlock_workplan_handoff.md`
+- `docs/EXECUTION_EVIDENCE_CONTRACT.md`
+- `docs/execution_evidence/execution_evidence_contract.md`
+- `docs/execution_evidence/execution_evidence_contract_handoff.md`
 
 It is written for the current two-machine setup:
 - current research machine = primary research plane
@@ -99,6 +102,10 @@ Required outputs:
 - `tournament_unlock_workplan.md`
 - `tournament_unlock_workplan_handoff.json`
 - `tournament_unlock_workplan_handoff.md`
+- `execution_evidence_contract.json`
+- `execution_evidence_contract.md`
+- `execution_evidence_contract_handoff.json`
+- `execution_evidence_contract_handoff.md`
 - `strategy_family_registry.json`
 - `strategy_family_registry.md`
 - `strategy_family_handoff.json`
@@ -119,6 +126,7 @@ Tasks:
 - refresh the tournament profile registry and tournament profile handoff so profile choice is resolved from approved executable profiles plus current execution posture
 - refresh the tournament unlock registry and tournament unlock handoff so the operator can see what evidence or implementation work still blocks the next tournament tier
 - refresh the tournament unlock workplan and workplan handoff so the research plane and execution plane each get one explicit next mission
+- refresh the execution evidence contract and contract handoff so the next paper-runner session has an explicit acceptance checklist
 - refresh the formal family registry
 - refresh the family handoff packet
 - refresh ticker-family coverage

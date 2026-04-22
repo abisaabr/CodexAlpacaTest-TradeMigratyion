@@ -52,6 +52,8 @@ $tournamentUnlockBuilderPath = Join-Path $scriptRoot "build_tournament_unlock_re
 $tournamentUnlockHandoffBuilderPath = Join-Path $scriptRoot "build_tournament_unlock_handoff.py"
 $tournamentUnlockWorkplanBuilderPath = Join-Path $scriptRoot "build_tournament_unlock_workplan.py"
 $tournamentUnlockWorkplanHandoffBuilderPath = Join-Path $scriptRoot "build_tournament_unlock_workplan_handoff.py"
+$executionEvidenceContractBuilderPath = Join-Path $scriptRoot "build_execution_evidence_contract.py"
+$executionEvidenceContractHandoffBuilderPath = Join-Path $scriptRoot "build_execution_evidence_contract_handoff.py"
 $coverageBuilderPath = Join-Path $scriptRoot "build_ticker_family_coverage.py"
 $programLauncherPath = Join-Path $scriptRoot "launch_down_choppy_program.ps1"
 $validatorPath = Join-Path $scriptRoot "validate_program_live_book.py"
@@ -188,6 +190,14 @@ function Write-Status {
         tournament_unlock_workplan_handoff_json =
             if (Test-Path $tournamentUnlockWorkplanHandoffJsonPath) {
                 $tournamentUnlockWorkplanHandoffJsonPath
+            }
+            else {
+                ""
+            }
+        execution_evidence_contract_dir = $executionEvidenceRoot
+        execution_evidence_contract_handoff_json =
+            if (Test-Path $executionEvidenceContractHandoffJsonPath) {
+                $executionEvidenceContractHandoffJsonPath
             }
             else {
                 ""
@@ -349,6 +359,7 @@ $sessionReconciliationRoot = Join-Path $cycleRootPath "session_reconciliation"
 $executionCalibrationRoot = Join-Path $cycleRootPath "execution_calibration"
 $tournamentProfileRoot = Join-Path $cycleRootPath "tournament_profiles"
 $tournamentUnlockRoot = Join-Path $cycleRootPath "tournament_unlocks"
+$executionEvidenceRoot = Join-Path $cycleRootPath "execution_evidence"
 $coverageRefreshRoot = Join-Path $cycleRootPath "coverage_refresh"
 $runRegistryReportDir = Join-Path $cycleRootPath "run_registry_report"
 $activeProgramReportDir = Join-Path $cycleRootPath "active_program_report"
@@ -366,6 +377,8 @@ $tournamentProfileHandoffJsonPath = Join-Path $tournamentProfileRoot "tournament
 $tournamentUnlockHandoffJsonPath = Join-Path $tournamentUnlockRoot "tournament_unlock_handoff.json"
 $tournamentUnlockWorkplanJsonPath = Join-Path $tournamentUnlockRoot "tournament_unlock_workplan.json"
 $tournamentUnlockWorkplanHandoffJsonPath = Join-Path $tournamentUnlockRoot "tournament_unlock_workplan_handoff.json"
+$executionEvidenceContractJsonPath = Join-Path $executionEvidenceRoot "execution_evidence_contract.json"
+$executionEvidenceContractHandoffJsonPath = Join-Path $executionEvidenceRoot "execution_evidence_contract_handoff.json"
 $programStatusPath = Join-Path $programRootPath "program_status.json"
 $phase2PackPath = Join-Path $programRootPath "phase2\launch_pack\phase2_agent_wave_pack.json"
 $phase2PackStatusPath = Join-Path $programRootPath "phase2\launch_pack\launch_status.json"
@@ -384,6 +397,7 @@ New-Item -ItemType Directory -Force -Path $executionCalibrationRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $familyRefreshRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $tournamentProfileRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $tournamentUnlockRoot | Out-Null
+New-Item -ItemType Directory -Force -Path $executionEvidenceRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $coverageRefreshRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $runRegistryReportDir | Out-Null
 New-Item -ItemType Directory -Force -Path $activeProgramReportDir | Out-Null
@@ -647,8 +661,36 @@ if (-not (Test-Path $tournamentUnlockWorkplanHandoffJsonPath)) {
     throw "Tournament unlock workplan handoff JSON was not created at $tournamentUnlockWorkplanHandoffJsonPath"
 }
 
+Write-Status -Phase "refreshing_execution_evidence_contract" -Message "Refreshing the execution evidence contract for the next trusted paper session."
+
+$executionEvidenceContractArgs = @(
+    "--workplan-json", $tournamentUnlockWorkplanJsonPath,
+    "--session-registry-json", $sessionReconciliationJsonPath,
+    "--session-handoff-json", $sessionReconciliationHandoffJsonPath,
+    "--execution-handoff-json", $executionCalibrationHandoffJsonPath,
+    "--report-dir", $executionEvidenceRoot
+)
+Invoke-PythonStep -ScriptPath $executionEvidenceContractBuilderPath -Arguments $executionEvidenceContractArgs -FailureMessage "Failed to refresh execution evidence contract."
+
+if (-not (Test-Path $executionEvidenceContractJsonPath)) {
+    throw "Execution evidence contract JSON was not created at $executionEvidenceContractJsonPath"
+}
+
+Write-Status -Phase "refreshing_execution_evidence_contract_handoff" -Message "Refreshing the execution evidence contract handoff."
+
+$executionEvidenceContractHandoffArgs = @(
+    "--contract-json", $executionEvidenceContractJsonPath,
+    "--report-dir", $executionEvidenceRoot
+)
+Invoke-PythonStep -ScriptPath $executionEvidenceContractHandoffBuilderPath -Arguments $executionEvidenceContractHandoffArgs -FailureMessage "Failed to refresh execution evidence contract handoff."
+
+if (-not (Test-Path $executionEvidenceContractHandoffJsonPath)) {
+    throw "Execution evidence contract handoff JSON was not created at $executionEvidenceContractHandoffJsonPath"
+}
+
 $cycleManifest.tournament_unlock_handoff_json = $tournamentUnlockHandoffJsonPath
- $cycleManifest.tournament_unlock_workplan_handoff_json = $tournamentUnlockWorkplanHandoffJsonPath
+$cycleManifest.tournament_unlock_workplan_handoff_json = $tournamentUnlockWorkplanHandoffJsonPath
+$cycleManifest.execution_evidence_contract_handoff_json = $executionEvidenceContractHandoffJsonPath
 Write-JsonFile -Path $manifestPath -Payload $cycleManifest
 
 Write-Status -Phase "refreshing_family_registry" -Message "Refreshing the strategy family registry."
@@ -739,6 +781,8 @@ Write-Status -Phase "planned" -Message "Nightly operator cycle planned successfu
         tournament_unlock_handoff_json = $tournamentUnlockHandoffJsonPath
         tournament_unlock_workplan_json = $tournamentUnlockWorkplanJsonPath
         tournament_unlock_workplan_handoff_json = $tournamentUnlockWorkplanHandoffJsonPath
+        execution_evidence_contract_json = $executionEvidenceContractJsonPath
+        execution_evidence_contract_handoff_json = $executionEvidenceContractHandoffJsonPath
         resolved_tournament_profile = $resolvedTournamentProfile
         coverage_plan_json = $coveragePlanPath
         program_status_path = $programStatusPath
@@ -860,6 +904,8 @@ $finalPayload = [ordered]@{
     tournament_unlock_handoff_json = $tournamentUnlockHandoffJsonPath
     tournament_unlock_workplan_json = $tournamentUnlockWorkplanJsonPath
     tournament_unlock_workplan_handoff_json = $tournamentUnlockWorkplanHandoffJsonPath
+    execution_evidence_contract_json = $executionEvidenceContractJsonPath
+    execution_evidence_contract_handoff_json = $executionEvidenceContractHandoffJsonPath
     coverage_plan_json = $coveragePlanPath
     phase2_pack_json =
         if (Test-Path $phase2PackPath) {
@@ -901,6 +947,8 @@ Write-Status -Phase "completed" -Message "Nightly operator cycle completed succe
         tournament_unlock_handoff_json = $tournamentUnlockHandoffJsonPath
         tournament_unlock_workplan_json = $tournamentUnlockWorkplanJsonPath
         tournament_unlock_workplan_handoff_json = $tournamentUnlockWorkplanHandoffJsonPath
+        execution_evidence_contract_json = $executionEvidenceContractJsonPath
+        execution_evidence_contract_handoff_json = $executionEvidenceContractHandoffJsonPath
         resolved_tournament_profile = $resolvedTournamentProfile
         coverage_plan_json = $coveragePlanPath
         validation_json = $validationJsonPath
