@@ -194,6 +194,7 @@ Write-PaperRunnerGate -Status "pending" -Phase "waiting" -Message "Waiting for t
 Invoke-RunRegistryReport
 
 $launchPayload = $null
+$recoveredPhase2Completion = $false
 while ((Get-Date) -lt $deadline) {
     $launchPayload = Get-LaunchPayload
     if ($null -eq $launchPayload) {
@@ -245,6 +246,7 @@ while ((Get-Date) -lt $deadline) {
                     exit 5
                 }
                 Write-Log "Phase 2 lane runners exited cleanly with master_summary artifacts. Starting live-book validation."
+                $recoveredPhase2Completion = $true
                 break
             }
         }
@@ -259,7 +261,7 @@ while ((Get-Date) -lt $deadline) {
     Start-Sleep -Seconds $PollSeconds
 }
 
-if ($null -eq $launchPayload -or [string]$launchPayload.phase -ne "completed") {
+if ($null -eq $launchPayload -or (([string]$launchPayload.phase -ne "completed") -and (-not $recoveredPhase2Completion))) {
     Write-Log "Timed out waiting for the Phase 2 launch pack to complete."
     Write-Status -Phase "failed" -Message "Timed out waiting for the Phase 2 launch pack to complete."
     Write-PaperRunnerGate -Status "failed" -Phase "failed" -Message "Timed out waiting for the Phase 2 launch pack to complete."

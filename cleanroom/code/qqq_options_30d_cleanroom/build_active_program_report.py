@@ -429,8 +429,11 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
 
     program_phase = str(program_status.get("phase", ""))
     if lane_source == "phase2_launch_pack":
+        resume_phase = str(resume_followon_status.get("phase", ""))
         launch_phase = str(phase2_launch_status.get("phase", ""))
-        if launch_phase:
+        if resume_phase:
+            program_phase = f"phase2_resumed:{resume_phase}"
+        elif launch_phase:
             program_phase = f"phase2_resumed:{launch_phase}"
 
     validation_effective, review_effective, replacement_effective, handoff_effective = effective_followon_statuses(
