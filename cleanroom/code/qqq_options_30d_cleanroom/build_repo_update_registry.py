@@ -109,6 +109,19 @@ def normalize_status_path(line: str) -> str:
     return path.replace("\\", "/")
 
 
+def should_ignore_dirty_path(path: str, prefixes: tuple[str, ...]) -> bool:
+    normalized = path.replace("\\", "/").strip()
+    if not normalized:
+        return False
+    if normalized.endswith("/__pycache__") or "/__pycache__/" in normalized:
+        return True
+    for prefix in prefixes:
+        cleaned = prefix.rstrip("/\\")
+        if normalized == cleaned or normalized.startswith(cleaned + "/"):
+            return True
+    return False
+
+
 def build_repo_result(spec: RepoSpec, *, skip_fetch: bool) -> dict[str, Any]:
     repo_exists = spec.path.exists()
     result: dict[str, Any] = {
@@ -146,10 +159,7 @@ def build_repo_result(spec: RepoSpec, *, skip_fetch: bool) -> dict[str, Any]:
         if not line.strip():
             continue
         normalized_path = normalize_status_path(line)
-        if normalized_path and any(
-            normalized_path.startswith(prefix.rstrip("/\\") + "/") or normalized_path == prefix.rstrip("/\\")
-            for prefix in spec.ignore_dirty_prefixes
-        ):
+        if normalized_path and should_ignore_dirty_path(normalized_path, spec.ignore_dirty_prefixes):
             continue
         dirty_lines.append(line)
     dirty = bool(dirty_lines)
