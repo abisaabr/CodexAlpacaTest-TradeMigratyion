@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T11:02:56.909348",
+  "generated_at": "2026-04-22T16:07:00.996882",
   "source_operating_model_json": "embedded_fallback_operating_model",
   "institutional_rules": [
     "Discovery should be assigned by family cohort to avoid overlap and improve frontier coverage.",
@@ -498,6 +498,7 @@
       "may_update_runner_gate": false,
       "may_publish_review_packets": false,
       "scripts": [
+        "launch_balanced_family_expansion_program.ps1",
         "run_core_strategy_expansion_overnight.py",
         "run_multiticker_cleanroom_portfolio.py"
       ],

@@ -2,7 +2,7 @@
 
 ## Resolution
 
-- Generated at: `2026-04-22T15:54:35.353827`
+- Generated at: `2026-04-22T16:07:00.489805`
 - Requested profile: `auto`
 - Resolved profile: `down_choppy_coverage_ranked`
 - Resolution mode: `auto_recommended`
@@ -92,7 +92,7 @@
 ### balanced_family_expansion_benchmark
 
 - Score: `-763`
-- Executable now: `false`
+- Executable now: `true`
 - Execution risk tier: `moderate`
 - Entry friction sensitivity: `medium`
 - Exit model dependency: `medium`

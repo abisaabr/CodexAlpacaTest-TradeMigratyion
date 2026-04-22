@@ -198,7 +198,15 @@ def build_agent_rows(plan: dict[str, Any]) -> list[dict[str, Any]]:
                 "selection_profile": "down_choppy_focus" if agent["strategy_set"] == "down_choppy_exhaustive" else "balanced",
                 "scripts": [
                     "build_family_wave_shortlist.py",
-                    "launch_down_choppy_program.ps1" if agent["strategy_set"] == "down_choppy_exhaustive" else "run_core_strategy_expansion_overnight.py",
+                    (
+                        "launch_down_choppy_program.ps1"
+                        if agent["strategy_set"] == "down_choppy_exhaustive"
+                        else (
+                            "launch_balanced_family_expansion_program.ps1"
+                            if agent["strategy_set"] == "family_expansion"
+                            else "run_core_strategy_expansion_overnight.py"
+                        )
+                    ),
                     "run_multiticker_cleanroom_portfolio.py",
                 ],
                 "inputs": [

@@ -2,20 +2,20 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T15:54:35.867253`
+- Generated at: `2026-04-22T16:07:00.956751`
 - Current unlocked profile: `down_choppy_coverage_ranked`
 - Available but not preferred: `down_choppy_full_ready`
 
 ## Research Plane Mission
 
 - Owner: `current_research_machine`
-- Title: Wire governed execution for `balanced_family_expansion_benchmark`.
-- Primary target profile: `balanced_family_expansion_benchmark`
-- Action: Add a governed executable entrypoint for `balanced_family_expansion_benchmark` instead of leaving it tracked-only in policy.
+- Title: Wire governed execution for `opening_30m_convexity_butterfly`.
+- Primary target profile: `opening_30m_convexity_butterfly`
+- Action: Add a governed executable entrypoint for `opening_30m_convexity_butterfly` instead of leaving it tracked-only in policy.
 - Action: Make sure the new path participates in the same nightly-operator control plane, lineage, validation, and morning-handoff chain.
 - Action: Refresh the tournament profile registry, tournament profile handoff, tournament unlock registry, and tournament unlock handoff after wiring is complete.
-- Success: `balanced_family_expansion_benchmark` no longer carries `implementation_not_wired` in the unlock registry.
-- Success: `balanced_family_expansion_benchmark` is executable in code, even if execution evidence still blocks activation.
+- Success: `opening_30m_convexity_butterfly` no longer carries `implementation_not_wired` in the unlock registry.
+- Success: `opening_30m_convexity_butterfly` is executable in code, even if execution evidence still blocks activation.
 - Success: The governed operator artifacts regenerate cleanly after the new profile wiring.
 
 ## Execution Plane Mission
@@ -36,5 +36,5 @@
 ## Completion Gates
 
 - `opening_30m_premium_defense`: clear `execution_evidence_floor, broker_order_audit_coverage, broker_activity_audit_coverage` via `upgrade_execution_evidence_to_entry_and_reconciliation, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
-- `balanced_family_expansion_benchmark`: clear `implementation_not_wired, execution_evidence_floor, broker_order_audit_coverage, broker_activity_audit_coverage` via `wire_profile_entrypoint, upgrade_execution_evidence_to_entry_and_reconciliation, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
+- `balanced_family_expansion_benchmark`: clear `execution_evidence_floor, broker_order_audit_coverage, broker_activity_audit_coverage` via `upgrade_execution_evidence_to_entry_and_reconciliation, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
 - `opening_30m_convexity_butterfly`: clear `implementation_not_wired, execution_evidence_floor, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry` via `wire_profile_entrypoint, upgrade_execution_evidence_to_broad, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`

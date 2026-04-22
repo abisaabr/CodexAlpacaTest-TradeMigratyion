@@ -1,11 +1,12 @@
 {
-  "generated_at": "2026-04-22T15:54:35.170197",
+  "generated_at": "2026-04-22T16:07:00.368773",
   "default_profile": "down_choppy_coverage_ranked",
   "active_profiles": [
     "down_choppy_coverage_ranked",
     "down_choppy_full_ready"
   ],
   "executable_profiles": [
+    "balanced_family_expansion_benchmark",
     "down_choppy_coverage_ranked",
     "down_choppy_full_ready",
     "opening_30m_premium_defense"
@@ -260,7 +261,7 @@
     {
       "profile_id": "balanced_family_expansion_benchmark",
       "status": "partial",
-      "executable_now": false,
+      "executable_now": true,
       "objective": "Cross-regime balanced family-expansion benchmark for diversified research and replacement pressure on the live book.",
       "regime_focus": [
         "bull",
@@ -269,8 +270,8 @@
       ],
       "session_focus": "full_session",
       "execution_window": "all_day",
-      "entrypoint": "manual_orchestrator",
-      "underlying_program": "run_core_strategy_expansion_overnight.py",
+      "entrypoint": "launch_nightly_operator_cycle.ps1",
+      "underlying_program": "launch_balanced_family_expansion_program.ps1",
       "discovery_source": "coverage_ranked",
       "bootstrap_ready_universe": true,
       "strategy_sets": [
@@ -293,7 +294,7 @@
       "requires_exit_telemetry": false,
       "preferred_machine_now": "current_research_machine",
       "preferred_machine_target": "either_machine",
-      "notes": "Already executable as a research program, but not yet wired into the single-command nightly operator cycle.",
+      "notes": "Governed execution is now wired through the nightly operator as a compact benchmark bundle, but activation still depends on stronger broker-audited execution evidence.",
       "families": [
         "Single-leg long call",
         "Single-leg long put",

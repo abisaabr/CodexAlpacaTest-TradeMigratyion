@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-04-22T15:54:35.353827",
-  "registry_generated_at": "2026-04-22T15:54:35.170197",
+  "generated_at": "2026-04-22T16:07:00.489805",
+  "registry_generated_at": "2026-04-22T16:07:00.368773",
   "execution_handoff_generated_at": "2026-04-22T14:46:18.843084",
   "requested_profile": "auto",
   "resolved_profile": "down_choppy_coverage_ranked",
@@ -101,7 +101,7 @@
     {
       "profile_id": "balanced_family_expansion_benchmark",
       "status": "partial",
-      "executable_now": false,
+      "executable_now": true,
       "score": -763,
       "reasons": [
         "posture caution favors moderate risk tier (+5)",

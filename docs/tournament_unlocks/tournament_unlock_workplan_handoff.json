@@ -1,28 +1,28 @@
 {
-  "generated_at": "2026-04-22T15:54:35.867253",
+  "generated_at": "2026-04-22T16:07:00.956751",
   "workplan_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_workplan.json",
   "current_unlocked_profile": "down_choppy_coverage_ranked",
-  "research_plane_title": "Wire governed execution for `balanced_family_expansion_benchmark`.",
+  "research_plane_title": "Wire governed execution for `opening_30m_convexity_butterfly`.",
   "execution_plane_title": "Produce the next trusted broker-audited execution evidence package.",
   "operator_actions": [
     "Keep running `down_choppy_coverage_ranked` as the unlocked governed profile.",
-    "Clear the implementation blocker on `balanced_family_expansion_benchmark` so the remaining unlock path is governed only by execution evidence and session trust.",
+    "Clear the implementation blocker on `opening_30m_convexity_butterfly` so the remaining unlock path is governed only by execution evidence and session trust.",
     "The execution plane should focus on landing fresh trusted paper-runner evidence that removes the current audit and evidence-floor blockers from the nearest unlock targets."
   ],
   "research_plane_mission": {
     "owner": "current_research_machine",
     "mission_code": "wire_next_unlock_profile",
-    "title": "Wire governed execution for `balanced_family_expansion_benchmark`.",
-    "primary_target_profile": "balanced_family_expansion_benchmark",
-    "summary": "Clear the implementation blocker on `balanced_family_expansion_benchmark` so the remaining unlock path is governed only by execution evidence and session trust.",
+    "title": "Wire governed execution for `opening_30m_convexity_butterfly`.",
+    "primary_target_profile": "opening_30m_convexity_butterfly",
+    "summary": "Clear the implementation blocker on `opening_30m_convexity_butterfly` so the remaining unlock path is governed only by execution evidence and session trust.",
     "actions": [
-      "Add a governed executable entrypoint for `balanced_family_expansion_benchmark` instead of leaving it tracked-only in policy.",
+      "Add a governed executable entrypoint for `opening_30m_convexity_butterfly` instead of leaving it tracked-only in policy.",
       "Make sure the new path participates in the same nightly-operator control plane, lineage, validation, and morning-handoff chain.",
       "Refresh the tournament profile registry, tournament profile handoff, tournament unlock registry, and tournament unlock handoff after wiring is complete."
     ],
     "success_criteria": [
-      "`balanced_family_expansion_benchmark` no longer carries `implementation_not_wired` in the unlock registry.",
-      "`balanced_family_expansion_benchmark` is executable in code, even if execution evidence still blocks activation.",
+      "`opening_30m_convexity_butterfly` no longer carries `implementation_not_wired` in the unlock registry.",
+      "`opening_30m_convexity_butterfly` is executable in code, even if execution evidence still blocks activation.",
       "The governed operator artifacts regenerate cleanly after the new profile wiring."
     ]
   },
@@ -70,15 +70,13 @@
     },
     {
       "profile_id": "balanced_family_expansion_benchmark",
-      "activation_state": "implementation_and_policy_blocked",
+      "activation_state": "policy_blocked",
       "required_clearances": [
-        "implementation_not_wired",
         "execution_evidence_floor",
         "broker_order_audit_coverage",
         "broker_activity_audit_coverage"
       ],
       "next_unlock_objectives": [
-        "wire_profile_entrypoint",
         "upgrade_execution_evidence_to_entry_and_reconciliation",
         "land_trusted_broker_order_audit_sessions",
         "land_trusted_broker_activity_audit_sessions"

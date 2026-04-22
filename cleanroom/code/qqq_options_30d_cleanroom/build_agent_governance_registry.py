@@ -156,7 +156,11 @@ FALLBACK_OPERATING_MODEL: dict[str, Any] = {
             "writes_live_state": False,
             "strategy_set": "family_expansion",
             "selection_profile": "balanced",
-            "scripts": ["run_core_strategy_expansion_overnight.py", "run_multiticker_cleanroom_portfolio.py"],
+            "scripts": [
+                "launch_balanced_family_expansion_program.ps1",
+                "run_core_strategy_expansion_overnight.py",
+                "run_multiticker_cleanroom_portfolio.py",
+            ],
             "inputs": ["Phase 1 shortlist", "benchmark symbols", "friction-aware lane summaries"],
             "outputs": ["balanced walkforward summaries", "family rankings", "run manifests"],
             "success_gate": "Cross-regime benchmark names and validated survivors only.",

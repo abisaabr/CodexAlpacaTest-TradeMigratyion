@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T15:54:35.528049",
+  "generated_at": "2026-04-22T16:07:00.501558",
   "profile_registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_profiles\\tournament_profile_registry.json",
   "profile_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_profiles\\tournament_profile_handoff.json",
   "execution_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_calibration\\execution_calibration_handoff.json",
@@ -44,7 +44,7 @@
         "summary": "Wire this profile into an executable governed entrypoint and launch path before trying to activate it.",
         "category": "implementation",
         "priority": 1,
-        "affected_profile_count": 3
+        "affected_profile_count": 2
       },
       {
         "objective_code": "upgrade_execution_evidence_to_broad",
@@ -155,26 +155,18 @@
       {
         "profile_id": "balanced_family_expansion_benchmark",
         "status": "partial",
-        "executable_now": false,
-        "activation_state": "implementation_and_policy_blocked",
+        "executable_now": true,
+        "activation_state": "policy_blocked",
         "recommendation_level": "blocked",
         "resolved_now": false,
         "current_score": -763,
-        "unmet_requirement_count": 4,
+        "unmet_requirement_count": 3,
         "blocker_codes": [
-          "implementation_not_wired",
           "execution_evidence_floor",
           "broker_order_audit_coverage",
           "broker_activity_audit_coverage"
         ],
         "blockers": [
-          {
-            "blocker_code": "implementation_not_wired",
-            "summary": "Profile is tracked in governance but does not yet have a governed executable entrypoint.",
-            "category": "implementation",
-            "current": "partial",
-            "required": "executable_now"
-          },
           {
             "blocker_code": "execution_evidence_floor",
             "summary": "Current execution evidence `limited_entry_only` is below this profile's floor `entry_and_reconciliation`.",
@@ -198,12 +190,6 @@
           }
         ],
         "next_unlock_objectives": [
-          {
-            "objective_code": "wire_profile_entrypoint",
-            "summary": "Wire this profile into an executable governed entrypoint and launch path before trying to activate it.",
-            "category": "implementation",
-            "priority": 1
-          },
           {
             "objective_code": "upgrade_execution_evidence_to_entry_and_reconciliation",
             "summary": "Upgrade execution evidence from `limited_entry_only` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
@@ -604,112 +590,6 @@
       ]
     },
     {
-      "profile_id": "balanced_family_expansion_benchmark",
-      "status": "partial",
-      "executable_now": false,
-      "activation_state": "implementation_and_policy_blocked",
-      "recommendation_level": "blocked",
-      "resolved_now": false,
-      "current_score": -763,
-      "unmet_requirement_count": 4,
-      "blocker_codes": [
-        "implementation_not_wired",
-        "execution_evidence_floor",
-        "broker_order_audit_coverage",
-        "broker_activity_audit_coverage"
-      ],
-      "blockers": [
-        {
-          "blocker_code": "implementation_not_wired",
-          "summary": "Profile is tracked in governance but does not yet have a governed executable entrypoint.",
-          "category": "implementation",
-          "current": "partial",
-          "required": "executable_now"
-        },
-        {
-          "blocker_code": "execution_evidence_floor",
-          "summary": "Current execution evidence `limited_entry_only` is below this profile's floor `entry_and_reconciliation`.",
-          "category": "evidence",
-          "current": "limited_entry_only",
-          "required": "entry_and_reconciliation"
-        },
-        {
-          "blocker_code": "broker_order_audit_coverage",
-          "summary": "Profile requires broker-order audit coverage in trusted learning sessions before activation.",
-          "category": "audit",
-          "current": "true",
-          "required": "broker_order_audit_coverage_available"
-        },
-        {
-          "blocker_code": "broker_activity_audit_coverage",
-          "summary": "Profile requires broker account-activity audit coverage in trusted learning sessions before activation.",
-          "category": "audit",
-          "current": "true",
-          "required": "broker_activity_audit_coverage_available"
-        }
-      ],
-      "next_unlock_objectives": [
-        {
-          "objective_code": "wire_profile_entrypoint",
-          "summary": "Wire this profile into an executable governed entrypoint and launch path before trying to activate it.",
-          "category": "implementation",
-          "priority": 1
-        },
-        {
-          "objective_code": "upgrade_execution_evidence_to_entry_and_reconciliation",
-          "summary": "Upgrade execution evidence from `limited_entry_only` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
-          "category": "evidence",
-          "priority": 1
-        },
-        {
-          "objective_code": "land_trusted_broker_order_audit_sessions",
-          "summary": "Land fresh trusted paper sessions with broker-order audit coverage so broker-audited profiles can activate.",
-          "category": "audit",
-          "priority": 1
-        },
-        {
-          "objective_code": "land_trusted_broker_activity_audit_sessions",
-          "summary": "Land fresh trusted paper sessions with broker account-activity audit coverage so broker-audited profiles can activate.",
-          "category": "audit",
-          "priority": 1
-        }
-      ],
-      "session_focus": "full_session",
-      "execution_window": "all_day",
-      "execution_risk_tier": "moderate",
-      "minimum_execution_evidence_strength": "entry_and_reconciliation",
-      "preferred_machine_now": "current_research_machine",
-      "preferred_machine_target": "either_machine",
-      "trusted_learning_scope": "trusted_and_cautious_sessions",
-      "session_reconciliation_posture": "caution",
-      "families": [
-        "Single-leg long call",
-        "Single-leg long put",
-        "Debit call spread",
-        "Debit put spread",
-        "Credit call spread",
-        "Credit put spread",
-        "Iron condor",
-        "Iron butterfly",
-        "Call butterfly",
-        "Put butterfly",
-        "Broken-wing call butterfly",
-        "Broken-wing put butterfly",
-        "Call backspread",
-        "Put backspread",
-        "Long straddle",
-        "Long strangle"
-      ],
-      "evaluation_reasons": [
-        "posture caution favors moderate risk tier (+5)",
-        "current execution evidence `limited_entry_only` is below the profile floor `entry_and_reconciliation` (-250)",
-        "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
-        "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
-        "elevated entry friction penalizes medium sensitivity (-10)",
-        "exit telemetry gap penalizes medium exit-model dependency (-8)"
-      ]
-    },
-    {
       "profile_id": "opening_30m_convexity_butterfly",
       "status": "planned",
       "executable_now": false,
@@ -1053,6 +933,98 @@
         "elevated entry friction penalizes low sensitivity (-0)",
         "exit telemetry gap penalizes medium exit-model dependency (-8)",
         "profile research bias matches preferred execution-informed research bias (+15)"
+      ]
+    },
+    {
+      "profile_id": "balanced_family_expansion_benchmark",
+      "status": "partial",
+      "executable_now": true,
+      "activation_state": "policy_blocked",
+      "recommendation_level": "blocked",
+      "resolved_now": false,
+      "current_score": -763,
+      "unmet_requirement_count": 3,
+      "blocker_codes": [
+        "execution_evidence_floor",
+        "broker_order_audit_coverage",
+        "broker_activity_audit_coverage"
+      ],
+      "blockers": [
+        {
+          "blocker_code": "execution_evidence_floor",
+          "summary": "Current execution evidence `limited_entry_only` is below this profile's floor `entry_and_reconciliation`.",
+          "category": "evidence",
+          "current": "limited_entry_only",
+          "required": "entry_and_reconciliation"
+        },
+        {
+          "blocker_code": "broker_order_audit_coverage",
+          "summary": "Profile requires broker-order audit coverage in trusted learning sessions before activation.",
+          "category": "audit",
+          "current": "true",
+          "required": "broker_order_audit_coverage_available"
+        },
+        {
+          "blocker_code": "broker_activity_audit_coverage",
+          "summary": "Profile requires broker account-activity audit coverage in trusted learning sessions before activation.",
+          "category": "audit",
+          "current": "true",
+          "required": "broker_activity_audit_coverage_available"
+        }
+      ],
+      "next_unlock_objectives": [
+        {
+          "objective_code": "upgrade_execution_evidence_to_entry_and_reconciliation",
+          "summary": "Upgrade execution evidence from `limited_entry_only` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
+          "category": "evidence",
+          "priority": 1
+        },
+        {
+          "objective_code": "land_trusted_broker_order_audit_sessions",
+          "summary": "Land fresh trusted paper sessions with broker-order audit coverage so broker-audited profiles can activate.",
+          "category": "audit",
+          "priority": 1
+        },
+        {
+          "objective_code": "land_trusted_broker_activity_audit_sessions",
+          "summary": "Land fresh trusted paper sessions with broker account-activity audit coverage so broker-audited profiles can activate.",
+          "category": "audit",
+          "priority": 1
+        }
+      ],
+      "session_focus": "full_session",
+      "execution_window": "all_day",
+      "execution_risk_tier": "moderate",
+      "minimum_execution_evidence_strength": "entry_and_reconciliation",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "either_machine",
+      "trusted_learning_scope": "trusted_and_cautious_sessions",
+      "session_reconciliation_posture": "caution",
+      "families": [
+        "Single-leg long call",
+        "Single-leg long put",
+        "Debit call spread",
+        "Debit put spread",
+        "Credit call spread",
+        "Credit put spread",
+        "Iron condor",
+        "Iron butterfly",
+        "Call butterfly",
+        "Put butterfly",
+        "Broken-wing call butterfly",
+        "Broken-wing put butterfly",
+        "Call backspread",
+        "Put backspread",
+        "Long straddle",
+        "Long strangle"
+      ],
+      "evaluation_reasons": [
+        "posture caution favors moderate risk tier (+5)",
+        "current execution evidence `limited_entry_only` is below the profile floor `entry_and_reconciliation` (-250)",
+        "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
+        "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
+        "elevated entry friction penalizes medium sensitivity (-10)",
+        "exit telemetry gap penalizes medium exit-model dependency (-8)"
       ]
     }
   ]

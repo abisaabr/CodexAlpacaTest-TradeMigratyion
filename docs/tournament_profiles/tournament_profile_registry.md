@@ -6,7 +6,7 @@ This registry is the control-plane source of truth for which institutional tourn
 
 - Default profile: `down_choppy_coverage_ranked`
 - Active profiles: `down_choppy_coverage_ranked, down_choppy_full_ready`
-- Executable profiles: `down_choppy_coverage_ranked, down_choppy_full_ready, opening_30m_premium_defense`
+- Executable profiles: `balanced_family_expansion_benchmark, down_choppy_coverage_ranked, down_choppy_full_ready, opening_30m_premium_defense`
 
 ## Profiles
 
@@ -168,13 +168,13 @@ This registry is the control-plane source of truth for which institutional tourn
 ### balanced_family_expansion_benchmark
 
 - Status: `partial`
-- Executable now: `false`
+- Executable now: `true`
 - Objective: Cross-regime balanced family-expansion benchmark for diversified research and replacement pressure on the live book.
 - Regime focus: `bull, bear, choppy`
 - Session focus: `full_session`
 - Execution window: `all_day`
-- Entrypoint: `manual_orchestrator`
-- Underlying program: `run_core_strategy_expansion_overnight.py`
+- Entrypoint: `launch_nightly_operator_cycle.ps1`
+- Underlying program: `launch_balanced_family_expansion_program.ps1`
 - Discovery source: `coverage_ranked`
 - Bootstrap ready universe: `true`
 - Strategy sets: `family_expansion`
@@ -194,5 +194,5 @@ This registry is the control-plane source of truth for which institutional tourn
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `either_machine`
 - Families: `Single-leg long call`, `Single-leg long put`, `Debit call spread`, `Debit put spread`, `Credit call spread`, `Credit put spread`, `Iron condor`, `Iron butterfly`, `Call butterfly`, `Put butterfly`, `Broken-wing call butterfly`, `Broken-wing put butterfly`, `Call backspread`, `Put backspread`, `Long straddle`, `Long strangle`
-- Notes: Already executable as a research program, but not yet wired into the single-command nightly operator cycle.
+- Notes: Governed execution is now wired through the nightly operator as a compact benchmark bundle, but activation still depends on stronger broker-audited execution evidence.
 
