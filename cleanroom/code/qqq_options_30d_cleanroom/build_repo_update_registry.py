@@ -28,7 +28,7 @@ DEFAULT_EXECUTION_REPO_ROOT = first_existing_path(
     Path(r"C:\Users\rabisaab\OneDrive\CodexAlpaca\downloads_remaining_20260417\folders\codexalpaca_repo"),
 )
 DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "repo_updates"
-RUNNER_REQUIRED_COMMITS = ["50764cf", "4292514", "f6d6168", "8037710", "bdd7663"]
+RUNNER_REQUIRED_COMMITS = ["50764cf", "4292514", "f6d6168", "8037710", "bdd7663", "1e72e18"]
 
 
 @dataclass(frozen=True)

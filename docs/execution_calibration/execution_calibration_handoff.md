@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T10:56:34.894387`
+- Generated at: `2026-04-22T13:52:00.549675`
 - Posture: `caution`
 - Evidence strength: `limited_entry_only`
 
@@ -14,7 +14,8 @@
 - `exit_telemetry_gap`: `true`
 - `reconciliation_pressure`: `false`
 - `partial_fill_pressure`: `false`
-- `broker_audit_gap`: `true`
+- `broker_order_audit_gap`: `true`
+- `broker_activity_audit_gap`: `true`
 
 ## Policy Guidance
 
@@ -32,6 +33,7 @@
 - Favor premium-defense and defined-risk opening-window challengers before adding more aggressive debit-heavy opening profiles.
 - Treat current execution evidence as directional rather than fully authoritative because the completed-trade sample is still small.
 - Treat broker-order audit coverage itself as a telemetry gap until upgraded session bundles start landing from the execution machine.
+- Treat broker account-activity audit coverage as a telemetry gap until upgraded session bundles start landing from the execution machine.
 
 ## Top Entry Slippage Clusters
 

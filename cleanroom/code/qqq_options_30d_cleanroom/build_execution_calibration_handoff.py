@@ -29,10 +29,17 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
     completed_trade_count = int(summary.get("completed_trade_count", 0) or 0)
     severe_loss_sessions = int(summary.get("severe_loss_flatten_session_count", 0) or 0)
     broker_audit_sessions = int(summary.get("sessions_with_broker_order_audit", 0) or 0)
+    broker_activity_audit_sessions = int(summary.get("sessions_with_broker_activity_audit", 0) or 0)
     broker_status_mismatch_count = int(summary.get("broker_status_mismatch_count_total", 0) or 0)
     unmatched_local_order_count = int(summary.get("local_order_without_broker_match_count_total", 0) or 0)
     ending_broker_position_count = int(summary.get("ending_broker_position_count_total", 0) or 0)
-    partial_fill_count = int(summary.get("broker_partially_filled_order_count_total", 0) or 0)
+    broker_activity_unmatched_count = int(summary.get("broker_activity_unmatched_count_total", 0) or 0)
+    local_filled_order_without_activity_match_count = int(
+        summary.get("local_filled_order_without_activity_match_count_total", 0) or 0
+    )
+    partial_fill_count = int(summary.get("broker_partially_filled_order_count_total", 0) or 0) + int(
+        summary.get("broker_activity_partial_fill_count_total", 0) or 0
+    )
     entry_mean_pct = float(((summary.get("entry_abs_slippage_pct_of_expected") or {}).get("mean") or 0.0))
     event_mean_pct = float(((summary.get("event_entry_adverse_slippage_pct") or {}).get("mean") or 0.0))
     exit_obs = int(data_quality.get("exit_slippage_observations", 0) or 0)
@@ -45,9 +52,12 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
         broker_status_mismatch_count > 0
         or unmatched_local_order_count > 0
         or ending_broker_position_count > 0
+        or broker_activity_unmatched_count > 0
+        or local_filled_order_without_activity_match_count > 0
     )
     partial_fill_pressure = partial_fill_count > 0
-    broker_audit_gap = broker_audit_sessions == 0
+    broker_order_audit_gap = broker_audit_sessions == 0
+    broker_activity_audit_gap = broker_activity_audit_sessions == 0
 
     if (high_guardrail_pressure and elevated_entry_friction) or (
         reconciliation_pressure and (partial_fill_pressure or exit_telemetry_gap)
@@ -59,15 +69,16 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
         or exit_telemetry_gap
         or reconciliation_pressure
         or partial_fill_pressure
-        or broker_audit_gap
+        or broker_order_audit_gap
+        or broker_activity_audit_gap
     ):
         posture = "watch"
     else:
         posture = "stable"
 
-    if exit_telemetry_gap and broker_audit_gap and sample_size_limited:
+    if exit_telemetry_gap and broker_order_audit_gap and broker_activity_audit_gap and sample_size_limited:
         evidence_strength = "limited_entry_only"
-    elif exit_telemetry_gap and broker_audit_gap:
+    elif exit_telemetry_gap and broker_order_audit_gap and broker_activity_audit_gap:
         evidence_strength = "entry_only"
     elif exit_telemetry_gap and sample_size_limited:
         evidence_strength = "limited_entry_and_reconciliation"
@@ -88,7 +99,8 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
             "exit_telemetry_gap": exit_telemetry_gap,
             "reconciliation_pressure": reconciliation_pressure,
             "partial_fill_pressure": partial_fill_pressure,
-            "broker_audit_gap": broker_audit_gap,
+            "broker_order_audit_gap": broker_order_audit_gap,
+            "broker_activity_audit_gap": broker_activity_audit_gap,
         },
     }
 
@@ -138,11 +150,13 @@ def policy_recommendations(payload: dict[str, Any], posture: dict[str, Any]) -> 
     if flags["sample_size_limited"]:
         operator_actions.append("Treat current execution evidence as directional rather than fully authoritative because the completed-trade sample is still small.")
     if flags["reconciliation_pressure"]:
-        operator_actions.append("Inspect broker-order audit mismatches, unmatched local orders, and residual broker positions before trusting combo-heavy challengers or loosening exit assumptions.")
+        operator_actions.append("Inspect broker-order audit mismatches, broker-activity mismatches, unmatched local references, and residual broker positions before trusting combo-heavy challengers or loosening exit assumptions.")
     if flags["partial_fill_pressure"]:
-        operator_actions.append("Favor simpler exits, smaller size caps, and stronger cleanup assumptions while partial-fill pressure remains visible in broker audit artifacts.")
-    if flags["broker_audit_gap"]:
+        operator_actions.append("Favor simpler exits, smaller size caps, and stronger cleanup assumptions while partial-fill pressure remains visible in broker order and broker activity artifacts.")
+    if flags["broker_order_audit_gap"]:
         operator_actions.append("Treat broker-order audit coverage itself as a telemetry gap until upgraded session bundles start landing from the execution machine.")
+    if flags["broker_activity_audit_gap"]:
+        operator_actions.append("Treat broker account-activity audit coverage as a telemetry gap until upgraded session bundles start landing from the execution machine.")
 
     return {
         "entry_penalty_mode": entry_penalty_mode,

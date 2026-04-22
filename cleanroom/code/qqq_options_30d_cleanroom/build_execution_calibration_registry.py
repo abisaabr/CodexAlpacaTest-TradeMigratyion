@@ -254,10 +254,16 @@ def build_findings(payload: dict[str, Any]) -> list[dict[str, Any]]:
     summary = payload["summary"]
     data_quality = payload["data_quality"]
     broker_audit_sessions = int(summary.get("sessions_with_broker_order_audit", 0) or 0)
+    broker_activity_audit_sessions = int(summary.get("sessions_with_broker_activity_audit", 0) or 0)
     broker_status_mismatch_count = int(summary.get("broker_status_mismatch_count_total", 0) or 0)
     broker_partial_fill_count = int(summary.get("broker_partially_filled_order_count_total", 0) or 0)
     unmatched_local_order_count = int(summary.get("local_order_without_broker_match_count_total", 0) or 0)
     ending_broker_position_count = int(summary.get("ending_broker_position_count_total", 0) or 0)
+    broker_activity_unmatched_count = int(summary.get("broker_activity_unmatched_count_total", 0) or 0)
+    local_filled_order_without_activity_match_count = int(
+        summary.get("local_filled_order_without_activity_match_count_total", 0) or 0
+    )
+    broker_activity_partial_fill_count = int(summary.get("broker_activity_partial_fill_count_total", 0) or 0)
 
     if data_quality["exit_slippage_observations"] == 0:
         findings.append(
@@ -286,6 +292,15 @@ def build_findings(payload: dict[str, Any]) -> list[dict[str, Any]]:
             }
         )
 
+    if broker_activity_audit_sessions == 0:
+        findings.append(
+            {
+                "priority": "medium",
+                "type": "broker_activity_audit_gap",
+                "message": "Session-level broker account-activity audit artifacts are not present yet in the execution sample. That means the control plane still lacks a second source of truth for fills beyond local events and broker order snapshots.",
+            }
+        )
+
     if broker_status_mismatch_count > 0 or unmatched_local_order_count > 0 or ending_broker_position_count > 0:
         findings.append(
             {
@@ -296,12 +311,23 @@ def build_findings(payload: dict[str, Any]) -> list[dict[str, Any]]:
             }
         )
 
-    if broker_partial_fill_count > 0:
+    if broker_activity_unmatched_count > 0 or local_filled_order_without_activity_match_count > 0:
+        findings.append(
+            {
+                "priority": "high",
+                "type": "activity_reconciliation_pressure",
+                "message": "Broker account activity does not line up cleanly with local filled-order references yet. Session summaries show "
+                f"`{broker_activity_unmatched_count}` broker activity row(s) without a local match and `{local_filled_order_without_activity_match_count}` local filled order(s) without an activity match. Until this stabilizes, research should keep entry/exit realism conservative and avoid over-trusting combo-heavy challengers.",
+            }
+        )
+
+    if broker_partial_fill_count > 0 or broker_activity_partial_fill_count > 0:
         findings.append(
             {
                 "priority": "medium",
                 "type": "partial_fill_pressure",
-                "message": f"Broker audit captured `{broker_partial_fill_count}` partially filled order(s). That is a useful warning to keep multi-leg cleanup and size-cap assumptions conservative, especially in opening-window profiles.",
+                "message": "Execution telemetry captured partial-fill pressure in upgraded session artifacts. "
+                f"Broker orders show `{broker_partial_fill_count}` partially filled order(s), and broker activities show `{broker_activity_partial_fill_count}` partial fill activity row(s). That is a useful warning to keep multi-leg cleanup and size-cap assumptions conservative, especially in opening-window profiles.",
             }
         )
 
@@ -370,6 +396,7 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
     missing_state_dates: list[str] = []
     missing_event_dates: list[str] = []
     missing_broker_order_audit_dates: list[str] = []
+    missing_broker_activity_audit_dates: list[str] = []
     missing_ending_broker_position_dates: list[str] = []
 
     severe_loss_flatten_session_count = 0
@@ -382,6 +409,7 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
         completed_path = run_dir / "multi_ticker_portfolio_session_summary_completed_trades.csv"
         events_path = run_dir / "trade_reconciliation_events.json"
         broker_order_audit_path = run_dir / "multi_ticker_portfolio_session_summary_broker_order_audit.csv"
+        broker_activity_audit_path = run_dir / "multi_ticker_portfolio_session_summary_broker_account_activities.csv"
         ending_broker_positions_path = run_dir / "multi_ticker_portfolio_session_summary_ending_broker_positions.csv"
         state_path = state_root / f"session_{trade_date}.json"
 
@@ -390,6 +418,7 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
         completed_rows = load_csv_rows(completed_path)
         event_rows = load_json_array(events_path)
         broker_order_audit_rows = load_csv_rows(broker_order_audit_path)
+        broker_activity_audit_rows = load_csv_rows(broker_activity_audit_path)
         ending_broker_position_rows = load_csv_rows(ending_broker_positions_path)
         state_payload = load_json_object(state_path)
 
@@ -405,6 +434,8 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
             missing_event_dates.append(trade_date)
         if "broker_order_audit_available" in summary_payload and not broker_order_audit_path.exists():
             missing_broker_order_audit_dates.append(trade_date)
+        if "broker_activity_audit_available" in summary_payload and not broker_activity_audit_path.exists():
+            missing_broker_activity_audit_dates.append(trade_date)
         if "ending_broker_position_count" in summary_payload and not ending_broker_positions_path.exists():
             missing_ending_broker_position_dates.append(trade_date)
 
@@ -515,6 +546,29 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
                 "broker_order_audit_available": bool(summary_payload.get("broker_order_audit_available", False)),
                 "broker_order_count": parse_int(summary_payload.get("broker_order_count"))
                 or len(broker_order_audit_rows),
+                "broker_activity_audit_available": bool(summary_payload.get("broker_activity_audit_available", False)),
+                "broker_activity_count": parse_int(summary_payload.get("broker_activity_count"))
+                or len(broker_activity_audit_rows),
+                "broker_fill_activity_count": parse_int(summary_payload.get("broker_fill_activity_count"))
+                or len(broker_activity_audit_rows),
+                "broker_activity_partial_fill_count": parse_int(summary_payload.get("broker_partial_fill_activity_count"))
+                or sum(
+                    1
+                    for row in broker_activity_audit_rows
+                    if str(row.get("fill_type", "")).strip().lower() == "partial_fill"
+                ),
+                "broker_activity_matched_count": parse_int(summary_payload.get("broker_activity_matched_count"))
+                or sum(
+                    1
+                    for row in broker_activity_audit_rows
+                    if str(row.get("matched_to_local", "")).strip().lower() == "true"
+                ),
+                "broker_activity_unmatched_count": parse_int(summary_payload.get("broker_activity_unmatched_count"))
+                or sum(
+                    1
+                    for row in broker_activity_audit_rows
+                    if str(row.get("matched_to_local", "")).strip().lower() == "false"
+                ),
                 "broker_multileg_order_count": parse_int(summary_payload.get("broker_multileg_order_count"))
                 or 0,
                 "broker_partially_filled_order_count": parse_int(summary_payload.get("broker_partially_filled_order_count"))
@@ -523,6 +577,10 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
                 or 0,
                 "local_order_without_broker_match_count": parse_int(
                     summary_payload.get("local_order_without_broker_match_count")
+                )
+                or 0,
+                "local_filled_order_without_activity_match_count": parse_int(
+                    summary_payload.get("local_filled_order_without_activity_match_count")
                 )
                 or 0,
                 "ending_broker_position_count": parse_int(summary_payload.get("ending_broker_position_count"))
@@ -551,11 +609,21 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
             "sessions_with_completed_trades": sum(1 for row in sessions if row["completed_trade_count"] > 0),
             "sessions_with_event_logs": len(run_dirs) - len(missing_event_dates),
             "sessions_with_broker_order_audit": sum(1 for row in sessions if row["broker_order_audit_available"]),
+            "sessions_with_broker_activity_audit": sum(1 for row in sessions if row["broker_activity_audit_available"]),
             "date_span": {"start": run_dirs[0].name if run_dirs else "", "end": run_dirs[-1].name if run_dirs else ""},
             "completed_trade_count": sum(int(row["completed_trade_count"]) for row in sessions),
             "reconciliation_row_count": sum(int(row["reconciliation_row_count"]) for row in sessions),
             "event_row_count": sum(int(row["event_row_count"]) for row in sessions),
             "broker_order_count_total": sum(int(row["broker_order_count"]) for row in sessions),
+            "broker_activity_count_total": sum(int(row["broker_activity_count"]) for row in sessions),
+            "broker_fill_activity_count_total": sum(int(row["broker_fill_activity_count"]) for row in sessions),
+            "broker_activity_partial_fill_count_total": sum(
+                int(row["broker_activity_partial_fill_count"]) for row in sessions
+            ),
+            "broker_activity_matched_count_total": sum(int(row["broker_activity_matched_count"]) for row in sessions),
+            "broker_activity_unmatched_count_total": sum(
+                int(row["broker_activity_unmatched_count"]) for row in sessions
+            ),
             "broker_multileg_order_count_total": sum(int(row["broker_multileg_order_count"]) for row in sessions),
             "broker_partially_filled_order_count_total": sum(
                 int(row["broker_partially_filled_order_count"]) for row in sessions
@@ -563,6 +631,9 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
             "broker_status_mismatch_count_total": sum(int(row["broker_status_mismatch_count"]) for row in sessions),
             "local_order_without_broker_match_count_total": sum(
                 int(row["local_order_without_broker_match_count"]) for row in sessions
+            ),
+            "local_filled_order_without_activity_match_count_total": sum(
+                int(row["local_filled_order_without_activity_match_count"]) for row in sessions
             ),
             "ending_broker_position_count_total": sum(int(row["ending_broker_position_count"]) for row in sessions),
             "entry_fill_count": sum(int(row["entry_fill_count"]) for row in sessions),
@@ -598,6 +669,7 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
             "missing_state_dates": missing_state_dates,
             "missing_event_dates": missing_event_dates,
             "missing_broker_order_audit_dates": missing_broker_order_audit_dates,
+            "missing_broker_activity_audit_dates": missing_broker_activity_audit_dates,
             "missing_ending_broker_position_dates": missing_ending_broker_position_dates,
         },
         "sessions": sorted(sessions, key=lambda row: row["trade_date"]),
@@ -695,9 +767,13 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Reconciliation attempts: `{summary['reconciliation_row_count']}`")
     lines.append(f"- Event rows: `{summary['event_row_count']}`")
     lines.append(f"- Sessions with broker-order audit: `{summary['sessions_with_broker_order_audit']}`")
+    lines.append(f"- Sessions with broker-activity audit: `{summary['sessions_with_broker_activity_audit']}`")
     lines.append(f"- Broker orders audited: `{summary['broker_order_count_total']}`")
+    lines.append(f"- Broker activities audited: `{summary['broker_activity_count_total']}`")
+    lines.append(f"- Broker activity unmatched rows: `{summary['broker_activity_unmatched_count_total']}`")
     lines.append(f"- Broker status mismatches: `{summary['broker_status_mismatch_count_total']}`")
     lines.append(f"- Local orders without broker match: `{summary['local_order_without_broker_match_count_total']}`")
+    lines.append(f"- Local filled orders without activity match: `{summary['local_filled_order_without_activity_match_count_total']}`")
     lines.append(f"- Ending broker positions: `{summary['ending_broker_position_count_total']}`")
     lines.append(f"- Entry fills: `{summary['entry_fill_count']}`")
     lines.append(f"- Exit fills: `{summary['exit_fill_count']}`")
@@ -725,7 +801,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append("")
     for row in payload["sessions"]:
         lines.append(
-            f"- `{row['trade_date']}`: startup `{row['startup_check_status'] or 'unknown'}`, completed trades `{row['completed_trade_count']}`, guardrail fires `{row['guardrail_fire_count']}`, broker mismatches `{row['broker_status_mismatch_count']}`, unmatched local orders `{row['local_order_without_broker_match_count']}`, ending broker positions `{row['ending_broker_position_count']}`, blocked new entries `{str(bool(row['blocked_new_entries'])).lower()}`, severe-loss flatten `{str(bool(row['severe_loss_flatten_triggered'])).lower()}`"
+            f"- `{row['trade_date']}`: startup `{row['startup_check_status'] or 'unknown'}`, completed trades `{row['completed_trade_count']}`, broker-activity rows `{row['broker_activity_count']}`, guardrail fires `{row['guardrail_fire_count']}`, broker mismatches `{row['broker_status_mismatch_count']}`, unmatched local orders `{row['local_order_without_broker_match_count']}`, unmatched broker activities `{row['broker_activity_unmatched_count']}`, ending broker positions `{row['ending_broker_position_count']}`, blocked new entries `{str(bool(row['blocked_new_entries'])).lower()}`, severe-loss flatten `{str(bool(row['severe_loss_flatten_triggered'])).lower()}`"
         )
     if not payload["sessions"]:
         lines.append("- No session artifacts were found.")
@@ -738,6 +814,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Missing state dates: `{', '.join(data_quality['missing_state_dates']) or 'none'}`")
     lines.append(f"- Missing event-log dates: `{', '.join(data_quality['missing_event_dates']) or 'none'}`")
     lines.append(f"- Missing broker-order audit dates: `{', '.join(data_quality['missing_broker_order_audit_dates']) or 'none'}`")
+    lines.append(f"- Missing broker-activity audit dates: `{', '.join(data_quality['missing_broker_activity_audit_dates']) or 'none'}`")
     lines.append(f"- Missing ending-broker-position dates: `{', '.join(data_quality['missing_ending_broker_position_dates']) or 'none'}`")
     lines.append("- Current runner telemetry is materially stronger on entry-side calibration than exit-side slippage calibration.")
     lines.append("")

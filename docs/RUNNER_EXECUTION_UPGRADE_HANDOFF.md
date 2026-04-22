@@ -4,13 +4,14 @@ Use this handoff when the new machine needs to bring the live paper runner up to
 
 ## Scope
 
-This handoff covers five runner-side upgrades that were implemented on branch `codex/qqq-paper-portfolio` in the main runtime repo:
+This handoff covers six runner-side upgrades that were implemented on branch `codex/qqq-paper-portfolio` in the main runtime repo:
 
 1. `50764cf` - `Add Alpaca multi-leg order routing to paper runner`
 2. `4292514` - `Align paper runner with Alpaca option fee model`
 3. `f6d6168` - `Add multileg exit cleanup fallback`
 4. `8037710` - `Harden multileg exit reconciliation`
 5. `bdd7663` - `Add broker order audit to session summary`
+6. `1e72e18` - `Add Alpaca trade activity audit to runner`
 
 Target repo on the new machine:
 - `C:\Users\<you>\Downloads\codexalpaca_repo`
@@ -107,15 +108,36 @@ Why this matters:
 - it makes combo-exit and cleanup behavior much easier to inspect after the session
 - it creates the right surface for future statement/runtime reconciliation and execution-calibration feedback
 
+### 6. Broker Account-Activity Audit
+
+The paper runner's end-of-session bundle now captures broker account activity, not just local events and broker order snapshots.
+
+Behavior change:
+- the Alpaca adapter can now fetch account activities from `/v2/account/activities`
+- session finalization pulls the day's `trade_activity` rows in ascending order
+- the runner filters to fill activity, matches activity rows back to local filled-order references, and records unmatched cases
+- the session summary now carries counts for:
+  - broker activity rows
+  - partial-fill activity rows
+  - matched vs unmatched broker activity rows
+  - local filled orders without an activity match
+- summary bundles now include:
+  - `broker_account_activities`
+
+Why this matters:
+- it gives the execution plane a second broker-native fill surface beyond order snapshots
+- it helps distinguish order-state reconciliation from actual account activity reconciliation
+- it creates the right raw material for execution calibration and research feedback loops
+
 ## Why This Matters
 
-These five changes close a major research-to-execution gap:
+These six changes close a major research-to-execution gap:
 - the cleanroom can now research defined-risk and multi-leg structures more realistically
 - the paper runner can now express those structures at the broker in a combo-native way
 - live runner economics are much closer to Alpaca's actual options fee posture
 - routine combo exits now degrade into an explicit cleanup path instead of silently stalling on a not-filled combo order
 - cleanup sizing and startup/EOD suppression are safer when combo exits partially fill
-- session closeout now leaves behind an auditable broker-order and ending-position packet instead of only local event history
+- session closeout now leaves behind an auditable broker-order, broker-activity, and ending-position packet instead of only local event history
 
 Without these changes, multi-leg strategies can look valid in research while still being distorted in live runner accounting or routed as if they were single-leg trades.
 
@@ -128,7 +150,7 @@ python -m pytest -q
 ```
 
 Expected result at the time of this handoff:
-- `110 passed`
+- `112 passed`
 
 ## Official Alpaca Sources
 
@@ -141,7 +163,7 @@ Use these sources when verifying fee and order assumptions:
 
 1. Open `C:\Users\<you>\Downloads\codexalpaca_repo`.
 2. Fetch `origin/codex/qqq-paper-portfolio`.
-3. Confirm that commits `50764cf`, `4292514`, `f6d6168`, `8037710`, and `bdd7663` are present.
+3. Confirm that commits `50764cf`, `4292514`, `f6d6168`, `8037710`, `bdd7663`, and `1e72e18` are present.
 4. If the machine is intentionally tracking a different branch, inspect and cherry-pick or merge these changes deliberately.
 5. Run `python -m pytest -q`.
 6. Summarize:
@@ -149,8 +171,8 @@ Use these sources when verifying fee and order assumptions:
    - whether the runner fee model is Alpaca-aligned
    - whether a not-filled multi-leg exit now degrades into cleanup instead of stalling
    - whether combo close-order detection now inspects `mleg` legs and cleanup sizing now prefers live broker quantities
-   - whether the session bundle now includes a broker-order audit and ending broker-position snapshot
-   - whether local runner events and Alpaca order state reconcile cleanly enough for paper-runner use
+   - whether the session bundle now includes a broker-order audit, broker account-activity audit, and ending broker-position snapshot
+   - whether local runner events, Alpaca order state, and Alpaca trade activity reconcile cleanly enough for paper-runner use
    - whether the full test suite is green
    - whether any local operational config should stay unchanged before market open
 

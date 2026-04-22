@@ -15,7 +15,7 @@ Then act as the execution-plane Codex operator for the paper runner.
 In C:\Users\<you>\Downloads\codexalpaca_repo:
 
 1. Fetch `origin/codex/qqq-paper-portfolio`.
-2. Verify whether commits `50764cf`, `4292514`, `f6d6168`, `8037710`, and `bdd7663` are already present.
+2. Verify whether commits `50764cf`, `4292514`, `f6d6168`, `8037710`, `bdd7663`, and `1e72e18` are already present.
 3. If they are not present on the current local branch, integrate them deliberately from `origin/codex/qqq-paper-portfolio` without changing unrelated strategy logic or risk settings.
 4. Verify that the runner now has:
    - combo-native Alpaca `mleg` entry/exit routing in `alpaca_lab/multi_ticker_portfolio/trader.py`
@@ -24,6 +24,7 @@ In C:\Users\<you>\Downloads\codexalpaca_repo:
    - leg-aware close-order detection for open Alpaca `mleg` exits in the same file
    - broker-position-aware cleanup sizing for partially filled combo exits in the same file
    - a broker-order audit in the session summary output path
+   - a broker account-activity audit in the session summary output path
    - an ending broker-position snapshot in the session summary output path
 5. Run `python -m pytest -q`.
 6. Summarize:
@@ -32,8 +33,8 @@ In C:\Users\<you>\Downloads\codexalpaca_repo:
    - whether the runner fee model is aligned with Alpaca's current options fee posture
    - whether a not-filled combo exit now degrades into an explicit cleanup path
    - whether open combo close orders and partial-fill cleanup are reconciled safely enough for paper-runner use
-   - whether the runner now leaves behind a broker-order audit and ending broker-position snapshot for post-session reconciliation
-   - whether local runner order events and Alpaca order state reconcile cleanly enough for execution-plane use
+   - whether the runner now leaves behind a broker-order audit, broker account-activity audit, and ending broker-position snapshot for post-session reconciliation
+   - whether local runner order events, Alpaca order state, and Alpaca account activity reconcile cleanly enough for execution-plane use
    - whether the machine is safe to keep using as the execution-plane paper runner
 
 Hard rules:
