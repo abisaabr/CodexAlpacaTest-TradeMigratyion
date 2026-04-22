@@ -28,6 +28,10 @@ This registry is the control-plane source of truth for which institutional tourn
 - Phase 2 split axis: `ticker_bundle`
 - Validation split axis: `portfolio_context`
 - Promotion mode: `review_only`
+- Execution risk tier: `moderate`
+- Entry friction sensitivity: `medium`
+- Exit model dependency: `medium`
+- Research bias: `premium_defense_mixed`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `either_machine`
 - Families: `Single-leg long put`, `Debit put spread`, `Credit call spread`, `Iron condor`, `Iron butterfly`, `Put backspread`, `Long straddle`, `Long strangle`, `Put butterfly`, `Broken-wing put butterfly`
@@ -51,6 +55,10 @@ This registry is the control-plane source of truth for which institutional tourn
 - Phase 2 split axis: `ticker_bundle`
 - Validation split axis: `portfolio_context`
 - Promotion mode: `review_only`
+- Execution risk tier: `moderate`
+- Entry friction sensitivity: `medium`
+- Exit model dependency: `medium`
+- Research bias: `premium_defense_mixed`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `either_machine`
 - Families: `Single-leg long put`, `Debit put spread`, `Credit call spread`, `Iron condor`, `Iron butterfly`, `Put backspread`, `Long straddle`, `Long strangle`, `Put butterfly`, `Broken-wing put butterfly`
@@ -74,6 +82,10 @@ This registry is the control-plane source of truth for which institutional tourn
 - Phase 2 split axis: `ticker_bundle`
 - Validation split axis: `portfolio_context`
 - Promotion mode: `review_only`
+- Execution risk tier: `aggressive`
+- Entry friction sensitivity: `high`
+- Exit model dependency: `high`
+- Research bias: `balanced_directional_vs_multileg`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `new_machine`
 - Families: `Single-leg long call`, `Single-leg long put`, `Debit call spread`, `Debit put spread`, `Credit call spread`, `Credit put spread`, `Iron condor`, `Iron butterfly`, `Call butterfly`, `Put butterfly`, `Call backspread`, `Put backspread`
@@ -97,6 +109,10 @@ This registry is the control-plane source of truth for which institutional tourn
 - Phase 2 split axis: `ticker_bundle`
 - Validation split axis: `portfolio_context`
 - Promotion mode: `review_only`
+- Execution risk tier: `conservative`
+- Entry friction sensitivity: `low`
+- Exit model dependency: `medium`
+- Research bias: `defined_risk_and_premium_defense`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `new_machine`
 - Families: `Credit call spread`, `Debit put spread`, `Iron condor`, `Iron butterfly`, `Put butterfly`
@@ -120,6 +136,10 @@ This registry is the control-plane source of truth for which institutional tourn
 - Phase 2 split axis: `ticker_bundle`
 - Validation split axis: `portfolio_context`
 - Promotion mode: `review_only`
+- Execution risk tier: `aggressive`
+- Entry friction sensitivity: `high`
+- Exit model dependency: `high`
+- Research bias: `convexity_and_long_vol`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `new_machine`
 - Families: `Put backspread`, `Long straddle`, `Long strangle`, `Put butterfly`, `Broken-wing put butterfly`
@@ -143,6 +163,10 @@ This registry is the control-plane source of truth for which institutional tourn
 - Phase 2 split axis: `portfolio_context`
 - Validation split axis: `portfolio_context`
 - Promotion mode: `review_only`
+- Execution risk tier: `moderate`
+- Entry friction sensitivity: `medium`
+- Exit model dependency: `medium`
+- Research bias: `balanced`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `either_machine`
 - Families: `Single-leg long call`, `Single-leg long put`, `Debit call spread`, `Debit put spread`, `Credit call spread`, `Credit put spread`, `Iron condor`, `Iron butterfly`, `Call butterfly`, `Put butterfly`, `Broken-wing call butterfly`, `Broken-wing put butterfly`, `Call backspread`, `Put backspread`, `Long straddle`, `Long strangle`

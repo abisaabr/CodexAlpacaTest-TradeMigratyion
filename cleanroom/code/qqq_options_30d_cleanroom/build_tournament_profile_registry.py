@@ -32,6 +32,10 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "phase2_split_axis": "ticker_bundle",
         "validation_split_axis": "portfolio_context",
         "promotion_mode": "review_only",
+        "execution_risk_tier": "moderate",
+        "entry_friction_sensitivity": "medium",
+        "exit_model_dependency": "medium",
+        "research_bias": "premium_defense_mixed",
         "preferred_machine_now": "current_research_machine",
         "preferred_machine_target": "either_machine",
         "notes": "Default nightly operator profile because it exercises the full discovery-to-morning-handoff chain without auto-promoting the live book.",
@@ -66,6 +70,10 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "phase2_split_axis": "ticker_bundle",
         "validation_split_axis": "portfolio_context",
         "promotion_mode": "review_only",
+        "execution_risk_tier": "moderate",
+        "entry_friction_sensitivity": "medium",
+        "exit_model_dependency": "medium",
+        "research_bias": "premium_defense_mixed",
         "preferred_machine_now": "current_research_machine",
         "preferred_machine_target": "either_machine",
         "notes": "Use when the ready universe is already broad enough and we want a direct run without extra bootstrap materialization.",
@@ -100,6 +108,10 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "phase2_split_axis": "ticker_bundle",
         "validation_split_axis": "portfolio_context",
         "promotion_mode": "review_only",
+        "execution_risk_tier": "aggressive",
+        "entry_friction_sensitivity": "high",
+        "exit_model_dependency": "high",
+        "research_bias": "balanced_directional_vs_multileg",
         "preferred_machine_now": "current_research_machine",
         "preferred_machine_target": "new_machine",
         "notes": "Best next structural tournament for diversifying away from the current single-leg-heavy live book, but it needs opening-window family wiring first.",
@@ -136,6 +148,10 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "phase2_split_axis": "ticker_bundle",
         "validation_split_axis": "portfolio_context",
         "promotion_mode": "review_only",
+        "execution_risk_tier": "conservative",
+        "entry_friction_sensitivity": "low",
+        "exit_model_dependency": "medium",
+        "research_bias": "defined_risk_and_premium_defense",
         "preferred_machine_now": "current_research_machine",
         "preferred_machine_target": "new_machine",
         "notes": "Targets the under-tested premium-defense surface that should help in weak or messy tape once session-specific timing is fully encoded.",
@@ -165,6 +181,10 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "phase2_split_axis": "ticker_bundle",
         "validation_split_axis": "portfolio_context",
         "promotion_mode": "review_only",
+        "execution_risk_tier": "aggressive",
+        "entry_friction_sensitivity": "high",
+        "exit_model_dependency": "high",
+        "research_bias": "convexity_and_long_vol",
         "preferred_machine_now": "current_research_machine",
         "preferred_machine_target": "new_machine",
         "notes": "Cleanest planned tournament for testing whether early-session expansion favors long-vol and butterfly structures more than plain long puts.",
@@ -194,6 +214,10 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "phase2_split_axis": "portfolio_context",
         "validation_split_axis": "portfolio_context",
         "promotion_mode": "review_only",
+        "execution_risk_tier": "moderate",
+        "entry_friction_sensitivity": "medium",
+        "exit_model_dependency": "medium",
+        "research_bias": "balanced",
         "preferred_machine_now": "current_research_machine",
         "preferred_machine_target": "either_machine",
         "notes": "Already executable as a research program, but not yet wired into the single-command nightly operator cycle.",
@@ -298,6 +322,10 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         lines.append(f"- Phase 2 split axis: `{row['phase2_split_axis']}`")
         lines.append(f"- Validation split axis: `{row['validation_split_axis']}`")
         lines.append(f"- Promotion mode: `{row['promotion_mode']}`")
+        lines.append(f"- Execution risk tier: `{row['execution_risk_tier']}`")
+        lines.append(f"- Entry friction sensitivity: `{row['entry_friction_sensitivity']}`")
+        lines.append(f"- Exit model dependency: `{row['exit_model_dependency']}`")
+        lines.append(f"- Research bias: `{row['research_bias']}`")
         lines.append(f"- Preferred machine now: `{row['preferred_machine_now']}`")
         lines.append(f"- Preferred machine target: `{row['preferred_machine_target']}`")
         lines.append(f"- Families: {', '.join(f'`{family}`' for family in row['families'])}")

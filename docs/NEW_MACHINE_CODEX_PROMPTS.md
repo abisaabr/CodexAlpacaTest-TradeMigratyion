@@ -35,7 +35,7 @@ Verify that this machine now owns the multi-ticker portfolio lease, that the pap
 Before using the prompts below for ongoing research or runner operations, read `docs/INSTITUTIONAL_OPERATING_BLUEPRINT.md` so the machine stays aligned with the project's research / control / execution-plane split and champion/challenger governance.
 Before assigning or changing agent work, also read `docs/AGENT_GOVERNANCE.md` so discovery stays split by family cohort, exhaustive follow-up stays split by ticker bundle, and live-book mutation stays with the single-writer steward.
 Before choosing or running a major nightly cycle, also read `docs/EXECUTION_CALIBRATION_REGISTRY.md` and inspect `docs/execution_calibration/execution_calibration_handoff.md` so current paper-runner fill, guardrail, and loss evidence can feed the next research run instead of being ignored.
-Before choosing a nightly research cycle, also read `docs/TOURNAMENT_PROFILE_REGISTRY.md` so the machine uses an approved active tournament profile instead of inventing a new one from scratch.
+Before choosing a nightly research cycle, also read `docs/TOURNAMENT_PROFILE_REGISTRY.md` and inspect `docs/tournament_profiles/tournament_profile_handoff.md` so the machine uses an approved executable tournament profile that is also aligned with the current execution posture.
 
 ## 6. Run The Family-Expansion Tournament Conveyor
 
@@ -159,5 +159,5 @@ Run one full nightly research cycle that:
 - builds hardening review, replacement plan, and morning handoff packets
 - keeps the live manifest unchanged unless a reviewed approval step happens
 
-Prefer using `cleanroom/code/qqq_options_30d_cleanroom/launch_nightly_operator_cycle.ps1` as the top-level entrypoint. Treat GitHub-backed docs and packets as the source of truth. Keep discovery parallel, keep production decisions serialized, and treat any lane without `master_summary.json` as failed.
+Prefer using `cleanroom/code/qqq_options_30d_cleanroom/launch_nightly_operator_cycle.ps1` as the top-level entrypoint. Treat GitHub-backed docs and packets as the source of truth. Keep discovery parallel, keep production decisions serialized, and treat any lane without `master_summary.json` as failed. Let the nightly operator resolve the tournament profile in `auto` mode unless I explicitly ask for a different executable profile.
 ```

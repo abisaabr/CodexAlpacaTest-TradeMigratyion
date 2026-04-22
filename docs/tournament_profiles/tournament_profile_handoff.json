@@ -1,0 +1,65 @@
+{
+  "generated_at": "2026-04-22T11:11:00.395790",
+  "registry_generated_at": "2026-04-22T11:11:00.349679",
+  "execution_handoff_generated_at": "2026-04-22T10:56:34.894387",
+  "requested_profile": "auto",
+  "resolved_profile": "down_choppy_coverage_ranked",
+  "resolution_mode": "auto_recommended",
+  "resolution_warning": "",
+  "default_profile": "down_choppy_coverage_ranked",
+  "execution_posture": "caution",
+  "execution_evidence_strength": "limited_entry_only",
+  "preferred_research_bias": "defined_risk_and_premium_defense",
+  "recommended_profiles_from_execution": [
+    "down_choppy_coverage_ranked",
+    "opening_30m_premium_defense"
+  ],
+  "deprioritized_profiles_from_execution": [
+    "opening_30m_convexity_butterfly",
+    "opening_30m_single_vs_multileg"
+  ],
+  "recommended_executable_profile": "down_choppy_coverage_ranked",
+  "recommended_executable_profiles": [
+    "down_choppy_coverage_ranked"
+  ],
+  "deprioritized_executable_profiles": [],
+  "profile_evaluations": [
+    {
+      "profile_id": "down_choppy_coverage_ranked",
+      "status": "active",
+      "score": 97,
+      "reasons": [
+        "execution handoff explicitly recommends this profile (+100)",
+        "posture caution favors moderate risk tier (+5)",
+        "elevated entry friction penalizes medium sensitivity (-10)",
+        "exit telemetry gap penalizes medium exit-model dependency (-8)",
+        "profile keeps a premium-defense tilt under cautious execution posture (+10)"
+      ],
+      "execution_risk_tier": "moderate",
+      "entry_friction_sensitivity": "medium",
+      "exit_model_dependency": "medium",
+      "research_bias": "premium_defense_mixed",
+      "discovery_source": "coverage_ranked",
+      "bootstrap_ready_universe": true
+    },
+    {
+      "profile_id": "down_choppy_full_ready",
+      "status": "active",
+      "score": -3,
+      "reasons": [
+        "posture caution favors moderate risk tier (+5)",
+        "elevated entry friction penalizes medium sensitivity (-10)",
+        "exit telemetry gap penalizes medium exit-model dependency (-8)",
+        "profile keeps a premium-defense tilt under cautious execution posture (+10)"
+      ],
+      "execution_risk_tier": "moderate",
+      "entry_friction_sensitivity": "medium",
+      "exit_model_dependency": "medium",
+      "research_bias": "premium_defense_mixed",
+      "discovery_source": "full_ready",
+      "bootstrap_ready_universe": false
+    }
+  ],
+  "registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_profiles\\tournament_profile_registry.json",
+  "execution_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_calibration\\execution_calibration_handoff.json"
+}

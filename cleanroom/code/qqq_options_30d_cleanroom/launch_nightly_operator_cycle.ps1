@@ -9,8 +9,8 @@ param(
     [string]$PythonExe = "python",
     [switch]$Execute,
     [switch]$BootstrapReadyUniverse = $true,
-    [ValidateSet("down_choppy_coverage_ranked", "down_choppy_full_ready")]
-    [string]$TournamentProfile = "down_choppy_coverage_ranked",
+    [ValidateSet("auto", "down_choppy_coverage_ranked", "down_choppy_full_ready")]
+    [string]$TournamentProfile = "auto",
     [ValidateSet("full_ready", "coverage_ranked")]
     [string]$DiscoverySource = "coverage_ranked",
     [int]$TopPerLane = 8,
@@ -24,6 +24,9 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+
+$discoverySourceWasExplicit = $PSBoundParameters.ContainsKey("DiscoverySource")
+$bootstrapReadyWasExplicit = $PSBoundParameters.ContainsKey("BootstrapReadyUniverse")
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $scriptRoot "..\..\.."))
@@ -42,6 +45,7 @@ $familyHandoffBuilderPath = Join-Path $scriptRoot "build_strategy_family_handoff
 $executionCalibrationBuilderPath = Join-Path $scriptRoot "build_execution_calibration_registry.py"
 $executionCalibrationHandoffBuilderPath = Join-Path $scriptRoot "build_execution_calibration_handoff.py"
 $tournamentProfileBuilderPath = Join-Path $scriptRoot "build_tournament_profile_registry.py"
+$tournamentProfileHandoffBuilderPath = Join-Path $scriptRoot "build_tournament_profile_handoff.py"
 $coverageBuilderPath = Join-Path $scriptRoot "build_ticker_family_coverage.py"
 $programLauncherPath = Join-Path $scriptRoot "launch_down_choppy_program.ps1"
 $validatorPath = Join-Path $scriptRoot "validate_program_live_book.py"
@@ -145,6 +149,17 @@ function Write-Status {
             }
         family_refresh_dir = $familyRefreshRoot
         tournament_profile_dir = $tournamentProfileRoot
+        tournament_profile_handoff_json =
+            if (Test-Path $tournamentProfileHandoffJsonPath) {
+                $tournamentProfileHandoffJsonPath
+            }
+            else {
+                ""
+            }
+        requested_tournament_profile = $TournamentProfile
+        resolved_tournament_profile = $resolvedTournamentProfile
+        tournament_profile_resolution_mode = $tournamentProfileResolutionMode
+        tournament_profile_resolution_warning = $tournamentProfileResolutionWarning
         coverage_refresh_dir = $coverageRefreshRoot
         validation_dir = $validationRoot
         review_dir = $reviewRoot
@@ -218,6 +233,14 @@ function Invoke-PowerShellStep {
     }
 }
 
+function Read-JsonFile {
+    param(
+        [string]$Path
+    )
+
+    return Get-Content -Path $Path -Raw | ConvertFrom-Json
+}
+
 function Get-ProgramPhase {
     if (-not (Test-Path $programStatusPath)) {
         return ""
@@ -235,23 +258,6 @@ function Refresh-ActiveProgramReport {
         return
     }
     & $PythonExe $activeProgramReporterPath --program-root $programRootPath --report-dir $activeProgramReportDir | Out-Null
-}
-
-if ($TournamentProfile -eq "down_choppy_full_ready") {
-    if (-not $PSBoundParameters.ContainsKey("DiscoverySource")) {
-        $DiscoverySource = "full_ready"
-    }
-    if (-not $PSBoundParameters.ContainsKey("BootstrapReadyUniverse")) {
-        $BootstrapReadyUniverse = $false
-    }
-}
-elseif ($TournamentProfile -eq "down_choppy_coverage_ranked") {
-    if (-not $PSBoundParameters.ContainsKey("DiscoverySource")) {
-        $DiscoverySource = "coverage_ranked"
-    }
-    if (-not $PSBoundParameters.ContainsKey("BootstrapReadyUniverse")) {
-        $BootstrapReadyUniverse = $true
-    }
 }
 
 if ([string]::IsNullOrWhiteSpace($ReadyBaseDir)) {
@@ -317,6 +323,7 @@ $statusPath = Join-Path $cycleRootPath "nightly_operator_cycle_status.json"
 $manifestPath = Join-Path $cycleRootPath "nightly_operator_cycle_manifest.json"
 $handoffPath = Join-Path $cycleRootPath "nightly_operator_cycle_handoff.json"
 $executionCalibrationHandoffJsonPath = Join-Path $executionCalibrationRoot "execution_calibration_handoff.json"
+$tournamentProfileHandoffJsonPath = Join-Path $tournamentProfileRoot "tournament_profile_handoff.json"
 $programStatusPath = Join-Path $programRootPath "program_status.json"
 $phase2PackPath = Join-Path $programRootPath "phase2\launch_pack\phase2_agent_wave_pack.json"
 $phase2PackStatusPath = Join-Path $programRootPath "phase2\launch_pack\launch_status.json"
@@ -324,6 +331,9 @@ $validationJsonPath = Join-Path $validationRoot "live_book_validation.json"
 $reviewJsonPath = Join-Path $reviewRoot "live_book_hardening_review.json"
 $replacementPlanJsonPath = Join-Path $replacementPlanRoot "live_book_replacement_plan.json"
 $morningHandoffJsonPath = Join-Path $morningHandoffRoot "live_book_morning_handoff.json"
+$resolvedTournamentProfile = ""
+$tournamentProfileResolutionMode = ""
+$tournamentProfileResolutionWarning = ""
 
 New-Item -ItemType Directory -Force -Path $cycleRootPath | Out-Null
 New-Item -ItemType Directory -Force -Path $programRootPath | Out-Null
@@ -349,7 +359,10 @@ $cycleManifest = [ordered]@{
     live_manifest_path = $LiveManifestPath
     paper_runner_gate_path = $PaperRunnerGatePath
     paper_runner_target_date = $PaperRunnerTargetDate
-    tournament_profile = $TournamentProfile
+    requested_tournament_profile = $TournamentProfile
+    resolved_tournament_profile = ""
+    tournament_profile_resolution_mode = ""
+    tournament_profile_resolution_warning = ""
     discovery_source = $DiscoverySource
     bootstrap_ready_universe = [bool]$BootstrapReadyUniverse
     filters = [ordered]@{
@@ -367,6 +380,7 @@ $cycleManifest = [ordered]@{
         family_registry_builder = $familyRegistryBuilderPath
         family_handoff_builder = $familyHandoffBuilderPath
         tournament_profile_builder = $tournamentProfileBuilderPath
+        tournament_profile_handoff_builder = $tournamentProfileHandoffBuilderPath
         coverage_builder = $coverageBuilderPath
         program_launcher = $programLauncherPath
         validator = $validatorPath
@@ -440,6 +454,70 @@ Invoke-PythonStep -ScriptPath $tournamentProfileBuilderPath -Arguments $tourname
 $tournamentProfileJsonPath = Join-Path $tournamentProfileRoot "tournament_profile_registry.json"
 if (-not (Test-Path $tournamentProfileJsonPath)) {
     throw "Tournament profile registry JSON was not created at $tournamentProfileJsonPath"
+}
+
+Write-Status -Phase "resolving_tournament_profile" -Message "Resolving the nightly tournament profile from the tournament registry and execution calibration handoff."
+
+$tournamentProfileHandoffArgs = @(
+    "--registry-json", $tournamentProfileJsonPath,
+    "--execution-handoff-json", $executionCalibrationHandoffJsonPath,
+    "--requested-profile", $TournamentProfile,
+    "--report-dir", $tournamentProfileRoot
+)
+Invoke-PythonStep -ScriptPath $tournamentProfileHandoffBuilderPath -Arguments $tournamentProfileHandoffArgs -FailureMessage "Failed to build tournament profile handoff."
+
+if (-not (Test-Path $tournamentProfileHandoffJsonPath)) {
+    throw "Tournament profile handoff JSON was not created at $tournamentProfileHandoffJsonPath"
+}
+
+$tournamentProfileRegistry = Read-JsonFile -Path $tournamentProfileJsonPath
+$tournamentProfileHandoff = Read-JsonFile -Path $tournamentProfileHandoffJsonPath
+$resolvedTournamentProfile = [string]$tournamentProfileHandoff.resolved_profile
+$tournamentProfileResolutionMode = [string]$tournamentProfileHandoff.resolution_mode
+$tournamentProfileResolutionWarning = [string]$tournamentProfileHandoff.resolution_warning
+
+if ([string]::IsNullOrWhiteSpace($resolvedTournamentProfile)) {
+    throw "Tournament profile handoff did not resolve a nightly profile."
+}
+
+$resolvedProfileSpec = $null
+foreach ($profile in @($tournamentProfileRegistry.profiles)) {
+    if ([string]$profile.profile_id -eq $resolvedTournamentProfile) {
+        $resolvedProfileSpec = $profile
+        break
+    }
+}
+if ($null -eq $resolvedProfileSpec) {
+    throw "Resolved tournament profile '$resolvedTournamentProfile' was not present in the tournament registry."
+}
+if (-not [bool]$resolvedProfileSpec.executable_now) {
+    throw "Resolved tournament profile '$resolvedTournamentProfile' is not executable now."
+}
+
+if (-not $discoverySourceWasExplicit) {
+    $DiscoverySource = [string]$resolvedProfileSpec.discovery_source
+}
+if (-not $bootstrapReadyWasExplicit) {
+    $BootstrapReadyUniverse = [bool]$resolvedProfileSpec.bootstrap_ready_universe
+}
+
+$cycleManifest.requested_tournament_profile = $TournamentProfile
+$cycleManifest.resolved_tournament_profile = $resolvedTournamentProfile
+$cycleManifest.tournament_profile_resolution_mode = $tournamentProfileResolutionMode
+$cycleManifest.tournament_profile_resolution_warning = $tournamentProfileResolutionWarning
+$cycleManifest.discovery_source = $DiscoverySource
+$cycleManifest.bootstrap_ready_universe = [bool]$BootstrapReadyUniverse
+$cycleManifest.execution_posture = [string]$tournamentProfileHandoff.execution_posture
+$cycleManifest.execution_evidence_strength = [string]$tournamentProfileHandoff.execution_evidence_strength
+$cycleManifest.tournament_profile_handoff_json = $tournamentProfileHandoffJsonPath
+Write-JsonFile -Path $manifestPath -Payload $cycleManifest
+
+Write-Status -Phase "resolved_tournament_profile" -Message "Resolved the nightly tournament profile from execution-aware policy." -Extra @{
+    tournament_profile_json = $tournamentProfileJsonPath
+    tournament_profile_handoff_json = $tournamentProfileHandoffJsonPath
+    resolved_tournament_profile = $resolvedTournamentProfile
+    tournament_profile_resolution_mode = $tournamentProfileResolutionMode
+    tournament_profile_resolution_warning = $tournamentProfileResolutionWarning
 }
 
 Write-Status -Phase "refreshing_family_registry" -Message "Refreshing the strategy family registry."
@@ -523,6 +601,8 @@ if (-not $Execute) {
         family_registry_json = $familyRegistryJsonPath
         family_handoff_json = $familyHandoffJsonPath
         tournament_profile_json = $tournamentProfileJsonPath
+        tournament_profile_handoff_json = $tournamentProfileHandoffJsonPath
+        resolved_tournament_profile = $resolvedTournamentProfile
         coverage_plan_json = $coveragePlanPath
         program_status_path = $programStatusPath
         next_step = "Run again with -Execute to launch the full nightly cycle."
@@ -628,12 +708,17 @@ $finalPayload = [ordered]@{
     completed_at = (Get-Date).ToString("o")
     cycle_root = $cycleRootPath
     program_root = $programRootPath
+    requested_tournament_profile = $TournamentProfile
+    resolved_tournament_profile = $resolvedTournamentProfile
+    tournament_profile_resolution_mode = $tournamentProfileResolutionMode
+    tournament_profile_resolution_warning = $tournamentProfileResolutionWarning
     program_phase = $programPhase
     execution_calibration_json = $executionCalibrationJsonPath
     execution_calibration_handoff_json = $executionCalibrationHandoffJsonPath
     family_registry_json = $familyRegistryJsonPath
     family_handoff_json = $familyHandoffJsonPath
     tournament_profile_json = $tournamentProfileJsonPath
+    tournament_profile_handoff_json = $tournamentProfileHandoffJsonPath
     coverage_plan_json = $coveragePlanPath
     phase2_pack_json =
         if (Test-Path $phase2PackPath) {
@@ -668,6 +753,8 @@ Write-Status -Phase "completed" -Message "Nightly operator cycle completed succe
         family_registry_json = $familyRegistryJsonPath
         family_handoff_json = $familyHandoffJsonPath
         tournament_profile_json = $tournamentProfileJsonPath
+        tournament_profile_handoff_json = $tournamentProfileHandoffJsonPath
+        resolved_tournament_profile = $resolvedTournamentProfile
         coverage_plan_json = $coveragePlanPath
         validation_json = $validationJsonPath
     hardening_review_json = $reviewJsonPath

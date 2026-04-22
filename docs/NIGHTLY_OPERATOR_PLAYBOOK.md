@@ -15,6 +15,7 @@ Before assigning agent work, refresh and inspect:
 - `docs/agent_governance/agent_governance_registry.md`
 - `docs/TOURNAMENT_PROFILE_REGISTRY.md`
 - `docs/tournament_profiles/tournament_profile_registry.md`
+- `docs/tournament_profiles/tournament_profile_handoff.md`
 
 It is written for the current two-machine setup:
 - current research machine = primary research plane
@@ -50,6 +51,10 @@ Required outputs:
 - `execution_calibration_registry.md`
 - `execution_calibration_handoff.json`
 - `execution_calibration_handoff.md`
+- `tournament_profile_registry.json`
+- `tournament_profile_registry.md`
+- `tournament_profile_handoff.json`
+- `tournament_profile_handoff.md`
 - `strategy_family_registry.json`
 - `strategy_family_registry.md`
 - `strategy_family_handoff.json`
@@ -59,6 +64,7 @@ Required outputs:
 Tasks:
 - refresh the execution calibration registry from the paper runner
 - refresh the execution calibration handoff packet so the nightly cycle has a machine-readable posture and policy recommendation
+- refresh the tournament profile registry and tournament profile handoff so profile choice is resolved from approved executable profiles plus current execution posture
 - refresh the formal family registry
 - refresh the family handoff packet
 - refresh ticker-family coverage
@@ -208,6 +214,7 @@ The new machine should not become the sole source of strategy invention yet.
 
 Before signing off on a nightly run, confirm:
 - execution calibration refreshed
+- tournament profile policy refreshed
 - family registry refreshed
 - family handoff refreshed
 - coverage refreshed
@@ -235,11 +242,12 @@ When no extraordinary event changes priorities, the default order is:
 
 1. refresh family registry
 2. refresh family handoff
-3. refresh coverage
-4. materialize missing priority symbols if needed
-5. run discovery lanes
-6. run exhaustive follow-up
-7. run shared-account validation
-8. generate review packets
-9. generate morning handoff
-10. keep the live manifest unchanged until explicit review
+3. refresh tournament profile policy
+4. refresh coverage
+5. materialize missing priority symbols if needed
+6. run discovery lanes
+7. run exhaustive follow-up
+8. run shared-account validation
+9. generate review packets
+10. generate morning handoff
+11. keep the live manifest unchanged until explicit review
