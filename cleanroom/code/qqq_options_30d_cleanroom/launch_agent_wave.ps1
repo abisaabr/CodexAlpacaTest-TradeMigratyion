@@ -22,6 +22,8 @@ $pack = Get-Content -Path $packFile -Raw | ConvertFrom-Json
 if ([string]::IsNullOrWhiteSpace($PythonExe)) {
     $PythonExe = [string]$pack.python_exe
 }
+$runnerPath = [string]$pack.runner_path
+$runnerWorkingDirectory = Split-Path -Parent $runnerPath
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $statusPath = Join-Path (Split-Path -Parent $packFile) "launch_status.json"
@@ -152,7 +154,7 @@ foreach ($lane in @($pack.lanes)) {
     $argumentLine = Convert-ArgumentListToCommandLine -Arguments @($lane.command_args)
     $process = Start-Process -FilePath $PythonExe `
         -ArgumentList $argumentLine `
-        -WorkingDirectory (Split-Path -Parent [string]$pack.runner_path) `
+        -WorkingDirectory $runnerWorkingDirectory `
         -RedirectStandardOutput ([string]$lane.stdout_path) `
         -RedirectStandardError ([string]$lane.stderr_path) `
         -PassThru

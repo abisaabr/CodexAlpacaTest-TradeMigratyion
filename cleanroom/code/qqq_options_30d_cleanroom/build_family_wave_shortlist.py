@@ -103,15 +103,21 @@ def load_lane_ticker_rows(lane: dict[str, Any]) -> list[dict[str, Any]]:
         for item in master_payload.get("failed_tickers", [])
         if isinstance(item, dict)
     }
+    expected_ticker_list = [str(ticker).upper() for ticker in lane.get("tickers", [])]
+    expected_ticker_set = set(expected_ticker_list)
 
     rows: list[dict[str, Any]] = []
     seen_ok: set[str] = set()
 
     for summary_path in sorted(research_dir.glob("*_summary.json")):
-        if summary_path.name == "master_summary.json":
+        if summary_path.name in {"master_summary.json", "prep_summary.json", "overnight_run_summary.json"}:
             continue
         payload = load_json(summary_path)
+        if not isinstance(payload, dict):
+            continue
         ticker = str(payload.get("ticker", summary_path.stem.replace("_summary", ""))).upper()
+        if expected_ticker_set and ticker not in expected_ticker_set:
+            continue
         frozen = payload.get("frozen_initial", {})
         reoptimized = payload.get("reoptimized", {})
         promoted = payload.get("promoted", {})
@@ -168,8 +174,7 @@ def load_lane_ticker_rows(lane: dict[str, Any]) -> list[dict[str, Any]]:
             }
         )
 
-    expected_tickers = [str(ticker).upper() for ticker in lane.get("tickers", [])]
-    for ticker in expected_tickers:
+    for ticker in expected_ticker_list:
         if ticker in seen_ok:
             continue
         failed = failed_map.get(ticker, {})
