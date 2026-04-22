@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T17:21:39.799635",
+  "generated_at": "2026-04-22T17:30:17.670340",
   "repo_update_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\repo_updates\\repo_update_handoff.json",
   "unlock_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_handoff.json",
   "workplan_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_workplan_handoff.json",
@@ -148,9 +148,11 @@
         "tournament unlock, workplan, and execution evidence artifacts are refreshed"
       ],
       "actions": [
+        "Run `launch_post_session_assimilation.ps1` as the governed entrypoint for post-session control-plane refresh.",
         "Rebuild session reconciliation registry and handoff.",
         "Rebuild execution calibration registry and handoff.",
         "Rebuild tournament unlock registry, unlock handoff, unlock workplan, and execution evidence contract.",
+        "Build the morning operator brief and handoff so tomorrow starts from one compact decision packet.",
         "Commit only distilled governance artifacts if they changed materially."
       ],
       "gates": [

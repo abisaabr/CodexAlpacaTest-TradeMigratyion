@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T17:21:38.651955`
+- Generated at: `2026-04-22T17:30:16.494140`
 - Current resolved profile: `down_choppy_coverage_ranked`
 - Execution posture: `caution`
 - Session reconciliation posture: `caution`

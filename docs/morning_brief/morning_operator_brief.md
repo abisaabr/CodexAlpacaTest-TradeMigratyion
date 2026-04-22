@@ -1,0 +1,76 @@
+# Morning Operator Brief
+
+## Snapshot
+
+- Generated at: `2026-04-22T17:30:18.088268`
+- Morning decision posture: `keep_blocked_profiles_blocked`
+- Current unlocked profile: `down_choppy_coverage_ranked`
+- Repo update status: `ready`
+- Session reconciliation posture: `caution`
+- Execution posture: `caution`
+- Execution evidence contract: `gapped`
+
+## Current Missions
+
+- Research machine: No research-plane unlock wiring is immediately required.
+- New machine: Produce the next trusted broker-audited execution evidence package.
+
+## Immediate Actions
+
+- Keep blocked profiles blocked until the missing execution evidence package lands.
+- Keep `down_choppy_coverage_ranked` as the current governed profile unless the refreshed unlock packet says otherwise.
+- Both governed repos are current enough to proceed without update action.
+- Use `trusted_and_cautious_sessions` when deciding which paper-runner sessions should influence research calibration and tournament policy.
+- Treat broker-order audit coverage as incomplete and avoid over-trusting clean local order logs alone.
+- Treat broker account-activity coverage as incomplete and avoid over-trusting local fill telemetry alone.
+- Use `raised` entry-fill penalties while observed entry friction remains around 0.80% mean absolute slippage and 0.65% mean adverse event slippage.
+- Keep exit-side execution modeling conservative until explicit exit slippage telemetry becomes reliable.
+- Do not activate tournament profiles above `moderate` risk until execution evidence improves.
+- Trust session reconciliation to exclude review-required paper-runner sessions before they can loosen execution calibration.
+- Treat excluded paper-runner sessions as evidence to inspect, not evidence to learn from automatically.
+- Favor premium-defense and defined-risk opening-window challengers before adding more aggressive debit-heavy opening profiles.
+- Treat current execution evidence as directional rather than fully authoritative because the completed-trade sample is still small.
+- Treat broker-order audit coverage itself as a telemetry gap until upgraded session bundles start landing from the execution machine.
+- Treat broker account-activity audit coverage as a telemetry gap until upgraded session bundles start landing from the execution machine.
+- Do not activate broker-audited-only profiles until both broker-order and broker-activity audit coverage are present in trusted learning sessions.
+- Keep aggressive opening-window and combo-heavy profiles behind the execution evidence floor until broad audited evidence and exit telemetry are present.
+- Keep running `down_choppy_coverage_ranked` as the unlocked governed profile.
+- The current unlock surface is blocked more by execution evidence than by missing governed entrypoints.
+- The execution plane should focus on landing fresh trusted paper-runner evidence that removes the current audit and evidence-floor blockers from the nearest unlock targets.
+- Keep running `down_choppy_coverage_ranked` as the governed overnight default.
+- Rebuild reconciliation, calibration, unlock, workplan, and execution evidence artifacts after the next trusted session lands.
+- Do not activate blocked profiles or mutate the live manifest during the overnight cycle.
+- Keep blocked profiles blocked for now: `opening_30m_premium_defense, balanced_family_expansion_benchmark, opening_30m_convexity_butterfly, opening_30m_single_vs_multileg`.
+- The nearest unlock targets to reassess after trusted evidence lands are `opening_30m_premium_defense, balanced_family_expansion_benchmark, opening_30m_convexity_butterfly`.
+- Close the immediate evidence gap `broker_order_audit`: Broker-order audit coverage must be present in the session bundle.
+- Close the immediate evidence gap `broker_activity_audit`: Broker account-activity audit coverage must be present in the session bundle.
+- Close the immediate evidence gap `broker_local_cashflow_comparable`: Broker/local economics comparison must be available when broker activity audit exists.
+- Close the immediate evidence gap `evidence_strength_progress`: Execution evidence should improve beyond `limited_entry_only` for the nearest unlock target.
+
+## Required Next-Session Artifacts
+
+- broker-order audit
+- broker account-activity audit
+- ending broker-position snapshot
+- shutdown reconciliation
+- completed trade table with broker/local economics comparison
+
+## Blocked Profiles
+
+- `opening_30m_premium_defense`
+- `balanced_family_expansion_benchmark`
+- `opening_30m_convexity_butterfly`
+- `opening_30m_single_vs_multileg`
+
+## Nearest Unlock Targets
+
+- `opening_30m_premium_defense`: policy_blocked via execution_evidence_floor, broker_order_audit_coverage, broker_activity_audit_coverage
+- `balanced_family_expansion_benchmark`: policy_blocked via execution_evidence_floor, broker_order_audit_coverage, broker_activity_audit_coverage
+- `opening_30m_convexity_butterfly`: policy_blocked via execution_evidence_floor, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry
+
+## By-Morning Success
+
+- `down_choppy_coverage_ranked` completes or remains healthy as the governed overnight research run.
+- A fresh paper-runner session lands with trusted broker-order and broker account-activity audit coverage.
+- Session reconciliation, execution calibration, unlock, workplan, and execution evidence artifacts are refreshed from the latest evidence.
+- The control plane can state clearly whether the next blocked profile is still blocked or has moved closer to being unlocked.

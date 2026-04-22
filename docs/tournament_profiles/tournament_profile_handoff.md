@@ -2,7 +2,7 @@
 
 ## Resolution
 
-- Generated at: `2026-04-22T17:21:38.447328`
+- Generated at: `2026-04-22T17:30:16.293309`
 - Requested profile: `auto`
 - Resolved profile: `down_choppy_coverage_ranked`
 - Resolution mode: `auto_recommended`

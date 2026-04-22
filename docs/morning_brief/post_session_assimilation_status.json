@@ -1,0 +1,13 @@
+﻿{
+    "execution_calibration_handoff_json":  "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_calibration\\execution_calibration_handoff.json",
+    "tournament_unlock_workplan_handoff_json":  "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_workplan_handoff.json",
+    "morning_operator_brief_handoff_json":  "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\morning_brief\\morning_operator_brief_handoff.json",
+    "execution_evidence_contract_handoff_json":  "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_evidence\\execution_evidence_contract_handoff.json",
+    "tournament_profile_handoff_json":  "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_profiles\\tournament_profile_handoff.json",
+    "control_plane_root":  "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion",
+    "overnight_plan_handoff_json":  "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\overnight_plan\\overnight_phased_plan_handoff.json",
+    "session_reconciliation_handoff_json":  "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\session_reconciliation\\session_reconciliation_handoff.json",
+    "tournament_unlock_handoff_json":  "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_handoff.json",
+    "generated_at":  "2026-04-22T17:30:18.2971764-04:00",
+    "runner_repo_root":  "C:\\Users\\rabisaab\\Downloads\\codexalpaca_repo"
+}

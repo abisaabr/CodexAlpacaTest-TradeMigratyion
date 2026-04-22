@@ -159,9 +159,11 @@ def build_phases(
                 "tournament unlock, workplan, and execution evidence artifacts are refreshed",
             ],
             "actions": [
+                "Run `launch_post_session_assimilation.ps1` as the governed entrypoint for post-session control-plane refresh.",
                 "Rebuild session reconciliation registry and handoff.",
                 "Rebuild execution calibration registry and handoff.",
                 "Rebuild tournament unlock registry, unlock handoff, unlock workplan, and execution evidence contract.",
+                "Build the morning operator brief and handoff so tomorrow starts from one compact decision packet.",
                 "Commit only distilled governance artifacts if they changed materially.",
             ],
             "gates": [

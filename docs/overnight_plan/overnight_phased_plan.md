@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T17:21:39.799635`
+- Generated at: `2026-04-22T17:30:17.670340`
 - Repo update status: `ready`
 - Current unlocked profile: `down_choppy_coverage_ranked`
 - Execution posture: `caution`
@@ -104,9 +104,11 @@
 - Owner: `new_machine_execution_plane`
 - Objective: Turn the next paper-runner session into governed control-plane learning instead of raw local exhaust.
 - Actions:
+  - Run `launch_post_session_assimilation.ps1` as the governed entrypoint for post-session control-plane refresh.
   - Rebuild session reconciliation registry and handoff.
   - Rebuild execution calibration registry and handoff.
   - Rebuild tournament unlock registry, unlock handoff, unlock workplan, and execution evidence contract.
+  - Build the morning operator brief and handoff so tomorrow starts from one compact decision packet.
   - Commit only distilled governance artifacts if they changed materially.
 - Success criteria:
   - session reconciliation is rebuilt from the latest session bundle

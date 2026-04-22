@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T17:21:39.034649`
+- Generated at: `2026-04-22T17:30:16.886587`
 - Current unlocked profile: `down_choppy_coverage_ranked`
 - Available but not preferred: `down_choppy_full_ready`
 

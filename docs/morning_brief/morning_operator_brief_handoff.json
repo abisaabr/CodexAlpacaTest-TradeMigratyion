@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-04-22T17:30:18.088268",
+  "brief_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\morning_brief\\morning_operator_brief.json",
+  "morning_decision_posture": "keep_blocked_profiles_blocked",
+  "current_unlocked_profile": "down_choppy_coverage_ranked",
+  "repo_update_status": "ready",
+  "session_reconciliation_posture": "caution",
+  "execution_posture": "caution",
+  "execution_evidence_contract_status": "gapped",
+  "blocked_profiles_must_remain_blocked": [
+    "opening_30m_premium_defense",
+    "balanced_family_expansion_benchmark",
+    "opening_30m_convexity_butterfly",
+    "opening_30m_single_vs_multileg"
+  ],
+  "required_next_session_artifacts": [
+    "broker-order audit",
+    "broker account-activity audit",
+    "ending broker-position snapshot",
+    "shutdown reconciliation",
+    "completed trade table with broker/local economics comparison"
+  ],
+  "operator_actions": [
+    "Keep blocked profiles blocked until the missing execution evidence package lands.",
+    "Keep `down_choppy_coverage_ranked` as the current governed profile unless the refreshed unlock packet says otherwise.",
+    "Both governed repos are current enough to proceed without update action.",
+    "Use `trusted_and_cautious_sessions` when deciding which paper-runner sessions should influence research calibration and tournament policy.",
+    "Treat broker-order audit coverage as incomplete and avoid over-trusting clean local order logs alone.",
+    "Treat broker account-activity coverage as incomplete and avoid over-trusting local fill telemetry alone.",
+    "Use `raised` entry-fill penalties while observed entry friction remains around 0.80% mean absolute slippage and 0.65% mean adverse event slippage.",
+    "Keep exit-side execution modeling conservative until explicit exit slippage telemetry becomes reliable."
+  ],
+  "nearest_unlock_targets": [
+    {
+      "profile_id": "opening_30m_premium_defense",
+      "activation_state": "policy_blocked",
+      "blocker_codes": [
+        "execution_evidence_floor",
+        "broker_order_audit_coverage",
+        "broker_activity_audit_coverage"
+      ]
+    },
+    {
+      "profile_id": "balanced_family_expansion_benchmark",
+      "activation_state": "policy_blocked",
+      "blocker_codes": [
+        "execution_evidence_floor",
+        "broker_order_audit_coverage",
+        "broker_activity_audit_coverage"
+      ]
+    },
+    {
+      "profile_id": "opening_30m_convexity_butterfly",
+      "activation_state": "policy_blocked",
+      "blocker_codes": [
+        "execution_evidence_floor",
+        "risk_tier_cap",
+        "broker_order_audit_coverage",
+        "broker_activity_audit_coverage",
+        "exit_telemetry"
+      ]
+    }
+  ]
+}

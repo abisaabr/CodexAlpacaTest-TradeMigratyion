@@ -414,3 +414,36 @@ Then act as the execution-plane mission operator for the new machine.
    - the completion gates that would let the control plane reconsider the next blocked profile
 4. Do not modify the live manifest, do not change strategy or risk policy, and do not start trading in this step.
 ```
+
+## 16. Run Governed Post-Session Assimilation
+
+```text
+Open these sibling folders and use them together:
+
+1. C:\Users\<you>\Downloads\codexalpaca_repo
+2. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs/POST_SESSION_ASSIMILATION.md
+- docs/SESSION_RECONCILIATION_REGISTRY.md
+- docs/EXECUTION_CALIBRATION_REGISTRY.md
+- docs/TOURNAMENT_UNLOCK_WORKPLAN.md
+- docs/EXECUTION_EVIDENCE_CONTRACT.md
+
+Then act as the post-session assimilation steward for the new machine.
+
+1. Run:
+   - `powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion\cleanroom\code\qqq_options_30d_cleanroom\launch_post_session_assimilation.ps1" -ControlPlaneRoot "C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion" -RunnerRepoRoot "C:\Users\<you>\Downloads\codexalpaca_repo"`
+2. Inspect:
+   - `docs/morning_brief/morning_operator_brief.md`
+   - `docs/morning_brief/morning_operator_brief_handoff.md`
+   - `docs/morning_brief/post_session_assimilation_status.json`
+3. Report:
+   - the morning decision posture
+   - the current unlocked profile
+   - what remains blocked
+   - the nearest unlock targets
+   - the exact next-session artifacts still missing, if any
+   - whether the refreshed evidence is strong enough to reassess the next blocked profile
+4. Do not modify the live manifest, do not change risk policy, and do not commit raw session exhaust or raw trade logs in this step.
+```

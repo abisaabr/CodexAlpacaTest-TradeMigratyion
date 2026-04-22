@@ -31,9 +31,12 @@ Before assigning agent work, refresh and inspect:
 - `docs/EXECUTION_EVIDENCE_CONTRACT.md`
 - `docs/execution_evidence/execution_evidence_contract.md`
 - `docs/execution_evidence/execution_evidence_contract_handoff.md`
+- `docs/POST_SESSION_ASSIMILATION.md`
 - `docs/OVERNIGHT_PHASED_PLAN.md`
 - `docs/overnight_plan/overnight_phased_plan.md`
 - `docs/overnight_plan/overnight_phased_plan_handoff.md`
+- `docs/morning_brief/morning_operator_brief.md`
+- `docs/morning_brief/morning_operator_brief_handoff.md`
 
 It is written for the current two-machine setup:
 - current research machine = primary research plane
@@ -254,6 +257,28 @@ Tasks:
 
 Go / no-go:
 - no auto-promotion into the live manifest
+
+## Post-Session Assimilation
+
+Preferred entrypoint:
+- `cleanroom/code/qqq_options_30d_cleanroom/launch_post_session_assimilation.ps1`
+
+Use it after the paper runner leaves behind a new session bundle and before letting that session teach research policy.
+
+Required outputs:
+- refreshed session reconciliation artifacts
+- refreshed execution calibration artifacts
+- refreshed tournament profile / unlock / workplan artifacts
+- refreshed execution evidence contract artifacts
+- refreshed overnight phased plan artifacts
+- `docs/morning_brief/morning_operator_brief.json`
+- `docs/morning_brief/morning_operator_brief.md`
+- `docs/morning_brief/morning_operator_brief_handoff.json`
+- `docs/morning_brief/morning_operator_brief_handoff.md`
+
+Go / no-go:
+- do not let raw runner exhaust stand in for governed morning state
+- do not let review-required sessions loosen research or unlock policy
 
 ## What This Machine Should Own Tonight
 
