@@ -46,6 +46,14 @@ def iso_or_blank(moment: datetime | None) -> str:
     return moment.isoformat() if moment is not None else ""
 
 
+def latest_iso_timestamp(*values: Any) -> str:
+    moments = [parse_iso_timestamp(value) for value in values]
+    valid_moments = [moment for moment in moments if moment is not None]
+    if not valid_moments:
+        return ""
+    return max(valid_moments).isoformat()
+
+
 def safe_mtime(path: Path | None) -> datetime | None:
     if path is None or not path.exists():
         return None
@@ -458,11 +466,24 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
                 }
             )
 
+    program_updated_at_iso = latest_iso_timestamp(
+        program_status.get("updated_at"),
+        phase1_status.get("updated_at"),
+        phase2_status.get("updated_at"),
+        phase2_launch_status.get("updated_at"),
+        resume_followon_status.get("updated_at"),
+        validation_effective.get("updated_at_iso"),
+        review_effective.get("updated_at_iso"),
+        replacement_effective.get("updated_at_iso"),
+        handoff_effective.get("updated_at_iso"),
+        *[lane.get("latest_activity_at_iso") for lane in summarized_lanes],
+    )
+
     return {
         "generated_at": iso_or_blank(now),
         "program_root": str(program_root),
         "program_phase": program_phase,
-        "program_updated_at_iso": str(program_status.get("updated_at", "")),
+        "program_updated_at_iso": program_updated_at_iso,
         "stale_minutes": stale_minutes,
         "lane_source": lane_source,
         "phase1_status_path": existing_path(program_root / "phase1_status.json"),
