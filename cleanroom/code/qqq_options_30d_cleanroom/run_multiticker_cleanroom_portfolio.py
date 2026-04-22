@@ -147,6 +147,7 @@ def build_run_signature(
     family_include_filters: list[str],
     family_exclude_filters: list[str],
     execution_calibration_context: dict[str, object],
+    execution_slippage_calibration: dict[str, object],
 ) -> dict[str, object]:
     code_paths = [
         Path(__file__).resolve(),
@@ -171,6 +172,7 @@ def build_run_signature(
             "daily_universe": artifact_signature(universe_path),
         },
         "execution_calibration": execution_calibration_context,
+        "execution_slippage_calibration": execution_slippage_calibration,
         "code_artifacts": [artifact_signature(path) for path in code_paths],
     }
 
@@ -1884,6 +1886,7 @@ def run_single_ticker_research(
             family_include_filters=family_include_filters,
             family_exclude_filters=family_exclude_filters,
             execution_calibration_context=execution_calibration_context,
+            execution_slippage_calibration=execution_slippage_calibration,
         )
 
         strategy_variants = build_strategy_variants(
@@ -2828,6 +2831,7 @@ def main() -> None:
                 family_include_filters=family_include_filters,
                 family_exclude_filters=family_exclude_filters,
                 execution_calibration_context=execution_calibration_context,
+                execution_slippage_calibration=execution_slippage_calibration,
             )
         except Exception as exc:
             error_row = {
