@@ -107,6 +107,18 @@ function Get-LaunchPayload {
     }
 }
 
+function Test-LaneProcessRunning {
+    param([object]$Row)
+    $pidValue = 0
+    try {
+        $pidValue = [int]$Row.pid
+    }
+    catch {
+        return $false
+    }
+    return $null -ne (Get-Process -Id $pidValue -ErrorAction SilentlyContinue)
+}
+
 Write-Log "Waiting for phase 2 launch pack completion in $packRoot"
 Write-Status -Phase "waiting" -Message "Waiting for the Phase 2 launch pack to reach a terminal state."
 Invoke-RunRegistryReport
@@ -135,6 +147,29 @@ while ((Get-Date) -lt $deadline) {
         }
         Write-Log "Phase 2 launch pack completed successfully. Starting live-book validation."
         break
+    }
+    if ($phase -in @("started", "running")) {
+        $rows = @($launchPayload.rows)
+        if ($rows.Count -gt 0) {
+            $runningRows = @($rows | Where-Object { Test-LaneProcessRunning $_ })
+            if ($runningRows.Count -eq 0) {
+                $failedRows = @(
+                    $rows | Where-Object {
+                        $researchDir = [string]$_.research_dir
+                        -not (Test-Path (Join-Path $researchDir "master_summary.json"))
+                    }
+                )
+                if ($failedRows.Count -gt 0) {
+                    $failedLaneIds = @($failedRows | ForEach-Object { [string]$_.lane_id })
+                    Write-Log ("Phase 2 lane runners exited without required outputs: " + ($failedLaneIds -join ", "))
+                    Write-Status -Phase "failed" -Message ("Phase 2 lane runners exited without required outputs: " + ($failedLaneIds -join ", "))
+                    Invoke-RunRegistryReport
+                    exit 5
+                }
+                Write-Log "Phase 2 lane runners exited cleanly with master_summary artifacts. Starting live-book validation."
+                break
+            }
+        }
     }
     if ($phase -eq "preflight_failed") {
         Write-Log "Phase 2 launch pack failed preflight."
