@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T17:30:16.494140",
+  "generated_at": "2026-04-22T17:36:16.751432",
   "profile_registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_profiles\\tournament_profile_registry.json",
   "profile_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_profiles\\tournament_profile_handoff.json",
   "execution_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_calibration\\execution_calibration_handoff.json",
@@ -20,7 +20,7 @@
     "immediate_unlock_objectives": [
       {
         "objective_code": "upgrade_execution_evidence_to_entry_and_reconciliation",
-        "summary": "Upgrade execution evidence from `limited_entry_only` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
+        "summary": "Upgrade execution evidence from `no_recent_trade_sessions` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
         "category": "evidence",
         "priority": 1,
         "affected_profile_count": 2
@@ -41,7 +41,7 @@
       },
       {
         "objective_code": "upgrade_execution_evidence_to_broad",
-        "summary": "Upgrade execution evidence from `limited_entry_only` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts.",
+        "summary": "Upgrade execution evidence from `no_recent_trade_sessions` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts.",
         "category": "evidence",
         "priority": 1,
         "affected_profile_count": 2
@@ -79,9 +79,9 @@
         "blockers": [
           {
             "blocker_code": "execution_evidence_floor",
-            "summary": "Current execution evidence `limited_entry_only` is below this profile's floor `entry_and_reconciliation`.",
+            "summary": "Current execution evidence `no_recent_trade_sessions` is below this profile's floor `entry_and_reconciliation`.",
             "category": "evidence",
-            "current": "limited_entry_only",
+            "current": "no_recent_trade_sessions",
             "required": "entry_and_reconciliation"
           },
           {
@@ -102,7 +102,7 @@
         "next_unlock_objectives": [
           {
             "objective_code": "upgrade_execution_evidence_to_entry_and_reconciliation",
-            "summary": "Upgrade execution evidence from `limited_entry_only` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
+            "summary": "Upgrade execution evidence from `no_recent_trade_sessions` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
             "category": "evidence",
             "priority": 1
           },
@@ -137,7 +137,7 @@
         "evaluation_reasons": [
           "execution handoff explicitly recommends this profile (+100)",
           "posture caution favors conservative risk tier (+15)",
-          "current execution evidence `limited_entry_only` is below the profile floor `entry_and_reconciliation` (-250)",
+          "current execution evidence `no_recent_trade_sessions` is below the profile floor `entry_and_reconciliation` (-250)",
           "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
           "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
           "elevated entry friction penalizes low sensitivity (-0)",
@@ -162,9 +162,9 @@
         "blockers": [
           {
             "blocker_code": "execution_evidence_floor",
-            "summary": "Current execution evidence `limited_entry_only` is below this profile's floor `entry_and_reconciliation`.",
+            "summary": "Current execution evidence `no_recent_trade_sessions` is below this profile's floor `entry_and_reconciliation`.",
             "category": "evidence",
-            "current": "limited_entry_only",
+            "current": "no_recent_trade_sessions",
             "required": "entry_and_reconciliation"
           },
           {
@@ -185,7 +185,7 @@
         "next_unlock_objectives": [
           {
             "objective_code": "upgrade_execution_evidence_to_entry_and_reconciliation",
-            "summary": "Upgrade execution evidence from `limited_entry_only` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
+            "summary": "Upgrade execution evidence from `no_recent_trade_sessions` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
             "category": "evidence",
             "priority": 1
           },
@@ -230,7 +230,7 @@
         ],
         "evaluation_reasons": [
           "posture caution favors moderate risk tier (+5)",
-          "current execution evidence `limited_entry_only` is below the profile floor `entry_and_reconciliation` (-250)",
+          "current execution evidence `no_recent_trade_sessions` is below the profile floor `entry_and_reconciliation` (-250)",
           "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
           "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
           "elevated entry friction penalizes medium sensitivity (-10)",
@@ -256,9 +256,9 @@
         "blockers": [
           {
             "blocker_code": "execution_evidence_floor",
-            "summary": "Current execution evidence `limited_entry_only` is below this profile's floor `broad`.",
+            "summary": "Current execution evidence `no_recent_trade_sessions` is below this profile's floor `broad`.",
             "category": "evidence",
-            "current": "limited_entry_only",
+            "current": "no_recent_trade_sessions",
             "required": "broad"
           },
           {
@@ -293,7 +293,7 @@
         "next_unlock_objectives": [
           {
             "objective_code": "upgrade_execution_evidence_to_broad",
-            "summary": "Upgrade execution evidence from `limited_entry_only` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts.",
+            "summary": "Upgrade execution evidence from `no_recent_trade_sessions` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts.",
             "category": "evidence",
             "priority": 1
           },
@@ -340,7 +340,7 @@
         "evaluation_reasons": [
           "execution handoff explicitly deprioritizes this profile (-100)",
           "posture caution favors aggressive risk tier (-15)",
-          "current execution evidence `limited_entry_only` is below the profile floor `broad` (-250)",
+          "current execution evidence `no_recent_trade_sessions` is below the profile floor `broad` (-250)",
           "current execution policy caps profile risk at `moderate`, below this profile's `aggressive` tier (-250)",
           "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
           "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
@@ -370,9 +370,9 @@
         "blockers": [
           {
             "blocker_code": "execution_evidence_floor",
-            "summary": "Current execution evidence `limited_entry_only` is below this profile's floor `broad`.",
+            "summary": "Current execution evidence `no_recent_trade_sessions` is below this profile's floor `broad`.",
             "category": "evidence",
-            "current": "limited_entry_only",
+            "current": "no_recent_trade_sessions",
             "required": "broad"
           },
           {
@@ -407,7 +407,7 @@
         "next_unlock_objectives": [
           {
             "objective_code": "upgrade_execution_evidence_to_broad",
-            "summary": "Upgrade execution evidence from `limited_entry_only` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts.",
+            "summary": "Upgrade execution evidence from `no_recent_trade_sessions` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts.",
             "category": "evidence",
             "priority": 1
           },
@@ -461,7 +461,7 @@
         "evaluation_reasons": [
           "execution handoff explicitly deprioritizes this profile (-100)",
           "posture caution favors aggressive risk tier (-15)",
-          "current execution evidence `limited_entry_only` is below the profile floor `broad` (-250)",
+          "current execution evidence `no_recent_trade_sessions` is below the profile floor `broad` (-250)",
           "current execution policy caps profile risk at `moderate`, below this profile's `aggressive` tier (-250)",
           "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
           "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
@@ -571,9 +571,9 @@
       "blockers": [
         {
           "blocker_code": "execution_evidence_floor",
-          "summary": "Current execution evidence `limited_entry_only` is below this profile's floor `entry_and_reconciliation`.",
+          "summary": "Current execution evidence `no_recent_trade_sessions` is below this profile's floor `entry_and_reconciliation`.",
           "category": "evidence",
-          "current": "limited_entry_only",
+          "current": "no_recent_trade_sessions",
           "required": "entry_and_reconciliation"
         },
         {
@@ -594,7 +594,7 @@
       "next_unlock_objectives": [
         {
           "objective_code": "upgrade_execution_evidence_to_entry_and_reconciliation",
-          "summary": "Upgrade execution evidence from `limited_entry_only` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
+          "summary": "Upgrade execution evidence from `no_recent_trade_sessions` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
           "category": "evidence",
           "priority": 1
         },
@@ -629,7 +629,7 @@
       "evaluation_reasons": [
         "execution handoff explicitly recommends this profile (+100)",
         "posture caution favors conservative risk tier (+15)",
-        "current execution evidence `limited_entry_only` is below the profile floor `entry_and_reconciliation` (-250)",
+        "current execution evidence `no_recent_trade_sessions` is below the profile floor `entry_and_reconciliation` (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
         "elevated entry friction penalizes low sensitivity (-0)",
@@ -654,9 +654,9 @@
       "blockers": [
         {
           "blocker_code": "execution_evidence_floor",
-          "summary": "Current execution evidence `limited_entry_only` is below this profile's floor `entry_and_reconciliation`.",
+          "summary": "Current execution evidence `no_recent_trade_sessions` is below this profile's floor `entry_and_reconciliation`.",
           "category": "evidence",
-          "current": "limited_entry_only",
+          "current": "no_recent_trade_sessions",
           "required": "entry_and_reconciliation"
         },
         {
@@ -677,7 +677,7 @@
       "next_unlock_objectives": [
         {
           "objective_code": "upgrade_execution_evidence_to_entry_and_reconciliation",
-          "summary": "Upgrade execution evidence from `limited_entry_only` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
+          "summary": "Upgrade execution evidence from `no_recent_trade_sessions` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
           "category": "evidence",
           "priority": 1
         },
@@ -722,7 +722,7 @@
       ],
       "evaluation_reasons": [
         "posture caution favors moderate risk tier (+5)",
-        "current execution evidence `limited_entry_only` is below the profile floor `entry_and_reconciliation` (-250)",
+        "current execution evidence `no_recent_trade_sessions` is below the profile floor `entry_and_reconciliation` (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
         "elevated entry friction penalizes medium sensitivity (-10)",
@@ -748,9 +748,9 @@
       "blockers": [
         {
           "blocker_code": "execution_evidence_floor",
-          "summary": "Current execution evidence `limited_entry_only` is below this profile's floor `broad`.",
+          "summary": "Current execution evidence `no_recent_trade_sessions` is below this profile's floor `broad`.",
           "category": "evidence",
-          "current": "limited_entry_only",
+          "current": "no_recent_trade_sessions",
           "required": "broad"
         },
         {
@@ -785,7 +785,7 @@
       "next_unlock_objectives": [
         {
           "objective_code": "upgrade_execution_evidence_to_broad",
-          "summary": "Upgrade execution evidence from `limited_entry_only` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts.",
+          "summary": "Upgrade execution evidence from `no_recent_trade_sessions` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts.",
           "category": "evidence",
           "priority": 1
         },
@@ -832,7 +832,7 @@
       "evaluation_reasons": [
         "execution handoff explicitly deprioritizes this profile (-100)",
         "posture caution favors aggressive risk tier (-15)",
-        "current execution evidence `limited_entry_only` is below the profile floor `broad` (-250)",
+        "current execution evidence `no_recent_trade_sessions` is below the profile floor `broad` (-250)",
         "current execution policy caps profile risk at `moderate`, below this profile's `aggressive` tier (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
@@ -862,9 +862,9 @@
       "blockers": [
         {
           "blocker_code": "execution_evidence_floor",
-          "summary": "Current execution evidence `limited_entry_only` is below this profile's floor `broad`.",
+          "summary": "Current execution evidence `no_recent_trade_sessions` is below this profile's floor `broad`.",
           "category": "evidence",
-          "current": "limited_entry_only",
+          "current": "no_recent_trade_sessions",
           "required": "broad"
         },
         {
@@ -899,7 +899,7 @@
       "next_unlock_objectives": [
         {
           "objective_code": "upgrade_execution_evidence_to_broad",
-          "summary": "Upgrade execution evidence from `limited_entry_only` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts.",
+          "summary": "Upgrade execution evidence from `no_recent_trade_sessions` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts.",
           "category": "evidence",
           "priority": 1
         },
@@ -953,7 +953,7 @@
       "evaluation_reasons": [
         "execution handoff explicitly deprioritizes this profile (-100)",
         "posture caution favors aggressive risk tier (-15)",
-        "current execution evidence `limited_entry_only` is below the profile floor `broad` (-250)",
+        "current execution evidence `no_recent_trade_sessions` is below the profile floor `broad` (-250)",
         "current execution policy caps profile risk at `moderate`, below this profile's `aggressive` tier (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",

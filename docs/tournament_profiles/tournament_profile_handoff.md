@@ -2,13 +2,14 @@
 
 ## Resolution
 
-- Generated at: `2026-04-22T17:30:16.293309`
+- Generated at: `2026-04-22T17:36:16.565169`
 - Requested profile: `auto`
 - Resolved profile: `down_choppy_coverage_ranked`
 - Resolution mode: `auto_recommended`
 - Resolution warning: `none`
 - Execution posture: `caution`
 - Evidence strength: `limited_entry_only`
+- Unlock evidence strength: `no_recent_trade_sessions`
 - Preferred research bias: `defined_risk_and_premium_defense`
 - Recommended executable profile: `down_choppy_coverage_ranked`
 - Recommended executable profiles: `down_choppy_coverage_ranked`
@@ -82,7 +83,7 @@
 - Reasons:
   - execution handoff explicitly recommends this profile (+100)
   - posture caution favors conservative risk tier (+15)
-  - current execution evidence `limited_entry_only` is below the profile floor `entry_and_reconciliation` (-250)
+  - current execution evidence `no_recent_trade_sessions` is below the profile floor `entry_and_reconciliation` (-250)
   - profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)
   - profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)
   - elevated entry friction penalizes low sensitivity (-0)
@@ -106,7 +107,7 @@
 - Bootstrap ready universe: `true`
 - Reasons:
   - posture caution favors moderate risk tier (+5)
-  - current execution evidence `limited_entry_only` is below the profile floor `entry_and_reconciliation` (-250)
+  - current execution evidence `no_recent_trade_sessions` is below the profile floor `entry_and_reconciliation` (-250)
   - profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)
   - profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)
   - elevated entry friction penalizes medium sensitivity (-10)
@@ -130,7 +131,7 @@
 - Reasons:
   - execution handoff explicitly deprioritizes this profile (-100)
   - posture caution favors aggressive risk tier (-15)
-  - current execution evidence `limited_entry_only` is below the profile floor `broad` (-250)
+  - current execution evidence `no_recent_trade_sessions` is below the profile floor `broad` (-250)
   - current execution policy caps profile risk at `moderate`, below this profile's `aggressive` tier (-250)
   - profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)
   - profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)
@@ -158,7 +159,7 @@
 - Reasons:
   - execution handoff explicitly deprioritizes this profile (-100)
   - posture caution favors aggressive risk tier (-15)
-  - current execution evidence `limited_entry_only` is below the profile floor `broad` (-250)
+  - current execution evidence `no_recent_trade_sessions` is below the profile floor `broad` (-250)
   - current execution policy caps profile risk at `moderate`, below this profile's `aggressive` tier (-250)
   - profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)
   - profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)

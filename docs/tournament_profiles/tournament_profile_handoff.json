@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-04-22T17:30:16.293309",
-  "registry_generated_at": "2026-04-22T17:30:16.089296",
-  "execution_handoff_generated_at": "2026-04-22T17:30:15.709711",
+  "generated_at": "2026-04-22T17:36:16.565169",
+  "registry_generated_at": "2026-04-22T17:36:16.372818",
+  "execution_handoff_generated_at": "2026-04-22T17:36:15.987782",
   "requested_profile": "auto",
   "resolved_profile": "down_choppy_coverage_ranked",
   "resolution_mode": "auto_recommended",
@@ -9,6 +9,7 @@
   "default_profile": "down_choppy_coverage_ranked",
   "execution_posture": "caution",
   "execution_evidence_strength": "limited_entry_only",
+  "unlock_execution_evidence_strength": "no_recent_trade_sessions",
   "preferred_research_bias": "defined_risk_and_premium_defense",
   "recommended_profiles_from_execution": [
     "down_choppy_coverage_ranked",
@@ -82,7 +83,7 @@
       "reasons": [
         "execution handoff explicitly recommends this profile (+100)",
         "posture caution favors conservative risk tier (+15)",
-        "current execution evidence `limited_entry_only` is below the profile floor `entry_and_reconciliation` (-250)",
+        "current execution evidence `no_recent_trade_sessions` is below the profile floor `entry_and_reconciliation` (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
         "elevated entry friction penalizes low sensitivity (-0)",
@@ -108,7 +109,7 @@
       "score": -763,
       "reasons": [
         "posture caution favors moderate risk tier (+5)",
-        "current execution evidence `limited_entry_only` is below the profile floor `entry_and_reconciliation` (-250)",
+        "current execution evidence `no_recent_trade_sessions` is below the profile floor `entry_and_reconciliation` (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
         "elevated entry friction penalizes medium sensitivity (-10)",
@@ -134,7 +135,7 @@
       "reasons": [
         "execution handoff explicitly deprioritizes this profile (-100)",
         "posture caution favors aggressive risk tier (-15)",
-        "current execution evidence `limited_entry_only` is below the profile floor `broad` (-250)",
+        "current execution evidence `no_recent_trade_sessions` is below the profile floor `broad` (-250)",
         "current execution policy caps profile risk at `moderate`, below this profile's `aggressive` tier (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
@@ -164,7 +165,7 @@
       "reasons": [
         "execution handoff explicitly deprioritizes this profile (-100)",
         "posture caution favors aggressive risk tier (-15)",
-        "current execution evidence `limited_entry_only` is below the profile floor `broad` (-250)",
+        "current execution evidence `no_recent_trade_sessions` is below the profile floor `broad` (-250)",
         "current execution policy caps profile risk at `moderate`, below this profile's `aggressive` tier (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",

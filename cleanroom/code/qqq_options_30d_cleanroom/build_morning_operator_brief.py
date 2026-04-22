@@ -153,6 +153,8 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Session reconciliation posture: `{payload['session_reconciliation_posture']}`")
     lines.append(f"- Execution posture: `{payload['execution_posture']}`")
     lines.append(f"- Execution evidence contract: `{payload['execution_evidence_contract_status']}`")
+    lines.append(f"- General evidence strength: `{payload['execution_evidence_strength']}`")
+    lines.append(f"- Unlock evidence strength: `{payload['unlock_execution_evidence_strength']}`")
     lines.append("")
     lines.append("## Current Missions")
     lines.append("")
@@ -227,6 +229,8 @@ def main() -> None:
         "session_reconciliation_posture": (session_handoff.get("posture") or {}).get("overall_session_reconciliation_posture"),
         "execution_posture": (execution_handoff.get("posture") or {}).get("overall_execution_posture"),
         "execution_evidence_contract_status": evidence_handoff.get("contract_status"),
+        "execution_evidence_strength": (execution_handoff.get("posture") or {}).get("evidence_strength"),
+        "unlock_execution_evidence_strength": (execution_handoff.get("posture") or {}).get("unlock_evidence_strength"),
         "research_machine_mission": overnight_plan_handoff.get("research_machine_mission"),
         "new_machine_mission": overnight_plan_handoff.get("new_machine_mission"),
         "blocked_profiles_must_remain_blocked": list(overnight_plan_handoff.get("blocked_profiles_must_remain_blocked") or []),

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T17:30:18.088268",
+  "generated_at": "2026-04-22T17:36:18.366324",
   "brief_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\morning_brief\\morning_operator_brief.json",
   "morning_decision_posture": "keep_blocked_profiles_blocked",
   "current_unlocked_profile": "down_choppy_coverage_ranked",
@@ -7,6 +7,8 @@
   "session_reconciliation_posture": "caution",
   "execution_posture": "caution",
   "execution_evidence_contract_status": "gapped",
+  "execution_evidence_strength": "limited_entry_only",
+  "unlock_execution_evidence_strength": "no_recent_trade_sessions",
   "blocked_profiles_must_remain_blocked": [
     "opening_30m_premium_defense",
     "balanced_family_expansion_benchmark",

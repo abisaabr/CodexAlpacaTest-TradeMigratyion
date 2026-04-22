@@ -109,9 +109,15 @@ def build_profile_unlock_row(
     session_posture = dict(session_handoff.get("posture") or {})
     session_policy = dict(session_handoff.get("policy") or {})
 
-    current_evidence_strength = str(execution_posture.get("evidence_strength") or "no_recent_trade_sessions")
+    general_evidence_strength = str(execution_posture.get("evidence_strength") or "no_recent_trade_sessions")
+    unlock_evidence_strength = str(execution_posture.get("unlock_evidence_strength") or "no_recent_trade_sessions")
     current_max_risk_tier = str(execution_policy.get("max_execution_risk_tier") or "moderate")
     required_evidence_strength = str(profile.get("minimum_execution_evidence_strength") or "limited_entry_only")
+    current_evidence_strength = (
+        unlock_evidence_strength
+        if bool(profile.get("requires_broker_order_audit_coverage")) or bool(profile.get("requires_broker_activity_audit_coverage"))
+        else general_evidence_strength
+    )
 
     blockers: list[dict[str, Any]] = []
     objectives: list[dict[str, Any]] = []

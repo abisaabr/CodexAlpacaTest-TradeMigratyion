@@ -64,7 +64,8 @@ def score_profile(profile: dict[str, Any], execution_handoff: dict[str, Any]) ->
     posture = str(((execution_handoff.get("posture") or {}).get("overall_execution_posture")) or "watch")
     flags = dict((execution_handoff.get("posture") or {}).get("flags") or {})
     policy = dict(execution_handoff.get("policy") or {})
-    current_evidence_strength = str((execution_handoff.get("posture") or {}).get("evidence_strength") or "no_recent_trade_sessions")
+    general_evidence_strength = str((execution_handoff.get("posture") or {}).get("evidence_strength") or "no_recent_trade_sessions")
+    unlock_evidence_strength = str((execution_handoff.get("posture") or {}).get("unlock_evidence_strength") or "no_recent_trade_sessions")
     current_max_risk_tier = str(policy.get("max_execution_risk_tier") or "moderate")
 
     score = 0
@@ -74,6 +75,11 @@ def score_profile(profile: dict[str, Any], execution_handoff: dict[str, Any]) ->
     requires_broker_order_audit_coverage = bool(profile.get("requires_broker_order_audit_coverage", False))
     requires_broker_activity_audit_coverage = bool(profile.get("requires_broker_activity_audit_coverage", False))
     requires_exit_telemetry = bool(profile.get("requires_exit_telemetry", False))
+    current_evidence_strength = (
+        unlock_evidence_strength
+        if (requires_broker_order_audit_coverage or requires_broker_activity_audit_coverage)
+        else general_evidence_strength
+    )
 
     if profile_id in set(policy.get("recommended_profiles") or []):
         score += 100
@@ -231,6 +237,7 @@ def build_payload(registry: dict[str, Any], execution_handoff: dict[str, Any], r
         "default_profile": registry.get("default_profile"),
         "execution_posture": (execution_handoff.get("posture") or {}).get("overall_execution_posture"),
         "execution_evidence_strength": (execution_handoff.get("posture") or {}).get("evidence_strength"),
+        "unlock_execution_evidence_strength": (execution_handoff.get("posture") or {}).get("unlock_evidence_strength"),
         "preferred_research_bias": execution_policy.get("preferred_research_bias"),
         "recommended_profiles_from_execution": list(execution_policy.get("recommended_profiles") or []),
         "deprioritized_profiles_from_execution": list(execution_policy.get("deprioritized_profiles") or []),
@@ -256,6 +263,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Resolution warning: `{payload['resolution_warning'] or 'none'}`")
     lines.append(f"- Execution posture: `{payload['execution_posture']}`")
     lines.append(f"- Evidence strength: `{payload['execution_evidence_strength']}`")
+    lines.append(f"- Unlock evidence strength: `{payload['unlock_execution_evidence_strength']}`")
     lines.append(f"- Preferred research bias: `{payload['preferred_research_bias']}`")
     lines.append(f"- Recommended executable profile: `{payload['recommended_executable_profile']}`")
     lines.append(f"- Recommended executable profiles: `{', '.join(payload['recommended_executable_profiles']) or 'none'}`")

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T17:30:15.709711",
+  "generated_at": "2026-04-22T17:36:15.987782",
   "runner_repo_root": "C:\\Users\\rabisaab\\OneDrive\\CodexAlpaca\\downloads_remaining_20260417\\folders\\codexalpaca_repo",
   "reports_root": "C:\\Users\\rabisaab\\OneDrive\\CodexAlpaca\\downloads_remaining_20260417\\folders\\codexalpaca_repo\\reports\\multi_ticker_portfolio",
   "top_n": 10,
@@ -19,6 +19,11 @@
     "sessions_with_event_logs": 7,
     "sessions_with_broker_order_audit": 0,
     "sessions_with_broker_activity_audit": 0,
+    "trusted_sessions_with_completed_trades": 1,
+    "trusted_sessions_with_broker_order_audit": 0,
+    "trusted_sessions_with_broker_activity_audit": 0,
+    "trusted_sessions_with_broker_local_cashflow_comparison": 0,
+    "trusted_sessions_with_full_audit_bundle": 0,
     "date_span": {
       "start": "2026-04-12",
       "end": "2026-04-21"
@@ -152,7 +157,8 @@
       "2026-04-15",
       "2026-04-17",
       "2026-04-21"
-    ]
+    ],
+    "trusted_full_audit_bundle_dates": []
   },
   "sessions": [
     {

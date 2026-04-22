@@ -45,6 +45,7 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
     local_filled_order_without_activity_match_count = int(
         summary.get("local_filled_order_without_activity_match_count_total", 0) or 0
     )
+    trusted_full_audit_bundle_sessions = int(summary.get("trusted_sessions_with_full_audit_bundle", 0) or 0)
     partial_fill_count = int(summary.get("broker_partially_filled_order_count_total", 0) or 0) + int(
         summary.get("broker_activity_partial_fill_count_total", 0) or 0
     )
@@ -97,9 +98,17 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
     else:
         evidence_strength = "broad"
 
+    if trusted_full_audit_bundle_sessions <= 0:
+        unlock_evidence_strength = "no_recent_trade_sessions"
+    elif exit_telemetry_gap or trusted_full_audit_bundle_sessions < 3:
+        unlock_evidence_strength = "entry_and_reconciliation"
+    else:
+        unlock_evidence_strength = "broad"
+
     return {
         "overall_execution_posture": posture,
         "evidence_strength": evidence_strength,
+        "unlock_evidence_strength": unlock_evidence_strength,
         "flags": {
             "sample_size_limited": sample_size_limited,
             "session_reconciliation_filter_active": session_reconciliation_filter_active,
@@ -118,6 +127,7 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
 def policy_recommendations(payload: dict[str, Any], posture: dict[str, Any]) -> dict[str, Any]:
     summary = dict(payload.get("summary") or {})
     flags = dict(posture.get("flags") or {})
+    unlock_evidence_strength = str(posture.get("unlock_evidence_strength") or "no_recent_trade_sessions")
 
     entry_mean_pct = float(((summary.get("entry_abs_slippage_pct_of_expected") or {}).get("mean") or 0.0))
     event_mean_pct = float(((summary.get("event_entry_adverse_slippage_pct") or {}).get("mean") or 0.0))
@@ -156,13 +166,14 @@ def policy_recommendations(payload: dict[str, Any], posture: dict[str, Any]) -> 
 
     opening_window_aggressive_profiles_permitted = (
         posture.get("overall_execution_posture") == "stable"
-        and posture.get("evidence_strength") == "broad"
+        and unlock_evidence_strength == "broad"
         and not flags["exit_telemetry_gap"]
         and not flags["broker_order_audit_gap"]
         and not flags["broker_activity_audit_gap"]
     )
-    broker_audited_profile_activation_permitted = not (
-        flags["broker_order_audit_gap"] or flags["broker_activity_audit_gap"]
+    broker_audited_profile_activation_permitted = (
+        unlock_evidence_strength in {"entry_and_reconciliation", "broad"}
+        and not (flags["broker_order_audit_gap"] or flags["broker_activity_audit_gap"])
     )
 
     recommended_profiles: list[str] = ["down_choppy_coverage_ranked"]
@@ -233,6 +244,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Generated at: `{payload['generated_at']}`")
     lines.append(f"- Posture: `{posture['overall_execution_posture']}`")
     lines.append(f"- Evidence strength: `{posture['evidence_strength']}`")
+    lines.append(f"- Unlock evidence strength: `{posture['unlock_evidence_strength']}`")
     lines.append("")
     lines.append("## Flags")
     lines.append("")

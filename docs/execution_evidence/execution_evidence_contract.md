@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T17:30:17.278322`
+- Generated at: `2026-04-22T17:36:17.563532`
 - Current unlocked profile: `down_choppy_coverage_ranked`
 - Execution mission title: Produce the next trusted broker-audited execution evidence package.
 - Contract status: `gapped`

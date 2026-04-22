@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T17:30:16.494140`
+- Generated at: `2026-04-22T17:36:16.751432`
 - Current resolved profile: `down_choppy_coverage_ranked`
 - Execution posture: `caution`
 - Session reconciliation posture: `caution`
@@ -19,16 +19,16 @@
 
 ## Immediate Unlock Objectives
 
-- `upgrade_execution_evidence_to_entry_and_reconciliation`: Upgrade execution evidence from `limited_entry_only` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts. Affects `2` profiles.
+- `upgrade_execution_evidence_to_entry_and_reconciliation`: Upgrade execution evidence from `no_recent_trade_sessions` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts. Affects `2` profiles.
 - `land_trusted_broker_order_audit_sessions`: Land fresh trusted paper sessions with broker-order audit coverage so broker-audited profiles can activate. Affects `4` profiles.
 - `land_trusted_broker_activity_audit_sessions`: Land fresh trusted paper sessions with broker account-activity audit coverage so broker-audited profiles can activate. Affects `4` profiles.
-- `upgrade_execution_evidence_to_broad`: Upgrade execution evidence from `limited_entry_only` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts. Affects `2` profiles.
+- `upgrade_execution_evidence_to_broad`: Upgrade execution evidence from `no_recent_trade_sessions` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts. Affects `2` profiles.
 
 ## Operator Actions
 
 - Run `down_choppy_coverage_ranked` while higher-tier profiles remain blocked by execution evidence or implementation gates.
 - Keep `down_choppy_full_ready` as fallback executable profiles, not the default nightly choice.
-- Upgrade execution evidence from `limited_entry_only` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.
+- Upgrade execution evidence from `no_recent_trade_sessions` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.
 - Land fresh trusted paper sessions with broker-order audit coverage so broker-audited profiles can activate.
 - Land fresh trusted paper sessions with broker account-activity audit coverage so broker-audited profiles can activate.
-- Upgrade execution evidence from `limited_entry_only` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts.
+- Upgrade execution evidence from `no_recent_trade_sessions` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts.

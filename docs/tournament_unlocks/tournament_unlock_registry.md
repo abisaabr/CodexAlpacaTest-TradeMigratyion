@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T17:30:16.494140`
+- Generated at: `2026-04-22T17:36:16.751432`
 - Current resolved profile: `down_choppy_coverage_ranked`
 - Execution posture: `caution`
 - Session reconciliation posture: `caution`
@@ -13,10 +13,10 @@
 
 ## Immediate Unlock Objectives
 
-- `upgrade_execution_evidence_to_entry_and_reconciliation`: Upgrade execution evidence from `limited_entry_only` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts. Affects `2` profiles.
+- `upgrade_execution_evidence_to_entry_and_reconciliation`: Upgrade execution evidence from `no_recent_trade_sessions` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts. Affects `2` profiles.
 - `land_trusted_broker_order_audit_sessions`: Land fresh trusted paper sessions with broker-order audit coverage so broker-audited profiles can activate. Affects `4` profiles.
 - `land_trusted_broker_activity_audit_sessions`: Land fresh trusted paper sessions with broker account-activity audit coverage so broker-audited profiles can activate. Affects `4` profiles.
-- `upgrade_execution_evidence_to_broad`: Upgrade execution evidence from `limited_entry_only` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts. Affects `2` profiles.
+- `upgrade_execution_evidence_to_broad`: Upgrade execution evidence from `no_recent_trade_sessions` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts. Affects `2` profiles.
 - `raise_execution_risk_ceiling_to_aggressive`: Improve execution posture and trusted evidence enough to raise the activation ceiling from `moderate` to `aggressive`. Affects `2` profiles.
 - `land_reliable_exit_telemetry`: Capture reliable exit telemetry from fresh broker-audited paper sessions before activating exit-sensitive profiles. Affects `2` profiles.
 

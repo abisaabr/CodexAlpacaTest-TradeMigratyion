@@ -1,9 +1,10 @@
 {
-  "generated_at": "2026-04-22T17:30:15.709711",
+  "generated_at": "2026-04-22T17:36:15.987782",
   "registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_calibration\\execution_calibration_registry.json",
   "posture": {
     "overall_execution_posture": "caution",
     "evidence_strength": "limited_entry_only",
+    "unlock_evidence_strength": "no_recent_trade_sessions",
     "flags": {
       "sample_size_limited": true,
       "session_reconciliation_filter_active": true,

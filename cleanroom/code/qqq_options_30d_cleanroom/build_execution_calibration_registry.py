@@ -710,6 +710,31 @@ def build_payload(
             }
         )
 
+    trusted_session_rows = [
+        session_rows_by_date[trade_date]
+        for trade_date in included_session_dates
+        if trade_date in session_rows_by_date
+    ]
+    trusted_trade_session_rows = [
+        row for row in trusted_session_rows if int(row.get("completed_trade_count", 0) or 0) > 0
+    ]
+    trusted_broker_order_audit_rows = [
+        row for row in trusted_trade_session_rows if bool(row.get("broker_order_audit_available"))
+    ]
+    trusted_broker_activity_audit_rows = [
+        row for row in trusted_trade_session_rows if bool(row.get("broker_activity_audit_available"))
+    ]
+    trusted_broker_local_cashflow_rows = [
+        row for row in trusted_trade_session_rows if bool(row.get("broker_local_cashflow_comparable"))
+    ]
+    trusted_full_audit_bundle_rows = [
+        row
+        for row in trusted_trade_session_rows
+        if bool(row.get("broker_order_audit_available"))
+        and bool(row.get("broker_activity_audit_available"))
+        and bool(row.get("broker_local_cashflow_comparable"))
+    ]
+
     payload = {
         "generated_at": datetime.now().isoformat(),
         "runner_repo_root": str(runner_repo_root),
@@ -728,6 +753,11 @@ def build_payload(
             "sessions_with_event_logs": len(run_dirs) - len(missing_event_dates),
             "sessions_with_broker_order_audit": sum(1 for row in sessions if row["broker_order_audit_available"]),
             "sessions_with_broker_activity_audit": sum(1 for row in sessions if row["broker_activity_audit_available"]),
+            "trusted_sessions_with_completed_trades": len(trusted_trade_session_rows),
+            "trusted_sessions_with_broker_order_audit": len(trusted_broker_order_audit_rows),
+            "trusted_sessions_with_broker_activity_audit": len(trusted_broker_activity_audit_rows),
+            "trusted_sessions_with_broker_local_cashflow_comparison": len(trusted_broker_local_cashflow_rows),
+            "trusted_sessions_with_full_audit_bundle": len(trusted_full_audit_bundle_rows),
             "date_span": {"start": run_dirs[0].name if run_dirs else "", "end": run_dirs[-1].name if run_dirs else ""},
             "completed_trade_count": sum(int(row["completed_trade_count"]) for row in sessions),
             "reconciliation_row_count": sum(int(row["reconciliation_row_count"]) for row in sessions),
@@ -795,6 +825,11 @@ def build_payload(
             "missing_session_reconciliation_dates": missing_session_reconciliation_dates,
             "included_session_dates": included_session_dates,
             "excluded_session_dates": excluded_session_dates,
+            "trusted_full_audit_bundle_dates": [
+                str(row.get("trade_date", "")).strip()
+                for row in trusted_full_audit_bundle_rows
+                if str(row.get("trade_date", "")).strip()
+            ],
         },
         "sessions": sorted(sessions, key=lambda row: row["trade_date"]),
         "by_ticker": finalize_group_rows(by_ticker, "ticker"),

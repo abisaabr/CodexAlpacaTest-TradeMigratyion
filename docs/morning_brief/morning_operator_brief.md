@@ -2,13 +2,15 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T17:30:18.088268`
+- Generated at: `2026-04-22T17:36:18.366324`
 - Morning decision posture: `keep_blocked_profiles_blocked`
 - Current unlocked profile: `down_choppy_coverage_ranked`
 - Repo update status: `ready`
 - Session reconciliation posture: `caution`
 - Execution posture: `caution`
 - Execution evidence contract: `gapped`
+- General evidence strength: `limited_entry_only`
+- Unlock evidence strength: `no_recent_trade_sessions`
 
 ## Current Missions
 

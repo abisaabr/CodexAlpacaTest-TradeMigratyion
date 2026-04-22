@@ -32,6 +32,8 @@ def write_markdown(path: Path, payload: dict) -> None:
     lines.append(f"- Session reconciliation posture: `{payload['session_reconciliation_posture']}`")
     lines.append(f"- Execution posture: `{payload['execution_posture']}`")
     lines.append(f"- Execution evidence contract: `{payload['execution_evidence_contract_status']}`")
+    lines.append(f"- General evidence strength: `{payload['execution_evidence_strength']}`")
+    lines.append(f"- Unlock evidence strength: `{payload['unlock_execution_evidence_strength']}`")
     lines.append("")
     lines.append("## Immediate Actions")
     lines.append("")
@@ -56,6 +58,8 @@ def main() -> None:
         "session_reconciliation_posture": brief.get("session_reconciliation_posture"),
         "execution_posture": brief.get("execution_posture"),
         "execution_evidence_contract_status": brief.get("execution_evidence_contract_status"),
+        "execution_evidence_strength": brief.get("execution_evidence_strength"),
+        "unlock_execution_evidence_strength": brief.get("unlock_execution_evidence_strength"),
         "blocked_profiles_must_remain_blocked": list(brief.get("blocked_profiles_must_remain_blocked") or []),
         "required_next_session_artifacts": list(brief.get("required_next_session_artifacts") or []),
         "operator_actions": list(brief.get("operator_actions") or [])[:8],

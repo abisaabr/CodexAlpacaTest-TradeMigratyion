@@ -8,6 +8,8 @@
 - Session reconciliation posture: `caution`
 - Execution posture: `caution`
 - Execution evidence contract: `gapped`
+- General evidence strength: `limited_entry_only`
+- Unlock evidence strength: `no_recent_trade_sessions`
 
 ## Immediate Actions
 

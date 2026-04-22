@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T17:30:18.088268",
+  "generated_at": "2026-04-22T17:36:18.366324",
   "repo_update_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\repo_updates\\repo_update_handoff.json",
   "session_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\session_reconciliation\\session_reconciliation_handoff.json",
   "execution_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_calibration\\execution_calibration_handoff.json",
@@ -14,6 +14,8 @@
   "session_reconciliation_posture": "caution",
   "execution_posture": "caution",
   "execution_evidence_contract_status": "gapped",
+  "execution_evidence_strength": "limited_entry_only",
+  "unlock_execution_evidence_strength": "no_recent_trade_sessions",
   "research_machine_mission": "No research-plane unlock wiring is immediately required.",
   "new_machine_mission": "Produce the next trusted broker-audited execution evidence package.",
   "blocked_profiles_must_remain_blocked": [
