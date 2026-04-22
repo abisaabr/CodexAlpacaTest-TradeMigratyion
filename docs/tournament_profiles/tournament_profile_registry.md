@@ -34,6 +34,7 @@ This registry is the control-plane source of truth for which institutional tourn
 - Research bias: `premium_defense_mixed`
 - Minimum execution evidence strength: `limited_entry_only`
 - Minimum trusted unlock sessions: `0`
+- Maximum latest unlock-session age (days): `0`
 - Requires broker-order audit coverage: `false`
 - Requires broker-activity audit coverage: `false`
 - Requires exit telemetry: `false`
@@ -66,6 +67,7 @@ This registry is the control-plane source of truth for which institutional tourn
 - Research bias: `premium_defense_mixed`
 - Minimum execution evidence strength: `limited_entry_only`
 - Minimum trusted unlock sessions: `0`
+- Maximum latest unlock-session age (days): `0`
 - Requires broker-order audit coverage: `false`
 - Requires broker-activity audit coverage: `false`
 - Requires exit telemetry: `false`
@@ -98,6 +100,7 @@ This registry is the control-plane source of truth for which institutional tourn
 - Research bias: `balanced_directional_vs_multileg`
 - Minimum execution evidence strength: `broad`
 - Minimum trusted unlock sessions: `2`
+- Maximum latest unlock-session age (days): `5`
 - Requires broker-order audit coverage: `true`
 - Requires broker-activity audit coverage: `true`
 - Requires exit telemetry: `true`
@@ -130,6 +133,7 @@ This registry is the control-plane source of truth for which institutional tourn
 - Research bias: `defined_risk_and_premium_defense`
 - Minimum execution evidence strength: `entry_and_reconciliation`
 - Minimum trusted unlock sessions: `1`
+- Maximum latest unlock-session age (days): `7`
 - Requires broker-order audit coverage: `true`
 - Requires broker-activity audit coverage: `true`
 - Requires exit telemetry: `false`
@@ -162,6 +166,7 @@ This registry is the control-plane source of truth for which institutional tourn
 - Research bias: `convexity_and_long_vol`
 - Minimum execution evidence strength: `broad`
 - Minimum trusted unlock sessions: `2`
+- Maximum latest unlock-session age (days): `5`
 - Requires broker-order audit coverage: `true`
 - Requires broker-activity audit coverage: `true`
 - Requires exit telemetry: `true`
@@ -194,6 +199,7 @@ This registry is the control-plane source of truth for which institutional tourn
 - Research bias: `balanced`
 - Minimum execution evidence strength: `entry_and_reconciliation`
 - Minimum trusted unlock sessions: `1`
+- Maximum latest unlock-session age (days): `7`
 - Requires broker-order audit coverage: `true`
 - Requires broker-activity audit coverage: `true`
 - Requires exit telemetry: `false`

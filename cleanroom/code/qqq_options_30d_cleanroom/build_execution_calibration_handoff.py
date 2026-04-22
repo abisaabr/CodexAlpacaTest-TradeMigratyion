@@ -47,6 +47,13 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
     )
     trusted_full_audit_bundle_sessions = int(summary.get("trusted_sessions_with_full_audit_bundle", 0) or 0)
     trusted_runner_unlock_baseline_sessions = int(summary.get("trusted_sessions_with_runner_unlock_baseline", 0) or 0)
+    latest_trusted_unlock_session_date = str(summary.get("latest_trusted_unlock_session_date") or "").strip()
+    latest_trusted_unlock_session_age_days_raw = summary.get("latest_trusted_unlock_session_age_days")
+    latest_trusted_unlock_session_age_days = (
+        int(latest_trusted_unlock_session_age_days_raw)
+        if latest_trusted_unlock_session_age_days_raw not in (None, "")
+        else None
+    )
     partial_fill_count = int(summary.get("broker_partially_filled_order_count_total", 0) or 0) + int(
         summary.get("broker_activity_partial_fill_count_total", 0) or 0
     )
@@ -69,6 +76,7 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
     broker_order_audit_gap = broker_audit_sessions == 0
     broker_activity_audit_gap = broker_activity_audit_sessions == 0
     runner_unlock_baseline_gap = trusted_runner_unlock_baseline_sessions == 0
+    unlock_evidence_stale = latest_trusted_unlock_session_age_days is None or latest_trusted_unlock_session_age_days > 7
 
     if (high_guardrail_pressure and elevated_entry_friction) or (
         reconciliation_pressure and (partial_fill_pressure or exit_telemetry_gap)
@@ -83,6 +91,7 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
         or broker_order_audit_gap
         or broker_activity_audit_gap
         or runner_unlock_baseline_gap
+        or unlock_evidence_stale
     ):
         posture = "watch"
     else:
@@ -124,9 +133,12 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
             "broker_order_audit_gap": broker_order_audit_gap,
             "broker_activity_audit_gap": broker_activity_audit_gap,
             "runner_unlock_baseline_gap": runner_unlock_baseline_gap,
+            "unlock_evidence_stale": unlock_evidence_stale,
         },
         "trusted_unlock_session_count": trusted_full_audit_bundle_sessions,
         "trusted_runner_unlock_baseline_session_count": trusted_runner_unlock_baseline_sessions,
+        "latest_trusted_unlock_session_date": latest_trusted_unlock_session_date,
+        "latest_trusted_unlock_session_age_days": latest_trusted_unlock_session_age_days,
     }
 
 
@@ -163,7 +175,7 @@ def policy_recommendations(payload: dict[str, Any], posture: dict[str, Any]) -> 
     else:
         max_execution_risk_tier = "moderate"
 
-    if flags["sample_size_limited"] or flags["broker_order_audit_gap"] or flags["broker_activity_audit_gap"]:
+    if flags["sample_size_limited"] or flags["broker_order_audit_gap"] or flags["broker_activity_audit_gap"] or flags["unlock_evidence_stale"]:
         profile_activation_confidence = "bootstrapping"
     elif posture.get("evidence_strength") in {"entry_and_reconciliation", "broad"}:
         profile_activation_confidence = "qualified"
@@ -177,10 +189,16 @@ def policy_recommendations(payload: dict[str, Any], posture: dict[str, Any]) -> 
         and not flags["broker_order_audit_gap"]
         and not flags["broker_activity_audit_gap"]
         and not flags["runner_unlock_baseline_gap"]
+        and not flags["unlock_evidence_stale"]
     )
     broker_audited_profile_activation_permitted = (
         unlock_evidence_strength in {"entry_and_reconciliation", "broad"}
-        and not (flags["broker_order_audit_gap"] or flags["broker_activity_audit_gap"] or flags["runner_unlock_baseline_gap"])
+        and not (
+            flags["broker_order_audit_gap"]
+            or flags["broker_activity_audit_gap"]
+            or flags["runner_unlock_baseline_gap"]
+            or flags["unlock_evidence_stale"]
+        )
     )
 
     recommended_profiles: list[str] = ["down_choppy_coverage_ranked"]
@@ -218,6 +236,8 @@ def policy_recommendations(payload: dict[str, Any], posture: dict[str, Any]) -> 
         operator_actions.append("Treat broker account-activity audit coverage as a telemetry gap until upgraded session bundles start landing from the execution machine.")
     if flags["runner_unlock_baseline_gap"]:
         operator_actions.append("Do not treat legacy or dirty-runner sessions as unlock-grade evidence until a fresh clean runner-baseline session lands from the execution machine.")
+    if flags["unlock_evidence_stale"]:
+        operator_actions.append("Refresh broker-audited unlock evidence before activating blocked profiles; older trusted sessions should guide calibration, not unlock higher-risk tournaments.")
     if not broker_audited_profile_activation_permitted:
         operator_actions.append("Do not activate broker-audited-only profiles until both broker-order and broker-activity audit coverage are present in trusted learning sessions.")
     if not opening_window_aggressive_profiles_permitted:
@@ -258,6 +278,9 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(
         f"- Trusted runner-baseline sessions: `{posture['trusted_runner_unlock_baseline_session_count']}`"
     )
+    latest_unlock_age = posture.get("latest_trusted_unlock_session_age_days")
+    lines.append(f"- Latest trusted unlock-grade session: `{posture.get('latest_trusted_unlock_session_date') or 'none'}`")
+    lines.append(f"- Latest trusted unlock-grade session age (days): `{latest_unlock_age if latest_unlock_age is not None else 'n/a'}`")
     lines.append("")
     lines.append("## Flags")
     lines.append("")

@@ -5,7 +5,7 @@ import csv
 import json
 import math
 from collections import Counter, defaultdict
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -79,6 +79,17 @@ def round_float(value: float | None, digits: int = 6) -> float | None:
     if value is None:
         return None
     return round(value, digits)
+
+
+def age_in_days_from_today(date_text: str) -> int | None:
+    text = str(date_text or "").strip()
+    if not text:
+        return None
+    try:
+        parsed = date.fromisoformat(text)
+    except ValueError:
+        return None
+    return max((date.today() - parsed).days, 0)
 
 
 def percentile(values: list[float], pct: float) -> float | None:
@@ -305,6 +316,7 @@ def build_findings(payload: dict[str, Any]) -> list[dict[str, Any]]:
         summary.get("local_filled_order_without_activity_match_count_total", 0) or 0
     )
     broker_activity_partial_fill_count = int(summary.get("broker_activity_partial_fill_count_total", 0) or 0)
+    latest_trusted_unlock_session_age_days = parse_int(summary.get("latest_trusted_unlock_session_age_days"))
 
     if data_quality["exit_slippage_observations"] == 0:
         findings.append(
@@ -348,6 +360,15 @@ def build_findings(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 "priority": "medium",
                 "type": "runner_unlock_baseline_gap",
                 "message": "Trusted session bundles do not yet include a clean runner-baseline stamp, so unlock-grade evidence should remain blocked even when older paper evidence exists.",
+            }
+        )
+
+    if latest_trusted_unlock_session_age_days is not None and latest_trusted_unlock_session_age_days > 7:
+        findings.append(
+            {
+                "priority": "medium",
+                "type": "unlock_evidence_stale",
+                "message": f"The latest trusted unlock-grade session is `{latest_trusted_unlock_session_age_days}` day(s) old. Broker-audited tournament unlocks should stay conservative until fresher paper evidence lands.",
             }
         )
 
@@ -747,6 +768,28 @@ def build_payload(
         and bool(row.get("broker_local_cashflow_comparable"))
         and bool(row.get("runner_unlock_baseline_met"))
     ]
+    trusted_unlock_session_dates = sorted(
+        {
+            str(row.get("trade_date", "")).strip()
+            for row in trusted_full_audit_bundle_rows
+            if str(row.get("trade_date", "")).strip()
+        }
+    )
+    trusted_runner_unlock_baseline_dates = sorted(
+        {
+            str(row.get("trade_date", "")).strip()
+            for row in trusted_runner_unlock_baseline_rows
+            if str(row.get("trade_date", "")).strip()
+        }
+    )
+    latest_trusted_unlock_session_date = trusted_unlock_session_dates[-1] if trusted_unlock_session_dates else ""
+    latest_trusted_unlock_session_age_days = age_in_days_from_today(latest_trusted_unlock_session_date)
+    latest_trusted_runner_unlock_baseline_date = (
+        trusted_runner_unlock_baseline_dates[-1] if trusted_runner_unlock_baseline_dates else ""
+    )
+    latest_trusted_runner_unlock_baseline_age_days = age_in_days_from_today(
+        latest_trusted_runner_unlock_baseline_date
+    )
 
     payload = {
         "generated_at": datetime.now().isoformat(),
@@ -772,6 +815,12 @@ def build_payload(
             "trusted_sessions_with_broker_local_cashflow_comparison": len(trusted_broker_local_cashflow_rows),
             "trusted_sessions_with_runner_unlock_baseline": len(trusted_runner_unlock_baseline_rows),
             "trusted_sessions_with_full_audit_bundle": len(trusted_full_audit_bundle_rows),
+            "trusted_unlock_session_dates": trusted_unlock_session_dates,
+            "latest_trusted_unlock_session_date": latest_trusted_unlock_session_date,
+            "latest_trusted_unlock_session_age_days": latest_trusted_unlock_session_age_days,
+            "trusted_runner_unlock_baseline_dates": trusted_runner_unlock_baseline_dates,
+            "latest_trusted_runner_unlock_baseline_date": latest_trusted_runner_unlock_baseline_date,
+            "latest_trusted_runner_unlock_baseline_age_days": latest_trusted_runner_unlock_baseline_age_days,
             "date_span": {"start": run_dirs[0].name if run_dirs else "", "end": run_dirs[-1].name if run_dirs else ""},
             "completed_trade_count": sum(int(row["completed_trade_count"]) for row in sessions),
             "reconciliation_row_count": sum(int(row["reconciliation_row_count"]) for row in sessions),
@@ -955,6 +1004,9 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Event rows: `{summary['event_row_count']}`")
     lines.append(f"- Sessions with broker-order audit: `{summary['sessions_with_broker_order_audit']}`")
     lines.append(f"- Sessions with broker-activity audit: `{summary['sessions_with_broker_activity_audit']}`")
+    latest_unlock_age = summary.get("latest_trusted_unlock_session_age_days")
+    lines.append(f"- Latest trusted unlock-grade session: `{summary.get('latest_trusted_unlock_session_date') or 'none'}`")
+    lines.append(f"- Latest trusted unlock-grade session age (days): `{latest_unlock_age if latest_unlock_age is not None else 'n/a'}`")
     lines.append(f"- Broker orders audited: `{summary['broker_order_count_total']}`")
     lines.append(f"- Broker activities audited: `{summary['broker_activity_count_total']}`")
     lines.append(f"- Broker activity unmatched rows: `{summary['broker_activity_unmatched_count_total']}`")

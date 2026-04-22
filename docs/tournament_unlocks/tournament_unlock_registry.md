@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T17:53:46.036913`
+- Generated at: `2026-04-22T18:00:39.834158`
 - Current resolved profile: `down_choppy_coverage_ranked`
 - Execution posture: `caution`
 - Session reconciliation posture: `caution`
@@ -15,19 +15,21 @@
 
 - `upgrade_execution_evidence_to_entry_and_reconciliation`: Upgrade execution evidence from `no_recent_trade_sessions` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts. Affects `2` profiles.
 - `land_1_trusted_unlock_sessions`: Land at least `1` fresh trusted unlock-grade session(s) before activating this profile. Affects `2` profiles.
+- `refresh_unlock_evidence_within_7_days`: Land fresh trusted unlock-grade paper evidence no older than `7` day(s) before activating this profile. Affects `2` profiles.
 - `land_trusted_broker_order_audit_sessions`: Land fresh trusted paper sessions with broker-order audit coverage so broker-audited profiles can activate. Affects `4` profiles.
 - `land_trusted_broker_activity_audit_sessions`: Land fresh trusted paper sessions with broker account-activity audit coverage so broker-audited profiles can activate. Affects `4` profiles.
 - `upgrade_execution_evidence_to_broad`: Upgrade execution evidence from `no_recent_trade_sessions` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts. Affects `2` profiles.
 - `land_2_trusted_unlock_sessions`: Land at least `2` fresh trusted unlock-grade session(s) before activating this profile. Affects `2` profiles.
+- `refresh_unlock_evidence_within_5_days`: Land fresh trusted unlock-grade paper evidence no older than `5` day(s) before activating this profile. Affects `2` profiles.
 - `raise_execution_risk_ceiling_to_aggressive`: Improve execution posture and trusted evidence enough to raise the activation ceiling from `moderate` to `aggressive`. Affects `2` profiles.
 - `land_reliable_exit_telemetry`: Capture reliable exit telemetry from fresh broker-audited paper sessions before activating exit-sensitive profiles. Affects `2` profiles.
 
 ## Closest Next Unlock Targets
 
-- `opening_30m_premium_defense`: state `policy_blocked`, unmet `4`, blockers `execution_evidence_floor, unlock_session_count_floor, broker_order_audit_coverage, broker_activity_audit_coverage`, next objectives `upgrade_execution_evidence_to_entry_and_reconciliation, land_1_trusted_unlock_sessions, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
-- `balanced_family_expansion_benchmark`: state `policy_blocked`, unmet `4`, blockers `execution_evidence_floor, unlock_session_count_floor, broker_order_audit_coverage, broker_activity_audit_coverage`, next objectives `upgrade_execution_evidence_to_entry_and_reconciliation, land_1_trusted_unlock_sessions, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
-- `opening_30m_convexity_butterfly`: state `policy_blocked`, unmet `6`, blockers `execution_evidence_floor, unlock_session_count_floor, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry`, next objectives `upgrade_execution_evidence_to_broad, land_2_trusted_unlock_sessions, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`
-- `opening_30m_single_vs_multileg`: state `policy_blocked`, unmet `6`, blockers `execution_evidence_floor, unlock_session_count_floor, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry`, next objectives `upgrade_execution_evidence_to_broad, land_2_trusted_unlock_sessions, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`
+- `opening_30m_premium_defense`: state `policy_blocked`, unmet `5`, blockers `execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, broker_order_audit_coverage, broker_activity_audit_coverage`, next objectives `upgrade_execution_evidence_to_entry_and_reconciliation, land_1_trusted_unlock_sessions, refresh_unlock_evidence_within_7_days, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
+- `balanced_family_expansion_benchmark`: state `policy_blocked`, unmet `5`, blockers `execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, broker_order_audit_coverage, broker_activity_audit_coverage`, next objectives `upgrade_execution_evidence_to_entry_and_reconciliation, land_1_trusted_unlock_sessions, refresh_unlock_evidence_within_7_days, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
+- `opening_30m_convexity_butterfly`: state `policy_blocked`, unmet `7`, blockers `execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry`, next objectives `upgrade_execution_evidence_to_broad, land_2_trusted_unlock_sessions, refresh_unlock_evidence_within_5_days, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`
+- `opening_30m_single_vs_multileg`: state `policy_blocked`, unmet `7`, blockers `execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry`, next objectives `upgrade_execution_evidence_to_broad, land_2_trusted_unlock_sessions, refresh_unlock_evidence_within_5_days, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`
 
 ## Profile Detail
 
@@ -41,6 +43,7 @@
 - Risk tier: `moderate`
 - Minimum evidence strength: `limited_entry_only`
 - Trusted unlock sessions: current `0`, required `0`
+- Latest trusted unlock-session age (days): current `n/a`, ceiling `0`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `either_machine`
 - Blockers: `none`
@@ -56,6 +59,7 @@
 - Risk tier: `moderate`
 - Minimum evidence strength: `limited_entry_only`
 - Trusted unlock sessions: current `0`, required `0`
+- Latest trusted unlock-session age (days): current `n/a`, ceiling `0`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `either_machine`
 - Blockers: `none`
@@ -66,58 +70,62 @@
 - State: `policy_blocked`
 - Recommendation level: `recommended_but_not_yet_unlocked`
 - Executable now: `true`
-- Unmet requirements: `4`
+- Unmet requirements: `5`
 - Session focus: `opening_30m`
 - Risk tier: `conservative`
 - Minimum evidence strength: `entry_and_reconciliation`
 - Trusted unlock sessions: current `0`, required `1`
+- Latest trusted unlock-session age (days): current `n/a`, ceiling `7`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `new_machine`
-- Blockers: `execution_evidence_floor, unlock_session_count_floor, broker_order_audit_coverage, broker_activity_audit_coverage`
-- Next unlock objectives: `upgrade_execution_evidence_to_entry_and_reconciliation, land_1_trusted_unlock_sessions, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
+- Blockers: `execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, broker_order_audit_coverage, broker_activity_audit_coverage`
+- Next unlock objectives: `upgrade_execution_evidence_to_entry_and_reconciliation, land_1_trusted_unlock_sessions, refresh_unlock_evidence_within_7_days, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
 
 ### balanced_family_expansion_benchmark
 
 - State: `policy_blocked`
 - Recommendation level: `blocked`
 - Executable now: `true`
-- Unmet requirements: `4`
+- Unmet requirements: `5`
 - Session focus: `full_session`
 - Risk tier: `moderate`
 - Minimum evidence strength: `entry_and_reconciliation`
 - Trusted unlock sessions: current `0`, required `1`
+- Latest trusted unlock-session age (days): current `n/a`, ceiling `7`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `either_machine`
-- Blockers: `execution_evidence_floor, unlock_session_count_floor, broker_order_audit_coverage, broker_activity_audit_coverage`
-- Next unlock objectives: `upgrade_execution_evidence_to_entry_and_reconciliation, land_1_trusted_unlock_sessions, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
+- Blockers: `execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, broker_order_audit_coverage, broker_activity_audit_coverage`
+- Next unlock objectives: `upgrade_execution_evidence_to_entry_and_reconciliation, land_1_trusted_unlock_sessions, refresh_unlock_evidence_within_7_days, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
 
 ### opening_30m_convexity_butterfly
 
 - State: `policy_blocked`
 - Recommendation level: `blocked`
 - Executable now: `true`
-- Unmet requirements: `6`
+- Unmet requirements: `7`
 - Session focus: `opening_30m`
 - Risk tier: `aggressive`
 - Minimum evidence strength: `broad`
 - Trusted unlock sessions: current `0`, required `2`
+- Latest trusted unlock-session age (days): current `n/a`, ceiling `5`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `new_machine`
-- Blockers: `execution_evidence_floor, unlock_session_count_floor, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry`
-- Next unlock objectives: `upgrade_execution_evidence_to_broad, land_2_trusted_unlock_sessions, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`
+- Blockers: `execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry`
+- Next unlock objectives: `upgrade_execution_evidence_to_broad, land_2_trusted_unlock_sessions, refresh_unlock_evidence_within_5_days, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`
 
 ### opening_30m_single_vs_multileg
 
 - State: `policy_blocked`
 - Recommendation level: `blocked`
 - Executable now: `true`
-- Unmet requirements: `6`
+- Unmet requirements: `7`
 - Session focus: `opening_30m`
 - Risk tier: `aggressive`
 - Minimum evidence strength: `broad`
 - Trusted unlock sessions: current `0`, required `2`
+- Latest trusted unlock-session age (days): current `n/a`, ceiling `5`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `new_machine`
-- Blockers: `execution_evidence_floor, unlock_session_count_floor, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry`
-- Next unlock objectives: `upgrade_execution_evidence_to_broad, land_2_trusted_unlock_sessions, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`
+- Blockers: `execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry`
+- Next unlock objectives: `upgrade_execution_evidence_to_broad, land_2_trusted_unlock_sessions, refresh_unlock_evidence_within_5_days, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`
 

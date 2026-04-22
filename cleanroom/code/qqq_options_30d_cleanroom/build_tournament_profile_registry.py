@@ -38,6 +38,7 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "research_bias": "premium_defense_mixed",
         "minimum_execution_evidence_strength": "limited_entry_only",
         "minimum_trusted_unlock_session_count": 0,
+        "maximum_latest_unlock_session_age_days": 0,
         "requires_broker_order_audit_coverage": False,
         "requires_broker_activity_audit_coverage": False,
         "requires_exit_telemetry": False,
@@ -81,6 +82,7 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "research_bias": "premium_defense_mixed",
         "minimum_execution_evidence_strength": "limited_entry_only",
         "minimum_trusted_unlock_session_count": 0,
+        "maximum_latest_unlock_session_age_days": 0,
         "requires_broker_order_audit_coverage": False,
         "requires_broker_activity_audit_coverage": False,
         "requires_exit_telemetry": False,
@@ -124,6 +126,7 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "research_bias": "balanced_directional_vs_multileg",
         "minimum_execution_evidence_strength": "broad",
         "minimum_trusted_unlock_session_count": 2,
+        "maximum_latest_unlock_session_age_days": 5,
         "requires_broker_order_audit_coverage": True,
         "requires_broker_activity_audit_coverage": True,
         "requires_exit_telemetry": True,
@@ -169,6 +172,7 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "research_bias": "defined_risk_and_premium_defense",
         "minimum_execution_evidence_strength": "entry_and_reconciliation",
         "minimum_trusted_unlock_session_count": 1,
+        "maximum_latest_unlock_session_age_days": 7,
         "requires_broker_order_audit_coverage": True,
         "requires_broker_activity_audit_coverage": True,
         "requires_exit_telemetry": False,
@@ -207,6 +211,7 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "research_bias": "convexity_and_long_vol",
         "minimum_execution_evidence_strength": "broad",
         "minimum_trusted_unlock_session_count": 2,
+        "maximum_latest_unlock_session_age_days": 5,
         "requires_broker_order_audit_coverage": True,
         "requires_broker_activity_audit_coverage": True,
         "requires_exit_telemetry": True,
@@ -245,6 +250,7 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "research_bias": "balanced",
         "minimum_execution_evidence_strength": "entry_and_reconciliation",
         "minimum_trusted_unlock_session_count": 1,
+        "maximum_latest_unlock_session_age_days": 7,
         "requires_broker_order_audit_coverage": True,
         "requires_broker_activity_audit_coverage": True,
         "requires_exit_telemetry": False,
@@ -358,6 +364,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         lines.append(f"- Research bias: `{row['research_bias']}`")
         lines.append(f"- Minimum execution evidence strength: `{row['minimum_execution_evidence_strength']}`")
         lines.append(f"- Minimum trusted unlock sessions: `{row['minimum_trusted_unlock_session_count']}`")
+        lines.append(f"- Maximum latest unlock-session age (days): `{row['maximum_latest_unlock_session_age_days']}`")
         lines.append(f"- Requires broker-order audit coverage: `{str(row['requires_broker_order_audit_coverage']).lower()}`")
         lines.append(f"- Requires broker-activity audit coverage: `{str(row['requires_broker_activity_audit_coverage']).lower()}`")
         lines.append(f"- Requires exit telemetry: `{str(row['requires_exit_telemetry']).lower()}`")

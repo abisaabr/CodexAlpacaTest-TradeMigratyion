@@ -67,6 +67,14 @@ def score_profile(profile: dict[str, Any], execution_handoff: dict[str, Any]) ->
     general_evidence_strength = str((execution_handoff.get("posture") or {}).get("evidence_strength") or "no_recent_trade_sessions")
     unlock_evidence_strength = str((execution_handoff.get("posture") or {}).get("unlock_evidence_strength") or "no_recent_trade_sessions")
     trusted_unlock_session_count = int((execution_handoff.get("posture") or {}).get("trusted_unlock_session_count") or 0)
+    latest_trusted_unlock_session_age_days_raw = (execution_handoff.get("posture") or {}).get(
+        "latest_trusted_unlock_session_age_days"
+    )
+    latest_trusted_unlock_session_age_days = (
+        int(latest_trusted_unlock_session_age_days_raw)
+        if latest_trusted_unlock_session_age_days_raw not in (None, "")
+        else None
+    )
     current_max_risk_tier = str(policy.get("max_execution_risk_tier") or "moderate")
 
     score = 0
@@ -74,6 +82,7 @@ def score_profile(profile: dict[str, Any], execution_handoff: dict[str, Any]) ->
     profile_id = str(profile["profile_id"])
     minimum_execution_evidence_strength = str(profile.get("minimum_execution_evidence_strength") or "limited_entry_only")
     minimum_trusted_unlock_session_count = int(profile.get("minimum_trusted_unlock_session_count", 0) or 0)
+    maximum_latest_unlock_session_age_days = int(profile.get("maximum_latest_unlock_session_age_days", 0) or 0)
     requires_broker_order_audit_coverage = bool(profile.get("requires_broker_order_audit_coverage", False))
     requires_broker_activity_audit_coverage = bool(profile.get("requires_broker_activity_audit_coverage", False))
     requires_exit_telemetry = bool(profile.get("requires_exit_telemetry", False))
@@ -110,6 +119,20 @@ def score_profile(profile: dict[str, Any], execution_handoff: dict[str, Any]) ->
         score -= 250
         reasons.append(
             f"trusted unlock-grade session count `{trusted_unlock_session_count}` is below this profile's floor `{minimum_trusted_unlock_session_count}` (-250)"
+        )
+
+    if maximum_latest_unlock_session_age_days > 0 and (
+        latest_trusted_unlock_session_age_days is None
+        or latest_trusted_unlock_session_age_days > maximum_latest_unlock_session_age_days
+    ):
+        current_age = (
+            str(latest_trusted_unlock_session_age_days)
+            if latest_trusted_unlock_session_age_days is not None
+            else "none"
+        )
+        score -= 250
+        reasons.append(
+            f"latest trusted unlock-grade session age `{current_age}` day(s) is older than this profile's freshness ceiling `{maximum_latest_unlock_session_age_days}` (-250)"
         )
 
     if requires_broker_order_audit_coverage and not bool(policy.get("broker_audited_profile_activation_permitted")):
@@ -172,6 +195,7 @@ def build_payload(registry: dict[str, Any], execution_handoff: dict[str, Any], r
     for profile in profiles:
         score, reasons = score_profile(profile, execution_handoff)
         minimum_trusted_unlock_session_count = int(profile.get("minimum_trusted_unlock_session_count", 0) or 0)
+        maximum_latest_unlock_session_age_days = int(profile.get("maximum_latest_unlock_session_age_days", 0) or 0)
         evaluations.append(
             {
                 "profile_id": profile["profile_id"],
@@ -185,6 +209,7 @@ def build_payload(registry: dict[str, Any], execution_handoff: dict[str, Any], r
                 "research_bias": profile.get("research_bias"),
                 "minimum_execution_evidence_strength": profile.get("minimum_execution_evidence_strength"),
                 "minimum_trusted_unlock_session_count": minimum_trusted_unlock_session_count,
+                "maximum_latest_unlock_session_age_days": maximum_latest_unlock_session_age_days,
                 "requires_broker_order_audit_coverage": bool(profile.get("requires_broker_order_audit_coverage", False)),
                 "requires_broker_activity_audit_coverage": bool(profile.get("requires_broker_activity_audit_coverage", False)),
                 "requires_exit_telemetry": bool(profile.get("requires_exit_telemetry", False)),
@@ -297,6 +322,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         lines.append(f"- Research bias: `{row['research_bias']}`")
         lines.append(f"- Minimum execution evidence strength: `{row['minimum_execution_evidence_strength']}`")
         lines.append(f"- Minimum trusted unlock sessions: `{row['minimum_trusted_unlock_session_count']}`")
+        lines.append(f"- Maximum latest unlock-session age (days): `{row['maximum_latest_unlock_session_age_days']}`")
         lines.append(f"- Requires broker-order audit coverage: `{str(bool(row['requires_broker_order_audit_coverage'])).lower()}`")
         lines.append(f"- Requires broker-activity audit coverage: `{str(bool(row['requires_broker_activity_audit_coverage'])).lower()}`")
         lines.append(f"- Requires exit telemetry: `{str(bool(row['requires_exit_telemetry'])).lower()}`")

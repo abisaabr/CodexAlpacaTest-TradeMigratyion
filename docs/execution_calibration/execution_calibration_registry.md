@@ -19,6 +19,8 @@ This registry is the control-plane source of truth for what the paper runner has
 - Event rows: `737`
 - Sessions with broker-order audit: `0`
 - Sessions with broker-activity audit: `0`
+- Latest trusted unlock-grade session: `none`
+- Latest trusted unlock-grade session age (days): `n/a`
 - Broker orders audited: `0`
 - Broker activities audited: `0`
 - Broker activity unmatched rows: `0`

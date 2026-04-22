@@ -2,12 +2,14 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T17:53:45.335842`
+- Generated at: `2026-04-22T18:00:39.002621`
 - Posture: `caution`
 - Evidence strength: `limited_entry_only`
 - Unlock evidence strength: `no_recent_trade_sessions`
 - Trusted unlock-grade sessions: `0`
 - Trusted runner-baseline sessions: `0`
+- Latest trusted unlock-grade session: `none`
+- Latest trusted unlock-grade session age (days): `n/a`
 
 ## Flags
 
@@ -22,6 +24,7 @@
 - `broker_order_audit_gap`: `true`
 - `broker_activity_audit_gap`: `true`
 - `runner_unlock_baseline_gap`: `true`
+- `unlock_evidence_stale`: `true`
 
 ## Policy Guidance
 
@@ -48,6 +51,7 @@
 - Treat broker-order audit coverage itself as a telemetry gap until upgraded session bundles start landing from the execution machine.
 - Treat broker account-activity audit coverage as a telemetry gap until upgraded session bundles start landing from the execution machine.
 - Do not treat legacy or dirty-runner sessions as unlock-grade evidence until a fresh clean runner-baseline session lands from the execution machine.
+- Refresh broker-audited unlock evidence before activating blocked profiles; older trusted sessions should guide calibration, not unlock higher-risk tournaments.
 - Do not activate broker-audited-only profiles until both broker-order and broker-activity audit coverage are present in trusted learning sessions.
 - Keep aggressive opening-window and combo-heavy profiles behind the execution evidence floor until broad audited evidence and exit telemetry are present.
 

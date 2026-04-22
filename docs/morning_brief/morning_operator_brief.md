@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T17:53:47.361344`
+- Generated at: `2026-04-22T18:00:41.339682`
 - Morning decision posture: `keep_blocked_profiles_blocked`
 - Current unlocked profile: `down_choppy_coverage_ranked`
 - Repo update status: `ready`
@@ -36,6 +36,7 @@
 - Treat broker-order audit coverage itself as a telemetry gap until upgraded session bundles start landing from the execution machine.
 - Treat broker account-activity audit coverage as a telemetry gap until upgraded session bundles start landing from the execution machine.
 - Do not treat legacy or dirty-runner sessions as unlock-grade evidence until a fresh clean runner-baseline session lands from the execution machine.
+- Refresh broker-audited unlock evidence before activating blocked profiles; older trusted sessions should guide calibration, not unlock higher-risk tournaments.
 - Do not activate broker-audited-only profiles until both broker-order and broker-activity audit coverage are present in trusted learning sessions.
 - Keep aggressive opening-window and combo-heavy profiles behind the execution evidence floor until broad audited evidence and exit telemetry are present.
 - Keep running `down_choppy_coverage_ranked` as the unlocked governed profile.
@@ -70,9 +71,9 @@
 
 ## Nearest Unlock Targets
 
-- `opening_30m_premium_defense`: policy_blocked via execution_evidence_floor, unlock_session_count_floor, broker_order_audit_coverage, broker_activity_audit_coverage
-- `balanced_family_expansion_benchmark`: policy_blocked via execution_evidence_floor, unlock_session_count_floor, broker_order_audit_coverage, broker_activity_audit_coverage
-- `opening_30m_convexity_butterfly`: policy_blocked via execution_evidence_floor, unlock_session_count_floor, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry
+- `opening_30m_premium_defense`: policy_blocked via execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, broker_order_audit_coverage, broker_activity_audit_coverage
+- `balanced_family_expansion_benchmark`: policy_blocked via execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, broker_order_audit_coverage, broker_activity_audit_coverage
+- `opening_30m_convexity_butterfly`: policy_blocked via execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry
 
 ## By-Morning Success
 
