@@ -16,6 +16,17 @@ COMMISSION_PER_CONTRACT = 0.65
 SLIPPAGE_RATE = 0.01
 MIN_SLIPPAGE = 0.02
 MINUTES_PER_RTH_SESSION = 390
+OPTION_CONTRACT_SHARE_EQUIVALENT = 100
+ALPACA_OPTION_BROKER_COMMISSION_PER_CONTRACT = 0.0
+ALPACA_OPTION_ORF_PER_CONTRACT = 0.02685
+ALPACA_OPTION_OCC_CLEARING_PER_CONTRACT = 0.02
+ALPACA_OPTION_OCC_CLEARING_CAP_PER_ORDER = 55.0
+ALPACA_OPTION_CAT_FEE_PER_EQUIVALENT_SHARE = 0.000046
+ALPACA_OPTION_CAT_FEE_PER_CONTRACT = (
+    ALPACA_OPTION_CAT_FEE_PER_EQUIVALENT_SHARE * OPTION_CONTRACT_SHARE_EQUIVALENT
+)
+ALPACA_OPTION_TAF_PER_CONTRACT = 0.00279
+ALPACA_OPTION_FEE_SCHEDULE_AS_OF = "2026-04-22"
 PREMIUM_BUCKET_SLIPPAGE_MULTIPLIERS = {
     "<0.15": 2.4,
     "0.15-0.30": 1.8,
@@ -149,6 +160,19 @@ class DayContext:
     ret_30_pct: float
 
 
+@dataclass(frozen=True)
+class OptionFeeBreakdown:
+    contract_count: int
+    sell_contract_count: int
+    broker_commission: float
+    regulatory_fees: float
+    orf_fee: float
+    occ_clearing_fee: float
+    cat_fee: float
+    taf_fee: float
+    total_fees: float
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Backtest QQQ option strategy families on the clean-room 1-minute dataset.")
     parser.add_argument("--output-dir", default="output")
@@ -160,6 +184,71 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--report-name", default="qqq_strategy_backtest_report.md")
     parser.add_argument("--assumptions-name", default="qqq_strategy_backtest_assumptions.json")
     return parser
+
+
+def estimate_alpaca_option_fee_components(
+    *,
+    contract_count: int,
+    sell_contract_count: int,
+) -> OptionFeeBreakdown:
+    contract_count = max(0, int(contract_count))
+    sell_contract_count = max(0, min(contract_count, int(sell_contract_count)))
+    if contract_count == 0:
+        return OptionFeeBreakdown(
+            contract_count=0,
+            sell_contract_count=0,
+            broker_commission=0.0,
+            regulatory_fees=0.0,
+            orf_fee=0.0,
+            occ_clearing_fee=0.0,
+            cat_fee=0.0,
+            taf_fee=0.0,
+            total_fees=0.0,
+        )
+
+    broker_commission = contract_count * ALPACA_OPTION_BROKER_COMMISSION_PER_CONTRACT
+    orf_fee = contract_count * ALPACA_OPTION_ORF_PER_CONTRACT
+    occ_clearing_fee = min(
+        contract_count * ALPACA_OPTION_OCC_CLEARING_PER_CONTRACT,
+        ALPACA_OPTION_OCC_CLEARING_CAP_PER_ORDER,
+    )
+    cat_fee = contract_count * ALPACA_OPTION_CAT_FEE_PER_CONTRACT
+    taf_fee = sell_contract_count * ALPACA_OPTION_TAF_PER_CONTRACT
+    regulatory_fees = orf_fee + occ_clearing_fee + cat_fee + taf_fee
+    return OptionFeeBreakdown(
+        contract_count=contract_count,
+        sell_contract_count=sell_contract_count,
+        broker_commission=broker_commission,
+        regulatory_fees=regulatory_fees,
+        orf_fee=orf_fee,
+        occ_clearing_fee=occ_clearing_fee,
+        cat_fee=cat_fee,
+        taf_fee=taf_fee,
+        total_fees=broker_commission + regulatory_fees,
+    )
+
+
+def estimate_alpaca_option_order_fees(
+    *,
+    legs: list[dict[str, object]],
+    quantity: int,
+    closing: bool,
+) -> OptionFeeBreakdown:
+    quantity = max(0, int(quantity))
+    if quantity == 0 or not legs:
+        return estimate_alpaca_option_fee_components(contract_count=0, sell_contract_count=0)
+
+    sell_leg_count = 0
+    for leg in legs:
+        side = str(leg.get("side", ""))
+        is_sell = (side == "short" and not closing) or (side == "long" and closing)
+        if is_sell:
+            sell_leg_count += 1
+
+    return estimate_alpaca_option_fee_components(
+        contract_count=len(legs) * quantity,
+        sell_contract_count=sell_leg_count * quantity,
+    )
 
 
 def load_wide_data(path: Path) -> pd.DataFrame:
@@ -714,7 +803,9 @@ def simulate_strategy(
             continue
 
         entry_cash = open_cashflow(legs=legs, quantity=quantity)
-        commission_total = COMMISSION_PER_CONTRACT * quantity * len(legs) * 2.0
+        entry_fee_breakdown = estimate_alpaca_option_order_fees(legs=legs, quantity=quantity, closing=False)
+        exit_fee_breakdown = estimate_alpaca_option_order_fees(legs=legs, quantity=quantity, closing=True)
+        fee_total = entry_fee_breakdown.total_fees + exit_fee_breakdown.total_fees
         target_dollars = abs(entry_net_premium) * 100.0 * quantity * strategy.profit_target_multiple
         stop_dollars = abs(entry_net_premium) * 100.0 * quantity * strategy.stop_loss_multiple
 
@@ -760,7 +851,7 @@ def simulate_strategy(
                 quantity=quantity,
                 exit_contexts=current_exit_contexts,
             )
-            current_net_pnl = entry_cash + current_exit_cash - commission_total
+            current_net_pnl = entry_cash + current_exit_cash - fee_total
 
             if current_net_pnl >= target_dollars:
                 exit_idx = idx
@@ -840,7 +931,21 @@ def simulate_strategy(
                 "entry_cashflow": round(entry_cash, 2),
                 "exit_cashflow": round(exit_cash, 2),
                 "gross_pnl": round(entry_cash + exit_cash, 2),
-                "commission_total": round(commission_total, 2),
+                "entry_broker_commission": round(entry_fee_breakdown.broker_commission, 4),
+                "exit_broker_commission": round(exit_fee_breakdown.broker_commission, 4),
+                "broker_commission_total": round(
+                    entry_fee_breakdown.broker_commission + exit_fee_breakdown.broker_commission,
+                    4,
+                ),
+                "entry_regulatory_fees": round(entry_fee_breakdown.regulatory_fees, 4),
+                "exit_regulatory_fees": round(exit_fee_breakdown.regulatory_fees, 4),
+                "regulatory_fee_total": round(
+                    entry_fee_breakdown.regulatory_fees + exit_fee_breakdown.regulatory_fees,
+                    4,
+                ),
+                "entry_total_fees": round(entry_fee_breakdown.total_fees, 4),
+                "exit_total_fees": round(exit_fee_breakdown.total_fees, 4),
+                "commission_total": round(fee_total, 2),
                 "net_pnl": round(net_pnl, 2),
                 "max_loss_per_combo": round(max_loss_per_combo, 2),
                 "max_profit_per_combo": round(max_profit_per_combo, 2),
@@ -960,7 +1065,12 @@ def write_report(
     lines.append(f"- Starting equity per strategy: ${STARTING_EQUITY:,.0f}")
     lines.append("- RTH only: 09:30 to 15:59 America/New_York")
     lines.append("- Incomplete session filtering removes partial days such as 2026-04-10")
-    lines.append(f"- Per-contract commission: ${COMMISSION_PER_CONTRACT:.2f} each side")
+    lines.append("- Alpaca option model assumes commission-free contracts with regulatory fees layered on each order.")
+    lines.append(
+        "- Fee schedule snapshot: ORF $0.02685/contract, OCC $0.02/contract capped at $55/order, "
+        f"CAT ${ALPACA_OPTION_CAT_FEE_PER_CONTRACT:.4f}/contract, and TAF ${ALPACA_OPTION_TAF_PER_CONTRACT:.5f}/sold contract "
+        f"(as of {ALPACA_OPTION_FEE_SCHEDULE_AS_OF})."
+    )
     lines.append(
         f"- Slippage model: {SLIPPAGE_RATE * 100:.1f}% adverse with a ${MIN_SLIPPAGE:.2f} base minimum per option leg, scaled by premium bucket, trade count, volume, synthetic bars, and time of day."
     )
@@ -1065,6 +1175,14 @@ def main() -> None:
                 "entry_cashflow",
                 "exit_cashflow",
                 "gross_pnl",
+                "entry_broker_commission",
+                "exit_broker_commission",
+                "broker_commission_total",
+                "entry_regulatory_fees",
+                "exit_regulatory_fees",
+                "regulatory_fee_total",
+                "entry_total_fees",
+                "exit_total_fees",
                 "commission_total",
                 "net_pnl",
                 "max_loss_per_combo",
@@ -1087,7 +1205,17 @@ def main() -> None:
         "starting_equity_per_strategy": STARTING_EQUITY,
         "rth_only": True,
         "minutes_per_session": MINUTES_PER_RTH_SESSION,
-        "commission_per_contract_each_side": COMMISSION_PER_CONTRACT,
+        "legacy_commission_per_contract_each_side": COMMISSION_PER_CONTRACT,
+        "alpaca_option_fee_schedule": {
+            "as_of": ALPACA_OPTION_FEE_SCHEDULE_AS_OF,
+            "broker_commission_per_contract": ALPACA_OPTION_BROKER_COMMISSION_PER_CONTRACT,
+            "orf_per_contract": ALPACA_OPTION_ORF_PER_CONTRACT,
+            "occ_clearing_per_contract": ALPACA_OPTION_OCC_CLEARING_PER_CONTRACT,
+            "occ_clearing_cap_per_order": ALPACA_OPTION_OCC_CLEARING_CAP_PER_ORDER,
+            "cat_fee_per_equivalent_share": ALPACA_OPTION_CAT_FEE_PER_EQUIVALENT_SHARE,
+            "cat_fee_per_contract": ALPACA_OPTION_CAT_FEE_PER_CONTRACT,
+            "taf_per_sold_contract": ALPACA_OPTION_TAF_PER_CONTRACT,
+        },
         "slippage_rate": SLIPPAGE_RATE,
         "minimum_slippage_per_option": MIN_SLIPPAGE,
         "premium_bucket_slippage_multipliers": PREMIUM_BUCKET_SLIPPAGE_MULTIPLIERS,

@@ -1028,6 +1028,16 @@ def enrich_candidate_trades(trades: pd.DataFrame) -> pd.DataFrame:
         enriched["is_sub_015_premium"] = enriched["abs_entry_net_premium"] < 0.15
     if "is_sub_030_premium" not in enriched.columns and "abs_entry_net_premium" in enriched.columns:
         enriched["is_sub_030_premium"] = enriched["abs_entry_net_premium"] < 0.30
+    if "total_fees_per_combo" not in enriched.columns:
+        if {
+            "entry_total_fees_per_combo",
+            "exit_total_fees_per_combo",
+        }.issubset(enriched.columns):
+            enriched["total_fees_per_combo"] = (
+                enriched["entry_total_fees_per_combo"] + enriched["exit_total_fees_per_combo"]
+            )
+        elif "total_commission_per_combo" in enriched.columns:
+            enriched["total_fees_per_combo"] = enriched["total_commission_per_combo"]
     if "total_commission_per_combo" not in enriched.columns and {
         "entry_commission_per_combo",
         "exit_commission_per_combo",
@@ -1136,10 +1146,15 @@ def build_friction_profile(trades_df: pd.DataFrame) -> dict[str, float | int]:
             "trade_count": 0,
             "avg_entry_premium": 0.0,
             "median_entry_premium": 0.0,
+            "avg_total_fees_per_combo": 0.0,
+            "median_total_fees_per_combo": 0.0,
             "avg_total_friction_per_combo": 0.0,
             "median_total_friction_per_combo": 0.0,
             "avg_friction_pct_of_entry_premium": 0.0,
             "median_friction_pct_of_entry_premium": 0.0,
+            "total_broker_commission": 0.0,
+            "total_regulatory_fees": 0.0,
+            "total_fees": 0.0,
             "total_commission": 0.0,
             "total_slippage": 0.0,
             "total_friction": 0.0,
@@ -1153,6 +1168,23 @@ def build_friction_profile(trades_df: pd.DataFrame) -> dict[str, float | int]:
         }
     quantity = trades_df["quantity"] if "quantity" in trades_df.columns else 1.0
     premium_series = trades_df["abs_entry_net_premium"] if "abs_entry_net_premium" in trades_df.columns else pd.Series(0.0, index=trades_df.index)
+    total_broker_commission_per_combo = (
+        trades_df["total_broker_commission_per_combo"]
+        if "total_broker_commission_per_combo" in trades_df.columns
+        else pd.Series(0.0, index=trades_df.index)
+    )
+    total_regulatory_fees_per_combo = (
+        trades_df["total_regulatory_fees_per_combo"]
+        if "total_regulatory_fees_per_combo" in trades_df.columns
+        else pd.Series(0.0, index=trades_df.index)
+    )
+    total_fees_per_combo = (
+        trades_df["total_fees_per_combo"]
+        if "total_fees_per_combo" in trades_df.columns
+        else trades_df["total_commission_per_combo"]
+        if "total_commission_per_combo" in trades_df.columns
+        else pd.Series(0.0, index=trades_df.index)
+    )
     total_commission_per_combo = trades_df["total_commission_per_combo"] if "total_commission_per_combo" in trades_df.columns else pd.Series(0.0, index=trades_df.index)
     total_slippage_per_combo = trades_df["total_slippage_per_combo"] if "total_slippage_per_combo" in trades_df.columns else pd.Series(0.0, index=trades_df.index)
     total_friction_per_combo = trades_df["total_friction_per_combo"] if "total_friction_per_combo" in trades_df.columns else pd.Series(0.0, index=trades_df.index)
@@ -1162,6 +1194,9 @@ def build_friction_profile(trades_df: pd.DataFrame) -> dict[str, float | int]:
     sub_015_mask = trades_df["is_sub_015_premium"] if "is_sub_015_premium" in trades_df.columns else (premium_series < 0.15)
     sub_030_mask = trades_df["is_sub_030_premium"] if "is_sub_030_premium" in trades_df.columns else (premium_series < 0.30)
     total_premium_dollars = float((premium_series * 100.0 * quantity).sum())
+    total_broker_commission = float((total_broker_commission_per_combo * quantity).sum())
+    total_regulatory_fees = float((total_regulatory_fees_per_combo * quantity).sum())
+    total_fees = float((total_fees_per_combo * quantity).sum())
     total_commission = float((total_commission_per_combo * quantity).sum())
     total_slippage = float((total_slippage_per_combo * quantity).sum())
     total_friction = float((total_friction_per_combo * quantity).sum())
@@ -1170,10 +1205,15 @@ def build_friction_profile(trades_df: pd.DataFrame) -> dict[str, float | int]:
         "trade_count": trade_count,
         "avg_entry_premium": round(float(premium_series.mean()), 4),
         "median_entry_premium": round(float(premium_series.median()), 4),
+        "avg_total_fees_per_combo": round(float(total_fees_per_combo.mean()), 4),
+        "median_total_fees_per_combo": round(float(total_fees_per_combo.median()), 4),
         "avg_total_friction_per_combo": round(float(total_friction_per_combo.mean()), 4),
         "median_total_friction_per_combo": round(float(total_friction_per_combo.median()), 4),
         "avg_friction_pct_of_entry_premium": round(float(friction_pct_series.mean()), 2),
         "median_friction_pct_of_entry_premium": round(float(friction_pct_series.median()), 2),
+        "total_broker_commission": round(total_broker_commission, 2),
+        "total_regulatory_fees": round(total_regulatory_fees, 2),
+        "total_fees": round(total_fees, 2),
         "total_commission": round(total_commission, 2),
         "total_slippage": round(total_slippage, 2),
         "total_friction": round(total_friction, 2),

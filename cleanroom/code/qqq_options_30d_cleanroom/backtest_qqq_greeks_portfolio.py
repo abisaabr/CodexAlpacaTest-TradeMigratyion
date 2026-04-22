@@ -12,7 +12,6 @@ from statistics import NormalDist
 import pandas as pd
 
 from backtest_qqq_option_strategies import (
-    COMMISSION_PER_CONTRACT,
     MINUTES_PER_RTH_SESSION,
     STARTING_EQUITY,
     SIGNAL_DISPATCH,
@@ -20,6 +19,7 @@ from backtest_qqq_option_strategies import (
     buy_fill,
     close_cashflow,
     combo_entry_net_premium,
+    estimate_alpaca_option_order_fees,
     estimate_combo_bounds,
     load_daily_universe,
     load_wide_data,
@@ -133,6 +133,15 @@ CANDIDATE_TRADE_COLUMNS = (
     "premium_bucket",
     "is_sub_015_premium",
     "is_sub_030_premium",
+    "entry_broker_commission_per_combo",
+    "exit_broker_commission_per_combo",
+    "total_broker_commission_per_combo",
+    "entry_regulatory_fees_per_combo",
+    "exit_regulatory_fees_per_combo",
+    "total_regulatory_fees_per_combo",
+    "entry_total_fees_per_combo",
+    "exit_total_fees_per_combo",
+    "total_fees_per_combo",
     "entry_commission_per_combo",
     "exit_commission_per_combo",
     "total_commission_per_combo",
@@ -1482,8 +1491,24 @@ def generate_candidate_trades(
 
             entry_cash_per_combo = open_cashflow(legs=legs, quantity=1)
             entry_raw_cash_per_combo = raw_open_cashflow(legs=legs, quantity=1)
-            entry_commission_per_combo = COMMISSION_PER_CONTRACT * len(legs)
-            exit_commission_per_combo = COMMISSION_PER_CONTRACT * len(legs)
+            entry_fee_breakdown = estimate_alpaca_option_order_fees(legs=legs, quantity=1, closing=False)
+            exit_fee_breakdown = estimate_alpaca_option_order_fees(legs=legs, quantity=1, closing=True)
+            entry_broker_commission_per_combo = entry_fee_breakdown.broker_commission
+            exit_broker_commission_per_combo = exit_fee_breakdown.broker_commission
+            total_broker_commission_per_combo = (
+                entry_broker_commission_per_combo + exit_broker_commission_per_combo
+            )
+            entry_regulatory_fees_per_combo = entry_fee_breakdown.regulatory_fees
+            exit_regulatory_fees_per_combo = exit_fee_breakdown.regulatory_fees
+            total_regulatory_fees_per_combo = (
+                entry_regulatory_fees_per_combo + exit_regulatory_fees_per_combo
+            )
+            entry_total_fees_per_combo = entry_fee_breakdown.total_fees
+            exit_total_fees_per_combo = exit_fee_breakdown.total_fees
+            total_fees_per_combo = entry_total_fees_per_combo + exit_total_fees_per_combo
+            # Preserve legacy commission columns as fee aliases so existing downstream tools keep working.
+            entry_commission_per_combo = entry_total_fees_per_combo
+            exit_commission_per_combo = exit_total_fees_per_combo
             entry_net_premium = combo_entry_net_premium(legs)
             entry_raw_net_premium = combo_entry_raw_net_premium(legs)
             max_loss_per_combo, max_profit_per_combo = estimate_combo_bounds(legs=legs, entry_net_premium=entry_net_premium)
@@ -1547,8 +1572,13 @@ def generate_candidate_trades(
                     exit_contexts=current_exit_contexts,
                 )
                 current_exit_raw_cash = raw_close_cashflow(legs=legs, exit_prices_raw=current_prices, quantity=1)
-                current_net_pnl = entry_cash_per_combo + current_exit_cash - entry_commission_per_combo - exit_commission_per_combo
-                mark_to_market[idx] = current_exit_cash - exit_commission_per_combo
+                current_net_pnl = (
+                    entry_cash_per_combo
+                    + current_exit_cash
+                    - entry_total_fees_per_combo
+                    - exit_total_fees_per_combo
+                )
+                mark_to_market[idx] = current_exit_cash - exit_total_fees_per_combo
 
                 if current_net_pnl >= target_dollars:
                     exit_idx = idx
@@ -1585,7 +1615,7 @@ def generate_candidate_trades(
             entry_slippage_per_combo = abs(entry_cash_per_combo - entry_raw_cash_per_combo)
             exit_slippage_per_combo = abs(exit_cash_per_combo - exit_raw_cash_per_combo)
             total_slippage_per_combo = entry_slippage_per_combo + exit_slippage_per_combo
-            total_commission_per_combo = entry_commission_per_combo + exit_commission_per_combo
+            total_commission_per_combo = total_fees_per_combo
             total_friction_per_combo = total_slippage_per_combo + total_commission_per_combo
             gross_pnl_per_combo = entry_raw_cash_per_combo + exit_raw_cash_per_combo
             friction_pct_of_entry_premium = (
@@ -1646,6 +1676,15 @@ def generate_candidate_trades(
                     "premium_bucket": classify_premium_bucket(abs_entry_net_premium),
                     "is_sub_015_premium": abs_entry_net_premium < 0.15,
                     "is_sub_030_premium": abs_entry_net_premium < 0.30,
+                    "entry_broker_commission_per_combo": round(entry_broker_commission_per_combo, 4),
+                    "exit_broker_commission_per_combo": round(exit_broker_commission_per_combo, 4),
+                    "total_broker_commission_per_combo": round(total_broker_commission_per_combo, 4),
+                    "entry_regulatory_fees_per_combo": round(entry_regulatory_fees_per_combo, 4),
+                    "exit_regulatory_fees_per_combo": round(exit_regulatory_fees_per_combo, 4),
+                    "total_regulatory_fees_per_combo": round(total_regulatory_fees_per_combo, 4),
+                    "entry_total_fees_per_combo": round(entry_total_fees_per_combo, 4),
+                    "exit_total_fees_per_combo": round(exit_total_fees_per_combo, 4),
+                    "total_fees_per_combo": round(total_fees_per_combo, 4),
                     "entry_commission_per_combo": round(entry_commission_per_combo, 4),
                     "exit_commission_per_combo": round(exit_commission_per_combo, 4),
                     "total_commission_per_combo": round(total_commission_per_combo, 4),
@@ -1780,7 +1819,7 @@ def run_portfolio_allocator(
                 if position["exit_minute"] == minute_index:
                     quantity = int(position["quantity"])
                     cash += quantity * (
-                        float(position["exit_cash_per_combo"]) - float(position["exit_commission_per_combo"])
+                        float(position["exit_cash_per_combo"]) - float(position["exit_total_fees_per_combo"])
                     )
                     realized_net = quantity * float(position["net_pnl_per_combo"])
                     portfolio_trades.append(
@@ -1814,7 +1853,13 @@ def run_portfolio_allocator(
                     if quantity_by_risk < 1:
                         continue
 
-                    entry_outflow_per_combo = max(0.0, -(float(row.entry_cash_per_combo) - float(row.entry_commission_per_combo)))
+                    entry_total_fees_per_combo = float(
+                        getattr(row, "entry_total_fees_per_combo", getattr(row, "entry_commission_per_combo", 0.0))
+                    )
+                    exit_total_fees_per_combo = float(
+                        getattr(row, "exit_total_fees_per_combo", getattr(row, "exit_commission_per_combo", 0.0))
+                    )
+                    entry_outflow_per_combo = max(0.0, -(float(row.entry_cash_per_combo) - entry_total_fees_per_combo))
                     if entry_outflow_per_combo > 0.0:
                         quantity_by_cash = math.floor(max(0.0, cash) / entry_outflow_per_combo)
                     else:
@@ -1824,7 +1869,7 @@ def run_portfolio_allocator(
                     if quantity < 1:
                         continue
 
-                    cash += quantity * (float(row.entry_cash_per_combo) - float(row.entry_commission_per_combo))
+                    cash += quantity * (float(row.entry_cash_per_combo) - entry_total_fees_per_combo)
                     open_positions.append(
                         {
                             "trade": row._asdict(),
@@ -1832,8 +1877,14 @@ def run_portfolio_allocator(
                             "exit_minute": int(row.exit_minute),
                             "entry_cash_per_combo": float(row.entry_cash_per_combo),
                             "exit_cash_per_combo": float(row.exit_cash_per_combo),
-                            "entry_commission_per_combo": float(row.entry_commission_per_combo),
-                            "exit_commission_per_combo": float(row.exit_commission_per_combo),
+                            "entry_total_fees_per_combo": entry_total_fees_per_combo,
+                            "exit_total_fees_per_combo": exit_total_fees_per_combo,
+                            "entry_commission_per_combo": float(
+                                getattr(row, "entry_commission_per_combo", entry_total_fees_per_combo)
+                            ),
+                            "exit_commission_per_combo": float(
+                                getattr(row, "exit_commission_per_combo", exit_total_fees_per_combo)
+                            ),
                             "net_pnl_per_combo": float(row.net_pnl_per_combo),
                             "max_loss_per_combo": max_loss_per_combo,
                             "mark_to_market": {int(key): float(value) for key, value in json.loads(row.mark_to_market_json).items()},
