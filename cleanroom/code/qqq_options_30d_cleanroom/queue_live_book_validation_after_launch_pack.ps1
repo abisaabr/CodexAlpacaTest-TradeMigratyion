@@ -25,6 +25,7 @@ $programRootPath = [System.IO.Path]::GetFullPath($ProgramRoot)
 
 $validatorPath = Join-Path $scriptRoot "validate_program_live_book.py"
 $hardeningBuilderPath = Join-Path $scriptRoot "build_live_book_hardening_review.py"
+$replacementBuilderPath = Join-Path $scriptRoot "build_live_book_replacement_plan.py"
 $runRegistryReporterPath = Join-Path $scriptRoot "build_run_registry_report.py"
 $defaultOutputRoot = Join-Path $scriptRoot "output"
 $defaultRegistryPath = Join-Path $defaultOutputRoot "run_registry.jsonl"
@@ -42,6 +43,7 @@ if ([string]::IsNullOrWhiteSpace($ReviewOutputDir)) {
 else {
     $reviewRoot = [System.IO.Path]::GetFullPath($ReviewOutputDir)
 }
+$replacementPlanRoot = Join-Path $reviewRoot "replacement_plan"
 
 $statusPath = Join-Path $programRootPath "phase2_resume_followon_status.json"
 $logPath = Join-Path $programRootPath "phase2_resume_followon.log"
@@ -50,6 +52,7 @@ $deadline = (Get-Date).AddMinutes($TimeoutMinutes)
 
 New-Item -ItemType Directory -Force -Path $validationRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $reviewRoot | Out-Null
+New-Item -ItemType Directory -Force -Path $replacementPlanRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $runRegistryReportDir | Out-Null
 
 function Write-Log {
@@ -234,7 +237,24 @@ if ($LASTEXITCODE -ne 0) {
     exit $reviewExitCode
 }
 
-Write-Log "Phase 2 follow-on validation and hardening review completed successfully."
-Write-Status -Phase "completed" -Message "Phase 2 follow-on validation and hardening review completed successfully."
+Write-Status -Phase "planning_replacement" -Message "Building live-book replacement plan."
+Invoke-RunRegistryReport
+
+& python $replacementBuilderPath `
+    --validation-dir $validationRoot `
+    --review-dir $reviewRoot `
+    --output-dir $replacementPlanRoot `
+    --live-manifest $LiveManifestPath
+
+if ($LASTEXITCODE -ne 0) {
+    $replacementExitCode = $LASTEXITCODE
+    Write-Log "Replacement plan build failed with exit code $replacementExitCode."
+    Write-Status -Phase "failed" -Message "Replacement plan build failed."
+    Invoke-RunRegistryReport
+    exit $replacementExitCode
+}
+
+Write-Log "Phase 2 follow-on validation, hardening review, and replacement plan completed successfully."
+Write-Status -Phase "completed" -Message "Phase 2 follow-on validation, hardening review, and replacement plan completed successfully."
 Invoke-RunRegistryReport
 exit 0
