@@ -3,6 +3,7 @@
 ## Machine Budget
 
 Use `docs/INSTITUTIONAL_OPERATING_BLUEPRINT.md` as the higher-level system charter for which machine owns which plane, what gets automated, and what remains human-gated.
+Use `docs/AGENT_GOVERNANCE.md` plus `docs/agent_governance/agent_governance_registry.md` as the machine-readable contract for split axis, machine ownership, and which roles may mutate production state.
 
 - Logical CPUs: 16
 - Total RAM: 63.46 GB

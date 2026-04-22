@@ -7,6 +7,10 @@ Use it when the goal is to run one full research-to-handoff nightly cycle in a d
 Preferred entrypoint:
 - `cleanroom/code/qqq_options_30d_cleanroom/launch_nightly_operator_cycle.ps1`
 
+Before assigning agent work, refresh and inspect:
+- `docs/AGENT_GOVERNANCE.md`
+- `docs/agent_governance/agent_governance_registry.md`
+
 It is written for the current two-machine setup:
 - current research machine = primary research plane
 - new machine = execution / reproducible challenger plane

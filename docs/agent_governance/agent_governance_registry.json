@@ -1,0 +1,647 @@
+{
+  "generated_at": "2026-04-22T10:38:14.878747",
+  "source_operating_model_json": "embedded_fallback_operating_model",
+  "institutional_rules": [
+    "Discovery should be assigned by family cohort to avoid overlap and improve frontier coverage.",
+    "Exhaustive follow-up should be assigned by ticker bundle so symbol-specific fit is validated on survivors instead of on the full universe.",
+    "Shared-account validation must remain serialized and portfolio-context aware.",
+    "Only the Promotion Steward may write the live manifest or finalize production-book mutations.",
+    "Control-plane stewards may publish packets and gates, but not production strategy changes."
+  ],
+  "split_recommendation": {
+    "discovery": "family_cohort",
+    "exhaustive_validation": "ticker_bundle",
+    "shared_account_validation": "portfolio_context",
+    "production_decision": "live_book_single_writer"
+  },
+  "agents": [
+    {
+      "agent": "Inventory Steward",
+      "plane": "control",
+      "lane_type": "control_plane",
+      "split_axis": "governance",
+      "parallelism": 1,
+      "strategy_set": "",
+      "selection_profile": "",
+      "family_include_filters": [],
+      "automation_level": "autonomous",
+      "approval_level": "packet_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "either_machine",
+      "writes_live_state": false,
+      "may_launch_backtests": false,
+      "may_edit_strategy_code": false,
+      "may_materialize_data": false,
+      "may_write_live_manifest": false,
+      "may_update_runner_gate": false,
+      "may_publish_review_packets": true,
+      "scripts": [
+        "build_strategy_repo.py",
+        "build_ticker_family_coverage.py",
+        "build_agent_sharding_plan.py"
+      ],
+      "inputs": [
+        "backtester_registry.csv",
+        "backtester_ready manifests",
+        "strategy_repo snapshots"
+      ],
+      "outputs": [
+        "strategy_repo.json",
+        "ticker_family_coverage.md",
+        "agent_sharding_plan.json"
+      ],
+      "success_gate": "Coverage gaps and ready-universe counts are current before any new wave launches.",
+      "handoff_to": [
+        "Strategy Family Steward",
+        "Data Prep Steward",
+        "Bear Directional",
+        "Bear Premium",
+        "Bear Convexity",
+        "Butterfly Lab"
+      ],
+      "notes": "Owns universe accounting and under-tested family/ticker ranking.",
+      "prohibited_actions": [
+        "write_live_manifest",
+        "approve_production_changes",
+        "edit_strategy_family_definitions"
+      ]
+    },
+    {
+      "agent": "Strategy Family Steward",
+      "plane": "control",
+      "lane_type": "control_plane",
+      "split_axis": "family_taxonomy",
+      "parallelism": 1,
+      "strategy_set": "",
+      "selection_profile": "",
+      "family_include_filters": [],
+      "automation_level": "autonomous",
+      "approval_level": "packet_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "either_machine",
+      "writes_live_state": false,
+      "may_launch_backtests": false,
+      "may_edit_strategy_code": false,
+      "may_materialize_data": false,
+      "may_write_live_manifest": false,
+      "may_update_runner_gate": false,
+      "may_publish_review_packets": true,
+      "scripts": [
+        "build_strategy_family_registry.py",
+        "build_strategy_family_handoff.py"
+      ],
+      "inputs": [
+        "strategy repo snapshot",
+        "live manifest",
+        "ticker-family coverage"
+      ],
+      "outputs": [
+        "strategy_family_registry.json",
+        "strategy_family_handoff.json"
+      ],
+      "success_gate": "Family priorities are refreshed before major research or review waves.",
+      "handoff_to": [
+        "Strategy Architect",
+        "Inventory Steward",
+        "Reporting Steward"
+      ],
+      "notes": "Single owner of family taxonomy and family-priority labels.",
+      "prohibited_actions": [
+        "write_live_manifest",
+        "approve_production_changes"
+      ]
+    },
+    {
+      "agent": "Data Prep Steward",
+      "plane": "research",
+      "lane_type": "control_plane",
+      "split_axis": "data_readiness",
+      "parallelism": 1,
+      "strategy_set": "",
+      "selection_profile": "",
+      "family_include_filters": [],
+      "automation_level": "autonomous",
+      "approval_level": "packet_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "either_machine",
+      "writes_live_state": false,
+      "may_launch_backtests": false,
+      "may_edit_strategy_code": false,
+      "may_materialize_data": true,
+      "may_write_live_manifest": false,
+      "may_update_runner_gate": false,
+      "may_publish_review_packets": true,
+      "scripts": [
+        "materialize_backtester_ready.py"
+      ],
+      "inputs": [
+        "staged bundle zips",
+        "registry-only symbols",
+        "coverage prep frontier"
+      ],
+      "outputs": [
+        "expanded backtester_ready universe",
+        "materialization_status.json"
+      ],
+      "success_gate": "Priority symbols are materialized before discovery consumes them.",
+      "handoff_to": [
+        "Inventory Steward",
+        "Bear Directional",
+        "Bear Premium",
+        "Bear Convexity",
+        "Butterfly Lab"
+      ],
+      "notes": "Keeps data prep separate from research execution.",
+      "prohibited_actions": [
+        "write_live_manifest",
+        "approve_production_changes",
+        "launch_discovery_without_refreshed_coverage"
+      ]
+    },
+    {
+      "agent": "Strategy Architect",
+      "plane": "research",
+      "lane_type": "control_plane",
+      "split_axis": "strategy_surface",
+      "parallelism": 1,
+      "strategy_set": "",
+      "selection_profile": "",
+      "family_include_filters": [],
+      "automation_level": "human_guided",
+      "approval_level": "human_gated",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "current_research_machine",
+      "writes_live_state": false,
+      "may_launch_backtests": false,
+      "may_edit_strategy_code": true,
+      "may_materialize_data": false,
+      "may_write_live_manifest": false,
+      "may_update_runner_gate": false,
+      "may_publish_review_packets": false,
+      "scripts": [
+        "backtest_qqq_greeks_portfolio.py",
+        "run_multiticker_cleanroom_portfolio.py"
+      ],
+      "inputs": [
+        "family registry",
+        "coverage",
+        "postmortem findings"
+      ],
+      "outputs": [
+        "new family definitions",
+        "parameter-surface changes"
+      ],
+      "success_gate": "New families are wired into reporting before runners use them.",
+      "handoff_to": [
+        "Inventory Steward",
+        "Balanced Expansion"
+      ],
+      "notes": "Single editor of strategy-family definitions.",
+      "prohibited_actions": [
+        "write_live_manifest",
+        "auto_promote_new_families"
+      ]
+    },
+    {
+      "agent": "Bear Directional",
+      "plane": "research",
+      "lane_type": "discovery",
+      "split_axis": "family_cohort",
+      "parallelism": 1,
+      "strategy_set": "down_choppy_only",
+      "selection_profile": "down_choppy_focus",
+      "family_include_filters": [
+        "single_leg_long_put",
+        "debit_put_spread"
+      ],
+      "automation_level": "autonomous",
+      "approval_level": "packet_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "either_machine",
+      "writes_live_state": false,
+      "may_launch_backtests": true,
+      "may_edit_strategy_code": false,
+      "may_materialize_data": false,
+      "may_write_live_manifest": false,
+      "may_update_runner_gate": false,
+      "may_publish_review_packets": false,
+      "scripts": [
+        "launch_down_choppy_family_wave.ps1",
+        "run_multiticker_cleanroom_portfolio.py"
+      ],
+      "inputs": [
+        "ready tickers",
+        "coverage-ranked cohort lists"
+      ],
+      "outputs": [
+        "per-lane research_dir",
+        "per-ticker summaries",
+        "run_manifest.json"
+      ],
+      "success_gate": "No promotions. Survivors must show friction-aware strength.",
+      "handoff_to": [
+        "Reporting Steward"
+      ],
+      "notes": "Discovery lane for bearish directional structures only.",
+      "prohibited_actions": [
+        "write_live_manifest",
+        "expand_scope_beyond_assigned_family_lane"
+      ]
+    },
+    {
+      "agent": "Bear Premium",
+      "plane": "research",
+      "lane_type": "discovery",
+      "split_axis": "family_cohort",
+      "parallelism": 1,
+      "strategy_set": "down_choppy_only",
+      "selection_profile": "down_choppy_focus",
+      "family_include_filters": [
+        "credit_call_spread",
+        "iron_condor",
+        "iron_butterfly"
+      ],
+      "automation_level": "autonomous",
+      "approval_level": "packet_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "either_machine",
+      "writes_live_state": false,
+      "may_launch_backtests": true,
+      "may_edit_strategy_code": false,
+      "may_materialize_data": false,
+      "may_write_live_manifest": false,
+      "may_update_runner_gate": false,
+      "may_publish_review_packets": false,
+      "scripts": [
+        "launch_down_choppy_family_wave.ps1",
+        "run_multiticker_cleanroom_portfolio.py"
+      ],
+      "inputs": [
+        "ready tickers",
+        "coverage-ranked cohort lists"
+      ],
+      "outputs": [
+        "per-lane research_dir",
+        "per-ticker summaries",
+        "run_manifest.json"
+      ],
+      "success_gate": "No promotions. Survivors must show friction-aware strength.",
+      "handoff_to": [
+        "Reporting Steward"
+      ],
+      "notes": "Discovery lane for premium-defense structures only.",
+      "prohibited_actions": [
+        "write_live_manifest",
+        "expand_scope_beyond_assigned_family_lane"
+      ]
+    },
+    {
+      "agent": "Bear Convexity",
+      "plane": "research",
+      "lane_type": "discovery",
+      "split_axis": "family_cohort",
+      "parallelism": 1,
+      "strategy_set": "down_choppy_only",
+      "selection_profile": "down_choppy_focus",
+      "family_include_filters": [
+        "put_backspread",
+        "long_straddle",
+        "long_strangle"
+      ],
+      "automation_level": "autonomous",
+      "approval_level": "packet_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "either_machine",
+      "writes_live_state": false,
+      "may_launch_backtests": true,
+      "may_edit_strategy_code": false,
+      "may_materialize_data": false,
+      "may_write_live_manifest": false,
+      "may_update_runner_gate": false,
+      "may_publish_review_packets": false,
+      "scripts": [
+        "launch_down_choppy_family_wave.ps1",
+        "run_multiticker_cleanroom_portfolio.py"
+      ],
+      "inputs": [
+        "ready tickers",
+        "coverage-ranked cohort lists"
+      ],
+      "outputs": [
+        "per-lane research_dir",
+        "per-ticker summaries",
+        "run_manifest.json"
+      ],
+      "success_gate": "No promotions. Survivors must show friction-aware strength.",
+      "handoff_to": [
+        "Reporting Steward"
+      ],
+      "notes": "Discovery lane for convexity and long-vol structures only.",
+      "prohibited_actions": [
+        "write_live_manifest",
+        "expand_scope_beyond_assigned_family_lane"
+      ]
+    },
+    {
+      "agent": "Butterfly Lab",
+      "plane": "research",
+      "lane_type": "discovery",
+      "split_axis": "family_cohort",
+      "parallelism": 1,
+      "strategy_set": "down_choppy_only",
+      "selection_profile": "down_choppy_focus",
+      "family_include_filters": [
+        "put_butterfly",
+        "broken_wing_put_butterfly"
+      ],
+      "automation_level": "autonomous",
+      "approval_level": "packet_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "either_machine",
+      "writes_live_state": false,
+      "may_launch_backtests": true,
+      "may_edit_strategy_code": false,
+      "may_materialize_data": false,
+      "may_write_live_manifest": false,
+      "may_update_runner_gate": false,
+      "may_publish_review_packets": false,
+      "scripts": [
+        "launch_down_choppy_family_wave.ps1",
+        "run_multiticker_cleanroom_portfolio.py"
+      ],
+      "inputs": [
+        "ready tickers",
+        "coverage-ranked cohort lists"
+      ],
+      "outputs": [
+        "per-lane research_dir",
+        "per-ticker summaries",
+        "run_manifest.json"
+      ],
+      "success_gate": "No promotions. Survivors must show friction-aware strength.",
+      "handoff_to": [
+        "Reporting Steward"
+      ],
+      "notes": "Discovery lane for butterfly structures only.",
+      "prohibited_actions": [
+        "write_live_manifest",
+        "expand_scope_beyond_assigned_family_lane"
+      ]
+    },
+    {
+      "agent": "Down/Choppy Exhaustive",
+      "plane": "research",
+      "lane_type": "deep_dive",
+      "split_axis": "ticker_bundle",
+      "parallelism": 1,
+      "strategy_set": "down_choppy_exhaustive",
+      "selection_profile": "down_choppy_focus",
+      "family_include_filters": [],
+      "automation_level": "autonomous",
+      "approval_level": "packet_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "either_machine",
+      "writes_live_state": false,
+      "may_launch_backtests": true,
+      "may_edit_strategy_code": false,
+      "may_materialize_data": false,
+      "may_write_live_manifest": false,
+      "may_update_runner_gate": false,
+      "may_publish_review_packets": false,
+      "scripts": [
+        "build_family_wave_shortlist.py",
+        "launch_down_choppy_program.ps1"
+      ],
+      "inputs": [
+        "Phase 1 shortlist",
+        "friction-aware lane summaries"
+      ],
+      "outputs": [
+        "deep walkforward summaries",
+        "family rankings",
+        "run manifests"
+      ],
+      "success_gate": "Only shortlisted survivors advance into this phase.",
+      "handoff_to": [
+        "Shared-Account Validator",
+        "Reporting Steward"
+      ],
+      "notes": "Exhaustive validation lane for down/choppy survivors.",
+      "prohibited_actions": [
+        "write_live_manifest",
+        "widen_back_to_full_discovery_scope"
+      ]
+    },
+    {
+      "agent": "Balanced Expansion",
+      "plane": "research",
+      "lane_type": "deep_dive",
+      "split_axis": "ticker_bundle",
+      "parallelism": 1,
+      "strategy_set": "family_expansion",
+      "selection_profile": "balanced",
+      "family_include_filters": [],
+      "automation_level": "autonomous",
+      "approval_level": "packet_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "either_machine",
+      "writes_live_state": false,
+      "may_launch_backtests": true,
+      "may_edit_strategy_code": false,
+      "may_materialize_data": false,
+      "may_write_live_manifest": false,
+      "may_update_runner_gate": false,
+      "may_publish_review_packets": false,
+      "scripts": [
+        "run_core_strategy_expansion_overnight.py",
+        "run_multiticker_cleanroom_portfolio.py"
+      ],
+      "inputs": [
+        "Phase 1 shortlist",
+        "benchmark symbols",
+        "friction-aware lane summaries"
+      ],
+      "outputs": [
+        "balanced walkforward summaries",
+        "family rankings",
+        "run manifests"
+      ],
+      "success_gate": "Cross-regime benchmark names and validated survivors only.",
+      "handoff_to": [
+        "Shared-Account Validator",
+        "Reporting Steward"
+      ],
+      "notes": "Deep-dive lane for balanced cross-regime validation.",
+      "prohibited_actions": [
+        "write_live_manifest",
+        "skip_shortlist_or_validation_provenance"
+      ]
+    },
+    {
+      "agent": "Shared-Account Validator",
+      "plane": "research",
+      "lane_type": "validation",
+      "split_axis": "portfolio_context",
+      "parallelism": 1,
+      "strategy_set": "promotion_review",
+      "selection_profile": "portfolio_first",
+      "family_include_filters": [],
+      "automation_level": "autonomous",
+      "approval_level": "packet_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "new_machine",
+      "writes_live_state": false,
+      "may_launch_backtests": true,
+      "may_edit_strategy_code": false,
+      "may_materialize_data": false,
+      "may_write_live_manifest": false,
+      "may_update_runner_gate": false,
+      "may_publish_review_packets": true,
+      "scripts": [
+        "validate_program_live_book.py",
+        "run_multiticker_cleanroom_portfolio.py"
+      ],
+      "inputs": [
+        "deep-dive winners",
+        "current live manifest",
+        "shared-account baselines"
+      ],
+      "outputs": [
+        "live_book_validation.json",
+        "shared-account comparisons"
+      ],
+      "success_gate": "Only portfolio-improving challengers may advance.",
+      "handoff_to": [
+        "Reporting Steward",
+        "Promotion Steward"
+      ],
+      "notes": "Single serialized validation lane by design.",
+      "prohibited_actions": [
+        "write_live_manifest",
+        "approve_production_changes",
+        "treat_standalone_strength_as_production_ready"
+      ]
+    },
+    {
+      "agent": "Reporting Steward",
+      "plane": "control",
+      "lane_type": "control_plane",
+      "split_axis": "review_packet",
+      "parallelism": 1,
+      "strategy_set": "",
+      "selection_profile": "",
+      "family_include_filters": [],
+      "automation_level": "autonomous",
+      "approval_level": "packet_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "either_machine",
+      "writes_live_state": false,
+      "may_launch_backtests": false,
+      "may_edit_strategy_code": false,
+      "may_materialize_data": false,
+      "may_write_live_manifest": false,
+      "may_update_runner_gate": true,
+      "may_publish_review_packets": true,
+      "scripts": [
+        "build_family_wave_shortlist.py",
+        "build_live_book_morning_handoff.py",
+        "build_run_registry_report.py"
+      ],
+      "inputs": [
+        "lane summaries",
+        "validation outputs",
+        "run manifests"
+      ],
+      "outputs": [
+        "shortlist packets",
+        "replacement plan",
+        "morning handoff",
+        "run registry report"
+      ],
+      "success_gate": "Reports must separate discovery, validation, and production-ready evidence.",
+      "handoff_to": [
+        "Promotion Steward"
+      ],
+      "notes": "Turns raw results into operator-readable decision packets.",
+      "prohibited_actions": [
+        "write_live_manifest",
+        "approve_production_changes"
+      ]
+    },
+    {
+      "agent": "Promotion Steward",
+      "plane": "execution",
+      "lane_type": "single_writer",
+      "split_axis": "live_book",
+      "parallelism": 1,
+      "strategy_set": "",
+      "selection_profile": "",
+      "family_include_filters": [],
+      "automation_level": "human_gated",
+      "approval_level": "human_gated",
+      "preferred_machine_now": "new_machine",
+      "preferred_machine_target": "new_machine",
+      "writes_live_state": true,
+      "may_launch_backtests": false,
+      "may_edit_strategy_code": false,
+      "may_materialize_data": false,
+      "may_write_live_manifest": true,
+      "may_update_runner_gate": true,
+      "may_publish_review_packets": false,
+      "scripts": [
+        "export_promoted_strategies.py",
+        "wait_and_sync_live_manifest.ps1"
+      ],
+      "inputs": [
+        "approved promoted_strategies.yaml",
+        "shared-account validation",
+        "current live manifest"
+      ],
+      "outputs": [
+        "merged live manifest",
+        "GitHub commit/push",
+        "promotion audit trail"
+      ],
+      "success_gate": "Exactly one writer. Never shrink the live universe accidentally.",
+      "handoff_to": [],
+      "notes": "The only role allowed to mutate the live book.",
+      "prohibited_actions": [
+        "run_parallel_live_manifest_writers",
+        "push_unreviewed_manifest_changes"
+      ]
+    }
+  ],
+  "split_summary": {
+    "governance": [
+      "Inventory Steward"
+    ],
+    "family_taxonomy": [
+      "Strategy Family Steward"
+    ],
+    "data_readiness": [
+      "Data Prep Steward"
+    ],
+    "strategy_surface": [
+      "Strategy Architect"
+    ],
+    "family_cohort": [
+      "Bear Convexity",
+      "Bear Directional",
+      "Bear Premium",
+      "Butterfly Lab"
+    ],
+    "ticker_bundle": [
+      "Balanced Expansion",
+      "Down/Choppy Exhaustive"
+    ],
+    "portfolio_context": [
+      "Shared-Account Validator"
+    ],
+    "review_packet": [
+      "Reporting Steward"
+    ],
+    "live_book": [
+      "Promotion Steward"
+    ]
+  }
+}

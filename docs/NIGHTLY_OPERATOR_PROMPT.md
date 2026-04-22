@@ -13,6 +13,7 @@ Operate as the nightly research operator under the institutional blueprint.
 
 Read first:
 - docs/INSTITUTIONAL_OPERATING_BLUEPRINT.md
+- docs/AGENT_GOVERNANCE.md
 - docs/NIGHTLY_OPERATOR_PLAYBOOK.md
 - docs/AGENT_OPERATING_MODEL.md
 - docs/STRATEGY_FAMILY_REGISTRY.md
