@@ -28,11 +28,11 @@ This registry is the control-plane source of truth for what the paper runner has
 - Guardrail fires: `61`
 - Severe-loss flatten sessions: `1`
 - Mean absolute entry slippage vs expected: `0.803552`%
+- Mean absolute exit slippage vs expected: `5.146291`%
 - Mean event-level adverse entry slippage vs expected: `1.499969`%
 
 ## Institutional Findings
 
-- `high` `telemetry_gap`: Exit slippage is still not captured reliably in the condensed runner artifacts. Entry-side calibration is actionable today, but exit-side execution modeling should remain conservative until expected exit pricing and exit slippage are logged consistently.
 - `high` `guardrail_pressure`: Severe-loss flatten triggered in 1 session(s). That is a clear signal to pressure-test aggressive opening debit exposure and portfolio loss caps.
 - `medium` `broker_audit_gap`: Session-level broker order audit artifacts are not present yet in the execution sample. Entry-side calibration is useful today, but combo-exit and reconciliation policy should still stay conservative until upgraded session bundles accumulate.
 - `medium` `broker_activity_audit_gap`: Session-level broker account-activity audit artifacts are not present yet in the execution sample. That means the control plane still lacks a second source of truth for fills beyond local events and broker order snapshots.

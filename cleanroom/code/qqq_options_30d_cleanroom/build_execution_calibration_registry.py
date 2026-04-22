@@ -149,6 +149,9 @@ def new_group() -> dict[str, Any]:
         "entry_abs_slippage_pct_values": [],
         "entry_abs_slippage_values": [],
         "entry_slippage_values": [],
+        "exit_abs_slippage_pct_values": [],
+        "exit_abs_slippage_values": [],
+        "exit_slippage_values": [],
         "net_pnl_values": [],
         "exit_reasons": Counter(),
     }
@@ -170,6 +173,16 @@ def update_group_from_attempt(group: dict[str, Any], row: dict[str, Any]) -> Non
         expected_entry = parse_float(row.get("expected_entry_fill_price"))
         if expected_entry not in (None, 0.0):
             group["entry_abs_slippage_pct_values"].append((abs(entry_slippage) / abs(expected_entry)) * 100.0)
+
+
+def update_group_from_exit_result(group: dict[str, Any], row: dict[str, Any]) -> None:
+    exit_slippage = parse_float(row.get("exit_slippage"))
+    if exit_slippage is not None:
+        group["exit_slippage_values"].append(exit_slippage)
+        group["exit_abs_slippage_values"].append(abs(exit_slippage))
+        expected_exit = parse_float(row.get("expected_exit_fill_price"))
+        if expected_exit not in (None, 0.0):
+            group["exit_abs_slippage_pct_values"].append((abs(exit_slippage) / abs(expected_exit)) * 100.0)
 
 
 def update_group_from_completed(group: dict[str, Any], row: dict[str, Any]) -> None:
@@ -208,6 +221,9 @@ def finalize_group_rows(groups: dict[str, dict[str, Any]], key_name: str) -> lis
                 "entry_slippage": summarize_values(group["entry_slippage_values"]),
                 "entry_abs_slippage": summarize_values(group["entry_abs_slippage_values"]),
                 "entry_abs_slippage_pct_of_expected": summarize_values(group["entry_abs_slippage_pct_values"]),
+                "exit_slippage": summarize_values(group["exit_slippage_values"]),
+                "exit_abs_slippage": summarize_values(group["exit_abs_slippage_values"]),
+                "exit_abs_slippage_pct_of_expected": summarize_values(group["exit_abs_slippage_pct_values"]),
                 "net_pnl": net_pnl,
                 "net_pnl_total_estimate": round_float(total_from_summary(net_pnl)),
                 "top_exit_reason": sorted(group["exit_reasons"].items(), key=lambda item: (-item[1], item[0]))[0][0]
@@ -242,6 +258,8 @@ def flatten_rows_for_csv(category: str, key_name: str, rows: list[dict[str, Any]
                 "skipped_signal_count": row.get("skipped_signal_count", 0),
                 "entry_abs_slippage_pct_mean": entry_pct.get("mean"),
                 "entry_abs_slippage_pct_median": entry_pct.get("median"),
+                "exit_abs_slippage_pct_mean": (row.get("exit_abs_slippage_pct_of_expected") or {}).get("mean"),
+                "exit_abs_slippage_pct_median": (row.get("exit_abs_slippage_pct_of_expected") or {}).get("median"),
                 "net_pnl_total_estimate": row.get("net_pnl_total_estimate"),
                 "top_exit_reason": row.get("top_exit_reason", ""),
             }
@@ -388,6 +406,9 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
     entry_abs_slippage_values: list[float] = []
     entry_abs_slippage_pct_values: list[float] = []
     event_entry_adverse_slippage_pct_values: list[float] = []
+    exit_slippage_values: list[float] = []
+    exit_abs_slippage_values: list[float] = []
+    exit_abs_slippage_pct_values: list[float] = []
 
     sessions: list[dict[str, Any]] = []
     missing_summary_dates: list[str] = []
@@ -473,6 +494,28 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
                 adverse_fraction = parse_float(event.get("entry_adverse_slippage_fraction"))
                 if adverse_fraction is not None:
                     event_entry_adverse_slippage_pct_values.append(adverse_fraction * 100.0)
+            elif event_type == "exit_result":
+                exit_slippage = parse_float(event.get("exit_slippage"))
+                if exit_slippage is not None:
+                    exit_slippage_values.append(exit_slippage)
+                    exit_abs_slippage_values.append(abs(exit_slippage))
+                    expected_exit = parse_float(event.get("expected_exit_fill_price"))
+                    if expected_exit not in (None, 0.0):
+                        exit_abs_slippage_pct_values.append((abs(exit_slippage) / abs(expected_exit)) * 100.0)
+
+                ticker = str(event.get("underlying_symbol", "")).strip().upper() or "unknown"
+                strategy = str(event.get("strategy_name", "")).strip() or "unknown"
+                regime = str(event.get("regime", "")).strip() or "unknown"
+                timing_profile = str(event.get("timing_profile", "")).strip() or "unknown"
+                signal_name = str(event.get("signal_name", "")).strip() or "unknown"
+                entry_bucket = infer_entry_bucket(parse_float(event.get("entry_minute") or event.get("signal_minute")))
+
+                update_group_from_exit_result(by_ticker[ticker], event)
+                update_group_from_exit_result(by_strategy[strategy], event)
+                update_group_from_exit_result(by_regime[regime], event)
+                update_group_from_exit_result(by_timing_profile[timing_profile], event)
+                update_group_from_exit_result(by_signal_name[signal_name], event)
+                update_group_from_exit_result(by_entry_bucket[entry_bucket], event)
 
         for row in reconciliation_rows:
             attempt_id = str(row.get("attempt_id", "")).strip()
@@ -648,6 +691,9 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
             "entry_slippage": summarize_values(entry_slippage_values),
             "entry_abs_slippage": summarize_values(entry_abs_slippage_values),
             "entry_abs_slippage_pct_of_expected": summarize_values(entry_abs_slippage_pct_values),
+            "exit_slippage": summarize_values(exit_slippage_values),
+            "exit_abs_slippage": summarize_values(exit_abs_slippage_values),
+            "exit_abs_slippage_pct_of_expected": summarize_values(exit_abs_slippage_pct_values),
             "event_entry_adverse_slippage_pct": summarize_values(event_entry_adverse_slippage_pct_values),
             "signal_decisions": dict(sorted(signal_decisions.items())),
             "final_statuses": dict(sorted(final_statuses.items())),
@@ -661,7 +707,7 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
         },
         "data_quality": {
             "entry_slippage_observations": len(entry_slippage_values),
-            "exit_slippage_observations": 0,
+            "exit_slippage_observations": len(exit_slippage_values),
             "event_entry_adverse_slippage_observations": len(event_entry_adverse_slippage_pct_values),
             "missing_summary_dates": missing_summary_dates,
             "missing_reconciliation_dates": missing_reconciliation_dates,
@@ -780,6 +826,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Guardrail fires: `{summary['guardrail_fire_count_total']}`")
     lines.append(f"- Severe-loss flatten sessions: `{summary['severe_loss_flatten_session_count']}`")
     lines.append(f"- Mean absolute entry slippage vs expected: `{(summary['entry_abs_slippage_pct_of_expected'] or {}).get('mean', 'n/a')}`%")
+    lines.append(f"- Mean absolute exit slippage vs expected: `{(summary['exit_abs_slippage_pct_of_expected'] or {}).get('mean', 'n/a')}`%")
     lines.append(f"- Mean event-level adverse entry slippage vs expected: `{(summary['event_entry_adverse_slippage_pct'] or {}).get('mean', 'n/a')}`%")
     lines.append("")
     lines.append("## Institutional Findings")
