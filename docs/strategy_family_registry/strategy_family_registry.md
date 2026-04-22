@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T10:04:03.951944-04:00`
+- Generated at: `2026-04-22T10:09:07.917839-04:00`
 - Ready tickers: 140
 - Cataloged families: 16
 - Cataloged base strategies: 92

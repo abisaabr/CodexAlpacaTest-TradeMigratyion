@@ -10,6 +10,8 @@ This repo keeps a formal GitHub-backed strategy-family registry so both research
   - `docs/strategy_family_registry/strategy_family_registry.md`
   - `docs/strategy_family_registry/strategy_family_registry.json`
   - `docs/strategy_family_registry/strategy_family_registry.csv`
+  - `docs/strategy_family_registry/strategy_family_handoff.md`
+  - `docs/strategy_family_registry/strategy_family_handoff.json`
 
 ## Steward Responsibilities
 
@@ -25,6 +27,7 @@ From the repo root:
 ```powershell
 python .\cleanroom\code\qqq_options_30d_cleanroom\build_strategy_family_registry.py `
   --live-manifest-path "C:\Users\<you>\Downloads\codexalpaca_repo\config\strategy_manifests\multi_ticker_portfolio_live.yaml"
+python .\cleanroom\code\qqq_options_30d_cleanroom\build_strategy_family_handoff.py
 ```
 
 The builder prefers the sibling `qqq_options_30d_cleanroom\output` layout used on the new machine, and falls back to the current shared OneDrive-ready dataset path on this machine.

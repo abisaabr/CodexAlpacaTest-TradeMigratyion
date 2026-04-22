@@ -107,3 +107,24 @@ At the end, report:
 - which scripts are orchestrating the conveyor
 - whether GitHub promotion is armed correctly
 ```
+
+## 7. Run The Strategy Family Steward
+
+```text
+Open these sibling folders and use them together:
+
+1. C:\Users\<you>\Downloads\codexalpaca_repo
+2. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+3. C:\Users\<you>\Downloads\qqq_options_30d_cleanroom
+
+Act as the Strategy Family Steward. Refresh the formal family registry with `build_strategy_family_registry.py`, then refresh the shorter handoff packet with `build_strategy_family_handoff.py`. Use `docs/strategy_family_registry/strategy_family_registry.md`, `docs/strategy_family_registry/strategy_family_handoff.md`, `docs/STRATEGY_FAMILY_REGISTRY.md`, and `docs/STRATEGY_FAMILY_STEWARD.md` as the source of truth.
+
+Summarize:
+- which families are currently live and concentrated
+- which families are priority_discovery
+- which families are priority_validation
+- which families are promotion_follow_up
+- the top 3 family gaps most likely to improve the paper runner by diversifying away from the current single-leg-heavy book
+
+Then recommend the next 2-4 tournaments to run, and map those families into the current lane system when possible. Do not modify the live manifest and do not auto-promote strategies.
+```

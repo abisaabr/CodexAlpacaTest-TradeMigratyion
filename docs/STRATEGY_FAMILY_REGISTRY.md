@@ -5,10 +5,13 @@ This repo now carries a formal, GitHub-backed strategy-family registry so both t
 ## What It Is
 
 - Builder script: `cleanroom/code/qqq_options_30d_cleanroom/build_strategy_family_registry.py`
+- Handoff builder: `cleanroom/code/qqq_options_30d_cleanroom/build_strategy_family_handoff.py`
 - Committed snapshot:
   - `docs/strategy_family_registry/strategy_family_registry.csv`
   - `docs/strategy_family_registry/strategy_family_registry.json`
   - `docs/strategy_family_registry/strategy_family_registry.md`
+  - `docs/strategy_family_registry/strategy_family_handoff.json`
+  - `docs/strategy_family_registry/strategy_family_handoff.md`
 
 The registry is family-level, not ticker-level. It answers:
 - which families exist in the cleanroom now
@@ -46,6 +49,7 @@ python build_strategy_family_registry.py `
 - Use the committed markdown for quick operator review.
 - Use the JSON as the machine-readable source of truth for prompts, reporting, or agent planning.
 - Use the CSV for quick spreadsheet-style ranking or manual review.
+- Use the handoff packet for the shortest operator view when you just want the next family priorities and suggested tournaments.
 - Treat `priority_discovery` families as the best candidates for new discovery lanes.
 - Treat `priority_validation` families as the best candidates for exhaustive follow-up.
 - Treat `live_benchmark` families as replacement or diversification targets, not blind additions.
