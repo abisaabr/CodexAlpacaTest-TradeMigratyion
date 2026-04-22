@@ -16,6 +16,7 @@ import yaml
 ROOT = Path(__file__).resolve().parent
 DEFAULT_OUTPUT_ROOT = ROOT / "output"
 DEFAULT_EVAL_SCRIPT = ROOT / "evaluate_incremental_multiticker_candidates.py"
+STANDARD_TERMINAL_PHASES = {"complete", "complete_phase1_only", "complete_no_phase2_survivors"}
 
 
 def default_live_manifest_path() -> Path:
@@ -68,6 +69,81 @@ def load_program_status(program_root: Path) -> dict[str, Any]:
     return load_json(status_path)
 
 
+def process_is_running(pid: Any) -> bool:
+    try:
+        pid_value = int(pid)
+    except (TypeError, ValueError):
+        return False
+    result = subprocess.run(
+        ["tasklist", "/FI", f"PID eq {pid_value}", "/FO", "CSV", "/NH"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        return False
+    output = result.stdout.strip()
+    return bool(output and "No tasks are running" not in output and str(pid_value) in output)
+
+
+def load_phase2_launch_status(program_root: Path) -> dict[str, Any]:
+    status_path = program_root / "phase2" / "launch_pack" / "launch_status.json"
+    if not status_path.exists():
+        return {}
+    payload = load_json(status_path)
+    return payload if isinstance(payload, dict) else {}
+
+
+def collect_phase2_research_dirs(program_root: Path) -> list[Path]:
+    research_dirs: dict[str, Path] = {}
+    launch_status = load_phase2_launch_status(program_root)
+    for row in launch_status.get("rows", []) if isinstance(launch_status.get("rows"), list) else []:
+        research_dir = Path(str(row.get("research_dir", "")).strip())
+        if research_dir.exists():
+            research_dirs[str(research_dir.resolve())] = research_dir
+
+    phase2_root = program_root / "phase2"
+    if phase2_root.exists():
+        for child in phase2_root.iterdir():
+            if not child.is_dir():
+                continue
+            if child.name in {"launch_pack", "logs", "run_registry_report"}:
+                continue
+            research_dirs[str(child.resolve())] = child
+
+    return list(research_dirs.values())
+
+
+def phase2_resume_ready_for_validation(program_root: Path) -> bool:
+    research_dirs = collect_phase2_research_dirs(program_root)
+    if not research_dirs:
+        return False
+
+    launch_status = load_phase2_launch_status(program_root)
+    launch_rows = launch_status.get("rows", []) if isinstance(launch_status.get("rows"), list) else []
+    if launch_rows:
+        for row in launch_rows:
+            research_dir = Path(str(row.get("research_dir", "")).strip())
+            if not research_dir.exists():
+                return False
+            if process_is_running(row.get("pid")):
+                return False
+            if not (research_dir / "master_summary.json").exists():
+                return False
+        return True
+
+    return all((research_dir / "master_summary.json").exists() for research_dir in research_dirs)
+
+
+def determine_validation_basis(program_root: Path, status: dict[str, Any]) -> str:
+    phase = str(status.get("phase", ""))
+    if phase in STANDARD_TERMINAL_PHASES:
+        return "program_terminal"
+    if phase2_resume_ready_for_validation(program_root):
+        return "resumed_phase2_terminal"
+    raise RuntimeError(f"program status is not yet terminal: {phase}")
+
+
 def load_live_manifest_summary(manifest_path: Path) -> dict[str, Any]:
     payload = yaml.safe_load(manifest_path.read_text(encoding="utf-8")) or {}
     summary = dict(payload.get("summary") or {})
@@ -112,23 +188,39 @@ def summarize_shortlist_context(program_root: Path) -> dict[str, Any]:
 
 
 def collect_phase2_candidate_sources(program_root: Path) -> tuple[dict[str, dict[str, Any]], str]:
-    phase2_root = program_root / "phase2" / "lanes"
     candidates: dict[str, dict[str, Any]] = {}
-    if phase2_root.exists():
-        for summary_path in sorted(phase2_root.rglob("*_summary.json")):
-            if summary_path.name == "master_summary.json":
+    for research_dir in collect_phase2_research_dirs(program_root):
+        lane_id = research_dir.name
+        for summary_path in sorted(research_dir.glob("*_summary.json")):
+            if summary_path.name in {"master_summary.json", "prep_summary.json", "overnight_run_summary.json"}:
                 continue
             payload = load_json(summary_path)
+            if not isinstance(payload, dict):
+                continue
             ticker = str(payload.get("ticker", summary_path.stem.replace("_summary", ""))).upper()
-            candidates[ticker] = {
+            promoted = payload.get("promoted") or {}
+            score = float((payload.get("reoptimized") or {}).get("total_return_pct", 0.0) or 0.0)
+            selected_bull_count = len((promoted.get("selected_bull") or []))
+            selected_bear_count = len((promoted.get("selected_bear") or []))
+            selected_choppy_count = len((promoted.get("selected_choppy") or []))
+            selected_total_count = selected_bull_count + selected_bear_count + selected_choppy_count
+            candidate_row = {
                 "ticker": ticker,
                 "source": "phase2",
+                "lane_id": lane_id,
                 "summary_path": str(summary_path),
-                "research_dir": str(summary_path.parent),
-                "selected_bull_count": len(((payload.get("promoted") or {}).get("selected_bull") or [])),
-                "selected_bear_count": len(((payload.get("promoted") or {}).get("selected_bear") or [])),
-                "selected_choppy_count": len(((payload.get("promoted") or {}).get("selected_choppy") or [])),
+                "research_dir": str(research_dir),
+                "summary_score": score,
+                "selected_bull_count": selected_bull_count,
+                "selected_bear_count": selected_bear_count,
+                "selected_choppy_count": selected_choppy_count,
+                "selected_total_count": selected_total_count,
             }
+            existing = candidates.get(ticker)
+            existing_score = float(existing.get("summary_score", 0.0) or 0.0) if existing else float("-inf")
+            existing_selected = int(existing.get("selected_total_count", 0) or 0) if existing else -1
+            if existing is None or (score, selected_total_count, lane_id) > (existing_score, existing_selected, str(existing.get("lane_id", ""))):
+                candidates[ticker] = candidate_row
     if candidates:
         return candidates, "phase2"
 
@@ -180,6 +272,7 @@ def invoke_incremental_validation(
 def build_validation_payload(
     *,
     program_root: Path,
+    validation_basis: str,
     candidate_source_map: dict[str, dict[str, Any]],
     candidate_source: str,
     incremental_rows: list[dict[str, str]],
@@ -202,6 +295,7 @@ def build_validation_payload(
     return {
         "generated_at": datetime.now().astimezone().isoformat(),
         "program_root": str(program_root),
+        "validation_basis": validation_basis,
         "candidate_source": candidate_source,
         "no_candidate_validation": no_candidate_validation,
         "candidate_count": len(candidate_source_map),
@@ -224,6 +318,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         "# Live Book Validation",
         "",
         f"- Program root: `{payload['program_root']}`",
+        f"- Validation basis: `{payload['validation_basis']}`",
         f"- Candidate source: `{payload['candidate_source']}`",
         f"- Candidate count: `{payload['candidate_count']}`",
         f"- Improved candidates: `{payload['improved_candidate_count']}`",
@@ -308,9 +403,7 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     status = load_program_status(program_root)
-    phase = str(status.get("phase", ""))
-    if phase not in {"complete", "complete_phase1_only", "complete_no_phase2_survivors"}:
-        raise RuntimeError(f"program status is not yet terminal: {phase}")
+    validation_basis = determine_validation_basis(program_root, status)
 
     shortlist_context = summarize_shortlist_context(program_root)
     candidate_source_map, candidate_source = collect_phase2_candidate_sources(program_root)
@@ -330,6 +423,7 @@ def main() -> None:
     live_manifest_summary = load_live_manifest_summary(Path(args.live_manifest).resolve())
     payload = build_validation_payload(
         program_root=program_root,
+        validation_basis=validation_basis,
         candidate_source_map=candidate_source_map,
         candidate_source=candidate_source,
         incremental_rows=incremental_rows,
