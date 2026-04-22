@@ -1,11 +1,13 @@
 {
-  "generated_at": "2026-04-22T14:12:38.995959",
+  "generated_at": "2026-04-22T14:37:03.516841",
   "registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_calibration\\execution_calibration_registry.json",
   "posture": {
     "overall_execution_posture": "caution",
     "evidence_strength": "limited_entry_only",
     "flags": {
       "sample_size_limited": true,
+      "session_reconciliation_filter_active": true,
+      "sessions_excluded_by_session_reconciliation": true,
       "high_guardrail_pressure": true,
       "elevated_entry_friction": true,
       "exit_telemetry_gap": true,
@@ -29,8 +31,10 @@
       "opening_30m_single_vs_multileg"
     ],
     "operator_actions": [
-      "Use `raised` entry-fill penalties while observed entry friction remains around 0.80% mean absolute slippage and 1.50% mean adverse event slippage.",
+      "Use `raised` entry-fill penalties while observed entry friction remains around 0.80% mean absolute slippage and 0.65% mean adverse event slippage.",
       "Keep exit-side execution modeling conservative until explicit exit slippage telemetry becomes reliable.",
+      "Trust session reconciliation to exclude review-required paper-runner sessions before they can loosen execution calibration.",
+      "Treat excluded paper-runner sessions as evidence to inspect, not evidence to learn from automatically.",
       "Favor premium-defense and defined-risk opening-window challengers before adding more aggressive debit-heavy opening profiles.",
       "Treat current execution evidence as directional rather than fully authoritative because the completed-trade sample is still small.",
       "Treat broker-order audit coverage itself as a telemetry gap until upgraded session bundles start landing from the execution machine.",
@@ -68,6 +72,15 @@
         "p90": 0.0,
         "min": 0.0,
         "max": 0.0
+      },
+      "exit_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage_pct_of_expected": {
+        "count": 0
       },
       "net_pnl": {
         "count": 1,
@@ -114,6 +127,15 @@
         "min": 0.769231,
         "max": 0.769231
       },
+      "exit_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage_pct_of_expected": {
+        "count": 0
+      },
       "net_pnl": {
         "count": 1,
         "mean": -196.3,
@@ -158,6 +180,15 @@
         "p90": 0.320366,
         "min": 0.320366,
         "max": 0.320366
+      },
+      "exit_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage_pct_of_expected": {
+        "count": 0
       },
       "net_pnl": {
         "count": 1,
@@ -204,6 +235,15 @@
         "min": 0.539084,
         "max": 0.539084
       },
+      "exit_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage_pct_of_expected": {
+        "count": 0
+      },
       "net_pnl": {
         "count": 1,
         "mean": -98.6,
@@ -248,6 +288,15 @@
         "p90": 2.389078,
         "min": 2.389078,
         "max": 2.389078
+      },
+      "exit_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage_pct_of_expected": {
+        "count": 0
       },
       "net_pnl": {
         "count": 1,
@@ -296,6 +345,15 @@
         "min": 0.320366,
         "max": 0.320366
       },
+      "exit_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage_pct_of_expected": {
+        "count": 0
+      },
       "net_pnl": {
         "count": 1,
         "mean": -507.5,
@@ -340,6 +398,15 @@
         "p90": 0.0,
         "min": 0.0,
         "max": 0.0
+      },
+      "exit_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage_pct_of_expected": {
+        "count": 0
       },
       "net_pnl": {
         "count": 1,
@@ -386,6 +453,15 @@
         "min": 0.769231,
         "max": 0.769231
       },
+      "exit_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage_pct_of_expected": {
+        "count": 0
+      },
       "net_pnl": {
         "count": 1,
         "mean": -196.3,
@@ -431,6 +507,15 @@
         "min": 0.539084,
         "max": 0.539084
       },
+      "exit_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage_pct_of_expected": {
+        "count": 0
+      },
       "net_pnl": {
         "count": 1,
         "mean": -98.6,
@@ -475,6 +560,15 @@
         "p90": 2.389078,
         "min": 2.389078,
         "max": 2.389078
+      },
+      "exit_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage": {
+        "count": 0
+      },
+      "exit_abs_slippage_pct_of_expected": {
+        "count": 0
       },
       "net_pnl": {
         "count": 1,

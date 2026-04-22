@@ -20,6 +20,8 @@ The tournament profile registry tells us which governed research cycles exist.
 
 The execution calibration registry tells us what the paper runner has actually experienced in fills, guardrails, exits, and loss clusters, so the backtester can learn from real execution behavior instead of drift toward optimistic assumptions.
 
+The session reconciliation registry now sits in front of it. That means execution calibration is expected to learn only from session bundles that are trusted enough for policy use, instead of letting review-required sessions quietly loosen research assumptions.
+
 ## What It Reads
 
 From the execution repo:
@@ -51,6 +53,10 @@ That handoff is not just advisory anymore. The cleanroom now consumes it in four
 
 Primary handoff builder:
 - `cleanroom/code/qqq_options_30d_cleanroom/build_execution_calibration_handoff.py`
+
+Session-trust inputs:
+- `docs/session_reconciliation/session_reconciliation_registry.json`
+- `docs/session_reconciliation/session_reconciliation_handoff.json`
 
 ## Important Limitation
 

@@ -29,6 +29,12 @@ DEFAULT_RUNNER_REPO_ROOT = first_existing_path(
 )
 DEFAULT_REPORTS_ROOT = DEFAULT_RUNNER_REPO_ROOT / "reports" / "multi_ticker_portfolio"
 DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "execution_calibration"
+DEFAULT_SESSION_RECONCILIATION_REGISTRY_JSON = (
+    REPO_ROOT / "docs" / "session_reconciliation" / "session_reconciliation_registry.json"
+)
+DEFAULT_SESSION_RECONCILIATION_HANDOFF_JSON = (
+    REPO_ROOT / "docs" / "session_reconciliation" / "session_reconciliation_handoff.json"
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -38,6 +44,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--runner-repo-root", default=str(DEFAULT_RUNNER_REPO_ROOT))
     parser.add_argument("--reports-root", default=str(DEFAULT_REPORTS_ROOT))
     parser.add_argument("--report-dir", default=str(DEFAULT_REPORT_DIR))
+    parser.add_argument(
+        "--session-reconciliation-registry-json",
+        default=str(DEFAULT_SESSION_RECONCILIATION_REGISTRY_JSON),
+    )
+    parser.add_argument(
+        "--session-reconciliation-handoff-json",
+        default=str(DEFAULT_SESSION_RECONCILIATION_HANDOFF_JSON),
+    )
     parser.add_argument("--top-n", type=int, default=10)
     return parser
 
@@ -137,6 +151,15 @@ def infer_entry_bucket(minute_value: float | None) -> str:
     if minute_value <= 210:
         return "midday_91_210"
     return "power_hour_211_plus"
+
+
+def allowed_trust_tiers_from_scope(scope: str | None) -> set[str]:
+    normalized = str(scope or "").strip().lower()
+    if normalized == "trusted_sessions_only":
+        return {"trusted"}
+    if normalized == "trusted_and_cautious_sessions":
+        return {"trusted", "caution"}
+    return {"trusted", "caution", "review_required", "idle"}
 
 
 def new_group() -> dict[str, Any]:
@@ -378,10 +401,39 @@ def build_findings(payload: dict[str, Any]) -> list[dict[str, Any]]:
     return findings
 
 
-def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> dict[str, Any]:
+def build_payload(
+    *,
+    runner_repo_root: Path,
+    reports_root: Path,
+    top_n: int,
+    session_reconciliation_registry_json: Path | None = None,
+    session_reconciliation_handoff_json: Path | None = None,
+) -> dict[str, Any]:
     runs_root = reports_root / "runs"
     state_root = reports_root / "state"
     run_dirs = sorted([path for path in runs_root.iterdir() if path.is_dir()], key=lambda path: path.name) if runs_root.exists() else []
+
+    session_reconciliation_registry = (
+        load_json_object(session_reconciliation_registry_json)
+        if session_reconciliation_registry_json is not None and session_reconciliation_registry_json.exists()
+        else {}
+    )
+    session_reconciliation_handoff = (
+        load_json_object(session_reconciliation_handoff_json)
+        if session_reconciliation_handoff_json is not None and session_reconciliation_handoff_json.exists()
+        else {}
+    )
+    session_rows_by_date = {
+        str(row.get("trade_date", "")).strip(): row
+        for row in list(session_reconciliation_registry.get("sessions") or [])
+        if isinstance(row, dict) and str(row.get("trade_date", "")).strip()
+    }
+    trusted_learning_scope = (
+        str(((session_reconciliation_handoff.get("policy") or {}).get("trusted_learning_scope") or "")).strip()
+        or "all_recent_sessions"
+    )
+    allowed_trust_tiers = allowed_trust_tiers_from_scope(trusted_learning_scope)
+    session_reconciliation_filter_active = bool(session_rows_by_date)
 
     by_ticker: defaultdict[str, dict[str, Any]] = defaultdict(new_group)
     by_strategy: defaultdict[str, dict[str, Any]] = defaultdict(new_group)
@@ -419,12 +471,30 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
     missing_broker_order_audit_dates: list[str] = []
     missing_broker_activity_audit_dates: list[str] = []
     missing_ending_broker_position_dates: list[str] = []
+    missing_session_reconciliation_dates: list[str] = []
+    included_session_dates: list[str] = []
+    excluded_session_dates: list[str] = []
+    excluded_session_tier_counter: Counter[str] = Counter()
 
     severe_loss_flatten_session_count = 0
     attempt_context: dict[str, dict[str, str]] = {}
 
     for run_dir in run_dirs:
         trade_date = run_dir.name
+        if session_reconciliation_filter_active:
+            session_row = session_rows_by_date.get(trade_date)
+            if session_row is None:
+                missing_session_reconciliation_dates.append(trade_date)
+                excluded_session_dates.append(trade_date)
+                excluded_session_tier_counter["missing"] += 1
+                continue
+            session_trust_tier = str(session_row.get("trust_tier", "")).strip() or "unknown"
+            if session_trust_tier not in allowed_trust_tiers:
+                excluded_session_dates.append(trade_date)
+                excluded_session_tier_counter[session_trust_tier] += 1
+                continue
+            included_session_dates.append(trade_date)
+
         summary_path = run_dir / "multi_ticker_portfolio_session_summary.json"
         reconciliation_path = run_dir / "multi_ticker_portfolio_session_summary_trade_reconciliation.csv"
         completed_path = run_dir / "multi_ticker_portfolio_session_summary_completed_trades.csv"
@@ -647,6 +717,11 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
         "top_n": top_n,
         "summary": {
             "sessions_scanned": len(run_dirs),
+            "session_reconciliation_filter_active": session_reconciliation_filter_active,
+            "session_reconciliation_trusted_learning_scope": trusted_learning_scope,
+            "sessions_included_by_session_reconciliation": len(included_session_dates) if session_reconciliation_filter_active else len(run_dirs),
+            "sessions_excluded_by_session_reconciliation": len(excluded_session_dates),
+            "excluded_session_tiers": dict(sorted(excluded_session_tier_counter.items())),
             "sessions_with_summary": len(run_dirs) - len(missing_summary_dates),
             "sessions_with_reconciliation": len(run_dirs) - len(missing_reconciliation_dates),
             "sessions_with_completed_trades": sum(1 for row in sessions if row["completed_trade_count"] > 0),
@@ -717,6 +792,9 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
             "missing_broker_order_audit_dates": missing_broker_order_audit_dates,
             "missing_broker_activity_audit_dates": missing_broker_activity_audit_dates,
             "missing_ending_broker_position_dates": missing_ending_broker_position_dates,
+            "missing_session_reconciliation_dates": missing_session_reconciliation_dates,
+            "included_session_dates": included_session_dates,
+            "excluded_session_dates": excluded_session_dates,
         },
         "sessions": sorted(sessions, key=lambda row: row["trade_date"]),
         "by_ticker": finalize_group_rows(by_ticker, "ticker"),
@@ -806,6 +884,15 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Reports root: `{payload['reports_root']}`")
     lines.append(f"- Sessions scanned: `{summary['sessions_scanned']}`")
     lines.append(f"- Date span: `{summary['date_span']['start']}` -> `{summary['date_span']['end']}`")
+    lines.append(
+        f"- Session-reconciliation scope: `{summary['session_reconciliation_trusted_learning_scope']}`"
+    )
+    lines.append(
+        f"- Sessions included by session-reconciliation policy: `{summary['sessions_included_by_session_reconciliation']}`"
+    )
+    lines.append(
+        f"- Sessions excluded by session-reconciliation policy: `{summary['sessions_excluded_by_session_reconciliation']}`"
+    )
     lines.append("")
     lines.append("## Headline Calibration Summary")
     lines.append("")
@@ -863,6 +950,12 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Missing broker-order audit dates: `{', '.join(data_quality['missing_broker_order_audit_dates']) or 'none'}`")
     lines.append(f"- Missing broker-activity audit dates: `{', '.join(data_quality['missing_broker_activity_audit_dates']) or 'none'}`")
     lines.append(f"- Missing ending-broker-position dates: `{', '.join(data_quality['missing_ending_broker_position_dates']) or 'none'}`")
+    lines.append(
+        f"- Missing session-reconciliation dates: `{', '.join(data_quality['missing_session_reconciliation_dates']) or 'none'}`"
+    )
+    lines.append(
+        f"- Excluded session dates: `{', '.join(data_quality['excluded_session_dates']) or 'none'}`"
+    )
     lines.append("- Current runner telemetry is materially stronger on entry-side calibration than exit-side slippage calibration.")
     lines.append("")
 
@@ -877,7 +970,16 @@ def main() -> None:
     report_dir = Path(args.report_dir).resolve()
     report_dir.mkdir(parents=True, exist_ok=True)
 
-    payload = build_payload(runner_repo_root=runner_repo_root, reports_root=reports_root, top_n=int(args.top_n))
+    session_reconciliation_registry_json = Path(args.session_reconciliation_registry_json).resolve()
+    session_reconciliation_handoff_json = Path(args.session_reconciliation_handoff_json).resolve()
+
+    payload = build_payload(
+        runner_repo_root=runner_repo_root,
+        reports_root=reports_root,
+        top_n=int(args.top_n),
+        session_reconciliation_registry_json=session_reconciliation_registry_json,
+        session_reconciliation_handoff_json=session_reconciliation_handoff_json,
+    )
     write_json(report_dir / "execution_calibration_registry.json", payload)
     write_csv(report_dir / "execution_calibration_registry.csv", payload)
     write_markdown(report_dir / "execution_calibration_registry.md", payload)

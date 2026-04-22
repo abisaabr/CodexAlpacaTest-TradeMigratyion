@@ -2,13 +2,15 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T14:12:38.995959`
+- Generated at: `2026-04-22T14:37:03.516841`
 - Posture: `caution`
 - Evidence strength: `limited_entry_only`
 
 ## Flags
 
 - `sample_size_limited`: `true`
+- `session_reconciliation_filter_active`: `true`
+- `sessions_excluded_by_session_reconciliation`: `true`
 - `high_guardrail_pressure`: `true`
 - `elevated_entry_friction`: `true`
 - `exit_telemetry_gap`: `true`
@@ -28,8 +30,10 @@
 
 ## Operator Actions
 
-- Use `raised` entry-fill penalties while observed entry friction remains around 0.80% mean absolute slippage and 1.50% mean adverse event slippage.
+- Use `raised` entry-fill penalties while observed entry friction remains around 0.80% mean absolute slippage and 0.65% mean adverse event slippage.
 - Keep exit-side execution modeling conservative until explicit exit slippage telemetry becomes reliable.
+- Trust session reconciliation to exclude review-required paper-runner sessions before they can loosen execution calibration.
+- Treat excluded paper-runner sessions as evidence to inspect, not evidence to learn from automatically.
 - Favor premium-defense and defined-risk opening-window challengers before adding more aggressive debit-heavy opening profiles.
 - Treat current execution evidence as directional rather than fully authoritative because the completed-trade sample is still small.
 - Treat broker-order audit coverage itself as a telemetry gap until upgraded session bundles start landing from the execution machine.

@@ -464,7 +464,9 @@ Write-Status -Phase "refreshing_execution_calibration" -Message "Refreshing the 
 $executionCalibrationArgs = @(
     "--runner-repo-root", $RunnerRepoRoot,
     "--reports-root", (Join-Path $RunnerRepoRoot "reports\multi_ticker_portfolio"),
-    "--report-dir", $executionCalibrationRoot
+    "--report-dir", $executionCalibrationRoot,
+    "--session-reconciliation-registry-json", (Join-Path $sessionReconciliationRoot "session_reconciliation_registry.json"),
+    "--session-reconciliation-handoff-json", $sessionReconciliationHandoffJsonPath
 )
 Invoke-PythonStep -ScriptPath $executionCalibrationBuilderPath -Arguments $executionCalibrationArgs -FailureMessage "Failed to refresh execution calibration registry."
 

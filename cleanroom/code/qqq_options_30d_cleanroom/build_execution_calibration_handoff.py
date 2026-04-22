@@ -30,6 +30,10 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
     severe_loss_sessions = int(summary.get("severe_loss_flatten_session_count", 0) or 0)
     broker_audit_sessions = int(summary.get("sessions_with_broker_order_audit", 0) or 0)
     broker_activity_audit_sessions = int(summary.get("sessions_with_broker_activity_audit", 0) or 0)
+    session_reconciliation_filter_active = bool(summary.get("session_reconciliation_filter_active", False))
+    sessions_excluded_by_session_reconciliation = int(
+        summary.get("sessions_excluded_by_session_reconciliation", 0) or 0
+    )
     broker_status_mismatch_count = int(summary.get("broker_status_mismatch_count_total", 0) or 0)
     unmatched_local_order_count = int(summary.get("local_order_without_broker_match_count_total", 0) or 0)
     ending_broker_position_count = int(summary.get("ending_broker_position_count_total", 0) or 0)
@@ -94,6 +98,8 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
         "evidence_strength": evidence_strength,
         "flags": {
             "sample_size_limited": sample_size_limited,
+            "session_reconciliation_filter_active": session_reconciliation_filter_active,
+            "sessions_excluded_by_session_reconciliation": sessions_excluded_by_session_reconciliation > 0,
             "high_guardrail_pressure": high_guardrail_pressure,
             "elevated_entry_friction": elevated_entry_friction,
             "exit_telemetry_gap": exit_telemetry_gap,
@@ -145,6 +151,10 @@ def policy_recommendations(payload: dict[str, Any], posture: dict[str, Any]) -> 
         f"Use `{entry_penalty_mode}` entry-fill penalties while observed entry friction remains around {entry_mean_pct:.2f}% mean absolute slippage and {event_mean_pct:.2f}% mean adverse event slippage.",
         "Keep exit-side execution modeling conservative until explicit exit slippage telemetry becomes reliable.",
     ]
+    if flags["session_reconciliation_filter_active"]:
+        operator_actions.append("Trust session reconciliation to exclude review-required paper-runner sessions before they can loosen execution calibration.")
+    if flags["sessions_excluded_by_session_reconciliation"]:
+        operator_actions.append("Treat excluded paper-runner sessions as evidence to inspect, not evidence to learn from automatically.")
     if flags["high_guardrail_pressure"]:
         operator_actions.append("Favor premium-defense and defined-risk opening-window challengers before adding more aggressive debit-heavy opening profiles.")
     if flags["sample_size_limited"]:

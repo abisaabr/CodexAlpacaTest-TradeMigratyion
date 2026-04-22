@@ -26,7 +26,7 @@ Read first:
 Your job is to run one disciplined nightly cycle that:
 1. refreshes the repo update registry and handoff so GitHub drift is visible before work begins
 2. refreshes the session reconciliation registry and handoff from paper-runner session bundles
-3. refreshes the execution calibration registry and execution calibration handoff from paper-runner evidence
+3. refreshes the execution calibration registry and execution calibration handoff from paper-runner evidence, using the fresh session-reconciliation handoff so review-required sessions do not loosen research policy
 4. refreshes the tournament profile registry and tournament profile handoff
 5. refreshes the family registry and handoff packet
 6. refreshes the ticker coverage view

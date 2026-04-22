@@ -236,6 +236,7 @@ In C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion:
    - whether recent sessions are trusted, caution, or review-required
    - whether execution posture should tighten, stay the same, or improve
    - whether any broker-order, broker-activity, cleanup, or residual-position mismatches need human review
+   - whether any review-required sessions should be excluded from automatic research learning before calibration is refreshed
 5. If the reconciliation or calibration artifacts changed materially, prepare only those distilled artifacts for commit.
 6. Do not commit raw session exhaust, raw order logs, or raw intraday trade activity.
 

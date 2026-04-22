@@ -8,12 +8,15 @@ This registry is the control-plane source of truth for what the paper runner has
 - Reports root: `C:\Users\rabisaab\OneDrive\CodexAlpaca\downloads_remaining_20260417\folders\codexalpaca_repo\reports\multi_ticker_portfolio`
 - Sessions scanned: `7`
 - Date span: `2026-04-12` -> `2026-04-21`
+- Session-reconciliation scope: `trusted_and_cautious_sessions`
+- Sessions included by session-reconciliation policy: `1`
+- Sessions excluded by session-reconciliation policy: `6`
 
 ## Headline Calibration Summary
 
 - Completed trades: `5`
 - Reconciliation attempts: `690`
-- Event rows: `6235`
+- Event rows: `737`
 - Sessions with broker-order audit: `0`
 - Sessions with broker-activity audit: `0`
 - Broker orders audited: `0`
@@ -28,11 +31,12 @@ This registry is the control-plane source of truth for what the paper runner has
 - Guardrail fires: `61`
 - Severe-loss flatten sessions: `1`
 - Mean absolute entry slippage vs expected: `0.803552`%
-- Mean absolute exit slippage vs expected: `5.146291`%
-- Mean event-level adverse entry slippage vs expected: `1.499969`%
+- Mean absolute exit slippage vs expected: `n/a`%
+- Mean event-level adverse entry slippage vs expected: `0.64972`%
 
 ## Institutional Findings
 
+- `high` `telemetry_gap`: Exit slippage is still not captured reliably in the condensed runner artifacts. Entry-side calibration is actionable today, but exit-side execution modeling should remain conservative until expected exit pricing and exit slippage are logged consistently.
 - `high` `guardrail_pressure`: Severe-loss flatten triggered in 1 session(s). That is a clear signal to pressure-test aggressive opening debit exposure and portfolio loss caps.
 - `medium` `broker_audit_gap`: Session-level broker order audit artifacts are not present yet in the execution sample. Entry-side calibration is useful today, but combo-exit and reconciliation policy should still stay conservative until upgraded session bundles accumulate.
 - `medium` `broker_activity_audit_gap`: Session-level broker account-activity audit artifacts are not present yet in the execution sample. That means the control plane still lacks a second source of truth for fills beyond local events and broker order snapshots.
@@ -56,23 +60,19 @@ This registry is the control-plane source of truth for what the paper runner has
 
 ## Session Health
 
-- `2026-04-12`: startup `pending`, completed trades `0`, broker-activity rows `0`, guardrail fires `0`, broker mismatches `0`, unmatched local orders `0`, unmatched broker activities `0`, ending broker positions `0`, blocked new entries `false`, severe-loss flatten `false`
-- `2026-04-13`: startup `passed`, completed trades `0`, broker-activity rows `0`, guardrail fires `0`, broker mismatches `0`, unmatched local orders `0`, unmatched broker activities `0`, ending broker positions `0`, blocked new entries `false`, severe-loss flatten `false`
-- `2026-04-14`: startup `passed`, completed trades `0`, broker-activity rows `0`, guardrail fires `0`, broker mismatches `0`, unmatched local orders `0`, unmatched broker activities `0`, ending broker positions `0`, blocked new entries `false`, severe-loss flatten `false`
-- `2026-04-15`: startup `passed`, completed trades `0`, broker-activity rows `0`, guardrail fires `0`, broker mismatches `0`, unmatched local orders `0`, unmatched broker activities `0`, ending broker positions `0`, blocked new entries `true`, severe-loss flatten `false`
 - `2026-04-16`: startup `passed`, completed trades `5`, broker-activity rows `0`, guardrail fires `61`, broker mismatches `0`, unmatched local orders `0`, unmatched broker activities `0`, ending broker positions `0`, blocked new entries `true`, severe-loss flatten `true`
-- `2026-04-17`: startup `passed`, completed trades `0`, broker-activity rows `0`, guardrail fires `0`, broker mismatches `0`, unmatched local orders `0`, unmatched broker activities `0`, ending broker positions `0`, blocked new entries `false`, severe-loss flatten `false`
-- `2026-04-21`: startup `pending`, completed trades `0`, broker-activity rows `0`, guardrail fires `0`, broker mismatches `0`, unmatched local orders `0`, unmatched broker activities `0`, ending broker positions `0`, blocked new entries `false`, severe-loss flatten `false`
 
 ## Data Quality
 
-- Missing summary dates: `2026-04-13, 2026-04-14, 2026-04-15, 2026-04-17`
-- Missing reconciliation dates: `2026-04-12, 2026-04-13, 2026-04-14, 2026-04-15, 2026-04-17, 2026-04-21`
-- Missing completed-trade dates: `2026-04-12, 2026-04-13, 2026-04-14, 2026-04-15, 2026-04-17, 2026-04-21`
+- Missing summary dates: `none`
+- Missing reconciliation dates: `none`
+- Missing completed-trade dates: `none`
 - Missing state dates: `none`
-- Missing event-log dates: `2026-04-12, 2026-04-21`
+- Missing event-log dates: `none`
 - Missing broker-order audit dates: `none`
 - Missing broker-activity audit dates: `none`
 - Missing ending-broker-position dates: `none`
+- Missing session-reconciliation dates: `2026-04-13, 2026-04-14, 2026-04-15, 2026-04-17`
+- Excluded session dates: `2026-04-12, 2026-04-13, 2026-04-14, 2026-04-15, 2026-04-17, 2026-04-21`
 - Current runner telemetry is materially stronger on entry-side calibration than exit-side slippage calibration.
 
