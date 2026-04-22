@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-04-22T13:59:46.076390",
-  "overall_status": "attention_required",
-  "safe_to_run_nightly_cycle": false,
-  "safe_to_run_execution_plane_without_update_review": false,
+  "generated_at": "2026-04-22T14:00:50.173381",
+  "overall_status": "ready",
+  "safe_to_run_nightly_cycle": true,
+  "safe_to_run_execution_plane_without_update_review": true,
   "repos": [
     {
       "name": "control_plane",
@@ -11,35 +11,25 @@
       "remote": "origin",
       "expected_branch": "main",
       "repo_exists": true,
-      "status": "attention_required",
+      "status": "up_to_date",
       "fetch_ok": true,
       "fetch_error": "",
       "current_branch": "main",
       "branch_matches_expected": true,
-      "head_sha": "23a06433dca999fe95bfca40b6ab5bd48119a8fb",
+      "head_sha": "7b747b3d18aabca9a4069c4b7b0ea3103d1aec80",
       "remote_ref": "origin/main",
-      "remote_head_sha": "23a06433dca999fe95bfca40b6ab5bd48119a8fb",
+      "remote_head_sha": "7b747b3d18aabca9a4069c4b7b0ea3103d1aec80",
       "remote_ref_exists": true,
       "ahead_count": 0,
       "behind_count": 0,
-      "dirty": true,
-      "dirty_file_count": 9,
-      "dirty_files_preview": [
-        "M README.md",
-        " M docs/NEW_MACHINE_CODEX_PROMPTS.md",
-        " M docs/NIGHTLY_OPERATOR_PLAYBOOK.md",
-        " M docs/NIGHTLY_OPERATOR_PROMPT.md",
-        "?? cleanroom/code/qqq_options_30d_cleanroom/build_repo_update_registry.py",
-        "?? cleanroom/code/qqq_options_30d_cleanroom/launch_repo_update_check.ps1",
-        "?? docs/REPO_UPDATE_CHECK_PROMPT.md",
-        "?? docs/REPO_UPDATE_CONTROL.md",
-        "?? docs/repo_updates/"
-      ],
+      "dirty": false,
+      "dirty_file_count": 0,
+      "dirty_files_preview": [],
       "required_commits": [],
       "present_required_commits": [],
       "missing_required_commits": [],
-      "safe_to_run_without_update_review": false,
-      "recommendation": "Review or stash local modifications before integrating GitHub updates."
+      "safe_to_run_without_update_review": true,
+      "recommendation": "No GitHub update action is required right now."
     },
     {
       "name": "execution_repo",
@@ -83,18 +73,17 @@
   ],
   "summary": {
     "repo_count": 2,
-    "up_to_date_repo_count": 1,
+    "up_to_date_repo_count": 2,
     "update_required_repo_count": 0,
-    "attention_required_repo_count": 1,
+    "attention_required_repo_count": 0,
     "fully_current_repos": [
+      "control_plane",
       "execution_repo"
     ],
     "update_required_repos": [],
-    "attention_required_repos": [
-      "control_plane"
-    ]
+    "attention_required_repos": []
   },
   "overall_actions": [
-    "Resolve local branch, fetch, or dirty-worktree issues for: `control_plane`."
+    "Both governed repos are current enough to proceed without update action."
   ]
 }

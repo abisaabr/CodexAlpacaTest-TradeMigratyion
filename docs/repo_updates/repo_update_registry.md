@@ -4,10 +4,10 @@ This registry is the governed answer to whether the machine is current enough, c
 
 ## Snapshot
 
-- Generated at: `2026-04-22T13:59:46.076390`
-- Overall status: `attention_required`
-- Safe to run nightly cycle: `false`
-- Safe to run execution plane without update review: `false`
+- Generated at: `2026-04-22T14:00:50.173381`
+- Overall status: `ready`
+- Safe to run nightly cycle: `true`
+- Safe to run execution plane without update review: `true`
 
 ## Repo Status
 
@@ -15,15 +15,15 @@ This registry is the governed answer to whether the machine is current enough, c
 
 - Role: `governance_and_prompts`
 - Repo path: `C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion`
-- Status: `attention_required`
+- Status: `up_to_date`
 - Current branch: `main`
 - Expected branch: `main`
 - Branch matches expected: `true`
 - Ahead / behind: `0` / `0`
-- Dirty worktree: `true`
+- Dirty worktree: `false`
 - Missing required commits: `none`
-- Safe to run without update review: `false`
-- Recommendation: Review or stash local modifications before integrating GitHub updates.
+- Safe to run without update review: `true`
+- Recommendation: No GitHub update action is required right now.
 
 ### `execution_repo`
 
@@ -41,5 +41,5 @@ This registry is the governed answer to whether the machine is current enough, c
 
 ## Overall Actions
 
-- Resolve local branch, fetch, or dirty-worktree issues for: `control_plane`.
+- Both governed repos are current enough to proceed without update action.
 

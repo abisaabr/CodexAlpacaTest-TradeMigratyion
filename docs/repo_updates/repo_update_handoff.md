@@ -2,16 +2,16 @@
 
 ## Snapshot
 
-- Overall status: `attention_required`
-- Safe to run nightly cycle: `false`
-- Safe to run execution plane without update review: `false`
+- Overall status: `ready`
+- Safe to run nightly cycle: `true`
+- Safe to run execution plane without update review: `true`
 
 ## Required Actions
 
-- Resolve local branch, fetch, or dirty-worktree issues for: `control_plane`.
+- Both governed repos are current enough to proceed without update action.
 
 ## Repo Decisions
 
-- `control_plane`: `attention_required`. Review or stash local modifications before integrating GitHub updates.
+- `control_plane`: `up_to_date`. No GitHub update action is required right now.
 - `execution_repo`: `up_to_date`. No GitHub update action is required right now.
 
