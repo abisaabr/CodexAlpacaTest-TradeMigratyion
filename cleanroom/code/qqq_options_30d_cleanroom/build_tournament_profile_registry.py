@@ -36,6 +36,10 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "entry_friction_sensitivity": "medium",
         "exit_model_dependency": "medium",
         "research_bias": "premium_defense_mixed",
+        "minimum_execution_evidence_strength": "limited_entry_only",
+        "requires_broker_order_audit_coverage": False,
+        "requires_broker_activity_audit_coverage": False,
+        "requires_exit_telemetry": False,
         "preferred_machine_now": "current_research_machine",
         "preferred_machine_target": "either_machine",
         "notes": "Default nightly operator profile because it exercises the full discovery-to-morning-handoff chain without auto-promoting the live book.",
@@ -74,6 +78,10 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "entry_friction_sensitivity": "medium",
         "exit_model_dependency": "medium",
         "research_bias": "premium_defense_mixed",
+        "minimum_execution_evidence_strength": "limited_entry_only",
+        "requires_broker_order_audit_coverage": False,
+        "requires_broker_activity_audit_coverage": False,
+        "requires_exit_telemetry": False,
         "preferred_machine_now": "current_research_machine",
         "preferred_machine_target": "either_machine",
         "notes": "Use when the ready universe is already broad enough and we want a direct run without extra bootstrap materialization.",
@@ -112,6 +120,10 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "entry_friction_sensitivity": "high",
         "exit_model_dependency": "high",
         "research_bias": "balanced_directional_vs_multileg",
+        "minimum_execution_evidence_strength": "broad",
+        "requires_broker_order_audit_coverage": True,
+        "requires_broker_activity_audit_coverage": True,
+        "requires_exit_telemetry": True,
         "preferred_machine_now": "current_research_machine",
         "preferred_machine_target": "new_machine",
         "notes": "Best next structural tournament for diversifying away from the current single-leg-heavy live book, but it needs opening-window family wiring first.",
@@ -152,6 +164,10 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "entry_friction_sensitivity": "low",
         "exit_model_dependency": "medium",
         "research_bias": "defined_risk_and_premium_defense",
+        "minimum_execution_evidence_strength": "entry_and_reconciliation",
+        "requires_broker_order_audit_coverage": True,
+        "requires_broker_activity_audit_coverage": True,
+        "requires_exit_telemetry": False,
         "preferred_machine_now": "current_research_machine",
         "preferred_machine_target": "new_machine",
         "notes": "Targets the under-tested premium-defense surface that should help in weak or messy tape once session-specific timing is fully encoded.",
@@ -185,6 +201,10 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "entry_friction_sensitivity": "high",
         "exit_model_dependency": "high",
         "research_bias": "convexity_and_long_vol",
+        "minimum_execution_evidence_strength": "broad",
+        "requires_broker_order_audit_coverage": True,
+        "requires_broker_activity_audit_coverage": True,
+        "requires_exit_telemetry": True,
         "preferred_machine_now": "current_research_machine",
         "preferred_machine_target": "new_machine",
         "notes": "Cleanest planned tournament for testing whether early-session expansion favors long-vol and butterfly structures more than plain long puts.",
@@ -218,6 +238,10 @@ TOURNAMENT_PROFILES: list[dict[str, Any]] = [
         "entry_friction_sensitivity": "medium",
         "exit_model_dependency": "medium",
         "research_bias": "balanced",
+        "minimum_execution_evidence_strength": "entry_and_reconciliation",
+        "requires_broker_order_audit_coverage": True,
+        "requires_broker_activity_audit_coverage": True,
+        "requires_exit_telemetry": False,
         "preferred_machine_now": "current_research_machine",
         "preferred_machine_target": "either_machine",
         "notes": "Already executable as a research program, but not yet wired into the single-command nightly operator cycle.",
@@ -326,6 +350,10 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         lines.append(f"- Entry friction sensitivity: `{row['entry_friction_sensitivity']}`")
         lines.append(f"- Exit model dependency: `{row['exit_model_dependency']}`")
         lines.append(f"- Research bias: `{row['research_bias']}`")
+        lines.append(f"- Minimum execution evidence strength: `{row['minimum_execution_evidence_strength']}`")
+        lines.append(f"- Requires broker-order audit coverage: `{str(row['requires_broker_order_audit_coverage']).lower()}`")
+        lines.append(f"- Requires broker-activity audit coverage: `{str(row['requires_broker_activity_audit_coverage']).lower()}`")
+        lines.append(f"- Requires exit telemetry: `{str(row['requires_exit_telemetry']).lower()}`")
         lines.append(f"- Preferred machine now: `{row['preferred_machine_now']}`")
         lines.append(f"- Preferred machine target: `{row['preferred_machine_target']}`")
         lines.append(f"- Families: {', '.join(f'`{family}`' for family in row['families'])}")

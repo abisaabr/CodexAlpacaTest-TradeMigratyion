@@ -23,6 +23,8 @@ The tournament profile registry tells us **how** to search for it:
 - which regime/session profile to run
 - which entrypoint is valid today
 - whether the profile is active, partial, or planned
+- what execution evidence floor a profile requires before activation
+- whether broker-order audit coverage, broker-activity audit coverage, or exit telemetry are required before activation
 - how execution posture should bias or downgrade profile choice
 - how discovery and validation should be split
 - which machine should prefer to own the run now versus later
@@ -49,6 +51,7 @@ python .\cleanroom\code\qqq_options_30d_cleanroom\build_tournament_profile_hando
 ## Current Policy
 
 - `auto` should resolve through `tournament_profile_handoff.json` before a nightly cycle launches
+- execution-aware profile selection should respect explicit evidence floors and audit requirements, not just soft score preferences
 - `down_choppy_coverage_ranked` is the default active institutional nightly profile and the current execution-aware recommendation when posture is cautious
 - `down_choppy_full_ready` is the fallback active profile when the ready universe is already broad enough
 - opening-window profiles are intentionally tracked as planned until their session-specific execution wiring is complete

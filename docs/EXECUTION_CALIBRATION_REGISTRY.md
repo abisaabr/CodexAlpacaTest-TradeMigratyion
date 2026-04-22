@@ -50,6 +50,7 @@ That handoff is not just advisory anymore. The cleanroom now consumes it in four
 - the deterministic fill-capacity layer in that same cleanroom stack can now reject obviously unfillable signals and cap requested size when combo complexity and weak-leg liquidity say the market would not reasonably fill the full request
 - the exit path can now degrade from a clean combo exit into a cleanup-style exit when liquidity suggests the full position would not clear cleanly at the scheduled combo mark
 - the operator policy layer can now keep combo-heavy profiles on a tighter leash when upgraded runner bundles show reconciliation pressure or partial-fill stress in the broker-order audit
+- the tournament profile handoff now uses this execution posture to impose an activation ceiling, so aggressive or broker-audited-only profiles do not activate before the evidence is strong enough
 
 Primary handoff builder:
 - `cleanroom/code/qqq_options_30d_cleanroom/build_execution_calibration_handoff.py`

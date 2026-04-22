@@ -32,6 +32,10 @@ This registry is the control-plane source of truth for which institutional tourn
 - Entry friction sensitivity: `medium`
 - Exit model dependency: `medium`
 - Research bias: `premium_defense_mixed`
+- Minimum execution evidence strength: `limited_entry_only`
+- Requires broker-order audit coverage: `false`
+- Requires broker-activity audit coverage: `false`
+- Requires exit telemetry: `false`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `either_machine`
 - Families: `Single-leg long put`, `Debit put spread`, `Credit call spread`, `Iron condor`, `Iron butterfly`, `Put backspread`, `Long straddle`, `Long strangle`, `Put butterfly`, `Broken-wing put butterfly`
@@ -59,6 +63,10 @@ This registry is the control-plane source of truth for which institutional tourn
 - Entry friction sensitivity: `medium`
 - Exit model dependency: `medium`
 - Research bias: `premium_defense_mixed`
+- Minimum execution evidence strength: `limited_entry_only`
+- Requires broker-order audit coverage: `false`
+- Requires broker-activity audit coverage: `false`
+- Requires exit telemetry: `false`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `either_machine`
 - Families: `Single-leg long put`, `Debit put spread`, `Credit call spread`, `Iron condor`, `Iron butterfly`, `Put backspread`, `Long straddle`, `Long strangle`, `Put butterfly`, `Broken-wing put butterfly`
@@ -86,6 +94,10 @@ This registry is the control-plane source of truth for which institutional tourn
 - Entry friction sensitivity: `high`
 - Exit model dependency: `high`
 - Research bias: `balanced_directional_vs_multileg`
+- Minimum execution evidence strength: `broad`
+- Requires broker-order audit coverage: `true`
+- Requires broker-activity audit coverage: `true`
+- Requires exit telemetry: `true`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `new_machine`
 - Families: `Single-leg long call`, `Single-leg long put`, `Debit call spread`, `Debit put spread`, `Credit call spread`, `Credit put spread`, `Iron condor`, `Iron butterfly`, `Call butterfly`, `Put butterfly`, `Call backspread`, `Put backspread`
@@ -113,6 +125,10 @@ This registry is the control-plane source of truth for which institutional tourn
 - Entry friction sensitivity: `low`
 - Exit model dependency: `medium`
 - Research bias: `defined_risk_and_premium_defense`
+- Minimum execution evidence strength: `entry_and_reconciliation`
+- Requires broker-order audit coverage: `true`
+- Requires broker-activity audit coverage: `true`
+- Requires exit telemetry: `false`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `new_machine`
 - Families: `Credit call spread`, `Debit put spread`, `Iron condor`, `Iron butterfly`, `Put butterfly`
@@ -140,6 +156,10 @@ This registry is the control-plane source of truth for which institutional tourn
 - Entry friction sensitivity: `high`
 - Exit model dependency: `high`
 - Research bias: `convexity_and_long_vol`
+- Minimum execution evidence strength: `broad`
+- Requires broker-order audit coverage: `true`
+- Requires broker-activity audit coverage: `true`
+- Requires exit telemetry: `true`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `new_machine`
 - Families: `Put backspread`, `Long straddle`, `Long strangle`, `Put butterfly`, `Broken-wing put butterfly`
@@ -167,6 +187,10 @@ This registry is the control-plane source of truth for which institutional tourn
 - Entry friction sensitivity: `medium`
 - Exit model dependency: `medium`
 - Research bias: `balanced`
+- Minimum execution evidence strength: `entry_and_reconciliation`
+- Requires broker-order audit coverage: `true`
+- Requires broker-activity audit coverage: `true`
+- Requires exit telemetry: `false`
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `either_machine`
 - Families: `Single-leg long call`, `Single-leg long put`, `Debit call spread`, `Debit put spread`, `Credit call spread`, `Credit put spread`, `Iron condor`, `Iron butterfly`, `Call butterfly`, `Put butterfly`, `Broken-wing call butterfly`, `Broken-wing put butterfly`, `Call backspread`, `Put backspread`, `Long straddle`, `Long strangle`

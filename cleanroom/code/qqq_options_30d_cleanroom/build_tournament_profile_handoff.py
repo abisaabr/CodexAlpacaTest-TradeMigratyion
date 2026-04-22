@@ -29,6 +29,23 @@ def read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def evidence_strength_rank(value: str) -> int:
+    order = {
+        "no_recent_trade_sessions": 0,
+        "limited_entry_only": 1,
+        "entry_only": 2,
+        "limited_entry_and_reconciliation": 3,
+        "entry_and_reconciliation": 4,
+        "limited": 5,
+        "broad": 6,
+    }
+    return order.get(value, 0)
+
+
+def risk_tier_rank(value: str) -> int:
+    return {"conservative": 0, "moderate": 1, "aggressive": 2}.get(value, 1)
+
+
 def _risk_bonus(posture: str, tier: str) -> tuple[int, str]:
     matrix = {
         "caution": {"conservative": 15, "moderate": 5, "aggressive": -15},
@@ -47,10 +64,16 @@ def score_profile(profile: dict[str, Any], execution_handoff: dict[str, Any]) ->
     posture = str(((execution_handoff.get("posture") or {}).get("overall_execution_posture")) or "watch")
     flags = dict((execution_handoff.get("posture") or {}).get("flags") or {})
     policy = dict(execution_handoff.get("policy") or {})
+    current_evidence_strength = str((execution_handoff.get("posture") or {}).get("evidence_strength") or "no_recent_trade_sessions")
+    current_max_risk_tier = str(policy.get("max_execution_risk_tier") or "moderate")
 
     score = 0
     reasons: list[str] = []
     profile_id = str(profile["profile_id"])
+    minimum_execution_evidence_strength = str(profile.get("minimum_execution_evidence_strength") or "limited_entry_only")
+    requires_broker_order_audit_coverage = bool(profile.get("requires_broker_order_audit_coverage", False))
+    requires_broker_activity_audit_coverage = bool(profile.get("requires_broker_activity_audit_coverage", False))
+    requires_exit_telemetry = bool(profile.get("requires_exit_telemetry", False))
 
     if profile_id in set(policy.get("recommended_profiles") or []):
         score += 100
@@ -62,6 +85,30 @@ def score_profile(profile: dict[str, Any], execution_handoff: dict[str, Any]) ->
     risk_bonus, risk_reason = _risk_bonus(posture, str(profile.get("execution_risk_tier") or "moderate"))
     score += risk_bonus
     reasons.append(risk_reason)
+
+    if evidence_strength_rank(current_evidence_strength) < evidence_strength_rank(minimum_execution_evidence_strength):
+        score -= 250
+        reasons.append(
+            f"current execution evidence `{current_evidence_strength}` is below the profile floor `{minimum_execution_evidence_strength}` (-250)"
+        )
+
+    if risk_tier_rank(str(profile.get("execution_risk_tier") or "moderate")) > risk_tier_rank(current_max_risk_tier):
+        score -= 250
+        reasons.append(
+            f"current execution policy caps profile risk at `{current_max_risk_tier}`, below this profile's `{profile.get('execution_risk_tier')}` tier (-250)"
+        )
+
+    if requires_broker_order_audit_coverage and not bool(policy.get("broker_audited_profile_activation_permitted")):
+        score -= 250
+        reasons.append("profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)")
+
+    if requires_broker_activity_audit_coverage and not bool(policy.get("broker_audited_profile_activation_permitted")):
+        score -= 250
+        reasons.append("profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)")
+
+    if requires_exit_telemetry and bool((execution_handoff.get("posture") or {}).get("flags", {}).get("exit_telemetry_gap")):
+        score -= 250
+        reasons.append("profile requires reliable exit telemetry, but the current execution posture still flags an exit-telemetry gap (-250)")
 
     if bool(flags.get("elevated_entry_friction")):
         penalty = _penalty_from_scale(
@@ -108,26 +155,41 @@ def build_payload(registry: dict[str, Any], execution_handoff: dict[str, Any], r
     executable_profiles = [profile for profile in profiles if bool(profile.get("executable_now"))]
     evaluations: list[dict[str, Any]] = []
 
-    for profile in executable_profiles:
+    for profile in profiles:
         score, reasons = score_profile(profile, execution_handoff)
         evaluations.append(
             {
                 "profile_id": profile["profile_id"],
                 "status": profile["status"],
+                "executable_now": bool(profile.get("executable_now")),
                 "score": score,
                 "reasons": reasons,
                 "execution_risk_tier": profile.get("execution_risk_tier"),
                 "entry_friction_sensitivity": profile.get("entry_friction_sensitivity"),
                 "exit_model_dependency": profile.get("exit_model_dependency"),
                 "research_bias": profile.get("research_bias"),
+                "minimum_execution_evidence_strength": profile.get("minimum_execution_evidence_strength"),
+                "requires_broker_order_audit_coverage": bool(profile.get("requires_broker_order_audit_coverage", False)),
+                "requires_broker_activity_audit_coverage": bool(profile.get("requires_broker_activity_audit_coverage", False)),
+                "requires_exit_telemetry": bool(profile.get("requires_exit_telemetry", False)),
                 "discovery_source": profile.get("discovery_source"),
                 "bootstrap_ready_universe": profile.get("bootstrap_ready_universe"),
+                "activation_blocked": score < 0 and any("(-250)" in reason for reason in reasons),
             }
         )
 
     evaluations.sort(key=lambda row: (-int(row["score"]), str(row["profile_id"])))
-    recommended_executable_profiles = [row["profile_id"] for row in evaluations if row["score"] == evaluations[0]["score"]] if evaluations else []
-    recommended_executable_profile = recommended_executable_profiles[0] if recommended_executable_profiles else str(registry.get("default_profile") or "")
+    executable_evaluations = [row for row in evaluations if row["executable_now"]]
+    recommended_executable_profiles = (
+        [row["profile_id"] for row in executable_evaluations if row["score"] == executable_evaluations[0]["score"]]
+        if executable_evaluations
+        else []
+    )
+    recommended_executable_profile = (
+        recommended_executable_profiles[0]
+        if recommended_executable_profiles
+        else str(registry.get("default_profile") or "")
+    )
 
     execution_policy = dict(execution_handoff.get("policy") or {})
     deprioritized_profiles = set(execution_policy.get("deprioritized_profiles") or [])
@@ -145,6 +207,12 @@ def build_payload(registry: dict[str, Any], execution_handoff: dict[str, Any], r
             resolution_warning = "Requested profile is not present in the tournament profile registry."
         elif not bool(profile_map[requested_profile].get("executable_now")):
             resolution_warning = "Requested profile is tracked but not executable now."
+        elif any(
+            row["profile_id"] == requested_profile and bool(row.get("activation_blocked"))
+            for row in evaluations
+        ):
+            resolution_mode = "explicit_requested_with_warning"
+            resolution_warning = "Requested profile is executable in code, but current execution-evidence policy blocks activating it tonight."
         elif requested_profile in deprioritized_profiles:
             resolution_mode = "explicit_requested_with_warning"
             resolution_warning = "Requested profile is currently deprioritized by the execution-calibration policy."
@@ -168,7 +236,9 @@ def build_payload(registry: dict[str, Any], execution_handoff: dict[str, Any], r
         "deprioritized_profiles_from_execution": list(execution_policy.get("deprioritized_profiles") or []),
         "recommended_executable_profile": recommended_executable_profile,
         "recommended_executable_profiles": recommended_executable_profiles,
-        "deprioritized_executable_profiles": [row["profile_id"] for row in evaluations if row["profile_id"] in deprioritized_profiles],
+        "deprioritized_executable_profiles": [
+            row["profile_id"] for row in executable_evaluations if row["profile_id"] in deprioritized_profiles
+        ],
         "profile_evaluations": evaluations,
     }
 
@@ -202,10 +272,16 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         lines.append(f"### {row['profile_id']}")
         lines.append("")
         lines.append(f"- Score: `{row['score']}`")
+        lines.append(f"- Executable now: `{str(bool(row['executable_now'])).lower()}`")
         lines.append(f"- Execution risk tier: `{row['execution_risk_tier']}`")
         lines.append(f"- Entry friction sensitivity: `{row['entry_friction_sensitivity']}`")
         lines.append(f"- Exit model dependency: `{row['exit_model_dependency']}`")
         lines.append(f"- Research bias: `{row['research_bias']}`")
+        lines.append(f"- Minimum execution evidence strength: `{row['minimum_execution_evidence_strength']}`")
+        lines.append(f"- Requires broker-order audit coverage: `{str(bool(row['requires_broker_order_audit_coverage'])).lower()}`")
+        lines.append(f"- Requires broker-activity audit coverage: `{str(bool(row['requires_broker_activity_audit_coverage'])).lower()}`")
+        lines.append(f"- Requires exit telemetry: `{str(bool(row['requires_exit_telemetry'])).lower()}`")
+        lines.append(f"- Activation blocked by policy: `{str(bool(row['activation_blocked'])).lower()}`")
         lines.append(f"- Discovery source: `{row['discovery_source']}`")
         lines.append(f"- Bootstrap ready universe: `{str(bool(row['bootstrap_ready_universe'])).lower()}`")
         lines.append("- Reasons:")

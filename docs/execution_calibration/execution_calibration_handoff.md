@@ -25,6 +25,10 @@
 - Exit model posture: `conservative_fallback`
 - Opening-window debit posture: `caution`
 - Preferred research bias: `defined_risk_and_premium_defense`
+- Profile activation confidence: `bootstrapping`
+- Max execution risk tier: `moderate`
+- Broker-audited profile activation permitted: `false`
+- Opening-window aggressive profiles permitted: `false`
 - Recommended profiles: `down_choppy_coverage_ranked, opening_30m_premium_defense`
 - Deprioritized profiles: `opening_30m_convexity_butterfly, opening_30m_single_vs_multileg`
 
@@ -32,12 +36,15 @@
 
 - Use `raised` entry-fill penalties while observed entry friction remains around 0.80% mean absolute slippage and 0.65% mean adverse event slippage.
 - Keep exit-side execution modeling conservative until explicit exit slippage telemetry becomes reliable.
+- Do not activate tournament profiles above `moderate` risk until execution evidence improves.
 - Trust session reconciliation to exclude review-required paper-runner sessions before they can loosen execution calibration.
 - Treat excluded paper-runner sessions as evidence to inspect, not evidence to learn from automatically.
 - Favor premium-defense and defined-risk opening-window challengers before adding more aggressive debit-heavy opening profiles.
 - Treat current execution evidence as directional rather than fully authoritative because the completed-trade sample is still small.
 - Treat broker-order audit coverage itself as a telemetry gap until upgraded session bundles start landing from the execution machine.
 - Treat broker account-activity audit coverage as a telemetry gap until upgraded session bundles start landing from the execution machine.
+- Do not activate broker-audited-only profiles until both broker-order and broker-activity audit coverage are present in trusted learning sessions.
+- Keep aggressive opening-window and combo-heavy profiles behind the execution evidence floor until broad audited evidence and exit telemetry are present.
 
 ## Top Entry Slippage Clusters
 

@@ -97,6 +97,7 @@ Tasks:
 - refresh the execution calibration registry from the paper runner
 - refresh the execution calibration handoff packet so the nightly cycle has a machine-readable posture and policy recommendation
 - make sure execution calibration consumes the fresh session-reconciliation packet so review-required sessions, including broker/local economics-drift sessions, cannot loosen fill assumptions or tournament policy
+- make sure tournament profile resolution respects explicit execution evidence floors and audit gates before activating more aggressive or opening-window profiles
 - confirm the backtester will consume that handoff so nightly selection grids tighten automatically when live execution posture is in `caution`
 - confirm the fill model overlay is active so entry/exit slippage assumptions tighten automatically under the same posture
 - confirm deterministic fill-capacity / no-fill logic is active so challenger sizing reflects weak-leg liquidity and combo complexity instead of assuming every requested size fills

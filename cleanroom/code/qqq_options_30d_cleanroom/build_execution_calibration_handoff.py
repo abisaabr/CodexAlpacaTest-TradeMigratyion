@@ -22,6 +22,10 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def risk_tier_rank(tier: str) -> int:
+    return {"conservative": 0, "moderate": 1, "aggressive": 2}.get(tier, 1)
+
+
 def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
     summary = dict(payload.get("summary") or {})
     data_quality = dict(payload.get("data_quality") or {})
@@ -135,6 +139,32 @@ def policy_recommendations(payload: dict[str, Any], posture: dict[str, Any]) -> 
     else:
         exit_model_posture = "observed_exit_calibration"
 
+    if posture.get("overall_execution_posture") == "stable" and posture.get("evidence_strength") in {
+        "entry_and_reconciliation",
+        "broad",
+    }:
+        max_execution_risk_tier = "aggressive"
+    else:
+        max_execution_risk_tier = "moderate"
+
+    if flags["sample_size_limited"] or flags["broker_order_audit_gap"] or flags["broker_activity_audit_gap"]:
+        profile_activation_confidence = "bootstrapping"
+    elif posture.get("evidence_strength") in {"entry_and_reconciliation", "broad"}:
+        profile_activation_confidence = "qualified"
+    else:
+        profile_activation_confidence = "provisional"
+
+    opening_window_aggressive_profiles_permitted = (
+        posture.get("overall_execution_posture") == "stable"
+        and posture.get("evidence_strength") == "broad"
+        and not flags["exit_telemetry_gap"]
+        and not flags["broker_order_audit_gap"]
+        and not flags["broker_activity_audit_gap"]
+    )
+    broker_audited_profile_activation_permitted = not (
+        flags["broker_order_audit_gap"] or flags["broker_activity_audit_gap"]
+    )
+
     recommended_profiles: list[str] = ["down_choppy_coverage_ranked"]
     if flags["high_guardrail_pressure"] or flags["elevated_entry_friction"] or flags["reconciliation_pressure"]:
         recommended_profiles.append("opening_30m_premium_defense")
@@ -150,6 +180,7 @@ def policy_recommendations(payload: dict[str, Any], posture: dict[str, Any]) -> 
     operator_actions = [
         f"Use `{entry_penalty_mode}` entry-fill penalties while observed entry friction remains around {entry_mean_pct:.2f}% mean absolute slippage and {event_mean_pct:.2f}% mean adverse event slippage.",
         "Keep exit-side execution modeling conservative until explicit exit slippage telemetry becomes reliable.",
+        f"Do not activate tournament profiles above `{max_execution_risk_tier}` risk until execution evidence improves.",
     ]
     if flags["session_reconciliation_filter_active"]:
         operator_actions.append("Trust session reconciliation to exclude review-required paper-runner sessions before they can loosen execution calibration.")
@@ -167,12 +198,20 @@ def policy_recommendations(payload: dict[str, Any], posture: dict[str, Any]) -> 
         operator_actions.append("Treat broker-order audit coverage itself as a telemetry gap until upgraded session bundles start landing from the execution machine.")
     if flags["broker_activity_audit_gap"]:
         operator_actions.append("Treat broker account-activity audit coverage as a telemetry gap until upgraded session bundles start landing from the execution machine.")
+    if not broker_audited_profile_activation_permitted:
+        operator_actions.append("Do not activate broker-audited-only profiles until both broker-order and broker-activity audit coverage are present in trusted learning sessions.")
+    if not opening_window_aggressive_profiles_permitted:
+        operator_actions.append("Keep aggressive opening-window and combo-heavy profiles behind the execution evidence floor until broad audited evidence and exit telemetry are present.")
 
     return {
         "entry_penalty_mode": entry_penalty_mode,
         "exit_model_posture": exit_model_posture,
         "opening_window_debit_posture": opening_window_debit_posture,
         "preferred_research_bias": preferred_research_bias,
+        "profile_activation_confidence": profile_activation_confidence,
+        "max_execution_risk_tier": max_execution_risk_tier,
+        "broker_audited_profile_activation_permitted": broker_audited_profile_activation_permitted,
+        "opening_window_aggressive_profiles_permitted": opening_window_aggressive_profiles_permitted,
         "recommended_profiles": recommended_profiles,
         "deprioritized_profiles": deprioritized_profiles,
         "operator_actions": operator_actions,
@@ -206,6 +245,10 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Exit model posture: `{policies['exit_model_posture']}`")
     lines.append(f"- Opening-window debit posture: `{policies['opening_window_debit_posture']}`")
     lines.append(f"- Preferred research bias: `{policies['preferred_research_bias']}`")
+    lines.append(f"- Profile activation confidence: `{policies['profile_activation_confidence']}`")
+    lines.append(f"- Max execution risk tier: `{policies['max_execution_risk_tier']}`")
+    lines.append(f"- Broker-audited profile activation permitted: `{str(bool(policies['broker_audited_profile_activation_permitted'])).lower()}`")
+    lines.append(f"- Opening-window aggressive profiles permitted: `{str(bool(policies['opening_window_aggressive_profiles_permitted'])).lower()}`")
     lines.append(f"- Recommended profiles: `{', '.join(policies['recommended_profiles'])}`")
     lines.append(f"- Deprioritized profiles: `{', '.join(policies['deprioritized_profiles']) or 'none'}`")
     lines.append("")

@@ -38,6 +38,7 @@ Before running the paper runner or a governed nightly cycle, also read `docs/REP
 Before refreshing execution policy from paper-runner evidence, also read `docs/SESSION_RECONCILIATION_REGISTRY.md` and inspect `docs/session_reconciliation/session_reconciliation_handoff.md` so review-required sessions do not loosen research policy or promotion conclusions.
 Before choosing or running a major nightly cycle, also read `docs/EXECUTION_CALIBRATION_REGISTRY.md` and inspect `docs/execution_calibration/execution_calibration_handoff.md` so current paper-runner fill, guardrail, and loss evidence can feed the next research run instead of being ignored.
 Before choosing a nightly research cycle, also read `docs/TOURNAMENT_PROFILE_REGISTRY.md` and inspect `docs/tournament_profiles/tournament_profile_handoff.md` so the machine uses an approved executable tournament profile that is also aligned with the current execution posture.
+Do not treat a planned or executable profile as automatically safe to activate just because it is listed in the registry; also respect the profile's execution evidence floor, broker-audit requirements, and exit-telemetry requirements from the current tournament profile handoff.
 
 ## 6. Run The Family-Expansion Tournament Conveyor
 

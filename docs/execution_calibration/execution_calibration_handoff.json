@@ -22,6 +22,10 @@
     "exit_model_posture": "conservative_fallback",
     "opening_window_debit_posture": "caution",
     "preferred_research_bias": "defined_risk_and_premium_defense",
+    "profile_activation_confidence": "bootstrapping",
+    "max_execution_risk_tier": "moderate",
+    "broker_audited_profile_activation_permitted": false,
+    "opening_window_aggressive_profiles_permitted": false,
     "recommended_profiles": [
       "down_choppy_coverage_ranked",
       "opening_30m_premium_defense"
@@ -33,12 +37,15 @@
     "operator_actions": [
       "Use `raised` entry-fill penalties while observed entry friction remains around 0.80% mean absolute slippage and 0.65% mean adverse event slippage.",
       "Keep exit-side execution modeling conservative until explicit exit slippage telemetry becomes reliable.",
+      "Do not activate tournament profiles above `moderate` risk until execution evidence improves.",
       "Trust session reconciliation to exclude review-required paper-runner sessions before they can loosen execution calibration.",
       "Treat excluded paper-runner sessions as evidence to inspect, not evidence to learn from automatically.",
       "Favor premium-defense and defined-risk opening-window challengers before adding more aggressive debit-heavy opening profiles.",
       "Treat current execution evidence as directional rather than fully authoritative because the completed-trade sample is still small.",
       "Treat broker-order audit coverage itself as a telemetry gap until upgraded session bundles start landing from the execution machine.",
-      "Treat broker account-activity audit coverage as a telemetry gap until upgraded session bundles start landing from the execution machine."
+      "Treat broker account-activity audit coverage as a telemetry gap until upgraded session bundles start landing from the execution machine.",
+      "Do not activate broker-audited-only profiles until both broker-order and broker-activity audit coverage are present in trusted learning sessions.",
+      "Keep aggressive opening-window and combo-heavy profiles behind the execution evidence floor until broad audited evidence and exit telemetry are present."
     ]
   },
   "top_entry_slippage_clusters": [
