@@ -40,6 +40,8 @@ DEFAULT_STEP_DAYS = 21
 DEFAULT_SELECTION_PROFILE = "balanced"
 RUN_CHECKPOINT_VERSION = 1
 RUN_MANIFEST_VERSION = 1
+MAX_EXECUTION_CALIBRATED_THRESHOLD = 0.65
+MIN_EXECUTION_CALIBRATED_RISK_CAP = 0.06
 REGIME_THRESHOLD_GRID = [0.30, 0.35, 0.40, 0.45, 0.50, 0.55]
 TOP_BULL_GRID = [1, 2, 3, 4]
 TOP_BEAR_GRID = [1, 2, 3, 4]
@@ -101,6 +103,11 @@ def build_parser() -> argparse.ArgumentParser:
         default="",
         help="Comma-separated family or family-bucket filters to exclude.",
     )
+    parser.add_argument(
+        "--execution-calibration-handoff",
+        default="",
+        help="Optional JSON handoff that translates live Alpaca execution evidence into stricter research selection policy.",
+    )
     return parser
 
 
@@ -132,6 +139,7 @@ def build_run_signature(
     step_days: int,
     family_include_filters: list[str],
     family_exclude_filters: list[str],
+    execution_calibration_context: dict[str, object],
 ) -> dict[str, object]:
     code_paths = [
         Path(__file__).resolve(),
@@ -155,6 +163,7 @@ def build_run_signature(
             "dense": artifact_signature(dense_path),
             "daily_universe": artifact_signature(universe_path),
         },
+        "execution_calibration": execution_calibration_context,
         "code_artifacts": [artifact_signature(path) for path in code_paths],
     }
 
@@ -305,6 +314,149 @@ def ticker_input_lineage(output_dir: Path, ticker: str) -> dict[str, object]:
         "audit": output_dir / f"{ticker_lower}_365d_audit_report.json",
     }
     return {name: file_lineage_descriptor(path) for name, path in paths.items()}
+
+
+def resolve_default_execution_calibration_handoff_path() -> Path | None:
+    script_dir = Path(__file__).resolve().parent
+    candidates: list[Path] = []
+    try:
+        candidates.append(script_dir.parents[2] / "docs" / "execution_calibration" / "execution_calibration_handoff.json")
+    except IndexError:
+        pass
+    candidates.extend(
+        [
+            script_dir / "docs" / "execution_calibration" / "execution_calibration_handoff.json",
+            script_dir / "output" / "execution_calibration_handoff.json",
+            script_dir.parent / "CodexAlpacaTest-TradeMigratyion" / "docs" / "execution_calibration" / "execution_calibration_handoff.json",
+        ]
+    )
+    seen: set[str] = set()
+    for candidate in candidates:
+        resolved = candidate.resolve()
+        resolved_key = str(resolved).lower()
+        if resolved_key in seen:
+            continue
+        seen.add(resolved_key)
+        if resolved.exists():
+            return resolved
+    return None
+
+
+def resolve_execution_calibration_handoff_path(raw_value: str) -> Path | None:
+    if raw_value.strip():
+        path = Path(raw_value).expanduser().resolve()
+        if not path.exists():
+            raise FileNotFoundError(f"execution calibration handoff not found: {path}")
+        return path
+    return resolve_default_execution_calibration_handoff_path()
+
+
+def load_execution_calibration_handoff(path: Path | None) -> dict[str, Any] | None:
+    if path is None:
+        return None
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"execution calibration handoff must be a JSON object: {path}")
+    return payload
+
+
+def build_execution_calibration_context(path: Path | None) -> dict[str, object]:
+    if path is None:
+        return {
+            "enabled": False,
+            "handoff_lineage": None,
+            "overall_execution_posture": "unavailable",
+            "evidence_strength": "none",
+            "policy": {},
+            "flags": {},
+            "selection_adjustments": {
+                "threshold_shift": 0.0,
+                "min_trade_increment": 0,
+                "risk_cap_multiplier": 1.0,
+                "notes": ["No execution calibration handoff was available for this run."],
+            },
+        }
+
+    payload = load_execution_calibration_handoff(path)
+    posture = payload.get("posture", {}) if payload is not None else {}
+    policy = payload.get("policy", {}) if payload is not None else {}
+    flags = dict(posture.get("flags", {})) if isinstance(posture, dict) else {}
+
+    threshold_shift = 0.0
+    min_trade_increment = 0
+    risk_cap_multiplier = 1.0
+    notes: list[str] = []
+
+    if policy.get("entry_penalty_mode") == "raised":
+        threshold_shift += 0.05
+        notes.append("Raised regime thresholds because live entry friction is elevated.")
+    if bool(flags.get("sample_size_limited")):
+        min_trade_increment += 2
+        notes.append("Raised minimum trade requirements because execution evidence is still sample-limited.")
+    if bool(flags.get("high_guardrail_pressure")):
+        min_trade_increment += 1
+        risk_cap_multiplier *= 0.90
+        notes.append("Reduced risk caps modestly because live guardrail pressure has been elevated.")
+    if bool(flags.get("elevated_entry_friction")):
+        risk_cap_multiplier *= 0.90
+        notes.append("Reduced risk caps because observed Alpaca entry friction is running above baseline.")
+    if bool(flags.get("exit_telemetry_gap")):
+        risk_cap_multiplier *= 0.95
+        notes.append("Kept additional risk-cap conservatism because exit-side telemetry is still incomplete.")
+
+    if not notes:
+        notes.append("Execution calibration is present but does not currently tighten the selection grid.")
+
+    return {
+        "enabled": True,
+        "generated_at": payload.get("generated_at") if payload is not None else None,
+        "registry_json": payload.get("registry_json") if payload is not None else None,
+        "handoff_lineage": file_lineage_descriptor(path, prefer_full_hash=True),
+        "overall_execution_posture": posture.get("overall_execution_posture", "unknown") if isinstance(posture, dict) else "unknown",
+        "evidence_strength": posture.get("evidence_strength", "unknown") if isinstance(posture, dict) else "unknown",
+        "policy": dict(policy) if isinstance(policy, dict) else {},
+        "flags": flags,
+        "selection_adjustments": {
+            "threshold_shift": round(float(threshold_shift), 4),
+            "min_trade_increment": int(min_trade_increment),
+            "risk_cap_multiplier": round(float(risk_cap_multiplier), 4),
+            "notes": notes,
+        },
+    }
+
+
+def apply_execution_calibration_to_selection_grids(
+    selection_grids: dict[str, list[float] | list[int]],
+    execution_calibration_context: dict[str, object],
+) -> dict[str, list[float] | list[int]]:
+    if not bool(execution_calibration_context.get("enabled")):
+        return {key: list(values) for key, values in selection_grids.items()}
+
+    adjustments = execution_calibration_context.get("selection_adjustments", {})
+    threshold_shift = float(adjustments.get("threshold_shift", 0.0))
+    min_trade_increment = int(adjustments.get("min_trade_increment", 0))
+    risk_cap_multiplier = float(adjustments.get("risk_cap_multiplier", 1.0))
+
+    calibrated = {key: list(values) for key, values in selection_grids.items()}
+    calibrated["thresholds"] = sorted(
+        {
+            round(min(MAX_EXECUTION_CALIBRATED_THRESHOLD, float(value) + threshold_shift), 2)
+            for value in calibrated["thresholds"]
+        }
+    )
+    calibrated["min_trade_values"] = sorted(
+        {
+            max(1, int(value) + min_trade_increment)
+            for value in calibrated["min_trade_values"]
+        }
+    )
+    calibrated["risk_caps"] = sorted(
+        {
+            round(max(MIN_EXECUTION_CALIBRATED_RISK_CAP, float(value) * risk_cap_multiplier), 2)
+            for value in calibrated["risk_caps"]
+        }
+    )
+    return calibrated
 
 
 def collect_ticker_output_lineage(research_dir: Path, ticker: str) -> dict[str, object]:
@@ -1622,6 +1774,7 @@ def run_single_ticker_research(
     selection_profile: str,
     family_include_filters: list[str],
     family_exclude_filters: list[str],
+    execution_calibration_context: dict[str, object],
 ) -> dict[str, object]:
     ticker_lower = ticker.lower()
     research_dir.mkdir(parents=True, exist_ok=True)
@@ -1660,6 +1813,7 @@ def run_single_ticker_research(
             step_days=step_days,
             family_include_filters=family_include_filters,
             family_exclude_filters=family_exclude_filters,
+            execution_calibration_context=execution_calibration_context,
         )
 
         strategy_variants = build_strategy_variants(
@@ -1764,7 +1918,10 @@ def run_single_ticker_research(
             extra={"candidate_trade_count": int(len(candidate_trades))},
         )
 
-        selection_grids = build_selection_grids(selection_profile, strategy_set)
+        selection_grids = apply_execution_calibration_to_selection_grids(
+            build_selection_grids(selection_profile, strategy_set),
+            execution_calibration_context,
+        )
         walkforward_state = try_load_walkforward_checkpoint(
             paths=paths,
             run_signature=run_signature,
@@ -2011,6 +2168,8 @@ def run_single_ticker_research(
             "timing_profiles": [profile.name for profile in profiles],
             "family_include_filters": family_include_filters,
             "family_exclude_filters": family_exclude_filters,
+            "execution_calibration": execution_calibration_context,
+            "selection_grids": selection_grids,
             "frozen_initial_config": frozen_config,
             "reoptimized": reoptimized_summary,
             "frozen_initial": frozen_summary,
@@ -2068,6 +2227,7 @@ def try_load_existing_ticker_result(
     selection_profile: str,
     family_include_filters: list[str],
     family_exclude_filters: list[str],
+    execution_calibration_context: dict[str, object],
 ) -> dict[str, object] | None:
     ticker_lower = ticker.lower()
     summary_path = research_dir / f"{ticker_lower}_summary.json"
@@ -2089,6 +2249,8 @@ def try_load_existing_ticker_result(
     if summary.get("family_include_filters", []) != family_include_filters:
         return None
     if summary.get("family_exclude_filters", []) != family_exclude_filters:
+        return None
+    if summary.get("execution_calibration") != execution_calibration_context:
         return None
 
     strategy_variants = build_strategy_variants(
@@ -2288,6 +2450,14 @@ def write_master_report(path: Path, payload: dict[str, object]) -> None:
         f"- Training window: {payload['initial_train_days']} days, test window: {payload['test_days']} days, step: {payload['step_days']} days."
     )
     lines.append(f"- Selection profile: {payload.get('selection_profile', DEFAULT_SELECTION_PROFILE)}")
+    execution_calibration = dict(payload.get("execution_calibration", {}))
+    if execution_calibration.get("enabled"):
+        adjustments = dict(execution_calibration.get("selection_adjustments", {}))
+        lines.append(
+            f"- Execution calibration: `{execution_calibration.get('overall_execution_posture', 'unknown')}` posture with `{execution_calibration.get('evidence_strength', 'unknown')}` evidence; threshold shift {adjustments.get('threshold_shift', 0.0):.2f}, min-trade increment {adjustments.get('min_trade_increment', 0)}, risk-cap multiplier {adjustments.get('risk_cap_multiplier', 1.0):.2f}."
+        )
+    else:
+        lines.append("- Execution calibration: unavailable; static selection grids were used.")
     lines.append(
         f"- Successful tickers: {', '.join(payload.get('successful_tickers', [])) if payload.get('successful_tickers') else 'none'}"
     )
@@ -2424,6 +2594,8 @@ def main() -> None:
     research_dir = Path(args.research_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     research_dir.mkdir(parents=True, exist_ok=True)
+    execution_calibration_handoff_path = resolve_execution_calibration_handoff_path(args.execution_calibration_handoff)
+    execution_calibration_context = build_execution_calibration_context(execution_calibration_handoff_path)
     tickers = [ticker.strip().lower() for ticker in args.tickers.split(",") if ticker.strip()]
     profiles = build_timing_profiles(args.strategy_set)
     family_include_filters = parse_family_filters(args.family_include)
@@ -2453,6 +2625,8 @@ def main() -> None:
             "timing_profiles": [profile.name for profile in profiles],
             "family_include_filters": family_include_filters,
             "family_exclude_filters": family_exclude_filters,
+            "execution_calibration_handoff": str(execution_calibration_handoff_path) if execution_calibration_handoff_path is not None else None,
+            "execution_calibration": execution_calibration_context,
             "continue_on_error": bool(args.continue_on_error),
             "reuse_completed_tickers": bool(args.reuse_completed_tickers),
             "argv": sys.argv,
@@ -2460,6 +2634,9 @@ def main() -> None:
         "lineage": {
             "machine": collect_machine_lineage(),
             "code": collect_code_lineage(),
+            "execution_calibration_handoff": file_lineage_descriptor(execution_calibration_handoff_path, prefer_full_hash=True)
+            if execution_calibration_handoff_path is not None
+            else None,
             "ticker_inputs": {
                 ticker.upper(): ticker_input_lineage(output_dir, ticker)
                 for ticker in tickers
@@ -2484,6 +2661,13 @@ def main() -> None:
         write_run_manifest(manifest_path, run_manifest)
 
     sync_manifest(status="running", message="Run initialized.")
+    if execution_calibration_context.get("enabled"):
+        print(
+            "Execution calibration active: "
+            f"{execution_calibration_context.get('overall_execution_posture', 'unknown')} posture, "
+            f"{execution_calibration_context.get('evidence_strength', 'unknown')} evidence.",
+            flush=True,
+        )
     append_run_registry(
         registry_path,
         {
@@ -2496,6 +2680,7 @@ def main() -> None:
             "tickers": [ticker.upper() for ticker in tickers],
             "strategy_set": args.strategy_set,
             "selection_profile": args.selection_profile,
+            "execution_calibration": execution_calibration_context,
             "timing_profiles": [profile.name for profile in profiles],
             "family_include_filters": family_include_filters,
             "family_exclude_filters": family_exclude_filters,
@@ -2525,6 +2710,7 @@ def main() -> None:
                 selection_profile=args.selection_profile,
                 family_include_filters=family_include_filters,
                 family_exclude_filters=family_exclude_filters,
+                execution_calibration_context=execution_calibration_context,
             )
             if reused is not None:
                 ticker_results.append(reused)
@@ -2555,6 +2741,7 @@ def main() -> None:
                 selection_profile=args.selection_profile,
                 family_include_filters=family_include_filters,
                 family_exclude_filters=family_exclude_filters,
+                execution_calibration_context=execution_calibration_context,
             )
         except Exception as exc:
             error_row = {
@@ -2836,6 +3023,7 @@ def main() -> None:
         "selection_profile": args.selection_profile,
         "family_include_filters": family_include_filters,
         "family_exclude_filters": family_exclude_filters,
+        "execution_calibration": execution_calibration_context,
         "successful_tickers": [result["ticker"] for result in ticker_results],
         "failed_tickers": failed_tickers,
         "initial_train_days": args.initial_train_days,
