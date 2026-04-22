@@ -2,8 +2,8 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T10:09:07.917839-04:00`
-- Ready tickers: 140
+- Generated at: `2026-04-22T15:54:34.769990-04:00`
+- Ready tickers: 0
 - Cataloged families: 16
 - Cataloged base strategies: 92
 - Research ticker summaries found: 107
@@ -22,27 +22,27 @@
 
 ## Priority Families
 
-- `Broken-wing call butterfly`: `priority_discovery`; live strategies `0`; selected bases `0`; ready gap `140`
-- `Broken-wing put butterfly`: `priority_discovery`; live strategies `0`; selected bases `0`; ready gap `140`
-- `Call butterfly`: `priority_discovery`; live strategies `0`; selected bases `0`; ready gap `140`
-- `Debit call spread`: `priority_discovery`; live strategies `0`; selected bases `0`; ready gap `140`
-- `Debit put spread`: `priority_discovery`; live strategies `0`; selected bases `0`; ready gap `140`
-- `Credit call spread`: `priority_validation`; live strategies `0`; selected bases `1`; ready gap `139`
-- `Iron condor`: `priority_validation`; live strategies `0`; selected bases `1`; ready gap `139`
-- `Long strangle`: `priority_validation`; live strategies `0`; selected bases `1`; ready gap `139`
-- `Credit put spread`: `priority_validation`; live strategies `0`; selected bases `2`; ready gap `138`
-- `Put butterfly`: `priority_validation`; live strategies `0`; selected bases `2`; ready gap `138`
-- `Put backspread`: `promotion_follow_up`; live strategies `0`; selected bases `4`; ready gap `134`
-- `Long straddle`: `promotion_follow_up`; live strategies `0`; selected bases `4`; ready gap `133`
+- `Credit call spread`: `priority_validation`; live strategies `0`; selected bases `1`; ready gap `0`
+- `Credit put spread`: `priority_validation`; live strategies `0`; selected bases `2`; ready gap `0`
+- `Iron condor`: `priority_validation`; live strategies `0`; selected bases `1`; ready gap `0`
+- `Long strangle`: `priority_validation`; live strategies `0`; selected bases `1`; ready gap `0`
+- `Put butterfly`: `priority_validation`; live strategies `0`; selected bases `2`; ready gap `0`
+- `Long straddle`: `promotion_follow_up`; live strategies `0`; selected bases `4`; ready gap `0`
+- `Put backspread`: `promotion_follow_up`; live strategies `0`; selected bases `4`; ready gap `0`
+- `Call backspread`: `live_benchmark`; live strategies `2`; selected bases `2`; ready gap `0`
+- `Iron butterfly`: `live_benchmark`; live strategies `2`; selected bases `2`; ready gap `0`
+- `Single-leg long call`: `live_benchmark`; live strategies `48`; selected bases `5`; ready gap `0`
+- `Single-leg long put`: `live_benchmark`; live strategies `42`; selected bases `13`; ready gap `0`
+- `Broken-wing call butterfly`: `monitor`; live strategies `0`; selected bases `0`; ready gap `0`
 
 ## Registry
 
 ### Broken-wing call butterfly
 
 - Bucket: `broken_wing_butterfly`; bias: `bull_or_choppy`; leg range: `4-4`
-- Priority: `priority_discovery`; steward action: `collect_and_rank_new_family_candidates`
+- Priority: `monitor`; steward action: `maintain_registry_and_wait_for_new_evidence`
 - Base strategies: 3; selected `0`; promoted `0`
-- Selected tickers: 0; promoted tickers: 0; ready gap: 140
+- Selected tickers: 0; promoted tickers: 0; ready gap: 0
 - Live overlay: strategies `0` across `0` tickers
 - Strategy sets: `down_choppy_exhaustive`, `family_expansion`
 - Signals: `trend_call`
@@ -52,9 +52,9 @@
 ### Broken-wing put butterfly
 
 - Bucket: `broken_wing_butterfly`; bias: `bear_or_choppy`; leg range: `4-4`
-- Priority: `priority_discovery`; steward action: `collect_and_rank_new_family_candidates`
+- Priority: `monitor`; steward action: `maintain_registry_and_wait_for_new_evidence`
 - Base strategies: 3; selected `0`; promoted `0`
-- Selected tickers: 0; promoted tickers: 0; ready gap: 140
+- Selected tickers: 0; promoted tickers: 0; ready gap: 0
 - Live overlay: strategies `0` across `0` tickers
 - Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`
 - Signals: `trend_put`
@@ -66,7 +66,7 @@
 - Bucket: `backspread`; bias: `bull_convexity`; leg range: `3-3`
 - Priority: `live_benchmark`; steward action: `benchmark_against_current_live_book`
 - Base strategies: 2; selected `2`; promoted `2`
-- Selected tickers: 1; promoted tickers: 1; ready gap: 139
+- Selected tickers: 1; promoted tickers: 1; ready gap: 0
 - Live overlay: strategies `2` across `1` tickers
 - Strategy sets: `family_expansion`
 - Signals: `trend_call`
@@ -76,9 +76,9 @@
 ### Call butterfly
 
 - Bucket: `butterfly`; bias: `bull_or_choppy`; leg range: `4-4`
-- Priority: `priority_discovery`; steward action: `collect_and_rank_new_family_candidates`
+- Priority: `monitor`; steward action: `maintain_registry_and_wait_for_new_evidence`
 - Base strategies: 4; selected `0`; promoted `0`
-- Selected tickers: 0; promoted tickers: 0; ready gap: 140
+- Selected tickers: 0; promoted tickers: 0; ready gap: 0
 - Live overlay: strategies `0` across `0` tickers
 - Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`
 - Signals: `iron_condor`
@@ -90,9 +90,9 @@
 - Bucket: `credit_spread`; bias: `bear`; leg range: `2-2`
 - Priority: `priority_validation`; steward action: `push_family_into_exhaustive_validation`
 - Base strategies: 13; selected `1`; promoted `0`
-- Selected tickers: 1; promoted tickers: 0; ready gap: 139
+- Selected tickers: 1; promoted tickers: 0; ready gap: 0
 - Live overlay: strategies `0` across `0` tickers
-- Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`, `standard`
+- Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`, `opening_window_premium_defense`, `standard`
 - Signals: `credit_bear`
 - DTE modes: `next_expiry`, `same_day`
 - Note: Credit call spread has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation.
@@ -102,7 +102,7 @@
 - Bucket: `credit_spread`; bias: `bull`; leg range: `2-2`
 - Priority: `priority_validation`; steward action: `push_family_into_exhaustive_validation`
 - Base strategies: 5; selected `2`; promoted `0`
-- Selected tickers: 2; promoted tickers: 0; ready gap: 138
+- Selected tickers: 2; promoted tickers: 0; ready gap: 0
 - Live overlay: strategies `0` across `0` tickers
 - Strategy sets: `family_expansion`, `standard`
 - Signals: `credit_bull`
@@ -112,9 +112,9 @@
 ### Debit call spread
 
 - Bucket: `debit_spread`; bias: `bull`; leg range: `2-2`
-- Priority: `priority_discovery`; steward action: `collect_and_rank_new_family_candidates`
+- Priority: `monitor`; steward action: `maintain_registry_and_wait_for_new_evidence`
 - Base strategies: 3; selected `0`; promoted `0`
-- Selected tickers: 0; promoted tickers: 0; ready gap: 140
+- Selected tickers: 0; promoted tickers: 0; ready gap: 0
 - Live overlay: strategies `0` across `0` tickers
 - Strategy sets: `family_expansion`, `standard`
 - Signals: `trend_call`
@@ -124,11 +124,11 @@
 ### Debit put spread
 
 - Bucket: `debit_spread`; bias: `bear`; leg range: `2-2`
-- Priority: `priority_discovery`; steward action: `collect_and_rank_new_family_candidates`
+- Priority: `monitor`; steward action: `maintain_registry_and_wait_for_new_evidence`
 - Base strategies: 7; selected `0`; promoted `0`
-- Selected tickers: 0; promoted tickers: 0; ready gap: 140
+- Selected tickers: 0; promoted tickers: 0; ready gap: 0
 - Live overlay: strategies `0` across `0` tickers
-- Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`, `standard`
+- Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`, `opening_window_premium_defense`, `standard`
 - Signals: `trend_put`
 - DTE modes: `next_expiry`
 - Note: Debit put spread is still structurally under-tested across the ready universe and should stay in discovery rotation.
@@ -138,9 +138,9 @@
 - Bucket: `neutral_premium`; bias: `choppy`; leg range: `4-4`
 - Priority: `live_benchmark`; steward action: `benchmark_against_current_live_book`
 - Base strategies: 3; selected `2`; promoted `2`
-- Selected tickers: 5; promoted tickers: 5; ready gap: 135
+- Selected tickers: 5; promoted tickers: 5; ready gap: 0
 - Live overlay: strategies `2` across `1` tickers
-- Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`, `standard`
+- Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`, `opening_window_premium_defense`, `standard`
 - Signals: `iron_condor`
 - DTE modes: `same_day`
 - Note: Iron butterfly is already live and should be benchmarked for replacement or diversification, not re-added blindly.
@@ -150,9 +150,9 @@
 - Bucket: `neutral_premium`; bias: `choppy`; leg range: `4-4`
 - Priority: `priority_validation`; steward action: `push_family_into_exhaustive_validation`
 - Base strategies: 6; selected `1`; promoted `0`
-- Selected tickers: 1; promoted tickers: 0; ready gap: 139
+- Selected tickers: 1; promoted tickers: 0; ready gap: 0
 - Live overlay: strategies `0` across `0` tickers
-- Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`, `standard`
+- Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`, `opening_window_premium_defense`, `standard`
 - Signals: `iron_condor`
 - DTE modes: `same_day`
 - Note: Iron condor has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation.
@@ -162,19 +162,19 @@
 - Bucket: `long_vol`; bias: `choppy_or_expansion`; leg range: `2-2`
 - Priority: `promotion_follow_up`; steward action: `review_for_live_manifest_addition`
 - Base strategies: 5; selected `4`; promoted `2`
-- Selected tickers: 7; promoted tickers: 1; ready gap: 133
+- Selected tickers: 7; promoted tickers: 1; ready gap: 0
 - Live overlay: strategies `0` across `0` tickers
 - Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`, `standard`
 - Signals: `long_straddle`
 - DTE modes: `next_expiry`, `same_day`
-- Note: Long straddle has some evidence already, but there is still room to widen symbol coverage before promotion.
+- Note: Long straddle is cataloged and should be monitored as more out-of-sample evidence lands.
 
 ### Long strangle
 
 - Bucket: `long_vol`; bias: `choppy_or_expansion`; leg range: `2-2`
 - Priority: `priority_validation`; steward action: `push_family_into_exhaustive_validation`
 - Base strategies: 5; selected `1`; promoted `0`
-- Selected tickers: 1; promoted tickers: 0; ready gap: 139
+- Selected tickers: 1; promoted tickers: 0; ready gap: 0
 - Live overlay: strategies `0` across `0` tickers
 - Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`, `standard`
 - Signals: `long_straddle`
@@ -186,21 +186,21 @@
 - Bucket: `backspread`; bias: `bear_convexity`; leg range: `3-3`
 - Priority: `promotion_follow_up`; steward action: `review_for_live_manifest_addition`
 - Base strategies: 5; selected `4`; promoted `4`
-- Selected tickers: 6; promoted tickers: 6; ready gap: 134
+- Selected tickers: 6; promoted tickers: 6; ready gap: 0
 - Live overlay: strategies `0` across `0` tickers
 - Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`
 - Signals: `trend_put`
 - DTE modes: `next_expiry`
-- Note: Put backspread has some evidence already, but there is still room to widen symbol coverage before promotion.
+- Note: Put backspread is cataloged and should be monitored as more out-of-sample evidence lands.
 
 ### Put butterfly
 
 - Bucket: `butterfly`; bias: `bear_or_choppy`; leg range: `4-4`
 - Priority: `priority_validation`; steward action: `push_family_into_exhaustive_validation`
 - Base strategies: 4; selected `2`; promoted `0`
-- Selected tickers: 2; promoted tickers: 0; ready gap: 138
+- Selected tickers: 2; promoted tickers: 0; ready gap: 0
 - Live overlay: strategies `0` across `0` tickers
-- Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`
+- Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`, `opening_window_premium_defense`
 - Signals: `iron_condor`
 - DTE modes: `same_day`
 - Note: Put butterfly has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation.
@@ -210,7 +210,7 @@
 - Bucket: `single_leg`; bias: `bull`; leg range: `1-1`
 - Priority: `live_benchmark`; steward action: `benchmark_against_current_live_book`
 - Base strategies: 7; selected `5`; promoted `4`
-- Selected tickers: 39; promoted tickers: 38; ready gap: 101
+- Selected tickers: 39; promoted tickers: 38; ready gap: 0
 - Live overlay: strategies `48` across `21` tickers
 - Strategy sets: `family_expansion`, `standard`
 - Signals: `orb_call`, `trend_call`
@@ -222,7 +222,7 @@
 - Bucket: `single_leg`; bias: `bear`; leg range: `1-1`
 - Priority: `live_benchmark`; steward action: `benchmark_against_current_live_book`
 - Base strategies: 17; selected `13`; promoted `11`
-- Selected tickers: 47; promoted tickers: 44; ready gap: 93
+- Selected tickers: 47; promoted tickers: 44; ready gap: 0
 - Live overlay: strategies `42` across `20` tickers
 - Strategy sets: `down_choppy_exhaustive`, `down_choppy_only`, `family_expansion`, `standard`
 - Signals: `orb_put`, `trend_put`

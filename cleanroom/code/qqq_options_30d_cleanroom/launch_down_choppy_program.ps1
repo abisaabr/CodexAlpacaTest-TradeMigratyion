@@ -9,6 +9,15 @@ param(
     [switch]$BootstrapReadyUniverse = $true,
     [ValidateSet("full_ready", "coverage_ranked")]
     [string]$DiscoverySource = "full_ready",
+    [ValidateSet("down_choppy_only", "opening_window_premium_defense")]
+    [string]$Phase1StrategySet = "down_choppy_only",
+    [ValidateSet("down_choppy_focus", "opening_window_defensive")]
+    [string]$Phase1SelectionProfile = "down_choppy_focus",
+    [ValidateSet("down_choppy_exhaustive", "opening_window_premium_defense")]
+    [string]$Phase2StrategySet = "down_choppy_exhaustive",
+    [ValidateSet("down_choppy_focus", "opening_window_defensive")]
+    [string]$Phase2SelectionProfile = "down_choppy_focus",
+    [string]$Phase1AllowedFamilies = "",
     [string]$CoveragePlannerPath = "",
     [string]$CoverageReportDir = "",
     [int]$TopPerLane = 8,
@@ -229,7 +238,10 @@ function Wait-LaneProcesses {
 function Convert-CoveragePlanToWavePlan {
     param(
         [string]$NextWavePlanPath,
-        [string]$DiscoveryRootPath
+        [string]$DiscoveryRootPath,
+        [string]$StrategySet = "down_choppy_only",
+        [string]$SelectionProfile = "down_choppy_focus",
+        [string]$AllowedFamilies = ""
     )
 
     $payload = Get-Content -Path $NextWavePlanPath -Raw | ConvertFrom-Json
@@ -239,6 +251,19 @@ function Convert-CoveragePlanToWavePlan {
         }
         else {
             @()
+        }
+
+    $allowedFamilyTokens =
+        if ([string]::IsNullOrWhiteSpace($AllowedFamilies)) {
+            @()
+        }
+        else {
+            @(
+                $AllowedFamilies.Split(",") |
+                    ForEach-Object { ($_ -replace '[^A-Za-z0-9]+', '_').Trim('_').ToLower() } |
+                    Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+                    Sort-Object -Unique
+            )
         }
 
     $wavePlan = @()
@@ -252,14 +277,30 @@ function Convert-CoveragePlanToWavePlan {
             }
         $tickers = @($readyRows | ForEach-Object { [string]$_.ticker } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
         $families = @($lane.families | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+        $normalizedFamilies = @(
+            $families |
+                ForEach-Object { ($_ -replace '[^A-Za-z0-9]+', '_').Trim('_').ToLower() } |
+                Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+        )
+        if ($allowedFamilyTokens.Count -gt 0) {
+            $selectedIndices = @()
+            for ($index = 0; $index -lt $normalizedFamilies.Count; $index++) {
+                if ($allowedFamilyTokens -contains $normalizedFamilies[$index]) {
+                    $selectedIndices += $index
+                }
+            }
+            if (-not $selectedIndices) {
+                continue
+            }
+            $families = @($selectedIndices | ForEach-Object { $families[$_] })
+            $normalizedFamilies = @($selectedIndices | ForEach-Object { $normalizedFamilies[$_] })
+        }
         $wavePlan += [ordered]@{
             lane_id = [string]$lane.lane_id
             description = [string]$lane.description
-            strategy_set = "down_choppy_only"
-            selection_profile = "down_choppy_focus"
-            family_include = (($families | ForEach-Object {
-                        ($_ -replace '[^A-Za-z0-9]+', '_').Trim('_').ToLower()
-                    }) -join ",")
+            strategy_set = $StrategySet
+            selection_profile = $SelectionProfile
+            family_include = ($normalizedFamilies -join ",")
             tickers = $tickers
             research_dir = (Join-Path $DiscoveryRootPath ([string]$lane.lane_id))
             command = ""
@@ -484,7 +525,12 @@ if ($DiscoverySource -eq "coverage_ranked") {
         throw "coverage planner did not recreate next_wave_plan.json at $nextWavePlanPath"
     }
 
-    $wavePlan = Convert-CoveragePlanToWavePlan -NextWavePlanPath $nextWavePlanPath -DiscoveryRootPath $discoveryRoot
+    $wavePlan = Convert-CoveragePlanToWavePlan `
+        -NextWavePlanPath $nextWavePlanPath `
+        -DiscoveryRootPath $discoveryRoot `
+        -StrategySet $Phase1StrategySet `
+        -SelectionProfile $Phase1SelectionProfile `
+        -AllowedFamilies $Phase1AllowedFamilies
     $wavePlanPath = Join-Path $discoveryRoot "family_wave_plan.json"
     Write-JsonFile -Path $wavePlanPath -Payload $wavePlan
 }
@@ -512,6 +558,11 @@ $manifest = [ordered]@{
     run_phase2 = [bool]$RunPhase2
     bootstrap_ready_universe = [bool]$BootstrapReadyUniverse
     discovery_source = $DiscoverySource
+    phase1_strategy_set = $Phase1StrategySet
+    phase1_selection_profile = $Phase1SelectionProfile
+    phase1_allowed_families = $Phase1AllowedFamilies
+    phase2_strategy_set = $Phase2StrategySet
+    phase2_selection_profile = $Phase2SelectionProfile
     ready_base_dir = [System.IO.Path]::GetFullPath($ReadyBaseDir)
     discovery_root = $discoveryRoot
     shortlist_root = $shortlistRoot
@@ -610,6 +661,8 @@ Write-JsonFile -Path $statusPath -Payload ([ordered]@{
     --output-dir $shortlistRoot `
     --runner-path $runnerPath `
     --python-exe $PythonExe `
+    --phase2-strategy-set $Phase2StrategySet `
+    --phase2-selection-profile $Phase2SelectionProfile `
     --top-per-lane $TopPerLane `
     --max-per-phase2-lane $MaxPerPhase2Lane `
     --min-return-pct $MinReturnPct `

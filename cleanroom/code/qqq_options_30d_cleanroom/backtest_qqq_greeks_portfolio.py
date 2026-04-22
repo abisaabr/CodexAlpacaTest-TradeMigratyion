@@ -113,6 +113,22 @@ DOWN_CHOPPY_ONLY_STRATEGY_NAMES = {
     "put_butterfly_same_day_conservative",
 }
 
+OPENING_WINDOW_PREMIUM_DEFENSE_STRATEGY_NAMES = {
+    "bear_put_spread_next_expiry",
+    "bear_put_spread_next_expiry_tight",
+    "bear_put_spread_next_expiry_wide",
+    "bear_call_credit_spread_same_day",
+    "bear_call_credit_spread_same_day_conservative",
+    "bear_call_credit_spread_same_day_aggressive",
+    "bear_call_credit_spread_next_expiry",
+    "bear_call_credit_spread_next_expiry_conservative",
+    "iron_condor_same_day",
+    "iron_condor_same_day_conservative",
+    "iron_butterfly_same_day",
+    "put_butterfly_same_day",
+    "put_butterfly_same_day_conservative",
+}
+
 CANDIDATE_TRADE_COLUMNS = (
     "strategy",
     "family",
@@ -252,7 +268,12 @@ def build_delta_strategies(
 ) -> list[DeltaStrategy]:
     if strategy_set is None:
         strategy_set = "family_expansion" if include_family_expansion else "standard"
-    include_family_expansion = strategy_set in {"family_expansion", "down_choppy_only"}
+    include_family_expansion = strategy_set in {
+        "family_expansion",
+        "down_choppy_only",
+        "down_choppy_exhaustive",
+        "opening_window_premium_defense",
+    }
 
     def make_strategy(
         *,
@@ -1226,6 +1247,13 @@ def build_delta_strategies(
     if strategy_set == "down_choppy_only":
         strategies = [
             strategy for strategy in strategies if strategy.name in DOWN_CHOPPY_ONLY_STRATEGY_NAMES
+        ]
+
+    if strategy_set == "opening_window_premium_defense":
+        strategies = [
+            strategy
+            for strategy in strategies
+            if strategy.name in OPENING_WINDOW_PREMIUM_DEFENSE_STRATEGY_NAMES
         ]
 
     deduped: dict[str, DeltaStrategy] = {}

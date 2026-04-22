@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T14:53:04.689325",
+  "generated_at": "2026-04-22T15:54:35.170197",
   "default_profile": "down_choppy_coverage_ranked",
   "active_profiles": [
     "down_choppy_coverage_ranked",
@@ -7,7 +7,8 @@
   ],
   "executable_profiles": [
     "down_choppy_coverage_ranked",
-    "down_choppy_full_ready"
+    "down_choppy_full_ready",
+    "opening_30m_premium_defense"
   ],
   "planned_profiles": [
     "balanced_family_expansion_benchmark",
@@ -170,8 +171,8 @@
     },
     {
       "profile_id": "opening_30m_premium_defense",
-      "status": "planned",
-      "executable_now": false,
+      "status": "partial",
+      "executable_now": true,
       "objective": "Focused opening-session premium-defense tournament for bear and choppy regimes.",
       "regime_focus": [
         "down",
@@ -179,8 +180,8 @@
       ],
       "session_focus": "opening_30m",
       "execution_window": "first_30_minutes",
-      "entrypoint": "planned_profile",
-      "underlying_program": "not_yet_wired",
+      "entrypoint": "launch_nightly_operator_cycle.ps1",
+      "underlying_program": "launch_down_choppy_program.ps1",
       "discovery_source": "coverage_ranked",
       "bootstrap_ready_universe": true,
       "strategy_sets": [
@@ -203,7 +204,7 @@
       "requires_exit_telemetry": false,
       "preferred_machine_now": "current_research_machine",
       "preferred_machine_target": "new_machine",
-      "notes": "Targets the under-tested premium-defense surface that should help in weak or messy tape once session-specific timing is fully encoded.",
+      "notes": "Governed execution is now wired through the nightly operator, but activation still depends on stronger broker-audited execution evidence.",
       "families": [
         "Credit call spread",
         "Debit put spread",

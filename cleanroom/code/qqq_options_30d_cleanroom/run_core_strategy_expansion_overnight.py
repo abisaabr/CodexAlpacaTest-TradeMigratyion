@@ -76,15 +76,21 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--strategy-set",
-        choices=("standard", "family_expansion", "down_choppy_only", "down_choppy_exhaustive"),
+        choices=(
+            "standard",
+            "family_expansion",
+            "down_choppy_only",
+            "down_choppy_exhaustive",
+            "opening_window_premium_defense",
+        ),
         default="standard",
-        help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates, 'down_choppy_only' runs a lean bearish/choppy tournament surface, and 'down_choppy_exhaustive' expands bearish/choppy parameter sweeps.",
+        help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates, 'down_choppy_only' runs a lean bearish/choppy tournament surface, 'down_choppy_exhaustive' expands bearish/choppy parameter sweeps, and 'opening_window_premium_defense' focuses first-30-minute premium-defense families.",
     )
     parser.add_argument(
         "--selection-profile",
-        choices=("balanced", "down_choppy_focus"),
+        choices=("balanced", "down_choppy_focus", "opening_window_defensive"),
         default="balanced",
-        help="How strongly to bias config selection toward bearish and choppy robustness.",
+        help="How strongly to bias config selection toward bearish/choppy robustness or opening-window premium-defense posture.",
     )
     parser.add_argument(
         "--family-include",

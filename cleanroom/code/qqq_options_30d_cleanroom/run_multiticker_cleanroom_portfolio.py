@@ -74,9 +74,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--step-days", type=int, default=DEFAULT_STEP_DAYS)
     parser.add_argument(
         "--strategy-set",
-        choices=("standard", "family_expansion", "down_choppy_only", "down_choppy_exhaustive"),
+        choices=(
+            "standard",
+            "family_expansion",
+            "down_choppy_only",
+            "down_choppy_exhaustive",
+            "opening_window_premium_defense",
+        ),
         default="standard",
-        help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates, 'down_choppy_only' runs a lean bearish/choppy search surface, and 'down_choppy_exhaustive' expands bearish/choppy parameter sweeps.",
+        help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates, 'down_choppy_only' runs a lean bearish/choppy search surface, 'down_choppy_exhaustive' expands bearish/choppy parameter sweeps, and 'opening_window_premium_defense' focuses the first 30 minutes on defined-risk bear and neutral premium structures.",
     )
     parser.add_argument(
         "--continue-on-error",
@@ -90,9 +96,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--selection-profile",
-        choices=("balanced", "down_choppy_focus"),
+        choices=("balanced", "down_choppy_focus", "opening_window_defensive"),
         default=DEFAULT_SELECTION_PROFILE,
-        help="How strongly to bias config selection toward bearish and choppy regime robustness.",
+        help="How strongly to bias config selection toward bearish/choppy robustness or opening-window premium-defense posture.",
     )
     parser.add_argument(
         "--family-include",
@@ -712,6 +718,50 @@ def write_walkforward_checkpoint(
 
 
 def build_timing_profiles(strategy_set: str = "standard") -> tuple[TimingProfile, ...]:
+    if strategy_set == "opening_window_premium_defense":
+        return (
+            TimingProfile(
+                name="reactive",
+                orb_window=5,
+                trend_start=10,
+                credit_minute=10,
+                straddle_minute=5,
+                condor_minute=10,
+            ),
+            TimingProfile(
+                name="fast",
+                orb_window=10,
+                trend_start=15,
+                credit_minute=15,
+                straddle_minute=10,
+                condor_minute=15,
+            ),
+            TimingProfile(
+                name="base",
+                orb_window=15,
+                trend_start=20,
+                credit_minute=20,
+                straddle_minute=15,
+                condor_minute=20,
+            ),
+            TimingProfile(
+                name="slow",
+                orb_window=20,
+                trend_start=25,
+                credit_minute=25,
+                straddle_minute=20,
+                condor_minute=25,
+            ),
+            TimingProfile(
+                name="patient",
+                orb_window=25,
+                trend_start=30,
+                credit_minute=30,
+                straddle_minute=25,
+                condor_minute=30,
+            ),
+        )
+
     profiles = (
         TimingProfile(
             name="reactive",
@@ -900,6 +950,24 @@ def build_selection_grids(
     selection_profile: str,
     strategy_set: str = "standard",
 ) -> dict[str, list[float] | list[int]]:
+    if strategy_set == "opening_window_premium_defense":
+        if selection_profile == "opening_window_defensive":
+            return {
+                "thresholds": [0.25, 0.30, 0.35, 0.40],
+                "top_bull_values": [0, 1],
+                "top_bear_values": [1, 2, 3],
+                "top_choppy_values": [1, 2, 3],
+                "min_trade_values": [3, 5, 8],
+                "risk_caps": [0.06, 0.08, 0.10, 0.12],
+            }
+        return {
+            "thresholds": [0.25, 0.30, 0.35, 0.40],
+            "top_bull_values": [0, 1, 2],
+            "top_bear_values": [1, 2, 3],
+            "top_choppy_values": [1, 2, 3],
+            "min_trade_values": [3, 5, 8],
+            "risk_caps": [0.06, 0.08, 0.10, 0.12],
+        }
     if strategy_set == "down_choppy_only":
         if selection_profile == "down_choppy_focus":
             return {

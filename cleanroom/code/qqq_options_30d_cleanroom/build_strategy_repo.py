@@ -19,8 +19,9 @@ STRATEGY_SETS = (
     "family_expansion",
     "down_choppy_only",
     "down_choppy_exhaustive",
+    "opening_window_premium_defense",
 )
-SELECTION_PROFILES = ("balanced", "down_choppy_focus")
+SELECTION_PROFILES = ("balanced", "down_choppy_focus", "opening_window_defensive")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -169,11 +170,11 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         lines.append(
             f"- Base strategies: {item['base_strategy_count']}; timing profiles: {', '.join(item['timing_profiles'])}; variants/ticker: {item['variant_count_per_ticker']}"
         )
-        balanced = item["selection_profiles"]["balanced"]["variant_config_combinations_per_ticker"]
-        down_choppy = item["selection_profiles"]["down_choppy_focus"]["variant_config_combinations_per_ticker"]
-        lines.append(
-            f"- Variant-config combos/ticker: balanced `{balanced:,}`; down_choppy_focus `{down_choppy:,}`"
-        )
+        selection_chunks = []
+        for selection_profile, selection_item in item["selection_profiles"].items():
+            combos = int(selection_item["variant_config_combinations_per_ticker"])
+            selection_chunks.append(f"{selection_profile} `{combos:,}`")
+        lines.append(f"- Variant-config combos/ticker: {'; '.join(selection_chunks)}")
         lines.append("")
     lines.append("## Family Coverage")
     lines.append("")

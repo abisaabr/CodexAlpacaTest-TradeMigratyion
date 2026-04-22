@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-04-22T10:09:07.917839-04:00",
+  "generated_at": "2026-04-22T15:54:34.769990-04:00",
   "output_root": "C:\\Users\\rabisaab\\Downloads\\qqq_options_30d_cleanroom\\output",
-  "ready_base_dir": "C:\\Users\\rabisaab\\OneDrive - First American Corporation\\qqq_options_30d_cleanroom\\output\\backtester_ready",
+  "ready_base_dir": "C:\\Users\\rabisaab\\Downloads\\qqq_options_30d_cleanroom\\output\\backtester_ready",
   "live_manifest": {
     "manifest_path": "C:\\Users\\rabisaab\\OneDrive\\CodexAlpaca\\downloads_remaining_20260417\\folders\\codexalpaca_repo\\config\\strategy_manifests\\multi_ticker_portfolio_live.yaml",
     "strategy_count": 94,
@@ -36,149 +36,8 @@
       "XOM"
     ]
   },
-  "ready_ticker_count": 140,
-  "ready_tickers": [
-    "aal",
-    "aapl",
-    "abbv",
-    "adbe",
-    "ai",
-    "amc",
-    "amd",
-    "amzn",
-    "arkg",
-    "arkk",
-    "arm",
-    "asml",
-    "asts",
-    "avgo",
-    "ba",
-    "baba",
-    "bac",
-    "be",
-    "bito",
-    "boil",
-    "c",
-    "car",
-    "cat",
-    "ccl",
-    "coin",
-    "cost",
-    "crm",
-    "crwd",
-    "crwv",
-    "csco",
-    "cvna",
-    "cvx",
-    "dal",
-    "de",
-    "dia",
-    "dis",
-    "eem",
-    "efa",
-    "ewj",
-    "ewz",
-    "f",
-    "fas",
-    "fcx",
-    "fez",
-    "fxi",
-    "gdx",
-    "gdxj",
-    "gld",
-    "gme",
-    "goog",
-    "googl",
-    "gs",
-    "hims",
-    "hood",
-    "htz",
-    "hyg",
-    "ibit",
-    "intc",
-    "ionq",
-    "iren",
-    "itb",
-    "iwm",
-    "iyr",
-    "jpm",
-    "kbe",
-    "ko",
-    "kold",
-    "kre",
-    "kweb",
-    "labu",
-    "lcid",
-    "lly",
-    "lqd",
-    "mara",
-    "meta",
-    "mrvl",
-    "msft",
-    "mstr",
-    "mu",
-    "nbis",
-    "nflx",
-    "nio",
-    "nke",
-    "nok",
-    "nugt",
-    "nvda",
-    "nvo",
-    "oih",
-    "orcl",
-    "oxy",
-    "panw",
-    "pdd",
-    "pep",
-    "pfe",
-    "pltr",
-    "pypl",
-    "qcom",
-    "qqq",
-    "riot",
-    "rivn",
-    "rklb",
-    "rsp",
-    "rtx",
-    "schw",
-    "shop",
-    "slb",
-    "slv",
-    "smci",
-    "smh",
-    "snap",
-    "sndk",
-    "sofi",
-    "soxl",
-    "soxs",
-    "spce",
-    "spxs",
-    "spxu",
-    "spy",
-    "sqqq",
-    "t",
-    "tlt",
-    "tna",
-    "tqqq",
-    "tsla",
-    "tsm",
-    "ttd",
-    "ual",
-    "uco",
-    "upro",
-    "ura",
-    "urnm",
-    "uvix",
-    "uvxy",
-    "vz",
-    "wulf",
-    "xlb",
-    "xle",
-    "xme",
-    "xom",
-    "yinn"
-  ],
+  "ready_ticker_count": 0,
+  "ready_tickers": [],
   "research_summary_count": 107,
   "researched_ticker_count": 50,
   "researched_tickers": [
@@ -237,225 +96,6 @@
   "base_strategy_count": 92,
   "priority_families": [
     {
-      "family": "Broken-wing call butterfly",
-      "slug": "broken_wing_call_butterfly",
-      "structure_bucket": "broken_wing_butterfly",
-      "directional_bias": "bull_or_choppy",
-      "base_strategy_count": 3,
-      "base_strategies": [
-        "broken_wing_call_butterfly_next_expiry",
-        "broken_wing_call_butterfly_next_expiry_d12_30_55",
-        "broken_wing_call_butterfly_next_expiry_d18_40_65"
-      ],
-      "leg_count_range": [
-        4,
-        4
-      ],
-      "strategy_sets": [
-        "down_choppy_exhaustive",
-        "family_expansion"
-      ],
-      "signal_names": [
-        "trend_call"
-      ],
-      "dte_modes": [
-        "next_expiry"
-      ],
-      "selected_base_strategy_count": 0,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 0,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 140,
-      "ready_ticker_gap_ratio": 1.0,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_discovery",
-      "steward_action": "collect_and_rank_new_family_candidates",
-      "note": "Broken-wing call butterfly is still structurally under-tested across the ready universe and should stay in discovery rotation."
-    },
-    {
-      "family": "Broken-wing put butterfly",
-      "slug": "broken_wing_put_butterfly",
-      "structure_bucket": "broken_wing_butterfly",
-      "directional_bias": "bear_or_choppy",
-      "base_strategy_count": 3,
-      "base_strategies": [
-        "broken_wing_put_butterfly_next_expiry",
-        "broken_wing_put_butterfly_next_expiry_d12_30_55",
-        "broken_wing_put_butterfly_next_expiry_d18_40_65"
-      ],
-      "leg_count_range": [
-        4,
-        4
-      ],
-      "strategy_sets": [
-        "down_choppy_exhaustive",
-        "down_choppy_only",
-        "family_expansion"
-      ],
-      "signal_names": [
-        "trend_put"
-      ],
-      "dte_modes": [
-        "next_expiry"
-      ],
-      "selected_base_strategy_count": 0,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 0,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 140,
-      "ready_ticker_gap_ratio": 1.0,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_discovery",
-      "steward_action": "collect_and_rank_new_family_candidates",
-      "note": "Broken-wing put butterfly is still structurally under-tested across the ready universe and should stay in discovery rotation."
-    },
-    {
-      "family": "Call butterfly",
-      "slug": "call_butterfly",
-      "structure_bucket": "butterfly",
-      "directional_bias": "bull_or_choppy",
-      "base_strategy_count": 4,
-      "base_strategies": [
-        "call_butterfly_same_day",
-        "call_butterfly_same_day_conservative",
-        "call_butterfly_same_day_d12_24_36",
-        "call_butterfly_same_day_d25_40_55"
-      ],
-      "leg_count_range": [
-        4,
-        4
-      ],
-      "strategy_sets": [
-        "down_choppy_exhaustive",
-        "down_choppy_only",
-        "family_expansion"
-      ],
-      "signal_names": [
-        "iron_condor"
-      ],
-      "dte_modes": [
-        "same_day"
-      ],
-      "selected_base_strategy_count": 0,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 0,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 140,
-      "ready_ticker_gap_ratio": 1.0,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_discovery",
-      "steward_action": "collect_and_rank_new_family_candidates",
-      "note": "Call butterfly is still structurally under-tested across the ready universe and should stay in discovery rotation."
-    },
-    {
-      "family": "Debit call spread",
-      "slug": "debit_call_spread",
-      "structure_bucket": "debit_spread",
-      "directional_bias": "bull",
-      "base_strategy_count": 3,
-      "base_strategies": [
-        "bull_call_spread_next_expiry",
-        "bull_call_spread_next_expiry_tight",
-        "bull_call_spread_next_expiry_wide"
-      ],
-      "leg_count_range": [
-        2,
-        2
-      ],
-      "strategy_sets": [
-        "family_expansion",
-        "standard"
-      ],
-      "signal_names": [
-        "trend_call"
-      ],
-      "dte_modes": [
-        "next_expiry"
-      ],
-      "selected_base_strategy_count": 0,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 0,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 140,
-      "ready_ticker_gap_ratio": 1.0,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_discovery",
-      "steward_action": "collect_and_rank_new_family_candidates",
-      "note": "Debit call spread is still structurally under-tested across the ready universe and should stay in discovery rotation."
-    },
-    {
-      "family": "Debit put spread",
-      "slug": "debit_put_spread",
-      "structure_bucket": "debit_spread",
-      "directional_bias": "bear",
-      "base_strategy_count": 7,
-      "base_strategies": [
-        "bear_put_spread_next_expiry",
-        "bear_put_spread_next_expiry_d45_20",
-        "bear_put_spread_next_expiry_d50_25",
-        "bear_put_spread_next_expiry_d60_25",
-        "bear_put_spread_next_expiry_d65_35",
-        "bear_put_spread_next_expiry_tight",
-        "bear_put_spread_next_expiry_wide"
-      ],
-      "leg_count_range": [
-        2,
-        2
-      ],
-      "strategy_sets": [
-        "down_choppy_exhaustive",
-        "down_choppy_only",
-        "family_expansion",
-        "standard"
-      ],
-      "signal_names": [
-        "trend_put"
-      ],
-      "dte_modes": [
-        "next_expiry"
-      ],
-      "selected_base_strategy_count": 0,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 0,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 140,
-      "ready_ticker_gap_ratio": 1.0,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_discovery",
-      "steward_action": "collect_and_rank_new_family_candidates",
-      "note": "Debit put spread is still structurally under-tested across the ready universe and should stay in discovery rotation."
-    },
-    {
       "family": "Credit call spread",
       "slug": "credit_call_spread",
       "structure_bucket": "credit_spread",
@@ -484,6 +124,7 @@
         "down_choppy_exhaustive",
         "down_choppy_only",
         "family_expansion",
+        "opening_window_premium_defense",
         "standard"
       ],
       "signal_names": [
@@ -501,8 +142,8 @@
         "SPY"
       ],
       "promoted_tickers": [],
-      "ready_ticker_gap_count": 139,
-      "ready_ticker_gap_ratio": 0.9929,
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
       "live_manifest_strategy_count": 0,
       "live_manifest_ticker_count": 0,
       "live_manifest_tickers": [],
@@ -511,6 +152,54 @@
       "priority": "priority_validation",
       "steward_action": "push_family_into_exhaustive_validation",
       "note": "Credit call spread has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation."
+    },
+    {
+      "family": "Credit put spread",
+      "slug": "credit_put_spread",
+      "structure_bucket": "credit_spread",
+      "directional_bias": "bull",
+      "base_strategy_count": 5,
+      "base_strategies": [
+        "bull_put_credit_spread_next_expiry",
+        "bull_put_credit_spread_next_expiry_conservative",
+        "bull_put_credit_spread_same_day",
+        "bull_put_credit_spread_same_day_aggressive",
+        "bull_put_credit_spread_same_day_conservative"
+      ],
+      "leg_count_range": [
+        2,
+        2
+      ],
+      "strategy_sets": [
+        "family_expansion",
+        "standard"
+      ],
+      "signal_names": [
+        "credit_bull"
+      ],
+      "dte_modes": [
+        "next_expiry",
+        "same_day"
+      ],
+      "selected_base_strategy_count": 2,
+      "promoted_base_strategy_count": 0,
+      "selected_ticker_count": 2,
+      "promoted_ticker_count": 0,
+      "selected_tickers": [
+        "IWM",
+        "MSFT"
+      ],
+      "promoted_tickers": [],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 0,
+      "live_manifest_ticker_count": 0,
+      "live_manifest_tickers": [],
+      "live_manifest_regimes": {},
+      "live_manifest_timing_profiles": {},
+      "priority": "priority_validation",
+      "steward_action": "push_family_into_exhaustive_validation",
+      "note": "Credit put spread has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation."
     },
     {
       "family": "Iron condor",
@@ -534,6 +223,7 @@
         "down_choppy_exhaustive",
         "down_choppy_only",
         "family_expansion",
+        "opening_window_premium_defense",
         "standard"
       ],
       "signal_names": [
@@ -550,8 +240,8 @@
         "QQQ"
       ],
       "promoted_tickers": [],
-      "ready_ticker_gap_count": 139,
-      "ready_ticker_gap_ratio": 0.9929,
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
       "live_manifest_strategy_count": 0,
       "live_manifest_ticker_count": 0,
       "live_manifest_tickers": [],
@@ -599,8 +289,8 @@
         "ARM"
       ],
       "promoted_tickers": [],
-      "ready_ticker_gap_count": 139,
-      "ready_ticker_gap_ratio": 0.9929,
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
       "live_manifest_strategy_count": 0,
       "live_manifest_ticker_count": 0,
       "live_manifest_tickers": [],
@@ -609,54 +299,6 @@
       "priority": "priority_validation",
       "steward_action": "push_family_into_exhaustive_validation",
       "note": "Long strangle has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation."
-    },
-    {
-      "family": "Credit put spread",
-      "slug": "credit_put_spread",
-      "structure_bucket": "credit_spread",
-      "directional_bias": "bull",
-      "base_strategy_count": 5,
-      "base_strategies": [
-        "bull_put_credit_spread_next_expiry",
-        "bull_put_credit_spread_next_expiry_conservative",
-        "bull_put_credit_spread_same_day",
-        "bull_put_credit_spread_same_day_aggressive",
-        "bull_put_credit_spread_same_day_conservative"
-      ],
-      "leg_count_range": [
-        2,
-        2
-      ],
-      "strategy_sets": [
-        "family_expansion",
-        "standard"
-      ],
-      "signal_names": [
-        "credit_bull"
-      ],
-      "dte_modes": [
-        "next_expiry",
-        "same_day"
-      ],
-      "selected_base_strategy_count": 2,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 2,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [
-        "IWM",
-        "MSFT"
-      ],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 138,
-      "ready_ticker_gap_ratio": 0.9857,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_validation",
-      "steward_action": "push_family_into_exhaustive_validation",
-      "note": "Credit put spread has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation."
     },
     {
       "family": "Put butterfly",
@@ -677,7 +319,8 @@
       "strategy_sets": [
         "down_choppy_exhaustive",
         "down_choppy_only",
-        "family_expansion"
+        "family_expansion",
+        "opening_window_premium_defense"
       ],
       "signal_names": [
         "iron_condor"
@@ -694,8 +337,8 @@
         "AMZN"
       ],
       "promoted_tickers": [],
-      "ready_ticker_gap_count": 138,
-      "ready_ticker_gap_ratio": 0.9857,
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
       "live_manifest_strategy_count": 0,
       "live_manifest_ticker_count": 0,
       "live_manifest_tickers": [],
@@ -704,6 +347,63 @@
       "priority": "priority_validation",
       "steward_action": "push_family_into_exhaustive_validation",
       "note": "Put butterfly has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation."
+    },
+    {
+      "family": "Long straddle",
+      "slug": "long_straddle",
+      "structure_bucket": "long_vol",
+      "directional_bias": "choppy_or_expansion",
+      "base_strategy_count": 5,
+      "base_strategies": [
+        "long_straddle_next_expiry",
+        "long_straddle_next_expiry_d45",
+        "long_straddle_same_day",
+        "long_straddle_same_day_d45",
+        "long_straddle_same_day_d55"
+      ],
+      "leg_count_range": [
+        2,
+        2
+      ],
+      "strategy_sets": [
+        "down_choppy_exhaustive",
+        "down_choppy_only",
+        "family_expansion",
+        "standard"
+      ],
+      "signal_names": [
+        "long_straddle"
+      ],
+      "dte_modes": [
+        "next_expiry",
+        "same_day"
+      ],
+      "selected_base_strategy_count": 4,
+      "promoted_base_strategy_count": 2,
+      "selected_ticker_count": 7,
+      "promoted_ticker_count": 1,
+      "selected_tickers": [
+        "AAPL",
+        "ADBE",
+        "AMD",
+        "AMZN",
+        "ARM",
+        "ORCL",
+        "QCOM"
+      ],
+      "promoted_tickers": [
+        "AAPL"
+      ],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 0,
+      "live_manifest_ticker_count": 0,
+      "live_manifest_tickers": [],
+      "live_manifest_regimes": {},
+      "live_manifest_timing_profiles": {},
+      "priority": "promotion_follow_up",
+      "steward_action": "review_for_live_manifest_addition",
+      "note": "Long straddle is cataloged and should be monitored as more out-of-sample evidence lands."
     },
     {
       "family": "Put backspread",
@@ -753,8 +453,8 @@
         "AMZN",
         "ARM"
       ],
-      "ready_ticker_gap_count": 134,
-      "ready_ticker_gap_ratio": 0.9571,
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
       "live_manifest_strategy_count": 0,
       "live_manifest_ticker_count": 0,
       "live_manifest_tickers": [],
@@ -762,151 +462,7 @@
       "live_manifest_timing_profiles": {},
       "priority": "promotion_follow_up",
       "steward_action": "review_for_live_manifest_addition",
-      "note": "Put backspread has some evidence already, but there is still room to widen symbol coverage before promotion."
-    },
-    {
-      "family": "Long straddle",
-      "slug": "long_straddle",
-      "structure_bucket": "long_vol",
-      "directional_bias": "choppy_or_expansion",
-      "base_strategy_count": 5,
-      "base_strategies": [
-        "long_straddle_next_expiry",
-        "long_straddle_next_expiry_d45",
-        "long_straddle_same_day",
-        "long_straddle_same_day_d45",
-        "long_straddle_same_day_d55"
-      ],
-      "leg_count_range": [
-        2,
-        2
-      ],
-      "strategy_sets": [
-        "down_choppy_exhaustive",
-        "down_choppy_only",
-        "family_expansion",
-        "standard"
-      ],
-      "signal_names": [
-        "long_straddle"
-      ],
-      "dte_modes": [
-        "next_expiry",
-        "same_day"
-      ],
-      "selected_base_strategy_count": 4,
-      "promoted_base_strategy_count": 2,
-      "selected_ticker_count": 7,
-      "promoted_ticker_count": 1,
-      "selected_tickers": [
-        "AAPL",
-        "ADBE",
-        "AMD",
-        "AMZN",
-        "ARM",
-        "ORCL",
-        "QCOM"
-      ],
-      "promoted_tickers": [
-        "AAPL"
-      ],
-      "ready_ticker_gap_count": 133,
-      "ready_ticker_gap_ratio": 0.95,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "promotion_follow_up",
-      "steward_action": "review_for_live_manifest_addition",
-      "note": "Long straddle has some evidence already, but there is still room to widen symbol coverage before promotion."
-    }
-  ],
-  "families": [
-    {
-      "family": "Broken-wing call butterfly",
-      "slug": "broken_wing_call_butterfly",
-      "structure_bucket": "broken_wing_butterfly",
-      "directional_bias": "bull_or_choppy",
-      "base_strategy_count": 3,
-      "base_strategies": [
-        "broken_wing_call_butterfly_next_expiry",
-        "broken_wing_call_butterfly_next_expiry_d12_30_55",
-        "broken_wing_call_butterfly_next_expiry_d18_40_65"
-      ],
-      "leg_count_range": [
-        4,
-        4
-      ],
-      "strategy_sets": [
-        "down_choppy_exhaustive",
-        "family_expansion"
-      ],
-      "signal_names": [
-        "trend_call"
-      ],
-      "dte_modes": [
-        "next_expiry"
-      ],
-      "selected_base_strategy_count": 0,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 0,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 140,
-      "ready_ticker_gap_ratio": 1.0,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_discovery",
-      "steward_action": "collect_and_rank_new_family_candidates",
-      "note": "Broken-wing call butterfly is still structurally under-tested across the ready universe and should stay in discovery rotation."
-    },
-    {
-      "family": "Broken-wing put butterfly",
-      "slug": "broken_wing_put_butterfly",
-      "structure_bucket": "broken_wing_butterfly",
-      "directional_bias": "bear_or_choppy",
-      "base_strategy_count": 3,
-      "base_strategies": [
-        "broken_wing_put_butterfly_next_expiry",
-        "broken_wing_put_butterfly_next_expiry_d12_30_55",
-        "broken_wing_put_butterfly_next_expiry_d18_40_65"
-      ],
-      "leg_count_range": [
-        4,
-        4
-      ],
-      "strategy_sets": [
-        "down_choppy_exhaustive",
-        "down_choppy_only",
-        "family_expansion"
-      ],
-      "signal_names": [
-        "trend_put"
-      ],
-      "dte_modes": [
-        "next_expiry"
-      ],
-      "selected_base_strategy_count": 0,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 0,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 140,
-      "ready_ticker_gap_ratio": 1.0,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_discovery",
-      "steward_action": "collect_and_rank_new_family_candidates",
-      "note": "Broken-wing put butterfly is still structurally under-tested across the ready universe and should stay in discovery rotation."
+      "note": "Put backspread is cataloged and should be monitored as more out-of-sample evidence lands."
     },
     {
       "family": "Call backspread",
@@ -941,8 +497,8 @@
       "promoted_tickers": [
         "QQQ"
       ],
-      "ready_ticker_gap_count": 139,
-      "ready_ticker_gap_ratio": 0.9929,
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
       "live_manifest_strategy_count": 2,
       "live_manifest_ticker_count": 1,
       "live_manifest_tickers": [
@@ -957,245 +513,6 @@
       "priority": "live_benchmark",
       "steward_action": "benchmark_against_current_live_book",
       "note": "Call backspread is already live and should be benchmarked for replacement or diversification, not re-added blindly."
-    },
-    {
-      "family": "Call butterfly",
-      "slug": "call_butterfly",
-      "structure_bucket": "butterfly",
-      "directional_bias": "bull_or_choppy",
-      "base_strategy_count": 4,
-      "base_strategies": [
-        "call_butterfly_same_day",
-        "call_butterfly_same_day_conservative",
-        "call_butterfly_same_day_d12_24_36",
-        "call_butterfly_same_day_d25_40_55"
-      ],
-      "leg_count_range": [
-        4,
-        4
-      ],
-      "strategy_sets": [
-        "down_choppy_exhaustive",
-        "down_choppy_only",
-        "family_expansion"
-      ],
-      "signal_names": [
-        "iron_condor"
-      ],
-      "dte_modes": [
-        "same_day"
-      ],
-      "selected_base_strategy_count": 0,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 0,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 140,
-      "ready_ticker_gap_ratio": 1.0,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_discovery",
-      "steward_action": "collect_and_rank_new_family_candidates",
-      "note": "Call butterfly is still structurally under-tested across the ready universe and should stay in discovery rotation."
-    },
-    {
-      "family": "Credit call spread",
-      "slug": "credit_call_spread",
-      "structure_bucket": "credit_spread",
-      "directional_bias": "bear",
-      "base_strategy_count": 13,
-      "base_strategies": [
-        "bear_call_credit_spread_next_expiry",
-        "bear_call_credit_spread_next_expiry_conservative",
-        "bear_call_credit_spread_next_expiry_d18_08",
-        "bear_call_credit_spread_next_expiry_d26_12",
-        "bear_call_credit_spread_next_expiry_d34_15",
-        "bear_call_credit_spread_same_day",
-        "bear_call_credit_spread_same_day_aggressive",
-        "bear_call_credit_spread_same_day_conservative",
-        "bear_call_credit_spread_same_day_d18_08",
-        "bear_call_credit_spread_same_day_d22_10",
-        "bear_call_credit_spread_same_day_d26_12",
-        "bear_call_credit_spread_same_day_d30_15",
-        "bear_call_credit_spread_same_day_d40_20"
-      ],
-      "leg_count_range": [
-        2,
-        2
-      ],
-      "strategy_sets": [
-        "down_choppy_exhaustive",
-        "down_choppy_only",
-        "family_expansion",
-        "standard"
-      ],
-      "signal_names": [
-        "credit_bear"
-      ],
-      "dte_modes": [
-        "next_expiry",
-        "same_day"
-      ],
-      "selected_base_strategy_count": 1,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 1,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [
-        "SPY"
-      ],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 139,
-      "ready_ticker_gap_ratio": 0.9929,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_validation",
-      "steward_action": "push_family_into_exhaustive_validation",
-      "note": "Credit call spread has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation."
-    },
-    {
-      "family": "Credit put spread",
-      "slug": "credit_put_spread",
-      "structure_bucket": "credit_spread",
-      "directional_bias": "bull",
-      "base_strategy_count": 5,
-      "base_strategies": [
-        "bull_put_credit_spread_next_expiry",
-        "bull_put_credit_spread_next_expiry_conservative",
-        "bull_put_credit_spread_same_day",
-        "bull_put_credit_spread_same_day_aggressive",
-        "bull_put_credit_spread_same_day_conservative"
-      ],
-      "leg_count_range": [
-        2,
-        2
-      ],
-      "strategy_sets": [
-        "family_expansion",
-        "standard"
-      ],
-      "signal_names": [
-        "credit_bull"
-      ],
-      "dte_modes": [
-        "next_expiry",
-        "same_day"
-      ],
-      "selected_base_strategy_count": 2,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 2,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [
-        "IWM",
-        "MSFT"
-      ],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 138,
-      "ready_ticker_gap_ratio": 0.9857,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_validation",
-      "steward_action": "push_family_into_exhaustive_validation",
-      "note": "Credit put spread has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation."
-    },
-    {
-      "family": "Debit call spread",
-      "slug": "debit_call_spread",
-      "structure_bucket": "debit_spread",
-      "directional_bias": "bull",
-      "base_strategy_count": 3,
-      "base_strategies": [
-        "bull_call_spread_next_expiry",
-        "bull_call_spread_next_expiry_tight",
-        "bull_call_spread_next_expiry_wide"
-      ],
-      "leg_count_range": [
-        2,
-        2
-      ],
-      "strategy_sets": [
-        "family_expansion",
-        "standard"
-      ],
-      "signal_names": [
-        "trend_call"
-      ],
-      "dte_modes": [
-        "next_expiry"
-      ],
-      "selected_base_strategy_count": 0,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 0,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 140,
-      "ready_ticker_gap_ratio": 1.0,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_discovery",
-      "steward_action": "collect_and_rank_new_family_candidates",
-      "note": "Debit call spread is still structurally under-tested across the ready universe and should stay in discovery rotation."
-    },
-    {
-      "family": "Debit put spread",
-      "slug": "debit_put_spread",
-      "structure_bucket": "debit_spread",
-      "directional_bias": "bear",
-      "base_strategy_count": 7,
-      "base_strategies": [
-        "bear_put_spread_next_expiry",
-        "bear_put_spread_next_expiry_d45_20",
-        "bear_put_spread_next_expiry_d50_25",
-        "bear_put_spread_next_expiry_d60_25",
-        "bear_put_spread_next_expiry_d65_35",
-        "bear_put_spread_next_expiry_tight",
-        "bear_put_spread_next_expiry_wide"
-      ],
-      "leg_count_range": [
-        2,
-        2
-      ],
-      "strategy_sets": [
-        "down_choppy_exhaustive",
-        "down_choppy_only",
-        "family_expansion",
-        "standard"
-      ],
-      "signal_names": [
-        "trend_put"
-      ],
-      "dte_modes": [
-        "next_expiry"
-      ],
-      "selected_base_strategy_count": 0,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 0,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 140,
-      "ready_ticker_gap_ratio": 1.0,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_discovery",
-      "steward_action": "collect_and_rank_new_family_candidates",
-      "note": "Debit put spread is still structurally under-tested across the ready universe and should stay in discovery rotation."
     },
     {
       "family": "Iron butterfly",
@@ -1216,6 +533,7 @@
         "down_choppy_exhaustive",
         "down_choppy_only",
         "family_expansion",
+        "opening_window_premium_defense",
         "standard"
       ],
       "signal_names": [
@@ -1242,8 +560,8 @@
         "QQQ",
         "SPY"
       ],
-      "ready_ticker_gap_count": 135,
-      "ready_ticker_gap_ratio": 0.9643,
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
       "live_manifest_strategy_count": 2,
       "live_manifest_ticker_count": 1,
       "live_manifest_tickers": [
@@ -1259,267 +577,6 @@
       "priority": "live_benchmark",
       "steward_action": "benchmark_against_current_live_book",
       "note": "Iron butterfly is already live and should be benchmarked for replacement or diversification, not re-added blindly."
-    },
-    {
-      "family": "Iron condor",
-      "slug": "iron_condor",
-      "structure_bucket": "neutral_premium",
-      "directional_bias": "choppy",
-      "base_strategy_count": 6,
-      "base_strategies": [
-        "iron_condor_same_day",
-        "iron_condor_same_day_aggressive",
-        "iron_condor_same_day_conservative",
-        "iron_condor_same_day_d15_06",
-        "iron_condor_same_day_d18_08",
-        "iron_condor_same_day_d30_12"
-      ],
-      "leg_count_range": [
-        4,
-        4
-      ],
-      "strategy_sets": [
-        "down_choppy_exhaustive",
-        "down_choppy_only",
-        "family_expansion",
-        "standard"
-      ],
-      "signal_names": [
-        "iron_condor"
-      ],
-      "dte_modes": [
-        "same_day"
-      ],
-      "selected_base_strategy_count": 1,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 1,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [
-        "QQQ"
-      ],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 139,
-      "ready_ticker_gap_ratio": 0.9929,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_validation",
-      "steward_action": "push_family_into_exhaustive_validation",
-      "note": "Iron condor has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation."
-    },
-    {
-      "family": "Long straddle",
-      "slug": "long_straddle",
-      "structure_bucket": "long_vol",
-      "directional_bias": "choppy_or_expansion",
-      "base_strategy_count": 5,
-      "base_strategies": [
-        "long_straddle_next_expiry",
-        "long_straddle_next_expiry_d45",
-        "long_straddle_same_day",
-        "long_straddle_same_day_d45",
-        "long_straddle_same_day_d55"
-      ],
-      "leg_count_range": [
-        2,
-        2
-      ],
-      "strategy_sets": [
-        "down_choppy_exhaustive",
-        "down_choppy_only",
-        "family_expansion",
-        "standard"
-      ],
-      "signal_names": [
-        "long_straddle"
-      ],
-      "dte_modes": [
-        "next_expiry",
-        "same_day"
-      ],
-      "selected_base_strategy_count": 4,
-      "promoted_base_strategy_count": 2,
-      "selected_ticker_count": 7,
-      "promoted_ticker_count": 1,
-      "selected_tickers": [
-        "AAPL",
-        "ADBE",
-        "AMD",
-        "AMZN",
-        "ARM",
-        "ORCL",
-        "QCOM"
-      ],
-      "promoted_tickers": [
-        "AAPL"
-      ],
-      "ready_ticker_gap_count": 133,
-      "ready_ticker_gap_ratio": 0.95,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "promotion_follow_up",
-      "steward_action": "review_for_live_manifest_addition",
-      "note": "Long straddle has some evidence already, but there is still room to widen symbol coverage before promotion."
-    },
-    {
-      "family": "Long strangle",
-      "slug": "long_strangle",
-      "structure_bucket": "long_vol",
-      "directional_bias": "choppy_or_expansion",
-      "base_strategy_count": 5,
-      "base_strategies": [
-        "long_strangle_next_expiry",
-        "long_strangle_next_expiry_d30",
-        "long_strangle_same_day",
-        "long_strangle_same_day_d30",
-        "long_strangle_same_day_d40"
-      ],
-      "leg_count_range": [
-        2,
-        2
-      ],
-      "strategy_sets": [
-        "down_choppy_exhaustive",
-        "down_choppy_only",
-        "family_expansion",
-        "standard"
-      ],
-      "signal_names": [
-        "long_straddle"
-      ],
-      "dte_modes": [
-        "next_expiry",
-        "same_day"
-      ],
-      "selected_base_strategy_count": 1,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 1,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [
-        "ARM"
-      ],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 139,
-      "ready_ticker_gap_ratio": 0.9929,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_validation",
-      "steward_action": "push_family_into_exhaustive_validation",
-      "note": "Long strangle has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation."
-    },
-    {
-      "family": "Put backspread",
-      "slug": "put_backspread",
-      "structure_bucket": "backspread",
-      "directional_bias": "bear_convexity",
-      "base_strategy_count": 5,
-      "base_strategies": [
-        "put_backspread_next_expiry",
-        "put_backspread_next_expiry_aggressive",
-        "put_backspread_next_expiry_d20_45",
-        "put_backspread_next_expiry_d30_55",
-        "put_backspread_next_expiry_d40_65"
-      ],
-      "leg_count_range": [
-        3,
-        3
-      ],
-      "strategy_sets": [
-        "down_choppy_exhaustive",
-        "down_choppy_only",
-        "family_expansion"
-      ],
-      "signal_names": [
-        "trend_put"
-      ],
-      "dte_modes": [
-        "next_expiry"
-      ],
-      "selected_base_strategy_count": 4,
-      "promoted_base_strategy_count": 4,
-      "selected_ticker_count": 6,
-      "promoted_ticker_count": 6,
-      "selected_tickers": [
-        "AAPL",
-        "ABBV",
-        "ADBE",
-        "AMD",
-        "AMZN",
-        "ARM"
-      ],
-      "promoted_tickers": [
-        "AAPL",
-        "ABBV",
-        "ADBE",
-        "AMD",
-        "AMZN",
-        "ARM"
-      ],
-      "ready_ticker_gap_count": 134,
-      "ready_ticker_gap_ratio": 0.9571,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "promotion_follow_up",
-      "steward_action": "review_for_live_manifest_addition",
-      "note": "Put backspread has some evidence already, but there is still room to widen symbol coverage before promotion."
-    },
-    {
-      "family": "Put butterfly",
-      "slug": "put_butterfly",
-      "structure_bucket": "butterfly",
-      "directional_bias": "bear_or_choppy",
-      "base_strategy_count": 4,
-      "base_strategies": [
-        "put_butterfly_same_day",
-        "put_butterfly_same_day_conservative",
-        "put_butterfly_same_day_d12_24_36",
-        "put_butterfly_same_day_d25_40_55"
-      ],
-      "leg_count_range": [
-        4,
-        4
-      ],
-      "strategy_sets": [
-        "down_choppy_exhaustive",
-        "down_choppy_only",
-        "family_expansion"
-      ],
-      "signal_names": [
-        "iron_condor"
-      ],
-      "dte_modes": [
-        "same_day"
-      ],
-      "selected_base_strategy_count": 2,
-      "promoted_base_strategy_count": 0,
-      "selected_ticker_count": 2,
-      "promoted_ticker_count": 0,
-      "selected_tickers": [
-        "AAPL",
-        "AMZN"
-      ],
-      "promoted_tickers": [],
-      "ready_ticker_gap_count": 138,
-      "ready_ticker_gap_ratio": 0.9857,
-      "live_manifest_strategy_count": 0,
-      "live_manifest_ticker_count": 0,
-      "live_manifest_tickers": [],
-      "live_manifest_regimes": {},
-      "live_manifest_timing_profiles": {},
-      "priority": "priority_validation",
-      "steward_action": "push_family_into_exhaustive_validation",
-      "note": "Put butterfly has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation."
     },
     {
       "family": "Single-leg long call",
@@ -1637,8 +694,8 @@
         "XLE",
         "XOM"
       ],
-      "ready_ticker_gap_count": 101,
-      "ready_ticker_gap_ratio": 0.7214,
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
       "live_manifest_strategy_count": 48,
       "live_manifest_ticker_count": 21,
       "live_manifest_tickers": [
@@ -1820,8 +877,1094 @@
         "WULF",
         "XLE"
       ],
-      "ready_ticker_gap_count": 93,
-      "ready_ticker_gap_ratio": 0.6643,
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 42,
+      "live_manifest_ticker_count": 20,
+      "live_manifest_tickers": [
+        "AMZN",
+        "ARKK",
+        "BAC",
+        "CRM",
+        "GDX",
+        "GLD",
+        "IWM",
+        "JPM",
+        "MSFT",
+        "NKE",
+        "NVDA",
+        "ORCL",
+        "PLTR",
+        "QQQ",
+        "SCHW",
+        "SHOP",
+        "SLV",
+        "SPY",
+        "TSLA",
+        "XLE"
+      ],
+      "live_manifest_regimes": {
+        "bear": 39,
+        "choppy": 3
+      },
+      "live_manifest_timing_profiles": {
+        "base": 15,
+        "fast": 15,
+        "patient": 2,
+        "slow": 10
+      },
+      "priority": "live_benchmark",
+      "steward_action": "benchmark_against_current_live_book",
+      "note": "Single-leg long put is already live and should be benchmarked for replacement or diversification, not re-added blindly."
+    },
+    {
+      "family": "Broken-wing call butterfly",
+      "slug": "broken_wing_call_butterfly",
+      "structure_bucket": "broken_wing_butterfly",
+      "directional_bias": "bull_or_choppy",
+      "base_strategy_count": 3,
+      "base_strategies": [
+        "broken_wing_call_butterfly_next_expiry",
+        "broken_wing_call_butterfly_next_expiry_d12_30_55",
+        "broken_wing_call_butterfly_next_expiry_d18_40_65"
+      ],
+      "leg_count_range": [
+        4,
+        4
+      ],
+      "strategy_sets": [
+        "down_choppy_exhaustive",
+        "family_expansion"
+      ],
+      "signal_names": [
+        "trend_call"
+      ],
+      "dte_modes": [
+        "next_expiry"
+      ],
+      "selected_base_strategy_count": 0,
+      "promoted_base_strategy_count": 0,
+      "selected_ticker_count": 0,
+      "promoted_ticker_count": 0,
+      "selected_tickers": [],
+      "promoted_tickers": [],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 0,
+      "live_manifest_ticker_count": 0,
+      "live_manifest_tickers": [],
+      "live_manifest_regimes": {},
+      "live_manifest_timing_profiles": {},
+      "priority": "monitor",
+      "steward_action": "maintain_registry_and_wait_for_new_evidence",
+      "note": "Broken-wing call butterfly is still structurally under-tested across the ready universe and should stay in discovery rotation."
+    }
+  ],
+  "families": [
+    {
+      "family": "Broken-wing call butterfly",
+      "slug": "broken_wing_call_butterfly",
+      "structure_bucket": "broken_wing_butterfly",
+      "directional_bias": "bull_or_choppy",
+      "base_strategy_count": 3,
+      "base_strategies": [
+        "broken_wing_call_butterfly_next_expiry",
+        "broken_wing_call_butterfly_next_expiry_d12_30_55",
+        "broken_wing_call_butterfly_next_expiry_d18_40_65"
+      ],
+      "leg_count_range": [
+        4,
+        4
+      ],
+      "strategy_sets": [
+        "down_choppy_exhaustive",
+        "family_expansion"
+      ],
+      "signal_names": [
+        "trend_call"
+      ],
+      "dte_modes": [
+        "next_expiry"
+      ],
+      "selected_base_strategy_count": 0,
+      "promoted_base_strategy_count": 0,
+      "selected_ticker_count": 0,
+      "promoted_ticker_count": 0,
+      "selected_tickers": [],
+      "promoted_tickers": [],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 0,
+      "live_manifest_ticker_count": 0,
+      "live_manifest_tickers": [],
+      "live_manifest_regimes": {},
+      "live_manifest_timing_profiles": {},
+      "priority": "monitor",
+      "steward_action": "maintain_registry_and_wait_for_new_evidence",
+      "note": "Broken-wing call butterfly is still structurally under-tested across the ready universe and should stay in discovery rotation."
+    },
+    {
+      "family": "Broken-wing put butterfly",
+      "slug": "broken_wing_put_butterfly",
+      "structure_bucket": "broken_wing_butterfly",
+      "directional_bias": "bear_or_choppy",
+      "base_strategy_count": 3,
+      "base_strategies": [
+        "broken_wing_put_butterfly_next_expiry",
+        "broken_wing_put_butterfly_next_expiry_d12_30_55",
+        "broken_wing_put_butterfly_next_expiry_d18_40_65"
+      ],
+      "leg_count_range": [
+        4,
+        4
+      ],
+      "strategy_sets": [
+        "down_choppy_exhaustive",
+        "down_choppy_only",
+        "family_expansion"
+      ],
+      "signal_names": [
+        "trend_put"
+      ],
+      "dte_modes": [
+        "next_expiry"
+      ],
+      "selected_base_strategy_count": 0,
+      "promoted_base_strategy_count": 0,
+      "selected_ticker_count": 0,
+      "promoted_ticker_count": 0,
+      "selected_tickers": [],
+      "promoted_tickers": [],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 0,
+      "live_manifest_ticker_count": 0,
+      "live_manifest_tickers": [],
+      "live_manifest_regimes": {},
+      "live_manifest_timing_profiles": {},
+      "priority": "monitor",
+      "steward_action": "maintain_registry_and_wait_for_new_evidence",
+      "note": "Broken-wing put butterfly is still structurally under-tested across the ready universe and should stay in discovery rotation."
+    },
+    {
+      "family": "Call backspread",
+      "slug": "call_backspread",
+      "structure_bucket": "backspread",
+      "directional_bias": "bull_convexity",
+      "base_strategy_count": 2,
+      "base_strategies": [
+        "call_backspread_next_expiry",
+        "call_backspread_next_expiry_aggressive"
+      ],
+      "leg_count_range": [
+        3,
+        3
+      ],
+      "strategy_sets": [
+        "family_expansion"
+      ],
+      "signal_names": [
+        "trend_call"
+      ],
+      "dte_modes": [
+        "next_expiry"
+      ],
+      "selected_base_strategy_count": 2,
+      "promoted_base_strategy_count": 2,
+      "selected_ticker_count": 1,
+      "promoted_ticker_count": 1,
+      "selected_tickers": [
+        "QQQ"
+      ],
+      "promoted_tickers": [
+        "QQQ"
+      ],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 2,
+      "live_manifest_ticker_count": 1,
+      "live_manifest_tickers": [
+        "QQQ"
+      ],
+      "live_manifest_regimes": {
+        "bull": 2
+      },
+      "live_manifest_timing_profiles": {
+        "reactive": 2
+      },
+      "priority": "live_benchmark",
+      "steward_action": "benchmark_against_current_live_book",
+      "note": "Call backspread is already live and should be benchmarked for replacement or diversification, not re-added blindly."
+    },
+    {
+      "family": "Call butterfly",
+      "slug": "call_butterfly",
+      "structure_bucket": "butterfly",
+      "directional_bias": "bull_or_choppy",
+      "base_strategy_count": 4,
+      "base_strategies": [
+        "call_butterfly_same_day",
+        "call_butterfly_same_day_conservative",
+        "call_butterfly_same_day_d12_24_36",
+        "call_butterfly_same_day_d25_40_55"
+      ],
+      "leg_count_range": [
+        4,
+        4
+      ],
+      "strategy_sets": [
+        "down_choppy_exhaustive",
+        "down_choppy_only",
+        "family_expansion"
+      ],
+      "signal_names": [
+        "iron_condor"
+      ],
+      "dte_modes": [
+        "same_day"
+      ],
+      "selected_base_strategy_count": 0,
+      "promoted_base_strategy_count": 0,
+      "selected_ticker_count": 0,
+      "promoted_ticker_count": 0,
+      "selected_tickers": [],
+      "promoted_tickers": [],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 0,
+      "live_manifest_ticker_count": 0,
+      "live_manifest_tickers": [],
+      "live_manifest_regimes": {},
+      "live_manifest_timing_profiles": {},
+      "priority": "monitor",
+      "steward_action": "maintain_registry_and_wait_for_new_evidence",
+      "note": "Call butterfly is still structurally under-tested across the ready universe and should stay in discovery rotation."
+    },
+    {
+      "family": "Credit call spread",
+      "slug": "credit_call_spread",
+      "structure_bucket": "credit_spread",
+      "directional_bias": "bear",
+      "base_strategy_count": 13,
+      "base_strategies": [
+        "bear_call_credit_spread_next_expiry",
+        "bear_call_credit_spread_next_expiry_conservative",
+        "bear_call_credit_spread_next_expiry_d18_08",
+        "bear_call_credit_spread_next_expiry_d26_12",
+        "bear_call_credit_spread_next_expiry_d34_15",
+        "bear_call_credit_spread_same_day",
+        "bear_call_credit_spread_same_day_aggressive",
+        "bear_call_credit_spread_same_day_conservative",
+        "bear_call_credit_spread_same_day_d18_08",
+        "bear_call_credit_spread_same_day_d22_10",
+        "bear_call_credit_spread_same_day_d26_12",
+        "bear_call_credit_spread_same_day_d30_15",
+        "bear_call_credit_spread_same_day_d40_20"
+      ],
+      "leg_count_range": [
+        2,
+        2
+      ],
+      "strategy_sets": [
+        "down_choppy_exhaustive",
+        "down_choppy_only",
+        "family_expansion",
+        "opening_window_premium_defense",
+        "standard"
+      ],
+      "signal_names": [
+        "credit_bear"
+      ],
+      "dte_modes": [
+        "next_expiry",
+        "same_day"
+      ],
+      "selected_base_strategy_count": 1,
+      "promoted_base_strategy_count": 0,
+      "selected_ticker_count": 1,
+      "promoted_ticker_count": 0,
+      "selected_tickers": [
+        "SPY"
+      ],
+      "promoted_tickers": [],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 0,
+      "live_manifest_ticker_count": 0,
+      "live_manifest_tickers": [],
+      "live_manifest_regimes": {},
+      "live_manifest_timing_profiles": {},
+      "priority": "priority_validation",
+      "steward_action": "push_family_into_exhaustive_validation",
+      "note": "Credit call spread has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation."
+    },
+    {
+      "family": "Credit put spread",
+      "slug": "credit_put_spread",
+      "structure_bucket": "credit_spread",
+      "directional_bias": "bull",
+      "base_strategy_count": 5,
+      "base_strategies": [
+        "bull_put_credit_spread_next_expiry",
+        "bull_put_credit_spread_next_expiry_conservative",
+        "bull_put_credit_spread_same_day",
+        "bull_put_credit_spread_same_day_aggressive",
+        "bull_put_credit_spread_same_day_conservative"
+      ],
+      "leg_count_range": [
+        2,
+        2
+      ],
+      "strategy_sets": [
+        "family_expansion",
+        "standard"
+      ],
+      "signal_names": [
+        "credit_bull"
+      ],
+      "dte_modes": [
+        "next_expiry",
+        "same_day"
+      ],
+      "selected_base_strategy_count": 2,
+      "promoted_base_strategy_count": 0,
+      "selected_ticker_count": 2,
+      "promoted_ticker_count": 0,
+      "selected_tickers": [
+        "IWM",
+        "MSFT"
+      ],
+      "promoted_tickers": [],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 0,
+      "live_manifest_ticker_count": 0,
+      "live_manifest_tickers": [],
+      "live_manifest_regimes": {},
+      "live_manifest_timing_profiles": {},
+      "priority": "priority_validation",
+      "steward_action": "push_family_into_exhaustive_validation",
+      "note": "Credit put spread has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation."
+    },
+    {
+      "family": "Debit call spread",
+      "slug": "debit_call_spread",
+      "structure_bucket": "debit_spread",
+      "directional_bias": "bull",
+      "base_strategy_count": 3,
+      "base_strategies": [
+        "bull_call_spread_next_expiry",
+        "bull_call_spread_next_expiry_tight",
+        "bull_call_spread_next_expiry_wide"
+      ],
+      "leg_count_range": [
+        2,
+        2
+      ],
+      "strategy_sets": [
+        "family_expansion",
+        "standard"
+      ],
+      "signal_names": [
+        "trend_call"
+      ],
+      "dte_modes": [
+        "next_expiry"
+      ],
+      "selected_base_strategy_count": 0,
+      "promoted_base_strategy_count": 0,
+      "selected_ticker_count": 0,
+      "promoted_ticker_count": 0,
+      "selected_tickers": [],
+      "promoted_tickers": [],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 0,
+      "live_manifest_ticker_count": 0,
+      "live_manifest_tickers": [],
+      "live_manifest_regimes": {},
+      "live_manifest_timing_profiles": {},
+      "priority": "monitor",
+      "steward_action": "maintain_registry_and_wait_for_new_evidence",
+      "note": "Debit call spread is still structurally under-tested across the ready universe and should stay in discovery rotation."
+    },
+    {
+      "family": "Debit put spread",
+      "slug": "debit_put_spread",
+      "structure_bucket": "debit_spread",
+      "directional_bias": "bear",
+      "base_strategy_count": 7,
+      "base_strategies": [
+        "bear_put_spread_next_expiry",
+        "bear_put_spread_next_expiry_d45_20",
+        "bear_put_spread_next_expiry_d50_25",
+        "bear_put_spread_next_expiry_d60_25",
+        "bear_put_spread_next_expiry_d65_35",
+        "bear_put_spread_next_expiry_tight",
+        "bear_put_spread_next_expiry_wide"
+      ],
+      "leg_count_range": [
+        2,
+        2
+      ],
+      "strategy_sets": [
+        "down_choppy_exhaustive",
+        "down_choppy_only",
+        "family_expansion",
+        "opening_window_premium_defense",
+        "standard"
+      ],
+      "signal_names": [
+        "trend_put"
+      ],
+      "dte_modes": [
+        "next_expiry"
+      ],
+      "selected_base_strategy_count": 0,
+      "promoted_base_strategy_count": 0,
+      "selected_ticker_count": 0,
+      "promoted_ticker_count": 0,
+      "selected_tickers": [],
+      "promoted_tickers": [],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 0,
+      "live_manifest_ticker_count": 0,
+      "live_manifest_tickers": [],
+      "live_manifest_regimes": {},
+      "live_manifest_timing_profiles": {},
+      "priority": "monitor",
+      "steward_action": "maintain_registry_and_wait_for_new_evidence",
+      "note": "Debit put spread is still structurally under-tested across the ready universe and should stay in discovery rotation."
+    },
+    {
+      "family": "Iron butterfly",
+      "slug": "iron_butterfly",
+      "structure_bucket": "neutral_premium",
+      "directional_bias": "choppy",
+      "base_strategy_count": 3,
+      "base_strategies": [
+        "iron_butterfly_same_day",
+        "iron_butterfly_same_day_d40_15",
+        "iron_butterfly_same_day_d60_25"
+      ],
+      "leg_count_range": [
+        4,
+        4
+      ],
+      "strategy_sets": [
+        "down_choppy_exhaustive",
+        "down_choppy_only",
+        "family_expansion",
+        "opening_window_premium_defense",
+        "standard"
+      ],
+      "signal_names": [
+        "iron_condor"
+      ],
+      "dte_modes": [
+        "same_day"
+      ],
+      "selected_base_strategy_count": 2,
+      "promoted_base_strategy_count": 2,
+      "selected_ticker_count": 5,
+      "promoted_ticker_count": 5,
+      "selected_tickers": [
+        "AAPL",
+        "AMZN",
+        "IWM",
+        "QQQ",
+        "SPY"
+      ],
+      "promoted_tickers": [
+        "AAPL",
+        "AMZN",
+        "IWM",
+        "QQQ",
+        "SPY"
+      ],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 2,
+      "live_manifest_ticker_count": 1,
+      "live_manifest_tickers": [
+        "QQQ"
+      ],
+      "live_manifest_regimes": {
+        "choppy": 2
+      },
+      "live_manifest_timing_profiles": {
+        "fast": 1,
+        "reactive": 1
+      },
+      "priority": "live_benchmark",
+      "steward_action": "benchmark_against_current_live_book",
+      "note": "Iron butterfly is already live and should be benchmarked for replacement or diversification, not re-added blindly."
+    },
+    {
+      "family": "Iron condor",
+      "slug": "iron_condor",
+      "structure_bucket": "neutral_premium",
+      "directional_bias": "choppy",
+      "base_strategy_count": 6,
+      "base_strategies": [
+        "iron_condor_same_day",
+        "iron_condor_same_day_aggressive",
+        "iron_condor_same_day_conservative",
+        "iron_condor_same_day_d15_06",
+        "iron_condor_same_day_d18_08",
+        "iron_condor_same_day_d30_12"
+      ],
+      "leg_count_range": [
+        4,
+        4
+      ],
+      "strategy_sets": [
+        "down_choppy_exhaustive",
+        "down_choppy_only",
+        "family_expansion",
+        "opening_window_premium_defense",
+        "standard"
+      ],
+      "signal_names": [
+        "iron_condor"
+      ],
+      "dte_modes": [
+        "same_day"
+      ],
+      "selected_base_strategy_count": 1,
+      "promoted_base_strategy_count": 0,
+      "selected_ticker_count": 1,
+      "promoted_ticker_count": 0,
+      "selected_tickers": [
+        "QQQ"
+      ],
+      "promoted_tickers": [],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 0,
+      "live_manifest_ticker_count": 0,
+      "live_manifest_tickers": [],
+      "live_manifest_regimes": {},
+      "live_manifest_timing_profiles": {},
+      "priority": "priority_validation",
+      "steward_action": "push_family_into_exhaustive_validation",
+      "note": "Iron condor has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation."
+    },
+    {
+      "family": "Long straddle",
+      "slug": "long_straddle",
+      "structure_bucket": "long_vol",
+      "directional_bias": "choppy_or_expansion",
+      "base_strategy_count": 5,
+      "base_strategies": [
+        "long_straddle_next_expiry",
+        "long_straddle_next_expiry_d45",
+        "long_straddle_same_day",
+        "long_straddle_same_day_d45",
+        "long_straddle_same_day_d55"
+      ],
+      "leg_count_range": [
+        2,
+        2
+      ],
+      "strategy_sets": [
+        "down_choppy_exhaustive",
+        "down_choppy_only",
+        "family_expansion",
+        "standard"
+      ],
+      "signal_names": [
+        "long_straddle"
+      ],
+      "dte_modes": [
+        "next_expiry",
+        "same_day"
+      ],
+      "selected_base_strategy_count": 4,
+      "promoted_base_strategy_count": 2,
+      "selected_ticker_count": 7,
+      "promoted_ticker_count": 1,
+      "selected_tickers": [
+        "AAPL",
+        "ADBE",
+        "AMD",
+        "AMZN",
+        "ARM",
+        "ORCL",
+        "QCOM"
+      ],
+      "promoted_tickers": [
+        "AAPL"
+      ],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 0,
+      "live_manifest_ticker_count": 0,
+      "live_manifest_tickers": [],
+      "live_manifest_regimes": {},
+      "live_manifest_timing_profiles": {},
+      "priority": "promotion_follow_up",
+      "steward_action": "review_for_live_manifest_addition",
+      "note": "Long straddle is cataloged and should be monitored as more out-of-sample evidence lands."
+    },
+    {
+      "family": "Long strangle",
+      "slug": "long_strangle",
+      "structure_bucket": "long_vol",
+      "directional_bias": "choppy_or_expansion",
+      "base_strategy_count": 5,
+      "base_strategies": [
+        "long_strangle_next_expiry",
+        "long_strangle_next_expiry_d30",
+        "long_strangle_same_day",
+        "long_strangle_same_day_d30",
+        "long_strangle_same_day_d40"
+      ],
+      "leg_count_range": [
+        2,
+        2
+      ],
+      "strategy_sets": [
+        "down_choppy_exhaustive",
+        "down_choppy_only",
+        "family_expansion",
+        "standard"
+      ],
+      "signal_names": [
+        "long_straddle"
+      ],
+      "dte_modes": [
+        "next_expiry",
+        "same_day"
+      ],
+      "selected_base_strategy_count": 1,
+      "promoted_base_strategy_count": 0,
+      "selected_ticker_count": 1,
+      "promoted_ticker_count": 0,
+      "selected_tickers": [
+        "ARM"
+      ],
+      "promoted_tickers": [],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 0,
+      "live_manifest_ticker_count": 0,
+      "live_manifest_tickers": [],
+      "live_manifest_regimes": {},
+      "live_manifest_timing_profiles": {},
+      "priority": "priority_validation",
+      "steward_action": "push_family_into_exhaustive_validation",
+      "note": "Long strangle has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation."
+    },
+    {
+      "family": "Put backspread",
+      "slug": "put_backspread",
+      "structure_bucket": "backspread",
+      "directional_bias": "bear_convexity",
+      "base_strategy_count": 5,
+      "base_strategies": [
+        "put_backspread_next_expiry",
+        "put_backspread_next_expiry_aggressive",
+        "put_backspread_next_expiry_d20_45",
+        "put_backspread_next_expiry_d30_55",
+        "put_backspread_next_expiry_d40_65"
+      ],
+      "leg_count_range": [
+        3,
+        3
+      ],
+      "strategy_sets": [
+        "down_choppy_exhaustive",
+        "down_choppy_only",
+        "family_expansion"
+      ],
+      "signal_names": [
+        "trend_put"
+      ],
+      "dte_modes": [
+        "next_expiry"
+      ],
+      "selected_base_strategy_count": 4,
+      "promoted_base_strategy_count": 4,
+      "selected_ticker_count": 6,
+      "promoted_ticker_count": 6,
+      "selected_tickers": [
+        "AAPL",
+        "ABBV",
+        "ADBE",
+        "AMD",
+        "AMZN",
+        "ARM"
+      ],
+      "promoted_tickers": [
+        "AAPL",
+        "ABBV",
+        "ADBE",
+        "AMD",
+        "AMZN",
+        "ARM"
+      ],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 0,
+      "live_manifest_ticker_count": 0,
+      "live_manifest_tickers": [],
+      "live_manifest_regimes": {},
+      "live_manifest_timing_profiles": {},
+      "priority": "promotion_follow_up",
+      "steward_action": "review_for_live_manifest_addition",
+      "note": "Put backspread is cataloged and should be monitored as more out-of-sample evidence lands."
+    },
+    {
+      "family": "Put butterfly",
+      "slug": "put_butterfly",
+      "structure_bucket": "butterfly",
+      "directional_bias": "bear_or_choppy",
+      "base_strategy_count": 4,
+      "base_strategies": [
+        "put_butterfly_same_day",
+        "put_butterfly_same_day_conservative",
+        "put_butterfly_same_day_d12_24_36",
+        "put_butterfly_same_day_d25_40_55"
+      ],
+      "leg_count_range": [
+        4,
+        4
+      ],
+      "strategy_sets": [
+        "down_choppy_exhaustive",
+        "down_choppy_only",
+        "family_expansion",
+        "opening_window_premium_defense"
+      ],
+      "signal_names": [
+        "iron_condor"
+      ],
+      "dte_modes": [
+        "same_day"
+      ],
+      "selected_base_strategy_count": 2,
+      "promoted_base_strategy_count": 0,
+      "selected_ticker_count": 2,
+      "promoted_ticker_count": 0,
+      "selected_tickers": [
+        "AAPL",
+        "AMZN"
+      ],
+      "promoted_tickers": [],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 0,
+      "live_manifest_ticker_count": 0,
+      "live_manifest_tickers": [],
+      "live_manifest_regimes": {},
+      "live_manifest_timing_profiles": {},
+      "priority": "priority_validation",
+      "steward_action": "push_family_into_exhaustive_validation",
+      "note": "Put butterfly has produced selections but no approved live sleeves yet, so it belongs in exhaustive validation."
+    },
+    {
+      "family": "Single-leg long call",
+      "slug": "single_leg_long_call",
+      "structure_bucket": "single_leg",
+      "directional_bias": "bull",
+      "base_strategy_count": 7,
+      "base_strategies": [
+        "orb_long_call_next_expiry",
+        "orb_long_call_same_day",
+        "orb_long_call_same_day_d40",
+        "orb_long_call_same_day_d60",
+        "trend_long_call_next_expiry",
+        "trend_long_call_next_expiry_d50",
+        "trend_long_call_next_expiry_d70"
+      ],
+      "leg_count_range": [
+        1,
+        1
+      ],
+      "strategy_sets": [
+        "family_expansion",
+        "standard"
+      ],
+      "signal_names": [
+        "orb_call",
+        "trend_call"
+      ],
+      "dte_modes": [
+        "next_expiry",
+        "same_day"
+      ],
+      "selected_base_strategy_count": 5,
+      "promoted_base_strategy_count": 4,
+      "selected_ticker_count": 39,
+      "promoted_ticker_count": 38,
+      "selected_tickers": [
+        "AMZN",
+        "ARKK",
+        "ARM",
+        "ASTS",
+        "BAC",
+        "CRM",
+        "CRWV",
+        "DAL",
+        "DIS",
+        "GDX",
+        "GLD",
+        "GME",
+        "GOOG",
+        "HIMS",
+        "IONQ",
+        "IREN",
+        "IWM",
+        "JPM",
+        "MSFT",
+        "NKE",
+        "NVDA",
+        "ORCL",
+        "OXY",
+        "PLTR",
+        "QCOM",
+        "QQQ",
+        "RKLB",
+        "SCHW",
+        "SHOP",
+        "SLV",
+        "SMCI",
+        "SNDK",
+        "SPY",
+        "TSLA",
+        "TTD",
+        "UPRO",
+        "URA",
+        "XLE",
+        "XOM"
+      ],
+      "promoted_tickers": [
+        "AMZN",
+        "ARKK",
+        "ARM",
+        "ASTS",
+        "BAC",
+        "CRM",
+        "CRWV",
+        "DAL",
+        "DIS",
+        "GDX",
+        "GLD",
+        "GME",
+        "GOOG",
+        "HIMS",
+        "IONQ",
+        "IREN",
+        "IWM",
+        "JPM",
+        "MSFT",
+        "NKE",
+        "NVDA",
+        "ORCL",
+        "PLTR",
+        "QCOM",
+        "QQQ",
+        "RKLB",
+        "SCHW",
+        "SHOP",
+        "SLV",
+        "SMCI",
+        "SNDK",
+        "SPY",
+        "TSLA",
+        "TTD",
+        "UPRO",
+        "URA",
+        "XLE",
+        "XOM"
+      ],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
+      "live_manifest_strategy_count": 48,
+      "live_manifest_ticker_count": 21,
+      "live_manifest_tickers": [
+        "AMZN",
+        "ARKK",
+        "BAC",
+        "CRM",
+        "GDX",
+        "GLD",
+        "IWM",
+        "JPM",
+        "MSFT",
+        "NKE",
+        "NVDA",
+        "ORCL",
+        "PLTR",
+        "QQQ",
+        "SCHW",
+        "SHOP",
+        "SLV",
+        "SPY",
+        "TSLA",
+        "XLE",
+        "XOM"
+      ],
+      "live_manifest_regimes": {
+        "bull": 47,
+        "choppy": 1
+      },
+      "live_manifest_timing_profiles": {
+        "base": 15,
+        "fast": 19,
+        "reactive": 2,
+        "slow": 12
+      },
+      "priority": "live_benchmark",
+      "steward_action": "benchmark_against_current_live_book",
+      "note": "Single-leg long call is already live and should be benchmarked for replacement or diversification, not re-added blindly."
+    },
+    {
+      "family": "Single-leg long put",
+      "slug": "single_leg_long_put",
+      "structure_bucket": "single_leg",
+      "directional_bias": "bear",
+      "base_strategy_count": 17,
+      "base_strategies": [
+        "orb_long_put_next_expiry",
+        "orb_long_put_next_expiry_d40",
+        "orb_long_put_next_expiry_d60",
+        "orb_long_put_same_day",
+        "orb_long_put_same_day_d35",
+        "orb_long_put_same_day_d40",
+        "orb_long_put_same_day_d45",
+        "orb_long_put_same_day_d55",
+        "orb_long_put_same_day_d60",
+        "orb_long_put_same_day_d65",
+        "trend_long_put_next_expiry",
+        "trend_long_put_next_expiry_d45",
+        "trend_long_put_next_expiry_d50",
+        "trend_long_put_next_expiry_d55",
+        "trend_long_put_next_expiry_d65",
+        "trend_long_put_next_expiry_d70",
+        "trend_long_put_next_expiry_d75"
+      ],
+      "leg_count_range": [
+        1,
+        1
+      ],
+      "strategy_sets": [
+        "down_choppy_exhaustive",
+        "down_choppy_only",
+        "family_expansion",
+        "standard"
+      ],
+      "signal_names": [
+        "orb_put",
+        "trend_put"
+      ],
+      "dte_modes": [
+        "next_expiry",
+        "same_day"
+      ],
+      "selected_base_strategy_count": 13,
+      "promoted_base_strategy_count": 11,
+      "selected_ticker_count": 47,
+      "promoted_ticker_count": 44,
+      "selected_tickers": [
+        "AAPL",
+        "ABBV",
+        "ADBE",
+        "AMD",
+        "AMZN",
+        "ARKK",
+        "ARM",
+        "ASTS",
+        "AVGO",
+        "BA",
+        "BABA",
+        "BAC",
+        "CRM",
+        "CRWV",
+        "DAL",
+        "DIS",
+        "GDX",
+        "GLD",
+        "GME",
+        "GOOG",
+        "HIMS",
+        "IONQ",
+        "IREN",
+        "IWM",
+        "JPM",
+        "MSFT",
+        "NKE",
+        "NVDA",
+        "ORCL",
+        "OXY",
+        "PLTR",
+        "QCOM",
+        "QQQ",
+        "RKLB",
+        "SCHW",
+        "SHOP",
+        "SLV",
+        "SMCI",
+        "SNDK",
+        "SPY",
+        "TSLA",
+        "TTD",
+        "UPRO",
+        "URA",
+        "WULF",
+        "XLE",
+        "XOM"
+      ],
+      "promoted_tickers": [
+        "AAPL",
+        "ABBV",
+        "ADBE",
+        "AMD",
+        "AMZN",
+        "ARKK",
+        "ARM",
+        "ASTS",
+        "AVGO",
+        "BA",
+        "BABA",
+        "BAC",
+        "CRM",
+        "CRWV",
+        "DAL",
+        "DIS",
+        "GDX",
+        "GLD",
+        "GME",
+        "GOOG",
+        "HIMS",
+        "IONQ",
+        "IREN",
+        "IWM",
+        "JPM",
+        "MSFT",
+        "NKE",
+        "NVDA",
+        "ORCL",
+        "OXY",
+        "PLTR",
+        "QQQ",
+        "RKLB",
+        "SCHW",
+        "SHOP",
+        "SLV",
+        "SMCI",
+        "SPY",
+        "TSLA",
+        "TTD",
+        "UPRO",
+        "URA",
+        "WULF",
+        "XLE"
+      ],
+      "ready_ticker_gap_count": 0,
+      "ready_ticker_gap_ratio": 0.0,
       "live_manifest_strategy_count": 42,
       "live_manifest_ticker_count": 20,
       "live_manifest_tickers": [

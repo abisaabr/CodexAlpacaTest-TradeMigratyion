@@ -2,7 +2,7 @@
 
 ## Resolution
 
-- Generated at: `2026-04-22T14:53:05.054686`
+- Generated at: `2026-04-22T15:54:35.353827`
 - Requested profile: `auto`
 - Resolved profile: `down_choppy_coverage_ranked`
 - Resolution mode: `auto_recommended`
@@ -67,7 +67,7 @@
 ### opening_30m_premium_defense
 
 - Score: `-628`
-- Executable now: `false`
+- Executable now: `true`
 - Execution risk tier: `conservative`
 - Entry friction sensitivity: `low`
 - Exit model dependency: `medium`

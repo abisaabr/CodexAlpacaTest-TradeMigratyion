@@ -6,7 +6,7 @@ This registry is the control-plane source of truth for which institutional tourn
 
 - Default profile: `down_choppy_coverage_ranked`
 - Active profiles: `down_choppy_coverage_ranked, down_choppy_full_ready`
-- Executable profiles: `down_choppy_coverage_ranked, down_choppy_full_ready`
+- Executable profiles: `down_choppy_coverage_ranked, down_choppy_full_ready, opening_30m_premium_defense`
 
 ## Profiles
 
@@ -105,14 +105,14 @@ This registry is the control-plane source of truth for which institutional tourn
 
 ### opening_30m_premium_defense
 
-- Status: `planned`
-- Executable now: `false`
+- Status: `partial`
+- Executable now: `true`
 - Objective: Focused opening-session premium-defense tournament for bear and choppy regimes.
 - Regime focus: `down, choppy`
 - Session focus: `opening_30m`
 - Execution window: `first_30_minutes`
-- Entrypoint: `planned_profile`
-- Underlying program: `not_yet_wired`
+- Entrypoint: `launch_nightly_operator_cycle.ps1`
+- Underlying program: `launch_down_choppy_program.ps1`
 - Discovery source: `coverage_ranked`
 - Bootstrap ready universe: `true`
 - Strategy sets: `opening_window_premium_defense`
@@ -132,7 +132,7 @@ This registry is the control-plane source of truth for which institutional tourn
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `new_machine`
 - Families: `Credit call spread`, `Debit put spread`, `Iron condor`, `Iron butterfly`, `Put butterfly`
-- Notes: Targets the under-tested premium-defense surface that should help in weak or messy tape once session-specific timing is fully encoded.
+- Notes: Governed execution is now wired through the nightly operator, but activation still depends on stronger broker-audited execution evidence.
 
 ### opening_30m_convexity_butterfly
 

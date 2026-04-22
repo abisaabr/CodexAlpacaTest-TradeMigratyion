@@ -1,17 +1,17 @@
 family,structure_bucket,directional_bias,priority,steward_action,base_strategy_count,selected_base_strategy_count,promoted_base_strategy_count,selected_ticker_count,promoted_ticker_count,ready_ticker_gap_count,live_manifest_strategy_count,live_manifest_ticker_count
-Broken-wing call butterfly,broken_wing_butterfly,bull_or_choppy,priority_discovery,collect_and_rank_new_family_candidates,3,0,0,0,0,140,0,0
-Broken-wing put butterfly,broken_wing_butterfly,bear_or_choppy,priority_discovery,collect_and_rank_new_family_candidates,3,0,0,0,0,140,0,0
-Call backspread,backspread,bull_convexity,live_benchmark,benchmark_against_current_live_book,2,2,2,1,1,139,2,1
-Call butterfly,butterfly,bull_or_choppy,priority_discovery,collect_and_rank_new_family_candidates,4,0,0,0,0,140,0,0
-Credit call spread,credit_spread,bear,priority_validation,push_family_into_exhaustive_validation,13,1,0,1,0,139,0,0
-Credit put spread,credit_spread,bull,priority_validation,push_family_into_exhaustive_validation,5,2,0,2,0,138,0,0
-Debit call spread,debit_spread,bull,priority_discovery,collect_and_rank_new_family_candidates,3,0,0,0,0,140,0,0
-Debit put spread,debit_spread,bear,priority_discovery,collect_and_rank_new_family_candidates,7,0,0,0,0,140,0,0
-Iron butterfly,neutral_premium,choppy,live_benchmark,benchmark_against_current_live_book,3,2,2,5,5,135,2,1
-Iron condor,neutral_premium,choppy,priority_validation,push_family_into_exhaustive_validation,6,1,0,1,0,139,0,0
-Long straddle,long_vol,choppy_or_expansion,promotion_follow_up,review_for_live_manifest_addition,5,4,2,7,1,133,0,0
-Long strangle,long_vol,choppy_or_expansion,priority_validation,push_family_into_exhaustive_validation,5,1,0,1,0,139,0,0
-Put backspread,backspread,bear_convexity,promotion_follow_up,review_for_live_manifest_addition,5,4,4,6,6,134,0,0
-Put butterfly,butterfly,bear_or_choppy,priority_validation,push_family_into_exhaustive_validation,4,2,0,2,0,138,0,0
-Single-leg long call,single_leg,bull,live_benchmark,benchmark_against_current_live_book,7,5,4,39,38,101,48,21
-Single-leg long put,single_leg,bear,live_benchmark,benchmark_against_current_live_book,17,13,11,47,44,93,42,20
+Broken-wing call butterfly,broken_wing_butterfly,bull_or_choppy,monitor,maintain_registry_and_wait_for_new_evidence,3,0,0,0,0,0,0,0
+Broken-wing put butterfly,broken_wing_butterfly,bear_or_choppy,monitor,maintain_registry_and_wait_for_new_evidence,3,0,0,0,0,0,0,0
+Call backspread,backspread,bull_convexity,live_benchmark,benchmark_against_current_live_book,2,2,2,1,1,0,2,1
+Call butterfly,butterfly,bull_or_choppy,monitor,maintain_registry_and_wait_for_new_evidence,4,0,0,0,0,0,0,0
+Credit call spread,credit_spread,bear,priority_validation,push_family_into_exhaustive_validation,13,1,0,1,0,0,0,0
+Credit put spread,credit_spread,bull,priority_validation,push_family_into_exhaustive_validation,5,2,0,2,0,0,0,0
+Debit call spread,debit_spread,bull,monitor,maintain_registry_and_wait_for_new_evidence,3,0,0,0,0,0,0,0
+Debit put spread,debit_spread,bear,monitor,maintain_registry_and_wait_for_new_evidence,7,0,0,0,0,0,0,0
+Iron butterfly,neutral_premium,choppy,live_benchmark,benchmark_against_current_live_book,3,2,2,5,5,0,2,1
+Iron condor,neutral_premium,choppy,priority_validation,push_family_into_exhaustive_validation,6,1,0,1,0,0,0,0
+Long straddle,long_vol,choppy_or_expansion,promotion_follow_up,review_for_live_manifest_addition,5,4,2,7,1,0,0,0
+Long strangle,long_vol,choppy_or_expansion,priority_validation,push_family_into_exhaustive_validation,5,1,0,1,0,0,0,0
+Put backspread,backspread,bear_convexity,promotion_follow_up,review_for_live_manifest_addition,5,4,4,6,6,0,0,0
+Put butterfly,butterfly,bear_or_choppy,priority_validation,push_family_into_exhaustive_validation,4,2,0,2,0,0,0,0
+Single-leg long call,single_leg,bull,live_benchmark,benchmark_against_current_live_book,7,5,4,39,38,0,48,21
+Single-leg long put,single_leg,bear,live_benchmark,benchmark_against_current_live_book,17,13,11,47,44,0,42,20

@@ -9,7 +9,7 @@ param(
     [string]$PythonExe = "python",
     [switch]$Execute,
     [switch]$BootstrapReadyUniverse = $true,
-    [ValidateSet("auto", "down_choppy_coverage_ranked", "down_choppy_full_ready")]
+    [ValidateSet("auto", "down_choppy_coverage_ranked", "down_choppy_full_ready", "opening_30m_premium_defense")]
     [string]$TournamentProfile = "auto",
     [ValidateSet("full_ready", "coverage_ranked")]
     [string]$DiscoverySource = "coverage_ranked",
@@ -55,7 +55,7 @@ $tournamentUnlockWorkplanHandoffBuilderPath = Join-Path $scriptRoot "build_tourn
 $executionEvidenceContractBuilderPath = Join-Path $scriptRoot "build_execution_evidence_contract.py"
 $executionEvidenceContractHandoffBuilderPath = Join-Path $scriptRoot "build_execution_evidence_contract_handoff.py"
 $coverageBuilderPath = Join-Path $scriptRoot "build_ticker_family_coverage.py"
-$programLauncherPath = Join-Path $scriptRoot "launch_down_choppy_program.ps1"
+$defaultProgramLauncherPath = Join-Path $scriptRoot "launch_down_choppy_program.ps1"
 $validatorPath = Join-Path $scriptRoot "validate_program_live_book.py"
 $hardeningBuilderPath = Join-Path $scriptRoot "build_live_book_hardening_review.py"
 $replacementBuilderPath = Join-Path $scriptRoot "build_live_book_replacement_plan.py"
@@ -389,6 +389,9 @@ $morningHandoffJsonPath = Join-Path $morningHandoffRoot "live_book_morning_hando
 $resolvedTournamentProfile = ""
 $tournamentProfileResolutionMode = ""
 $tournamentProfileResolutionWarning = ""
+$resolvedProgramLauncherPath = $defaultProgramLauncherPath
+$resolvedProgramLauncherName = [System.IO.Path]::GetFileName($defaultProgramLauncherPath)
+$resolvedProgramExtraArgs = @()
 
 New-Item -ItemType Directory -Force -Path $cycleRootPath | Out-Null
 New-Item -ItemType Directory -Force -Path $programRootPath | Out-Null
@@ -442,7 +445,7 @@ $cycleManifest = [ordered]@{
         tournament_profile_builder = $tournamentProfileBuilderPath
         tournament_profile_handoff_builder = $tournamentProfileHandoffBuilderPath
         coverage_builder = $coverageBuilderPath
-        program_launcher = $programLauncherPath
+        program_launcher = $defaultProgramLauncherPath
         validator = $validatorPath
         hardening_builder = $hardeningBuilderPath
         replacement_builder = $replacementBuilderPath
@@ -582,6 +585,28 @@ if (-not [bool]$resolvedProfileSpec.executable_now) {
     throw "Resolved tournament profile '$resolvedTournamentProfile' is not executable now."
 }
 
+$resolvedProgramLauncherName = [string]$resolvedProfileSpec.underlying_program
+if ([string]::IsNullOrWhiteSpace($resolvedProgramLauncherName) -or $resolvedProgramLauncherName -eq "not_yet_wired") {
+    throw "Resolved tournament profile '$resolvedTournamentProfile' does not have a governed underlying program."
+}
+$resolvedProgramLauncherPath = Join-Path $scriptRoot $resolvedProgramLauncherName
+if (-not (Test-Path $resolvedProgramLauncherPath)) {
+    throw "Resolved tournament profile '$resolvedTournamentProfile' points at a missing underlying program: $resolvedProgramLauncherPath"
+}
+
+$resolvedProgramExtraArgs = @()
+switch ($resolvedTournamentProfile) {
+    "opening_30m_premium_defense" {
+        $resolvedProgramExtraArgs += @(
+            "-Phase1StrategySet", "opening_window_premium_defense",
+            "-Phase1SelectionProfile", "opening_window_defensive",
+            "-Phase2StrategySet", "down_choppy_exhaustive",
+            "-Phase2SelectionProfile", "down_choppy_focus",
+            "-Phase1AllowedFamilies", "credit_call_spread,debit_put_spread,iron_condor,iron_butterfly,put_butterfly"
+        )
+    }
+}
+
 if (-not $discoverySourceWasExplicit) {
     $DiscoverySource = [string]$resolvedProfileSpec.discovery_source
 }
@@ -598,6 +623,11 @@ $cycleManifest.bootstrap_ready_universe = [bool]$BootstrapReadyUniverse
 $cycleManifest.execution_posture = [string]$tournamentProfileHandoff.execution_posture
 $cycleManifest.execution_evidence_strength = [string]$tournamentProfileHandoff.execution_evidence_strength
 $cycleManifest.tournament_profile_handoff_json = $tournamentProfileHandoffJsonPath
+$cycleManifest.resolved_profile_strategy_sets = @($resolvedProfileSpec.strategy_sets)
+$cycleManifest.resolved_profile_selection_profiles = @($resolvedProfileSpec.selection_profiles)
+$cycleManifest.control_plane.program_launcher = $resolvedProgramLauncherPath
+$cycleManifest.control_plane.profile_program_launcher = $resolvedProgramLauncherName
+$cycleManifest.control_plane.profile_program_extra_args = @($resolvedProgramExtraArgs)
 Write-JsonFile -Path $manifestPath -Payload $cycleManifest
 
 Write-Status -Phase "resolved_tournament_profile" -Message "Resolved the nightly tournament profile from execution-aware policy." -Extra @{
@@ -606,6 +636,7 @@ Write-Status -Phase "resolved_tournament_profile" -Message "Resolved the nightly
     resolved_tournament_profile = $resolvedTournamentProfile
     tournament_profile_resolution_mode = $tournamentProfileResolutionMode
     tournament_profile_resolution_warning = $tournamentProfileResolutionWarning
+    underlying_program = $resolvedProgramLauncherName
 }
 
 Write-Status -Phase "refreshing_tournament_unlocks" -Message "Refreshing the tournament unlock registry from current execution, session trust, and tournament policy."
@@ -763,7 +794,8 @@ if (-not $Execute) {
     if ($BootstrapReadyUniverse) {
         $programArgs += "-BootstrapReadyUniverse"
     }
-    Invoke-PowerShellStep -ScriptPath $programLauncherPath -Arguments $programArgs -FailureMessage "Failed to build nightly research program plan."
+    $programArgs += @($resolvedProgramExtraArgs)
+    Invoke-PowerShellStep -ScriptPath $resolvedProgramLauncherPath -Arguments $programArgs -FailureMessage "Failed to build nightly research program plan."
 
     Refresh-ActiveProgramReport
     Invoke-RunRegistryReport -ReportDir $runRegistryReportDir -ManifestRoots @($cycleRootPath, $programRootPath)
@@ -818,7 +850,8 @@ $programArgs = @(
 if ($BootstrapReadyUniverse) {
     $programArgs += "-BootstrapReadyUniverse"
 }
-Invoke-PowerShellStep -ScriptPath $programLauncherPath -Arguments $programArgs -FailureMessage "Nightly discovery/exhaustive program failed."
+$programArgs += @($resolvedProgramExtraArgs)
+Invoke-PowerShellStep -ScriptPath $resolvedProgramLauncherPath -Arguments $programArgs -FailureMessage "Nightly discovery/exhaustive program failed."
 
 Refresh-ActiveProgramReport
 Invoke-RunRegistryReport -ReportDir $runRegistryReportDir -ManifestRoots @($cycleRootPath, $programRootPath)
