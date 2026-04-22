@@ -1,0 +1,77 @@
+{
+  "generated_at": "2026-04-22T14:32:10.854123",
+  "registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\session_reconciliation\\session_reconciliation_registry.json",
+  "posture": {
+    "overall_session_reconciliation_posture": "caution",
+    "evidence_strength": "limited",
+    "flags": {
+      "review_required_recent": false,
+      "caution_recent": true,
+      "broker_order_audit_gap": true,
+      "broker_activity_audit_gap": true,
+      "residual_positions": false,
+      "economics_delta": false,
+      "mismatch_pressure": false,
+      "partial_fill_pressure": false,
+      "cleanup_pressure": false
+    }
+  },
+  "policy": {
+    "trusted_learning_scope": "trusted_and_cautious_sessions",
+    "promotion_readiness": "review_only",
+    "operator_actions": [
+      "Use `trusted_and_cautious_sessions` when deciding which paper-runner sessions should influence research calibration and tournament policy.",
+      "Treat broker-order audit coverage as incomplete and avoid over-trusting clean local order logs alone.",
+      "Treat broker account-activity coverage as incomplete and avoid over-trusting local fill telemetry alone."
+    ]
+  },
+  "sessions_needing_attention": [
+    {
+      "trade_date": "2026-04-16",
+      "session_kind": "traded",
+      "submit_paper_orders": true,
+      "startup_check_status": "passed",
+      "blocked_new_entries": true,
+      "block_reason": "severe_loss_flatten_all triggered at equity 23656.40",
+      "completed_trade_count": 5,
+      "completed_trade_count_table": 5,
+      "completed_trade_count_delta": 0,
+      "reconciliation_row_count": 690,
+      "event_row_count": 737,
+      "realized_reconciled_net_pnl": -1343.6,
+      "completed_trade_net_pnl_total": -1343.6,
+      "realized_reconciliation_delta": -0.0,
+      "realized_reconciliation_delta_abs": 0.0,
+      "shutdown_reconciled": true,
+      "guardrail_fire_count": 61,
+      "guardrail_manual_review_count": 8,
+      "broker_order_audit_available": false,
+      "broker_order_count": 0,
+      "broker_status_mismatch_count": 0,
+      "local_order_without_broker_match_count": 0,
+      "unexpected_broker_order_count": 0,
+      "broker_activity_audit_available": false,
+      "broker_activity_count": 0,
+      "broker_activity_unmatched_count": 0,
+      "local_filled_order_without_activity_match_count": 0,
+      "broker_partially_filled_order_count": 0,
+      "broker_activity_partial_fill_count": 0,
+      "partial_fill_count": 0,
+      "ending_broker_position_count": 0,
+      "forced_exit_failure_count": 0,
+      "known_trade_cleanup_count": 0,
+      "unexpected_position_cleanup_count": 0,
+      "severe_loss_flatten_triggered": true,
+      "run_dir": "C:\\Users\\rabisaab\\OneDrive\\CodexAlpaca\\downloads_remaining_20260417\\folders\\codexalpaca_repo\\reports\\multi_ticker_portfolio\\runs\\2026-04-16",
+      "review_required_reasons": [],
+      "caution_reasons": [
+        "broker_order_audit_gap",
+        "broker_activity_audit_gap",
+        "guardrail_manual_review",
+        "severe_loss_flatten_triggered"
+      ],
+      "trust_tier": "caution",
+      "quality_score": 70
+    }
+  ]
+}

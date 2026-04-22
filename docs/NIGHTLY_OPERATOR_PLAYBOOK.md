@@ -12,6 +12,9 @@ Before assigning agent work, refresh and inspect:
 - `docs/repo_updates/repo_update_registry.md`
 - `docs/repo_updates/repo_update_handoff.md`
 - `docs/AGENT_GOVERNANCE.md`
+- `docs/SESSION_RECONCILIATION_REGISTRY.md`
+- `docs/session_reconciliation/session_reconciliation_registry.md`
+- `docs/session_reconciliation/session_reconciliation_handoff.md`
 - `docs/EXECUTION_CALIBRATION_REGISTRY.md`
 - `docs/execution_calibration/execution_calibration_registry.md`
 - `docs/execution_calibration/execution_calibration_handoff.md`
@@ -30,7 +33,7 @@ It is written for the current two-machine setup:
 Every night, the system should do four things well:
 
 1. refresh the family and coverage view
-2. refresh execution evidence from the paper runner
+2. refresh execution evidence and session trust from the paper runner
 3. run the highest-value challenger research
 4. validate challenger results against the champion book
 5. leave behind a clear morning packet without auto-mutating production
@@ -70,6 +73,10 @@ Owner:
 - Inventory Steward
 
 Required outputs:
+- `session_reconciliation_registry.json`
+- `session_reconciliation_registry.md`
+- `session_reconciliation_handoff.json`
+- `session_reconciliation_handoff.md`
 - `execution_calibration_registry.json`
 - `execution_calibration_registry.md`
 - `execution_calibration_handoff.json`
@@ -85,6 +92,8 @@ Required outputs:
 - refreshed ticker coverage outputs
 
 Tasks:
+- refresh the session reconciliation registry from the paper runner
+- refresh the session reconciliation handoff so the nightly cycle can distinguish trusted sessions from review-required sessions before using paper evidence to steer research
 - refresh the execution calibration registry from the paper runner
 - refresh the execution calibration handoff packet so the nightly cycle has a machine-readable posture and policy recommendation
 - confirm the backtester will consume that handoff so nightly selection grids tighten automatically when live execution posture is in `caution`
@@ -103,6 +112,7 @@ Tasks:
 
 Go / no-go:
 - do not launch discovery until family and coverage surfaces are current
+- do not let `review_required` paper-runner sessions loosen research policy, fill assumptions, or promotion conclusions
 - do not launch discovery if the execution calibration packet shows a telemetry or guardrail issue that should change fill assumptions first
 
 ### Phase 0.5: Data Prep

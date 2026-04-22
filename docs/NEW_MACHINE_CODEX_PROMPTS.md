@@ -35,6 +35,7 @@ Verify that this machine now owns the multi-ticker portfolio lease, that the pap
 Before using the prompts below for ongoing research or runner operations, read `docs/INSTITUTIONAL_OPERATING_BLUEPRINT.md` so the machine stays aligned with the project's research / control / execution-plane split and champion/challenger governance.
 Before assigning or changing agent work, also read `docs/AGENT_GOVERNANCE.md` so discovery stays split by family cohort, exhaustive follow-up stays split by ticker bundle, and live-book mutation stays with the single-writer steward.
 Before running the paper runner or a governed nightly cycle, also read `docs/REPO_UPDATE_CONTROL.md` and inspect `docs/repo_updates/repo_update_handoff.md` so the machine does not drift behind GitHub or run from the wrong branch silently.
+Before refreshing execution policy from paper-runner evidence, also read `docs/SESSION_RECONCILIATION_REGISTRY.md` and inspect `docs/session_reconciliation/session_reconciliation_handoff.md` so review-required sessions do not loosen research policy or promotion conclusions.
 Before choosing or running a major nightly cycle, also read `docs/EXECUTION_CALIBRATION_REGISTRY.md` and inspect `docs/execution_calibration/execution_calibration_handoff.md` so current paper-runner fill, guardrail, and loss evidence can feed the next research run instead of being ignored.
 Before choosing a nightly research cycle, also read `docs/TOURNAMENT_PROFILE_REGISTRY.md` and inspect `docs/tournament_profiles/tournament_profile_handoff.md` so the machine uses an approved executable tournament profile that is also aligned with the current execution posture.
 
@@ -206,6 +207,50 @@ Hard rules:
 - do not modify the live manifest
 - do not start trading
 - do not change strategy selection or risk policy in this step
+```
+
+## 11. Refresh Post-Session Reconciliation And Execution Policy
+
+```text
+Open these sibling folders and use them together:
+
+1. C:\Users\<you>\Downloads\codexalpaca_repo
+2. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs/SESSION_RECONCILIATION_REGISTRY.md
+- docs/EXECUTION_CALIBRATION_REGISTRY.md
+
+Then act as the Session Reconciliation Steward and Execution Calibration Steward for the new machine.
+
+In C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion:
+
+1. Rebuild the session reconciliation registry and handoff from the latest runner session bundles.
+2. Rebuild the execution calibration registry and handoff from the same runner evidence.
+3. Inspect:
+   - `docs/session_reconciliation/session_reconciliation_registry.md`
+   - `docs/session_reconciliation/session_reconciliation_handoff.md`
+   - `docs/execution_calibration/execution_calibration_registry.md`
+   - `docs/execution_calibration/execution_calibration_handoff.md`
+4. Determine:
+   - whether recent sessions are trusted, caution, or review-required
+   - whether execution posture should tighten, stay the same, or improve
+   - whether any broker-order, broker-activity, cleanup, or residual-position mismatches need human review
+5. If the reconciliation or calibration artifacts changed materially, prepare only those distilled artifacts for commit.
+6. Do not commit raw session exhaust, raw order logs, or raw intraday trade activity.
+
+At the end, report:
+- latest session bundle used
+- session reconciliation posture
+- execution calibration posture
+- whether research policy should tighten or loosen
+- whether the control-plane artifacts are ready to commit
+- any reconciliation anomalies that need human review
+
+Hard rules:
+- do not modify the live manifest
+- do not start trading
+- do not commit raw trade logs or raw session exhaust
 ```
 
 ## 10. Check GitHub Updates Before Open Or Nightly Work

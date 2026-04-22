@@ -42,6 +42,8 @@ $fallbackLiveManifestPath = "C:\Users\rabisaab\OneDrive\CodexAlpaca\downloads_re
 
 $familyRegistryBuilderPath = Join-Path $scriptRoot "build_strategy_family_registry.py"
 $familyHandoffBuilderPath = Join-Path $scriptRoot "build_strategy_family_handoff.py"
+$sessionReconciliationBuilderPath = Join-Path $scriptRoot "build_session_reconciliation_registry.py"
+$sessionReconciliationHandoffBuilderPath = Join-Path $scriptRoot "build_session_reconciliation_handoff.py"
 $executionCalibrationBuilderPath = Join-Path $scriptRoot "build_execution_calibration_registry.py"
 $executionCalibrationHandoffBuilderPath = Join-Path $scriptRoot "build_execution_calibration_handoff.py"
 $tournamentProfileBuilderPath = Join-Path $scriptRoot "build_tournament_profile_registry.py"
@@ -139,6 +141,14 @@ function Write-Status {
         updated_at = (Get-Date).ToString("o")
         cycle_root = $cycleRootPath
         program_root = $programRootPath
+        session_reconciliation_dir = $sessionReconciliationRoot
+        session_reconciliation_handoff_json =
+            if (Test-Path $sessionReconciliationHandoffJsonPath) {
+                $sessionReconciliationHandoffJsonPath
+            }
+            else {
+                ""
+            }
         execution_calibration_dir = $executionCalibrationRoot
         execution_calibration_handoff_json =
             if (Test-Path $executionCalibrationHandoffJsonPath) {
@@ -309,6 +319,7 @@ if ([string]::IsNullOrWhiteSpace($PaperRunnerTargetDate)) {
 }
 
 $familyRefreshRoot = Join-Path $cycleRootPath "family_refresh"
+$sessionReconciliationRoot = Join-Path $cycleRootPath "session_reconciliation"
 $executionCalibrationRoot = Join-Path $cycleRootPath "execution_calibration"
 $tournamentProfileRoot = Join-Path $cycleRootPath "tournament_profiles"
 $coverageRefreshRoot = Join-Path $cycleRootPath "coverage_refresh"
@@ -322,6 +333,7 @@ $morningHandoffRoot = Join-Path $reviewRoot "morning_handoff"
 $statusPath = Join-Path $cycleRootPath "nightly_operator_cycle_status.json"
 $manifestPath = Join-Path $cycleRootPath "nightly_operator_cycle_manifest.json"
 $handoffPath = Join-Path $cycleRootPath "nightly_operator_cycle_handoff.json"
+$sessionReconciliationHandoffJsonPath = Join-Path $sessionReconciliationRoot "session_reconciliation_handoff.json"
 $executionCalibrationHandoffJsonPath = Join-Path $executionCalibrationRoot "execution_calibration_handoff.json"
 $tournamentProfileHandoffJsonPath = Join-Path $tournamentProfileRoot "tournament_profile_handoff.json"
 $programStatusPath = Join-Path $programRootPath "program_status.json"
@@ -337,6 +349,7 @@ $tournamentProfileResolutionWarning = ""
 
 New-Item -ItemType Directory -Force -Path $cycleRootPath | Out-Null
 New-Item -ItemType Directory -Force -Path $programRootPath | Out-Null
+New-Item -ItemType Directory -Force -Path $sessionReconciliationRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $executionCalibrationRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $familyRefreshRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $tournamentProfileRoot | Out-Null
@@ -375,6 +388,8 @@ $cycleManifest = [ordered]@{
         min_trade_count = $MinTradeCount
     }
     control_plane = [ordered]@{
+        session_reconciliation_builder = $sessionReconciliationBuilderPath
+        session_reconciliation_handoff_builder = $sessionReconciliationHandoffBuilderPath
         execution_calibration_builder = $executionCalibrationBuilderPath
         execution_calibration_handoff_builder = $executionCalibrationHandoffBuilderPath
         family_registry_builder = $familyRegistryBuilderPath
@@ -416,6 +431,32 @@ trap {
     )
     Write-Error $failureMessage
     exit 2
+}
+
+Write-Status -Phase "refreshing_session_reconciliation" -Message "Refreshing the session reconciliation registry from paper-runner session bundles."
+
+$sessionReconciliationArgs = @(
+    "--runner-repo-root", $RunnerRepoRoot,
+    "--reports-root", (Join-Path $RunnerRepoRoot "reports\multi_ticker_portfolio\runs"),
+    "--report-dir", $sessionReconciliationRoot
+)
+Invoke-PythonStep -ScriptPath $sessionReconciliationBuilderPath -Arguments $sessionReconciliationArgs -FailureMessage "Failed to refresh session reconciliation registry."
+
+$sessionReconciliationJsonPath = Join-Path $sessionReconciliationRoot "session_reconciliation_registry.json"
+if (-not (Test-Path $sessionReconciliationJsonPath)) {
+    throw "Session reconciliation registry JSON was not created at $sessionReconciliationJsonPath"
+}
+
+Write-Status -Phase "refreshing_session_reconciliation_handoff" -Message "Refreshing the session reconciliation steward handoff."
+
+$sessionReconciliationHandoffArgs = @(
+    "--registry-json", $sessionReconciliationJsonPath,
+    "--report-dir", $sessionReconciliationRoot
+)
+Invoke-PythonStep -ScriptPath $sessionReconciliationHandoffBuilderPath -Arguments $sessionReconciliationHandoffArgs -FailureMessage "Failed to refresh session reconciliation handoff."
+
+if (-not (Test-Path $sessionReconciliationHandoffJsonPath)) {
+    throw "Session reconciliation handoff JSON was not created at $sessionReconciliationHandoffJsonPath"
 }
 
 Write-Status -Phase "refreshing_execution_calibration" -Message "Refreshing the execution calibration registry from paper-runner artifacts."
@@ -595,7 +636,9 @@ if (-not $Execute) {
     Refresh-ActiveProgramReport
     Invoke-RunRegistryReport -ReportDir $runRegistryReportDir -ManifestRoots @($cycleRootPath, $programRootPath)
 
-    Write-Status -Phase "planned" -Message "Nightly operator cycle planned successfully." -Extra @{
+Write-Status -Phase "planned" -Message "Nightly operator cycle planned successfully." -Extra @{
+        session_reconciliation_json = $sessionReconciliationJsonPath
+        session_reconciliation_handoff_json = $sessionReconciliationHandoffJsonPath
         execution_calibration_json = $executionCalibrationJsonPath
         execution_calibration_handoff_json = $executionCalibrationHandoffJsonPath
         family_registry_json = $familyRegistryJsonPath
@@ -748,6 +791,8 @@ $finalPayload = [ordered]@{
 Write-JsonFile -Path $handoffPath -Payload $finalPayload
 
 Write-Status -Phase "completed" -Message "Nightly operator cycle completed successfully." -Extra @{
+        session_reconciliation_json = $sessionReconciliationJsonPath
+        session_reconciliation_handoff_json = $sessionReconciliationHandoffJsonPath
         execution_calibration_json = $executionCalibrationJsonPath
         execution_calibration_handoff_json = $executionCalibrationHandoffJsonPath
         family_registry_json = $familyRegistryJsonPath
