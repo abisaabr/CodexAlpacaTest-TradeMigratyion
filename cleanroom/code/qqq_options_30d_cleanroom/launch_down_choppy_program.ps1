@@ -9,13 +9,13 @@ param(
     [switch]$BootstrapReadyUniverse = $true,
     [ValidateSet("full_ready", "coverage_ranked")]
     [string]$DiscoverySource = "full_ready",
-    [ValidateSet("down_choppy_only", "opening_window_premium_defense", "opening_window_convexity_butterfly")]
+    [ValidateSet("down_choppy_only", "opening_window_premium_defense", "opening_window_single_vs_multileg", "opening_window_convexity_butterfly")]
     [string]$Phase1StrategySet = "down_choppy_only",
-    [ValidateSet("down_choppy_focus", "opening_window_defensive", "opening_window_convexity")]
+    [ValidateSet("down_choppy_focus", "opening_window_defensive", "opening_window_balanced", "opening_window_convexity")]
     [string]$Phase1SelectionProfile = "down_choppy_focus",
-    [ValidateSet("down_choppy_exhaustive", "opening_window_premium_defense", "opening_window_convexity_butterfly")]
+    [ValidateSet("down_choppy_exhaustive", "opening_window_premium_defense", "opening_window_single_vs_multileg", "opening_window_convexity_butterfly")]
     [string]$Phase2StrategySet = "down_choppy_exhaustive",
-    [ValidateSet("down_choppy_focus", "opening_window_defensive", "opening_window_convexity")]
+    [ValidateSet("down_choppy_focus", "opening_window_defensive", "opening_window_balanced", "opening_window_convexity")]
     [string]$Phase2SelectionProfile = "down_choppy_focus",
     [string]$Phase1AllowedFamilies = "",
     [string]$CoveragePlannerPath = "",
@@ -27,7 +27,10 @@ param(
     [double]$MaxAvgFrictionPct = 95.0,
     [double]$MaxCheapSharePct = 85.0,
     [int]$MinTradeCount = 20,
-    [int]$PollSeconds = 30
+    [int]$PollSeconds = 30,
+    [string]$BenchmarkCoreTickers = "qqq,spy,iwm,nvda,tsla",
+    [int]$BenchmarkPerLaneCount = 2,
+    [int]$BenchmarkMaxTickerCount = 14
 )
 
 $ErrorActionPreference = "Stop"
@@ -310,6 +313,179 @@ function Convert-CoveragePlanToWavePlan {
     return $wavePlan
 }
 
+function Test-TickerReady {
+    param(
+        [string]$Ticker
+    )
+
+    $tickerLower = $Ticker.Trim().ToLower()
+    if ([string]::IsNullOrWhiteSpace($tickerLower)) {
+        return $false
+    }
+
+    $tickerDir = Join-Path $ReadyBaseDir $tickerLower
+    if (Test-Path $tickerDir) {
+        return $true
+    }
+
+    $widePath = Join-Path $tickerDir ("{0}_365d_option_1min_wide_backtest.parquet" -f $tickerLower)
+    return (Test-Path $widePath)
+}
+
+function Normalize-TickerList {
+    param(
+        [object[]]$Values
+    )
+
+    $tickers = New-Object System.Collections.Generic.List[string]
+    foreach ($value in @($Values)) {
+        if ([string]::IsNullOrWhiteSpace([string]$value)) {
+            continue
+        }
+        foreach ($token in ([string]$value -split ",")) {
+            $clean = $token.Trim().ToLower()
+            if (-not [string]::IsNullOrWhiteSpace($clean)) {
+                $tickers.Add($clean)
+            }
+        }
+    }
+    return @($tickers)
+}
+
+function Select-OpeningWindowBenchmarkTickers {
+    param(
+        [object]$CoveragePlan
+    )
+
+    $selected = New-Object System.Collections.Generic.List[string]
+    $selectedReasons = @()
+    $selectedSet = New-Object System.Collections.Generic.HashSet[string]
+    $missingCore = New-Object System.Collections.Generic.List[string]
+
+    foreach ($ticker in (Normalize-TickerList -Values @($BenchmarkCoreTickers))) {
+        if ($selected.Count -ge $BenchmarkMaxTickerCount) {
+            break
+        }
+        if (-not (Test-TickerReady -Ticker $ticker)) {
+            $missingCore.Add($ticker.ToUpper())
+            continue
+        }
+        if ($selectedSet.Add($ticker)) {
+            $selected.Add($ticker)
+            $selectedReasons += [ordered]@{
+                ticker = $ticker.ToUpper()
+                source = "core_benchmark"
+                lane_id = ""
+                gap_score = $null
+            }
+        }
+    }
+
+    $laneTemplates =
+        if ($null -ne $CoveragePlan -and $CoveragePlan.PSObject.Properties.Name -contains "lane_templates") {
+            @($CoveragePlan.lane_templates)
+        }
+        else {
+            @()
+        }
+
+    foreach ($lane in $laneTemplates) {
+        if ($selected.Count -ge $BenchmarkMaxTickerCount) {
+            break
+        }
+        $laneId = [string]$lane["lane_id"]
+        $readyRows = @($lane["ready_discovery"])
+        $addedForLane = 0
+        foreach ($row in $readyRows) {
+            if ($selected.Count -ge $BenchmarkMaxTickerCount -or $addedForLane -ge $BenchmarkPerLaneCount) {
+                break
+            }
+            $ticker = [string]$row["ticker"]
+            $tickerLower = $ticker.Trim().ToLower()
+            if ([string]::IsNullOrWhiteSpace($tickerLower) -or -not (Test-TickerReady -Ticker $tickerLower)) {
+                continue
+            }
+            if ($selectedSet.Add($tickerLower)) {
+                $selected.Add($tickerLower)
+                $selectedReasons += [ordered]@{
+                    ticker = $tickerLower.ToUpper()
+                    source = "coverage_ranked_ready"
+                    lane_id = $laneId
+                    gap_score = $row["gap_score"]
+                }
+                $addedForLane += 1
+            }
+        }
+    }
+
+    return [ordered]@{
+        selected_tickers = @($selected | Select-Object -Unique)
+        selected_reasons = $selectedReasons
+        missing_core_tickers = @($missingCore)
+    }
+}
+
+function Convert-CoveragePlanToSingleVsMultilegWavePlan {
+    param(
+        [string]$NextWavePlanPath,
+        [string]$DiscoveryRootPath,
+        [string]$StrategySet = "opening_window_single_vs_multileg",
+        [string]$SelectionProfile = "opening_window_balanced"
+    )
+
+    $payload = Get-Content -Path $NextWavePlanPath -Raw | ConvertFrom-Json
+    $benchmarkSelection = Select-OpeningWindowBenchmarkTickers -CoveragePlan $payload
+    $selectedTickers = @($benchmarkSelection.selected_tickers)
+
+    if ($selectedTickers.Count -lt 4) {
+        throw "opening-window single-vs-multileg benchmark selected too few ready tickers to run safely."
+    }
+
+    $laneConfigs = @(
+        [ordered]@{
+            lane_id = "01_opening_single_legs"
+            description = "Opening-window directional single-leg lane: calls versus puts."
+            family_include = "single_leg_long_call,single_leg_long_put"
+        },
+        [ordered]@{
+            lane_id = "02_opening_debit_spreads"
+            description = "Opening-window defined-risk debit spread lane."
+            family_include = "debit_call_spread,debit_put_spread"
+        },
+        [ordered]@{
+            lane_id = "03_opening_credit_and_iron"
+            description = "Opening-window credit spread and iron-structure lane."
+            family_include = "credit_call_spread,credit_put_spread,iron_condor,iron_butterfly"
+        },
+        [ordered]@{
+            lane_id = "04_opening_butterfly_backspread"
+            description = "Opening-window butterfly and backspread lane."
+            family_include = "call_butterfly,put_butterfly,call_backspread,put_backspread"
+        }
+    )
+
+    $wavePlan = @()
+    foreach ($lane in $laneConfigs) {
+        $wavePlan += [ordered]@{
+            lane_id = [string]$lane.lane_id
+            description = [string]$lane.description
+            strategy_set = $StrategySet
+            selection_profile = $SelectionProfile
+            family_include = [string]$lane.family_include
+            tickers = @($selectedTickers)
+            research_dir = (Join-Path $DiscoveryRootPath ([string]$lane.lane_id))
+            command = ""
+        }
+    }
+
+    return [ordered]@{
+        wave_plan = $wavePlan
+        selected_tickers = @($selectedTickers | ForEach-Object { $_.ToUpper() })
+        selected_reasons = @($benchmarkSelection.selected_reasons)
+        missing_core_tickers = @($benchmarkSelection.missing_core_tickers)
+    }
+}
+
 function Get-CoveragePrepTickers {
     param(
         [string]$NextWavePlanPath
@@ -393,6 +569,7 @@ $statusPath = Join-Path $programRootPath "program_status.json"
 $manifestPath = Join-Path $programRootPath "program_manifest.json"
 $phase1StatusPath = Join-Path $programRootPath "phase1_status.json"
 $phase2StatusPath = Join-Path $programRootPath "phase2_status.json"
+$singleVsMultilegPlanPath = Join-Path $programRootPath "opening_single_vs_multileg_plan.json"
 
 New-Item -ItemType Directory -Force -Path $programRootPath | Out-Null
 New-Item -ItemType Directory -Force -Path $discoveryRoot | Out-Null
@@ -525,12 +702,23 @@ if ($DiscoverySource -eq "coverage_ranked") {
         throw "coverage planner did not recreate next_wave_plan.json at $nextWavePlanPath"
     }
 
-    $wavePlan = Convert-CoveragePlanToWavePlan `
-        -NextWavePlanPath $nextWavePlanPath `
-        -DiscoveryRootPath $discoveryRoot `
-        -StrategySet $Phase1StrategySet `
-        -SelectionProfile $Phase1SelectionProfile `
-        -AllowedFamilies $Phase1AllowedFamilies
+    if ($Phase1StrategySet -eq "opening_window_single_vs_multileg") {
+        $singleVsMultilegPlan = Convert-CoveragePlanToSingleVsMultilegWavePlan `
+            -NextWavePlanPath $nextWavePlanPath `
+            -DiscoveryRootPath $discoveryRoot `
+            -StrategySet $Phase1StrategySet `
+            -SelectionProfile $Phase1SelectionProfile
+        $wavePlan = @($singleVsMultilegPlan.wave_plan)
+        Write-JsonFile -Path $singleVsMultilegPlanPath -Payload $singleVsMultilegPlan
+    }
+    else {
+        $wavePlan = Convert-CoveragePlanToWavePlan `
+            -NextWavePlanPath $nextWavePlanPath `
+            -DiscoveryRootPath $discoveryRoot `
+            -StrategySet $Phase1StrategySet `
+            -SelectionProfile $Phase1SelectionProfile `
+            -AllowedFamilies $Phase1AllowedFamilies
+    }
     $wavePlanPath = Join-Path $discoveryRoot "family_wave_plan.json"
     Write-JsonFile -Path $wavePlanPath -Payload $wavePlan
 }
@@ -585,6 +773,13 @@ $manifest = [ordered]@{
         min_trade_count = $MinTradeCount
     }
     discovery_lanes = @($wavePlan)
+    opening_single_vs_multileg_plan_path =
+        if (Test-Path $singleVsMultilegPlanPath) {
+            $singleVsMultilegPlanPath
+        }
+        else {
+            ""
+        }
 }
 if ($DiscoverySource -eq "coverage_ranked") {
     $manifest.bootstrap = [ordered]@{

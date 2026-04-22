@@ -9,7 +9,7 @@ param(
     [string]$PythonExe = "python",
     [switch]$Execute,
     [switch]$BootstrapReadyUniverse = $true,
-    [ValidateSet("auto", "down_choppy_coverage_ranked", "down_choppy_full_ready", "opening_30m_premium_defense", "opening_30m_convexity_butterfly", "balanced_family_expansion_benchmark")]
+    [ValidateSet("auto", "down_choppy_coverage_ranked", "down_choppy_full_ready", "opening_30m_premium_defense", "opening_30m_single_vs_multileg", "opening_30m_convexity_butterfly", "balanced_family_expansion_benchmark")]
     [string]$TournamentProfile = "auto",
     [ValidateSet("full_ready", "coverage_ranked")]
     [string]$DiscoverySource = "coverage_ranked",
@@ -649,6 +649,14 @@ switch ($resolvedTournamentProfile) {
             "-Phase2StrategySet", "down_choppy_exhaustive",
             "-Phase2SelectionProfile", "down_choppy_focus",
             "-Phase1AllowedFamilies", "credit_call_spread,debit_put_spread,iron_condor,iron_butterfly,put_butterfly"
+        )
+    }
+    "opening_30m_single_vs_multileg" {
+        $resolvedProgramExtraArgs += @(
+            "-Phase1StrategySet", "opening_window_single_vs_multileg",
+            "-Phase1SelectionProfile", "opening_window_balanced",
+            "-Phase2StrategySet", "opening_window_single_vs_multileg",
+            "-Phase2SelectionProfile", "opening_window_balanced"
         )
     }
     "opening_30m_convexity_butterfly" {

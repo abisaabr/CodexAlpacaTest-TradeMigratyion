@@ -6,7 +6,7 @@ This registry is the control-plane source of truth for which institutional tourn
 
 - Default profile: `down_choppy_coverage_ranked`
 - Active profiles: `down_choppy_coverage_ranked, down_choppy_full_ready`
-- Executable profiles: `balanced_family_expansion_benchmark, down_choppy_coverage_ranked, down_choppy_full_ready, opening_30m_convexity_butterfly, opening_30m_premium_defense`
+- Executable profiles: `balanced_family_expansion_benchmark, down_choppy_coverage_ranked, down_choppy_full_ready, opening_30m_convexity_butterfly, opening_30m_premium_defense, opening_30m_single_vs_multileg`
 
 ## Profiles
 
@@ -74,14 +74,14 @@ This registry is the control-plane source of truth for which institutional tourn
 
 ### opening_30m_single_vs_multileg
 
-- Status: `planned`
-- Executable now: `false`
+- Status: `partial`
+- Executable now: `true`
 - Objective: Institutional opening-window shootout between directional single-legs and defined-risk multi-leg structures.
 - Regime focus: `bull, bear, choppy`
 - Session focus: `opening_30m`
 - Execution window: `first_30_minutes`
-- Entrypoint: `planned_profile`
-- Underlying program: `not_yet_wired`
+- Entrypoint: `launch_nightly_operator_cycle.ps1`
+- Underlying program: `launch_down_choppy_program.ps1`
 - Discovery source: `coverage_ranked`
 - Bootstrap ready universe: `true`
 - Strategy sets: `opening_window_single_vs_multileg`
@@ -101,7 +101,7 @@ This registry is the control-plane source of truth for which institutional tourn
 - Preferred machine now: `current_research_machine`
 - Preferred machine target: `new_machine`
 - Families: `Single-leg long call`, `Single-leg long put`, `Debit call spread`, `Debit put spread`, `Credit call spread`, `Credit put spread`, `Iron condor`, `Iron butterfly`, `Call butterfly`, `Put butterfly`, `Call backspread`, `Put backspread`
-- Notes: Best next structural tournament for diversifying away from the current single-leg-heavy live book, but it needs opening-window family wiring first.
+- Notes: Governed execution is now wired through the nightly operator, but activation still depends on broad broker-audited execution evidence, reliable exit telemetry, and a higher execution-risk ceiling.
 
 ### opening_30m_premium_defense
 

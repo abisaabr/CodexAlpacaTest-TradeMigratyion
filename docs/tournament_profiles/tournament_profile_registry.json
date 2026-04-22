@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T16:45:35.050584",
+  "generated_at": "2026-04-22T17:21:38.227988",
   "default_profile": "down_choppy_coverage_ranked",
   "active_profiles": [
     "down_choppy_coverage_ranked",
@@ -10,7 +10,8 @@
     "down_choppy_coverage_ranked",
     "down_choppy_full_ready",
     "opening_30m_convexity_butterfly",
-    "opening_30m_premium_defense"
+    "opening_30m_premium_defense",
+    "opening_30m_single_vs_multileg"
   ],
   "planned_profiles": [
     "balanced_family_expansion_benchmark",
@@ -121,8 +122,8 @@
     },
     {
       "profile_id": "opening_30m_single_vs_multileg",
-      "status": "planned",
-      "executable_now": false,
+      "status": "partial",
+      "executable_now": true,
       "objective": "Institutional opening-window shootout between directional single-legs and defined-risk multi-leg structures.",
       "regime_focus": [
         "bull",
@@ -131,8 +132,8 @@
       ],
       "session_focus": "opening_30m",
       "execution_window": "first_30_minutes",
-      "entrypoint": "planned_profile",
-      "underlying_program": "not_yet_wired",
+      "entrypoint": "launch_nightly_operator_cycle.ps1",
+      "underlying_program": "launch_down_choppy_program.ps1",
       "discovery_source": "coverage_ranked",
       "bootstrap_ready_universe": true,
       "strategy_sets": [
@@ -155,7 +156,7 @@
       "requires_exit_telemetry": true,
       "preferred_machine_now": "current_research_machine",
       "preferred_machine_target": "new_machine",
-      "notes": "Best next structural tournament for diversifying away from the current single-leg-heavy live book, but it needs opening-window family wiring first.",
+      "notes": "Governed execution is now wired through the nightly operator, but activation still depends on broad broker-audited execution evidence, reliable exit telemetry, and a higher execution-risk ceiling.",
       "families": [
         "Single-leg long call",
         "Single-leg long put",

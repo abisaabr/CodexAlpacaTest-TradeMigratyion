@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T16:45:35.946338",
+  "generated_at": "2026-04-22T17:21:39.034649",
   "unlock_registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_registry.json",
   "unlock_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_handoff.json",
   "current_unlocked_profile": "down_choppy_coverage_ranked",
@@ -8,20 +8,12 @@
   ],
   "research_plane_mission": {
     "owner": "current_research_machine",
-    "mission_code": "wire_next_unlock_profile",
-    "title": "Wire governed execution for `opening_30m_single_vs_multileg`.",
-    "primary_target_profile": "opening_30m_single_vs_multileg",
-    "summary": "Clear the implementation blocker on `opening_30m_single_vs_multileg` so the remaining unlock path is governed only by execution evidence and session trust.",
-    "actions": [
-      "Add a governed executable entrypoint for `opening_30m_single_vs_multileg` instead of leaving it tracked-only in policy.",
-      "Make sure the new path participates in the same nightly-operator control plane, lineage, validation, and morning-handoff chain.",
-      "Refresh the tournament profile registry, tournament profile handoff, tournament unlock registry, and tournament unlock handoff after wiring is complete."
-    ],
-    "success_criteria": [
-      "`opening_30m_single_vs_multileg` no longer carries `implementation_not_wired` in the unlock registry.",
-      "`opening_30m_single_vs_multileg` is executable in code, even if execution evidence still blocks activation.",
-      "The governed operator artifacts regenerate cleanly after the new profile wiring."
-    ]
+    "mission_code": "maintain_current_governed_profiles",
+    "title": "No research-plane unlock wiring is immediately required.",
+    "primary_target_profile": "",
+    "summary": "The current unlock surface is blocked more by execution evidence than by missing governed entrypoints.",
+    "actions": [],
+    "success_criteria": []
   },
   "execution_plane_mission": {
     "owner": "new_machine_execution_plane",

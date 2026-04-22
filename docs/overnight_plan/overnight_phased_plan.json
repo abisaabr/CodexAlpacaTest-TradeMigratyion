@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T16:45:36.811354",
+  "generated_at": "2026-04-22T17:21:39.799635",
   "repo_update_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\repo_updates\\repo_update_handoff.json",
   "unlock_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_handoff.json",
   "workplan_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_workplan_handoff.json",
@@ -76,19 +76,11 @@
     {
       "phase_code": "phase_2_research_unlock_progress",
       "owner": "current_research_machine",
-      "title": "Wire governed execution for `opening_30m_single_vs_multileg`.",
-      "objective": "Clear the implementation blocker on `opening_30m_single_vs_multileg` so the remaining unlock path is governed only by execution evidence and session trust.",
-      "primary_target_profile": "opening_30m_single_vs_multileg",
-      "success_criteria": [
-        "`opening_30m_single_vs_multileg` no longer carries `implementation_not_wired` in the unlock registry.",
-        "`opening_30m_single_vs_multileg` is executable in code, even if execution evidence still blocks activation.",
-        "The governed operator artifacts regenerate cleanly after the new profile wiring."
-      ],
-      "actions": [
-        "Add a governed executable entrypoint for `opening_30m_single_vs_multileg` instead of leaving it tracked-only in policy.",
-        "Make sure the new path participates in the same nightly-operator control plane, lineage, validation, and morning-handoff chain.",
-        "Refresh the tournament profile registry, tournament profile handoff, tournament unlock registry, and tournament unlock handoff after wiring is complete."
-      ],
+      "title": "No research-plane unlock wiring is immediately required.",
+      "objective": "The current unlock surface is blocked more by execution evidence than by missing governed entrypoints.",
+      "primary_target_profile": "",
+      "success_criteria": [],
+      "actions": [],
       "gates": [
         "Do this through the governed control-plane path, not as an ad hoc side script."
       ]

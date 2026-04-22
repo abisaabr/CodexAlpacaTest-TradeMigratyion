@@ -129,6 +129,51 @@ OPENING_WINDOW_PREMIUM_DEFENSE_STRATEGY_NAMES = {
     "put_butterfly_same_day_conservative",
 }
 
+OPENING_WINDOW_SINGLE_VS_MULTILEG_STRATEGY_NAMES = {
+    "orb_long_call_same_day",
+    "orb_long_put_same_day",
+    "orb_long_call_same_day_d40",
+    "orb_long_put_same_day_d40",
+    "orb_long_call_same_day_d60",
+    "orb_long_put_same_day_d60",
+    "orb_long_call_next_expiry",
+    "orb_long_put_next_expiry",
+    "trend_long_call_next_expiry",
+    "trend_long_put_next_expiry",
+    "trend_long_call_next_expiry_d50",
+    "trend_long_put_next_expiry_d50",
+    "trend_long_call_next_expiry_d70",
+    "trend_long_put_next_expiry_d70",
+    "bull_call_spread_next_expiry",
+    "bull_call_spread_next_expiry_tight",
+    "bull_call_spread_next_expiry_wide",
+    "bear_put_spread_next_expiry",
+    "bear_put_spread_next_expiry_tight",
+    "bear_put_spread_next_expiry_wide",
+    "bull_put_credit_spread_same_day",
+    "bull_put_credit_spread_same_day_conservative",
+    "bull_put_credit_spread_same_day_aggressive",
+    "bear_call_credit_spread_same_day",
+    "bear_call_credit_spread_same_day_conservative",
+    "bear_call_credit_spread_same_day_aggressive",
+    "bull_put_credit_spread_next_expiry",
+    "bull_put_credit_spread_next_expiry_conservative",
+    "bear_call_credit_spread_next_expiry",
+    "bear_call_credit_spread_next_expiry_conservative",
+    "iron_condor_same_day",
+    "iron_condor_same_day_conservative",
+    "iron_condor_same_day_aggressive",
+    "iron_butterfly_same_day",
+    "call_butterfly_same_day",
+    "call_butterfly_same_day_conservative",
+    "put_butterfly_same_day",
+    "put_butterfly_same_day_conservative",
+    "call_backspread_next_expiry",
+    "call_backspread_next_expiry_aggressive",
+    "put_backspread_next_expiry",
+    "put_backspread_next_expiry_aggressive",
+}
+
 OPENING_WINDOW_CONVEXITY_BUTTERFLY_STRATEGY_NAMES = {
     "put_backspread_next_expiry",
     "put_backspread_next_expiry_aggressive",
@@ -285,6 +330,8 @@ def build_delta_strategies(
         "down_choppy_only",
         "down_choppy_exhaustive",
         "opening_window_premium_defense",
+        "opening_window_convexity_butterfly",
+        "opening_window_single_vs_multileg",
     }
 
     def make_strategy(
@@ -1266,6 +1313,13 @@ def build_delta_strategies(
             strategy
             for strategy in strategies
             if strategy.name in OPENING_WINDOW_PREMIUM_DEFENSE_STRATEGY_NAMES
+        ]
+
+    if strategy_set == "opening_window_single_vs_multileg":
+        strategies = [
+            strategy
+            for strategy in strategies
+            if strategy.name in OPENING_WINDOW_SINGLE_VS_MULTILEG_STRATEGY_NAMES
         ]
 
     if strategy_set == "opening_window_convexity_butterfly":

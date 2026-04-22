@@ -82,16 +82,17 @@ def build_parser() -> argparse.ArgumentParser:
             "down_choppy_only",
             "down_choppy_exhaustive",
             "opening_window_premium_defense",
+            "opening_window_single_vs_multileg",
             "opening_window_convexity_butterfly",
         ),
         default="standard",
-        help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates, 'down_choppy_only' runs a lean bearish/choppy tournament surface, 'down_choppy_exhaustive' expands bearish/choppy parameter sweeps, 'opening_window_premium_defense' focuses first-30-minute premium-defense families, and 'opening_window_convexity_butterfly' focuses first-30-minute convexity and butterfly families.",
+        help="Strategy universe to test. 'family_expansion' adds new bull/bear/choppy family candidates, 'down_choppy_only' runs a lean bearish/choppy tournament surface, 'down_choppy_exhaustive' expands bearish/choppy parameter sweeps, 'opening_window_premium_defense' focuses first-30-minute premium-defense families, 'opening_window_single_vs_multileg' compares directional single-legs against defined-risk multi-leg structures in the first 30 minutes, and 'opening_window_convexity_butterfly' focuses first-30-minute convexity and butterfly families.",
     )
     parser.add_argument(
         "--selection-profile",
-        choices=("balanced", "down_choppy_focus", "opening_window_defensive", "opening_window_convexity"),
+        choices=("balanced", "down_choppy_focus", "opening_window_defensive", "opening_window_balanced", "opening_window_convexity"),
         default="balanced",
-        help="How strongly to bias config selection toward bearish/choppy robustness, opening-window premium-defense posture, or opening-window convexity posture.",
+        help="How strongly to bias config selection toward bearish/choppy robustness, opening-window premium-defense posture, balanced opening-window comparison posture, or opening-window convexity posture.",
     )
     parser.add_argument(
         "--family-include",

@@ -2,21 +2,15 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T16:45:35.946338`
+- Generated at: `2026-04-22T17:21:39.034649`
 - Current unlocked profile: `down_choppy_coverage_ranked`
 - Available but not preferred: `down_choppy_full_ready`
 
 ## Research Plane Mission
 
 - Owner: `current_research_machine`
-- Title: Wire governed execution for `opening_30m_single_vs_multileg`.
-- Primary target profile: `opening_30m_single_vs_multileg`
-- Action: Add a governed executable entrypoint for `opening_30m_single_vs_multileg` instead of leaving it tracked-only in policy.
-- Action: Make sure the new path participates in the same nightly-operator control plane, lineage, validation, and morning-handoff chain.
-- Action: Refresh the tournament profile registry, tournament profile handoff, tournament unlock registry, and tournament unlock handoff after wiring is complete.
-- Success: `opening_30m_single_vs_multileg` no longer carries `implementation_not_wired` in the unlock registry.
-- Success: `opening_30m_single_vs_multileg` is executable in code, even if execution evidence still blocks activation.
-- Success: The governed operator artifacts regenerate cleanly after the new profile wiring.
+- Title: No research-plane unlock wiring is immediately required.
+- Primary target profile: `none`
 
 ## Execution Plane Mission
 

@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T16:45:35.505013`
+- Generated at: `2026-04-22T17:21:38.651955`
 - Current resolved profile: `down_choppy_coverage_ranked`
 - Execution posture: `caution`
 - Session reconciliation posture: `caution`
@@ -15,7 +15,7 @@
 - `opening_30m_premium_defense`: state `policy_blocked`, blockers `execution_evidence_floor, broker_order_audit_coverage, broker_activity_audit_coverage`, next objectives `upgrade_execution_evidence_to_entry_and_reconciliation, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
 - `balanced_family_expansion_benchmark`: state `policy_blocked`, blockers `execution_evidence_floor, broker_order_audit_coverage, broker_activity_audit_coverage`, next objectives `upgrade_execution_evidence_to_entry_and_reconciliation, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
 - `opening_30m_convexity_butterfly`: state `policy_blocked`, blockers `execution_evidence_floor, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry`, next objectives `upgrade_execution_evidence_to_broad, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`
-- `opening_30m_single_vs_multileg`: state `implementation_and_policy_blocked`, blockers `implementation_not_wired, execution_evidence_floor, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry`, next objectives `wire_profile_entrypoint, upgrade_execution_evidence_to_broad, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`
+- `opening_30m_single_vs_multileg`: state `policy_blocked`, blockers `execution_evidence_floor, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry`, next objectives `upgrade_execution_evidence_to_broad, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`
 
 ## Immediate Unlock Objectives
 

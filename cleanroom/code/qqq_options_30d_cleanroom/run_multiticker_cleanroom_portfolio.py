@@ -80,6 +80,7 @@ def build_parser() -> argparse.ArgumentParser:
             "down_choppy_only",
             "down_choppy_exhaustive",
             "opening_window_premium_defense",
+            "opening_window_single_vs_multileg",
             "opening_window_convexity_butterfly",
         ),
         default="standard",
@@ -97,9 +98,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--selection-profile",
-        choices=("balanced", "down_choppy_focus", "opening_window_defensive", "opening_window_convexity"),
+        choices=("balanced", "down_choppy_focus", "opening_window_defensive", "opening_window_balanced", "opening_window_convexity"),
         default=DEFAULT_SELECTION_PROFILE,
-        help="How strongly to bias config selection toward bearish/choppy robustness, opening-window premium-defense posture, or opening-window convexity posture.",
+        help="How strongly to bias config selection toward bearish/choppy robustness, opening-window premium-defense posture, balanced opening-window comparison posture, or opening-window convexity posture.",
     )
     parser.add_argument(
         "--family-include",
@@ -721,7 +722,7 @@ def write_walkforward_checkpoint(
 
 
 def build_timing_profiles(strategy_set: str = "standard") -> tuple[TimingProfile, ...]:
-    if strategy_set in {"opening_window_premium_defense", "opening_window_convexity_butterfly"}:
+    if strategy_set in {"opening_window_premium_defense", "opening_window_single_vs_multileg", "opening_window_convexity_butterfly"}:
         return (
             TimingProfile(
                 name="reactive",
@@ -966,6 +967,15 @@ def build_selection_grids(
         return {
             "thresholds": [0.25, 0.30, 0.35, 0.40],
             "top_bull_values": [0, 1, 2],
+            "top_bear_values": [1, 2, 3],
+            "top_choppy_values": [1, 2, 3],
+            "min_trade_values": [3, 5, 8],
+            "risk_caps": [0.06, 0.08, 0.10, 0.12],
+        }
+    if strategy_set == "opening_window_single_vs_multileg":
+        return {
+            "thresholds": [0.25, 0.30, 0.35, 0.40],
+            "top_bull_values": [1, 2, 3],
             "top_bear_values": [1, 2, 3],
             "top_choppy_values": [1, 2, 3],
             "min_trade_values": [3, 5, 8],

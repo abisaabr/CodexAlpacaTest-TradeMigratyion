@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-04-22T16:45:35.273653",
-  "registry_generated_at": "2026-04-22T16:45:35.050584",
+  "generated_at": "2026-04-22T17:21:38.447328",
+  "registry_generated_at": "2026-04-22T17:21:38.227988",
   "execution_handoff_generated_at": "2026-04-22T14:46:18.843084",
   "requested_profile": "auto",
   "resolved_profile": "down_choppy_coverage_ranked",
@@ -23,7 +23,8 @@
     "down_choppy_coverage_ranked"
   ],
   "deprioritized_executable_profiles": [
-    "opening_30m_convexity_butterfly"
+    "opening_30m_convexity_butterfly",
+    "opening_30m_single_vs_multileg"
   ],
   "profile_evaluations": [
     {
@@ -157,8 +158,8 @@
     },
     {
       "profile_id": "opening_30m_single_vs_multileg",
-      "status": "planned",
-      "executable_now": false,
+      "status": "partial",
+      "executable_now": true,
       "score": -1420,
       "reasons": [
         "execution handoff explicitly deprioritizes this profile (-100)",
