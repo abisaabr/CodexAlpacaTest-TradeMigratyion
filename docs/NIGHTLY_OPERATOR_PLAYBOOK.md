@@ -65,6 +65,7 @@ Tasks:
 - refresh the execution calibration registry from the paper runner
 - refresh the execution calibration handoff packet so the nightly cycle has a machine-readable posture and policy recommendation
 - confirm the backtester will consume that handoff so nightly selection grids tighten automatically when live execution posture is in `caution`
+- confirm the fill model overlay is active so entry/exit slippage assumptions tighten automatically under the same posture
 - refresh the tournament profile registry and tournament profile handoff so profile choice is resolved from approved executable profiles plus current execution posture
 - refresh the formal family registry
 - refresh the family handoff packet

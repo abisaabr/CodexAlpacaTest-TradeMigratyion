@@ -18,6 +18,7 @@ from typing import Any
 import pandas as pd
 
 import backtest_qqq_greeks_portfolio as bqp
+import backtest_qqq_option_strategies as bqs
 from backtest_qqq_greeks_portfolio import (
     DeltaStrategy,
     build_delta_strategies,
@@ -1775,6 +1776,7 @@ def run_single_ticker_research(
     family_include_filters: list[str],
     family_exclude_filters: list[str],
     execution_calibration_context: dict[str, object],
+    execution_slippage_calibration: dict[str, object],
 ) -> dict[str, object]:
     ticker_lower = ticker.lower()
     research_dir.mkdir(parents=True, exist_ok=True)
@@ -2169,6 +2171,7 @@ def run_single_ticker_research(
             "family_include_filters": family_include_filters,
             "family_exclude_filters": family_exclude_filters,
             "execution_calibration": execution_calibration_context,
+            "execution_slippage_calibration": execution_slippage_calibration,
             "selection_grids": selection_grids,
             "frozen_initial_config": frozen_config,
             "reoptimized": reoptimized_summary,
@@ -2451,10 +2454,14 @@ def write_master_report(path: Path, payload: dict[str, object]) -> None:
     )
     lines.append(f"- Selection profile: {payload.get('selection_profile', DEFAULT_SELECTION_PROFILE)}")
     execution_calibration = dict(payload.get("execution_calibration", {}))
+    execution_slippage_calibration = dict(payload.get("execution_slippage_calibration", {}))
     if execution_calibration.get("enabled"):
         adjustments = dict(execution_calibration.get("selection_adjustments", {}))
         lines.append(
             f"- Execution calibration: `{execution_calibration.get('overall_execution_posture', 'unknown')}` posture with `{execution_calibration.get('evidence_strength', 'unknown')}` evidence; threshold shift {adjustments.get('threshold_shift', 0.0):.2f}, min-trade increment {adjustments.get('min_trade_increment', 0)}, risk-cap multiplier {adjustments.get('risk_cap_multiplier', 1.0):.2f}."
+        )
+        lines.append(
+            f"- Execution-aware slippage overlay: entry x{execution_slippage_calibration.get('entry_multiplier', 1.0):.2f}, exit x{execution_slippage_calibration.get('exit_multiplier', 1.0):.2f}."
         )
     else:
         lines.append("- Execution calibration: unavailable; static selection grids were used.")
@@ -2596,6 +2603,7 @@ def main() -> None:
     research_dir.mkdir(parents=True, exist_ok=True)
     execution_calibration_handoff_path = resolve_execution_calibration_handoff_path(args.execution_calibration_handoff)
     execution_calibration_context = build_execution_calibration_context(execution_calibration_handoff_path)
+    execution_slippage_calibration = bqs.configure_execution_slippage_calibration(execution_calibration_context)
     tickers = [ticker.strip().lower() for ticker in args.tickers.split(",") if ticker.strip()]
     profiles = build_timing_profiles(args.strategy_set)
     family_include_filters = parse_family_filters(args.family_include)
@@ -2627,6 +2635,7 @@ def main() -> None:
             "family_exclude_filters": family_exclude_filters,
             "execution_calibration_handoff": str(execution_calibration_handoff_path) if execution_calibration_handoff_path is not None else None,
             "execution_calibration": execution_calibration_context,
+            "execution_slippage_calibration": execution_slippage_calibration,
             "continue_on_error": bool(args.continue_on_error),
             "reuse_completed_tickers": bool(args.reuse_completed_tickers),
             "argv": sys.argv,
@@ -2637,6 +2646,7 @@ def main() -> None:
             "execution_calibration_handoff": file_lineage_descriptor(execution_calibration_handoff_path, prefer_full_hash=True)
             if execution_calibration_handoff_path is not None
             else None,
+            "execution_slippage_calibration": execution_slippage_calibration,
             "ticker_inputs": {
                 ticker.upper(): ticker_input_lineage(output_dir, ticker)
                 for ticker in tickers
@@ -2668,6 +2678,12 @@ def main() -> None:
             f"{execution_calibration_context.get('evidence_strength', 'unknown')} evidence.",
             flush=True,
         )
+        print(
+            "Execution-aware slippage overlay: "
+            f"entry x{execution_slippage_calibration.get('entry_multiplier', 1.0):.2f}, "
+            f"exit x{execution_slippage_calibration.get('exit_multiplier', 1.0):.2f}.",
+            flush=True,
+        )
     append_run_registry(
         registry_path,
         {
@@ -2681,6 +2697,7 @@ def main() -> None:
             "strategy_set": args.strategy_set,
             "selection_profile": args.selection_profile,
             "execution_calibration": execution_calibration_context,
+            "execution_slippage_calibration": execution_slippage_calibration,
             "timing_profiles": [profile.name for profile in profiles],
             "family_include_filters": family_include_filters,
             "family_exclude_filters": family_exclude_filters,
@@ -2711,6 +2728,7 @@ def main() -> None:
                 family_include_filters=family_include_filters,
                 family_exclude_filters=family_exclude_filters,
                 execution_calibration_context=execution_calibration_context,
+                execution_slippage_calibration=execution_slippage_calibration,
             )
             if reused is not None:
                 ticker_results.append(reused)
@@ -3024,6 +3042,7 @@ def main() -> None:
         "family_include_filters": family_include_filters,
         "family_exclude_filters": family_exclude_filters,
         "execution_calibration": execution_calibration_context,
+        "execution_slippage_calibration": execution_slippage_calibration,
         "successful_tickers": [result["ticker"] for result in ticker_results],
         "failed_tickers": failed_tickers,
         "initial_train_days": args.initial_train_days,

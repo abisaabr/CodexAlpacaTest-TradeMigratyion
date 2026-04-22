@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import math
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 
 import pandas as pd
 
@@ -36,6 +37,16 @@ PREMIUM_BUCKET_SLIPPAGE_MULTIPLIERS = {
 }
 EARLY_SESSION_MINUTES = 15
 LATE_SESSION_MINUTES = 30
+DEFAULT_EXECUTION_SLIPPAGE_CALIBRATION = {
+    "enabled": False,
+    "overall_execution_posture": "unavailable",
+    "evidence_strength": "none",
+    "entry_multiplier": 1.0,
+    "exit_multiplier": 1.0,
+    "source_path": None,
+    "notes": ["Static slippage model; no live execution calibration overlay applied."],
+}
+EXECUTION_SLIPPAGE_CALIBRATION = copy.deepcopy(DEFAULT_EXECUTION_SLIPPAGE_CALIBRATION)
 
 
 def step_label(step: int) -> str:
@@ -61,6 +72,62 @@ def classify_premium_bucket(price: float) -> str:
     if price < 1.00:
         return "0.60-1.00"
     return "1.00+"
+
+
+def get_execution_slippage_calibration() -> dict[str, object]:
+    return copy.deepcopy(EXECUTION_SLIPPAGE_CALIBRATION)
+
+
+def configure_execution_slippage_calibration(calibration_context: dict[str, object] | None = None) -> dict[str, object]:
+    global EXECUTION_SLIPPAGE_CALIBRATION
+
+    if not calibration_context or not bool(calibration_context.get("enabled")):
+        EXECUTION_SLIPPAGE_CALIBRATION = copy.deepcopy(DEFAULT_EXECUTION_SLIPPAGE_CALIBRATION)
+        return get_execution_slippage_calibration()
+
+    policy = dict(calibration_context.get("policy", {}))
+    flags = dict(calibration_context.get("flags", {}))
+    notes: list[str] = []
+    entry_multiplier = 1.0
+    exit_multiplier = 1.0
+
+    if calibration_context.get("overall_execution_posture") == "caution":
+        entry_multiplier *= 1.03
+        exit_multiplier *= 1.03
+        notes.append("Applied a small global caution multiplier because live Alpaca execution posture is elevated.")
+    if policy.get("entry_penalty_mode") == "raised":
+        entry_multiplier *= 1.15
+        notes.append("Raised entry-side slippage because the execution handoff requested stronger entry penalties.")
+    if bool(flags.get("elevated_entry_friction")):
+        entry_multiplier *= 1.08
+        notes.append("Raised entry-side slippage because live fills show elevated adverse entry friction.")
+    if bool(flags.get("high_guardrail_pressure")):
+        entry_multiplier *= 1.05
+        exit_multiplier *= 1.05
+        notes.append("Raised both-side slippage modestly because live guardrail pressure has been elevated.")
+    if bool(flags.get("sample_size_limited")):
+        entry_multiplier *= 1.02
+        exit_multiplier *= 1.02
+        notes.append("Added a small conservatism buffer because the execution sample is still limited.")
+    if policy.get("exit_model_posture") == "conservative_fallback" or bool(flags.get("exit_telemetry_gap")):
+        exit_multiplier *= 1.12
+        notes.append("Raised exit-side slippage because exit telemetry is incomplete and the handoff calls for conservative fallback.")
+
+    source_path = None
+    handoff_lineage = calibration_context.get("handoff_lineage")
+    if isinstance(handoff_lineage, dict):
+        source_path = handoff_lineage.get("path")
+
+    EXECUTION_SLIPPAGE_CALIBRATION = {
+        "enabled": True,
+        "overall_execution_posture": calibration_context.get("overall_execution_posture", "unknown"),
+        "evidence_strength": calibration_context.get("evidence_strength", "unknown"),
+        "entry_multiplier": round(float(entry_multiplier), 4),
+        "exit_multiplier": round(float(exit_multiplier), 4),
+        "source_path": source_path,
+        "notes": notes or ["Execution calibration enabled without additional slippage adjustments."],
+    }
+    return get_execution_slippage_calibration()
 
 
 def estimate_execution_slippage(price: float, context: dict[str, object] | None = None) -> float:
@@ -102,8 +169,22 @@ def estimate_execution_slippage(price: float, context: dict[str, object] | None 
         data_quality_multiplier *= 1.20
     if not session_has_any_trade:
         data_quality_multiplier *= 1.15
+    execution_phase = str(context.get("execution_phase", "entry")).lower()
+    calibration = EXECUTION_SLIPPAGE_CALIBRATION
+    calibration_multiplier = (
+        float(calibration.get("exit_multiplier", 1.0))
+        if execution_phase.startswith("exit")
+        else float(calibration.get("entry_multiplier", 1.0))
+    )
 
-    return base_slippage * premium_multiplier * liquidity_multiplier * session_multiplier * data_quality_multiplier
+    return (
+        base_slippage
+        * premium_multiplier
+        * liquidity_multiplier
+        * session_multiplier
+        * data_quality_multiplier
+        * calibration_multiplier
+    )
 
 
 def buy_fill(price: float, context: dict[str, object] | None = None) -> float:
@@ -775,6 +856,7 @@ def simulate_strategy(
                 "is_synthetic_bar": snapshot.get("entry_is_synthetic_bar", False),
                 "session_has_any_trade": snapshot.get("session_has_any_trade", True),
                 "minute_index": snapshot.get("entry_minute_index", entry_idx),
+                "execution_phase": "entry",
             }
             fill_price = (
                 buy_fill(snapshot["entry_price_raw"], context=entry_execution_context)
@@ -840,6 +922,7 @@ def simulate_strategy(
                         "session_has_any_trade": bool(ctx.frame[trade_bar_col].fillna(False).any()) if trade_bar_col in ctx.frame.columns else True,
                         "minute_index": int(idx),
                         "vwap": float(ctx.frame.loc[idx, vwap_col]) if vwap_col in ctx.frame.columns and pd.notna(ctx.frame.loc[idx, vwap_col]) else float(raw_price),
+                        "execution_phase": "exit",
                     }
                 )
             if not all_available:
@@ -1089,6 +1172,13 @@ def write_report(
     lines.append(
         f"- Slippage model: {SLIPPAGE_RATE * 100:.1f}% adverse with a ${MIN_SLIPPAGE:.2f} base minimum per option leg, scaled by premium bucket, trade count, volume, synthetic bars, and time of day."
     )
+    execution_calibration = get_execution_slippage_calibration()
+    if execution_calibration.get("enabled"):
+        lines.append(
+            f"- Execution slippage calibration: `{execution_calibration.get('overall_execution_posture', 'unknown')}` posture with `{execution_calibration.get('evidence_strength', 'unknown')}` evidence; entry multiplier {execution_calibration.get('entry_multiplier', 1.0):.2f}, exit multiplier {execution_calibration.get('exit_multiplier', 1.0):.2f}."
+        )
+    else:
+        lines.append("- Execution slippage calibration: unavailable; static fill penalties were used.")
     lines.append(f"- Assumptions JSON: `{assumptions_path.name}`")
     lines.append("")
     lines.append("## Strategy Summary")
@@ -1246,6 +1336,7 @@ def main() -> None:
         "slippage_rate": SLIPPAGE_RATE,
         "minimum_slippage_per_option": MIN_SLIPPAGE,
         "premium_bucket_slippage_multipliers": PREMIUM_BUCKET_SLIPPAGE_MULTIPLIERS,
+        "execution_slippage_calibration": get_execution_slippage_calibration(),
         "early_session_minutes": EARLY_SESSION_MINUTES,
         "late_session_minutes": LATE_SESSION_MINUTES,
         "execution_model": "liquidity_aware_phase1",

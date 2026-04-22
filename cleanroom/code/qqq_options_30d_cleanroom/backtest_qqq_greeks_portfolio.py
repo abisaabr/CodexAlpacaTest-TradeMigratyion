@@ -1411,6 +1411,7 @@ def select_leg(
         "session_has_any_trade": bool(chosen["session_has_any_trade"]),
         "minute_index": int(minute_index),
         "vwap": float(chosen["vwap"]) if pd.notna(chosen["vwap"]) else float(chosen["close"]),
+        "execution_phase": "entry",
     }
     fill_price = (
         buy_fill(float(chosen["close"]), context=execution_context)
@@ -1581,13 +1582,14 @@ def generate_candidate_trades(
                         {
                             "trade_count": float(bar["trade_count"]) if pd.notna(bar.get("trade_count")) else 0.0,
                             "volume": float(bar["volume"]) if pd.notna(bar.get("volume")) else 0.0,
-                            "has_trade_bar": bool(bar.get("has_trade_bar", False)),
-                            "is_synthetic_bar": bool(bar.get("is_synthetic_bar", False)),
-                            "session_has_any_trade": bool(bar.get("session_has_any_trade", False)),
-                            "minute_index": int(idx),
-                            "vwap": float(bar["vwap"]) if pd.notna(bar.get("vwap")) else float(raw_price),
-                        }
-                    )
+                        "has_trade_bar": bool(bar.get("has_trade_bar", False)),
+                        "is_synthetic_bar": bool(bar.get("is_synthetic_bar", False)),
+                        "session_has_any_trade": bool(bar.get("session_has_any_trade", False)),
+                        "minute_index": int(idx),
+                        "vwap": float(bar["vwap"]) if pd.notna(bar.get("vwap")) else float(raw_price),
+                        "execution_phase": "exit",
+                    }
+                )
                 if not available:
                     continue
 

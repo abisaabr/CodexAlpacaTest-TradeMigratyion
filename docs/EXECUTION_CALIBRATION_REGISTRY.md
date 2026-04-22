@@ -39,7 +39,9 @@ Refresh this registry before major nightly research cycles so the operator can:
 
 Then build the execution calibration handoff so the nightly operator has a concise policy posture, not just raw metrics.
 
-That handoff is not just advisory anymore. The cleanroom selector in `cleanroom/code/qqq_options_30d_cleanroom/run_multiticker_cleanroom_portfolio.py` now consumes it directly to tighten regime thresholds, minimum trade-count requirements, and risk-cap grids when live Alpaca evidence says fills and guardrails are running hot.
+That handoff is not just advisory anymore. The cleanroom now consumes it in two places:
+- the selector in `cleanroom/code/qqq_options_30d_cleanroom/run_multiticker_cleanroom_portfolio.py` tightens regime thresholds, minimum trade-count requirements, and risk-cap grids when live Alpaca evidence says fills and guardrails are running hot
+- the fill model in `cleanroom/code/qqq_options_30d_cleanroom/backtest_qqq_option_strategies.py` raises entry and exit slippage multipliers in a governed, phase-aware way so the simulator itself becomes more conservative under the same posture
 
 Primary handoff builder:
 - `cleanroom/code/qqq_options_30d_cleanroom/build_execution_calibration_handoff.py`
