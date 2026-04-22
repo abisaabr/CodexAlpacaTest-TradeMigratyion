@@ -10,6 +10,8 @@ Preferred entrypoint:
 Before assigning agent work, refresh and inspect:
 - `docs/AGENT_GOVERNANCE.md`
 - `docs/agent_governance/agent_governance_registry.md`
+- `docs/TOURNAMENT_PROFILE_REGISTRY.md`
+- `docs/tournament_profiles/tournament_profile_registry.md`
 
 It is written for the current two-machine setup:
 - current research machine = primary research plane

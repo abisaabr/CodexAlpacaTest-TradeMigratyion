@@ -14,6 +14,7 @@ Operate as the nightly research operator under the institutional blueprint.
 Read first:
 - docs/INSTITUTIONAL_OPERATING_BLUEPRINT.md
 - docs/AGENT_GOVERNANCE.md
+- docs/TOURNAMENT_PROFILE_REGISTRY.md
 - docs/NIGHTLY_OPERATOR_PLAYBOOK.md
 - docs/AGENT_OPERATING_MODEL.md
 - docs/STRATEGY_FAMILY_REGISTRY.md
@@ -53,6 +54,7 @@ Execution order:
 14. Refresh the run-registry packet and active-program packet where appropriate
 
 Prefer using `cleanroom/code/qqq_options_30d_cleanroom/launch_nightly_operator_cycle.ps1` as the top-level entrypoint when it is available, so the cycle is executed as one governed operator flow instead of a loose sequence of manual steps. If you need to inspect or repair a phase, do that surgically, then return to the top-level cycle.
+Use the tournament profile registry to decide whether to run the default `down_choppy_coverage_ranked` cycle, the `down_choppy_full_ready` fallback, or a still-planned opening-window profile that should remain in design rather than execution.
 
 Output requirements:
 - show what ran

@@ -8,6 +8,8 @@ param(
     [string]$PythonExe = "python",
     [switch]$Execute,
     [switch]$BootstrapReadyUniverse = $true,
+    [ValidateSet("down_choppy_coverage_ranked", "down_choppy_full_ready")]
+    [string]$TournamentProfile = "down_choppy_coverage_ranked",
     [ValidateSet("full_ready", "coverage_ranked")]
     [string]$DiscoverySource = "coverage_ranked",
     [int]$TopPerLane = 8,
@@ -35,6 +37,7 @@ $fallbackLiveManifestPath = "C:\Users\rabisaab\OneDrive\CodexAlpaca\downloads_re
 
 $familyRegistryBuilderPath = Join-Path $scriptRoot "build_strategy_family_registry.py"
 $familyHandoffBuilderPath = Join-Path $scriptRoot "build_strategy_family_handoff.py"
+$tournamentProfileBuilderPath = Join-Path $scriptRoot "build_tournament_profile_registry.py"
 $coverageBuilderPath = Join-Path $scriptRoot "build_ticker_family_coverage.py"
 $programLauncherPath = Join-Path $scriptRoot "launch_down_choppy_program.ps1"
 $validatorPath = Join-Path $scriptRoot "validate_program_live_book.py"
@@ -129,6 +132,7 @@ function Write-Status {
         cycle_root = $cycleRootPath
         program_root = $programRootPath
         family_refresh_dir = $familyRefreshRoot
+        tournament_profile_dir = $tournamentProfileRoot
         coverage_refresh_dir = $coverageRefreshRoot
         validation_dir = $validationRoot
         review_dir = $reviewRoot
@@ -221,6 +225,23 @@ function Refresh-ActiveProgramReport {
     & $PythonExe $activeProgramReporterPath --program-root $programRootPath --report-dir $activeProgramReportDir | Out-Null
 }
 
+if ($TournamentProfile -eq "down_choppy_full_ready") {
+    if (-not $PSBoundParameters.ContainsKey("DiscoverySource")) {
+        $DiscoverySource = "full_ready"
+    }
+    if (-not $PSBoundParameters.ContainsKey("BootstrapReadyUniverse")) {
+        $BootstrapReadyUniverse = $false
+    }
+}
+elseif ($TournamentProfile -eq "down_choppy_coverage_ranked") {
+    if (-not $PSBoundParameters.ContainsKey("DiscoverySource")) {
+        $DiscoverySource = "coverage_ranked"
+    }
+    if (-not $PSBoundParameters.ContainsKey("BootstrapReadyUniverse")) {
+        $BootstrapReadyUniverse = $true
+    }
+}
+
 if ([string]::IsNullOrWhiteSpace($ReadyBaseDir)) {
     $ReadyBaseDir = Resolve-PreferredPath -Candidates @($siblingReadyBaseDir, $oneDriveReadyBaseDir) -Fallback $siblingReadyBaseDir
 }
@@ -262,6 +283,7 @@ if ([string]::IsNullOrWhiteSpace($PaperRunnerTargetDate)) {
 }
 
 $familyRefreshRoot = Join-Path $cycleRootPath "family_refresh"
+$tournamentProfileRoot = Join-Path $cycleRootPath "tournament_profiles"
 $coverageRefreshRoot = Join-Path $cycleRootPath "coverage_refresh"
 $runRegistryReportDir = Join-Path $cycleRootPath "run_registry_report"
 $activeProgramReportDir = Join-Path $cycleRootPath "active_program_report"
@@ -284,6 +306,7 @@ $morningHandoffJsonPath = Join-Path $morningHandoffRoot "live_book_morning_hando
 New-Item -ItemType Directory -Force -Path $cycleRootPath | Out-Null
 New-Item -ItemType Directory -Force -Path $programRootPath | Out-Null
 New-Item -ItemType Directory -Force -Path $familyRefreshRoot | Out-Null
+New-Item -ItemType Directory -Force -Path $tournamentProfileRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $coverageRefreshRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $runRegistryReportDir | Out-Null
 New-Item -ItemType Directory -Force -Path $activeProgramReportDir | Out-Null
@@ -302,6 +325,7 @@ $cycleManifest = [ordered]@{
     live_manifest_path = $LiveManifestPath
     paper_runner_gate_path = $PaperRunnerGatePath
     paper_runner_target_date = $PaperRunnerTargetDate
+    tournament_profile = $TournamentProfile
     discovery_source = $DiscoverySource
     bootstrap_ready_universe = [bool]$BootstrapReadyUniverse
     filters = [ordered]@{
@@ -316,6 +340,7 @@ $cycleManifest = [ordered]@{
     control_plane = [ordered]@{
         family_registry_builder = $familyRegistryBuilderPath
         family_handoff_builder = $familyHandoffBuilderPath
+        tournament_profile_builder = $tournamentProfileBuilderPath
         coverage_builder = $coverageBuilderPath
         program_launcher = $programLauncherPath
         validator = $validatorPath
@@ -351,6 +376,18 @@ trap {
     )
     Write-Error $failureMessage
     exit 2
+}
+
+Write-Status -Phase "refreshing_tournament_profiles" -Message "Refreshing the tournament profile registry."
+
+$tournamentProfileArgs = @(
+    "--report-dir", $tournamentProfileRoot
+)
+Invoke-PythonStep -ScriptPath $tournamentProfileBuilderPath -Arguments $tournamentProfileArgs -FailureMessage "Failed to refresh tournament profile registry."
+
+$tournamentProfileJsonPath = Join-Path $tournamentProfileRoot "tournament_profile_registry.json"
+if (-not (Test-Path $tournamentProfileJsonPath)) {
+    throw "Tournament profile registry JSON was not created at $tournamentProfileJsonPath"
 }
 
 Write-Status -Phase "refreshing_family_registry" -Message "Refreshing the strategy family registry."
@@ -431,6 +468,7 @@ if (-not $Execute) {
     Write-Status -Phase "planned" -Message "Nightly operator cycle planned successfully." -Extra @{
         family_registry_json = $familyRegistryJsonPath
         family_handoff_json = $familyHandoffJsonPath
+        tournament_profile_json = $tournamentProfileJsonPath
         coverage_plan_json = $coveragePlanPath
         program_status_path = $programStatusPath
         next_step = "Run again with -Execute to launch the full nightly cycle."
@@ -539,6 +577,7 @@ $finalPayload = [ordered]@{
     program_phase = $programPhase
     family_registry_json = $familyRegistryJsonPath
     family_handoff_json = $familyHandoffJsonPath
+    tournament_profile_json = $tournamentProfileJsonPath
     coverage_plan_json = $coveragePlanPath
     phase2_pack_json =
         if (Test-Path $phase2PackPath) {
@@ -568,10 +607,11 @@ $finalPayload = [ordered]@{
 Write-JsonFile -Path $handoffPath -Payload $finalPayload
 
 Write-Status -Phase "completed" -Message "Nightly operator cycle completed successfully." -Extra @{
-    family_registry_json = $familyRegistryJsonPath
-    family_handoff_json = $familyHandoffJsonPath
-    coverage_plan_json = $coveragePlanPath
-    validation_json = $validationJsonPath
+        family_registry_json = $familyRegistryJsonPath
+        family_handoff_json = $familyHandoffJsonPath
+        tournament_profile_json = $tournamentProfileJsonPath
+        coverage_plan_json = $coveragePlanPath
+        validation_json = $validationJsonPath
     hardening_review_json = $reviewJsonPath
     replacement_plan_json = $replacementPlanJsonPath
     morning_handoff_json = $morningHandoffJsonPath

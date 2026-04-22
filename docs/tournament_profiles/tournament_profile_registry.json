@@ -1,0 +1,268 @@
+{
+  "generated_at": "2026-04-22T10:44:10.743656",
+  "default_profile": "down_choppy_coverage_ranked",
+  "active_profiles": [
+    "down_choppy_coverage_ranked",
+    "down_choppy_full_ready"
+  ],
+  "executable_profiles": [
+    "down_choppy_coverage_ranked",
+    "down_choppy_full_ready"
+  ],
+  "planned_profiles": [
+    "balanced_family_expansion_benchmark",
+    "opening_30m_convexity_butterfly",
+    "opening_30m_premium_defense",
+    "opening_30m_single_vs_multileg"
+  ],
+  "profiles": [
+    {
+      "profile_id": "down_choppy_coverage_ranked",
+      "status": "active",
+      "executable_now": true,
+      "objective": "Primary institutional nightly challenger cycle for down and choppy markets.",
+      "regime_focus": [
+        "down",
+        "choppy"
+      ],
+      "session_focus": "full_session",
+      "execution_window": "all_day",
+      "entrypoint": "launch_nightly_operator_cycle.ps1",
+      "underlying_program": "launch_down_choppy_program.ps1",
+      "discovery_source": "coverage_ranked",
+      "bootstrap_ready_universe": true,
+      "strategy_sets": [
+        "down_choppy_only",
+        "down_choppy_exhaustive"
+      ],
+      "selection_profiles": [
+        "down_choppy_focus"
+      ],
+      "phase1_split_axis": "family_cohort",
+      "phase2_split_axis": "ticker_bundle",
+      "validation_split_axis": "portfolio_context",
+      "promotion_mode": "review_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "either_machine",
+      "notes": "Default nightly operator profile because it exercises the full discovery-to-morning-handoff chain without auto-promoting the live book.",
+      "families": [
+        "Single-leg long put",
+        "Debit put spread",
+        "Credit call spread",
+        "Iron condor",
+        "Iron butterfly",
+        "Put backspread",
+        "Long straddle",
+        "Long strangle",
+        "Put butterfly",
+        "Broken-wing put butterfly"
+      ]
+    },
+    {
+      "profile_id": "down_choppy_full_ready",
+      "status": "active",
+      "executable_now": true,
+      "objective": "Fallback nightly challenger cycle when breadth over the current ready universe matters more than gap-ranked precision.",
+      "regime_focus": [
+        "down",
+        "choppy"
+      ],
+      "session_focus": "full_session",
+      "execution_window": "all_day",
+      "entrypoint": "launch_nightly_operator_cycle.ps1",
+      "underlying_program": "launch_down_choppy_program.ps1",
+      "discovery_source": "full_ready",
+      "bootstrap_ready_universe": false,
+      "strategy_sets": [
+        "down_choppy_only",
+        "down_choppy_exhaustive"
+      ],
+      "selection_profiles": [
+        "down_choppy_focus"
+      ],
+      "phase1_split_axis": "family_cohort",
+      "phase2_split_axis": "ticker_bundle",
+      "validation_split_axis": "portfolio_context",
+      "promotion_mode": "review_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "either_machine",
+      "notes": "Use when the ready universe is already broad enough and we want a direct run without extra bootstrap materialization.",
+      "families": [
+        "Single-leg long put",
+        "Debit put spread",
+        "Credit call spread",
+        "Iron condor",
+        "Iron butterfly",
+        "Put backspread",
+        "Long straddle",
+        "Long strangle",
+        "Put butterfly",
+        "Broken-wing put butterfly"
+      ]
+    },
+    {
+      "profile_id": "opening_30m_single_vs_multileg",
+      "status": "planned",
+      "executable_now": false,
+      "objective": "Institutional opening-window shootout between directional single-legs and defined-risk multi-leg structures.",
+      "regime_focus": [
+        "bull",
+        "bear",
+        "choppy"
+      ],
+      "session_focus": "opening_30m",
+      "execution_window": "first_30_minutes",
+      "entrypoint": "planned_profile",
+      "underlying_program": "not_yet_wired",
+      "discovery_source": "coverage_ranked",
+      "bootstrap_ready_universe": true,
+      "strategy_sets": [
+        "opening_window_single_vs_multileg"
+      ],
+      "selection_profiles": [
+        "opening_window_balanced"
+      ],
+      "phase1_split_axis": "family_cohort",
+      "phase2_split_axis": "ticker_bundle",
+      "validation_split_axis": "portfolio_context",
+      "promotion_mode": "review_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "new_machine",
+      "notes": "Best next structural tournament for diversifying away from the current single-leg-heavy live book, but it needs opening-window family wiring first.",
+      "families": [
+        "Single-leg long call",
+        "Single-leg long put",
+        "Debit call spread",
+        "Debit put spread",
+        "Credit call spread",
+        "Credit put spread",
+        "Iron condor",
+        "Iron butterfly",
+        "Call butterfly",
+        "Put butterfly",
+        "Call backspread",
+        "Put backspread"
+      ]
+    },
+    {
+      "profile_id": "opening_30m_premium_defense",
+      "status": "planned",
+      "executable_now": false,
+      "objective": "Focused opening-session premium-defense tournament for bear and choppy regimes.",
+      "regime_focus": [
+        "down",
+        "choppy"
+      ],
+      "session_focus": "opening_30m",
+      "execution_window": "first_30_minutes",
+      "entrypoint": "planned_profile",
+      "underlying_program": "not_yet_wired",
+      "discovery_source": "coverage_ranked",
+      "bootstrap_ready_universe": true,
+      "strategy_sets": [
+        "opening_window_premium_defense"
+      ],
+      "selection_profiles": [
+        "opening_window_defensive"
+      ],
+      "phase1_split_axis": "family_cohort",
+      "phase2_split_axis": "ticker_bundle",
+      "validation_split_axis": "portfolio_context",
+      "promotion_mode": "review_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "new_machine",
+      "notes": "Targets the under-tested premium-defense surface that should help in weak or messy tape once session-specific timing is fully encoded.",
+      "families": [
+        "Credit call spread",
+        "Debit put spread",
+        "Iron condor",
+        "Iron butterfly",
+        "Put butterfly"
+      ]
+    },
+    {
+      "profile_id": "opening_30m_convexity_butterfly",
+      "status": "planned",
+      "executable_now": false,
+      "objective": "Focused opening-session convexity and butterfly profile for early expansion or reversal moves.",
+      "regime_focus": [
+        "down",
+        "choppy"
+      ],
+      "session_focus": "opening_30m",
+      "execution_window": "first_30_minutes",
+      "entrypoint": "planned_profile",
+      "underlying_program": "not_yet_wired",
+      "discovery_source": "coverage_ranked",
+      "bootstrap_ready_universe": true,
+      "strategy_sets": [
+        "opening_window_convexity_butterfly"
+      ],
+      "selection_profiles": [
+        "opening_window_convexity"
+      ],
+      "phase1_split_axis": "family_cohort",
+      "phase2_split_axis": "ticker_bundle",
+      "validation_split_axis": "portfolio_context",
+      "promotion_mode": "review_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "new_machine",
+      "notes": "Cleanest planned tournament for testing whether early-session expansion favors long-vol and butterfly structures more than plain long puts.",
+      "families": [
+        "Put backspread",
+        "Long straddle",
+        "Long strangle",
+        "Put butterfly",
+        "Broken-wing put butterfly"
+      ]
+    },
+    {
+      "profile_id": "balanced_family_expansion_benchmark",
+      "status": "partial",
+      "executable_now": false,
+      "objective": "Cross-regime balanced family-expansion benchmark for diversified research and replacement pressure on the live book.",
+      "regime_focus": [
+        "bull",
+        "bear",
+        "choppy"
+      ],
+      "session_focus": "full_session",
+      "execution_window": "all_day",
+      "entrypoint": "manual_orchestrator",
+      "underlying_program": "run_core_strategy_expansion_overnight.py",
+      "discovery_source": "coverage_ranked",
+      "bootstrap_ready_universe": true,
+      "strategy_sets": [
+        "family_expansion"
+      ],
+      "selection_profiles": [
+        "balanced"
+      ],
+      "phase1_split_axis": "ticker_bundle",
+      "phase2_split_axis": "portfolio_context",
+      "validation_split_axis": "portfolio_context",
+      "promotion_mode": "review_only",
+      "preferred_machine_now": "current_research_machine",
+      "preferred_machine_target": "either_machine",
+      "notes": "Already executable as a research program, but not yet wired into the single-command nightly operator cycle.",
+      "families": [
+        "Single-leg long call",
+        "Single-leg long put",
+        "Debit call spread",
+        "Debit put spread",
+        "Credit call spread",
+        "Credit put spread",
+        "Iron condor",
+        "Iron butterfly",
+        "Call butterfly",
+        "Put butterfly",
+        "Broken-wing call butterfly",
+        "Broken-wing put butterfly",
+        "Call backspread",
+        "Put backspread",
+        "Long straddle",
+        "Long strangle"
+      ]
+    }
+  ]
+}
