@@ -84,6 +84,30 @@ function Resolve-PreferredPath {
     throw "No preferred path candidates were provided."
 }
 
+function Resolve-PreferredRegistryDirectory {
+    param(
+        [string[]]$Candidates,
+        [string]$Fallback
+    )
+
+    foreach ($candidate in @($Candidates)) {
+        if ([string]::IsNullOrWhiteSpace($candidate)) {
+            continue
+        }
+        $fullCandidate = [System.IO.Path]::GetFullPath($candidate)
+        $registryCandidate = Join-Path $fullCandidate "backtester_registry.csv"
+        if (Test-Path $registryCandidate) {
+            return $fullCandidate
+        }
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($Fallback)) {
+        return [System.IO.Path]::GetFullPath($Fallback)
+    }
+
+    throw "No registry directory candidates were provided."
+}
+
 function Write-JsonFile {
     param(
         [string]$Path,
@@ -339,7 +363,13 @@ else {
 }
 
 $researchOutputRoot = Resolve-PreferredPath -Candidates @($siblingOutputRoot, $oneDriveOutputRoot) -Fallback $siblingOutputRoot
-$secondaryOutputDir = $researchOutputRoot
+$readyBaseParentDir = Split-Path -Parent $ReadyBaseDir
+$secondaryOutputDir = Resolve-PreferredRegistryDirectory -Candidates @(
+    $researchOutputRoot,
+    $readyBaseParentDir,
+    $siblingOutputRoot,
+    $oneDriveOutputRoot
+) -Fallback $readyBaseParentDir
 $backtesterRegistryPath = Join-Path $secondaryOutputDir "backtester_registry.csv"
 $runRegistryPath = Join-Path $researchOutputRoot "run_registry.jsonl"
 
