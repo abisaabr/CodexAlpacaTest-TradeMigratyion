@@ -34,6 +34,7 @@ Verify that this machine now owns the multi-ticker portfolio lease, that the pap
 
 Before using the prompts below for ongoing research or runner operations, read `docs/INSTITUTIONAL_OPERATING_BLUEPRINT.md` so the machine stays aligned with the project's research / control / execution-plane split and champion/challenger governance.
 Before assigning or changing agent work, also read `docs/AGENT_GOVERNANCE.md` so discovery stays split by family cohort, exhaustive follow-up stays split by ticker bundle, and live-book mutation stays with the single-writer steward.
+Before running the paper runner or a governed nightly cycle, also read `docs/REPO_UPDATE_CONTROL.md` and inspect `docs/repo_updates/repo_update_handoff.md` so the machine does not drift behind GitHub or run from the wrong branch silently.
 Before choosing or running a major nightly cycle, also read `docs/EXECUTION_CALIBRATION_REGISTRY.md` and inspect `docs/execution_calibration/execution_calibration_handoff.md` so current paper-runner fill, guardrail, and loss evidence can feed the next research run instead of being ignored.
 Before choosing a nightly research cycle, also read `docs/TOURNAMENT_PROFILE_REGISTRY.md` and inspect `docs/tournament_profiles/tournament_profile_handoff.md` so the machine uses an approved executable tournament profile that is also aligned with the current execution posture.
 
@@ -199,6 +200,44 @@ At the end, report:
 - whether local runner order events and Alpaca order state reconcile cleanly enough for execution-plane use
 - whether the full suite is green
 - whether the machine is safe to keep using as the execution-plane paper runner
+
+Hard rules:
+- do not modify the live manifest
+- do not start trading
+- do not change strategy selection or risk policy in this step
+```
+
+## 10. Check GitHub Updates Before Open Or Nightly Work
+
+```text
+Open these sibling folders and use them together:
+
+1. C:\Users\<you>\Downloads\codexalpaca_repo
+2. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs/INSTITUTIONAL_OPERATING_BLUEPRINT.md
+- docs/REPO_UPDATE_CONTROL.md
+
+Then act as the Repo Update Steward for the new machine.
+
+In C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion:
+
+1. Run:
+   - `powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion\cleanroom\code\qqq_options_30d_cleanroom\launch_repo_update_check.ps1" -ControlPlaneRoot "C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion" -ExecutionRepoRoot "C:\Users\<you>\Downloads\codexalpaca_repo"`
+2. Inspect:
+   - `docs/repo_updates/repo_update_registry.md`
+   - `docs/repo_updates/repo_update_handoff.md`
+3. If the handoff says updates are required for `codexalpaca_repo`, integrate them deliberately from `origin/codex/qqq-paper-portfolio` without changing live strategy selection, risk policy, or the live manifest.
+4. If the handoff says updates are required for the control-plane repo, summarize the exact gap and whether the machine should pause governed nightly work until the control plane is current.
+5. If either repo is dirty, on the wrong branch, or missing required commits, treat that as an attention item and explain the safest next step instead of guessing.
+
+At the end, report:
+- overall repo update status
+- whether the control plane is current enough for governed nightly work
+- whether the execution repo is current enough for the paper runner
+- whether any required runner commits are missing
+- whether the machine is safe to proceed unchanged
 
 Hard rules:
 - do not modify the live manifest

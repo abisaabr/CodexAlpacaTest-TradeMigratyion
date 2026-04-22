@@ -8,6 +8,9 @@ Preferred entrypoint:
 - `cleanroom/code/qqq_options_30d_cleanroom/launch_nightly_operator_cycle.ps1`
 
 Before assigning agent work, refresh and inspect:
+- `docs/REPO_UPDATE_CONTROL.md`
+- `docs/repo_updates/repo_update_registry.md`
+- `docs/repo_updates/repo_update_handoff.md`
 - `docs/AGENT_GOVERNANCE.md`
 - `docs/EXECUTION_CALIBRATION_REGISTRY.md`
 - `docs/execution_calibration/execution_calibration_registry.md`
@@ -39,6 +42,26 @@ Research can be highly parallel.
 Production decisions must remain serialized and reviewable.
 
 ## Nightly Sequence
+
+### Phase -1: Repo Update Control
+
+Owner:
+- Repo Update Steward
+
+Required outputs:
+- `repo_update_registry.json`
+- `repo_update_registry.md`
+- `repo_update_handoff.json`
+- `repo_update_handoff.md`
+
+Tasks:
+- refresh the repo update registry against GitHub
+- verify the control-plane repo is current enough for governed nightly work
+- verify the execution repo is current enough for the paper runner and contains required runner commits
+- stop and surface an attention item if either repo is dirty, on the wrong branch, or behind a required branch
+
+Go / no-go:
+- do not start a governed nightly cycle from stale or branch-drifted repos when the handoff says update work is required
 
 ### Phase 0: Control-Plane Refresh
 

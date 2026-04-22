@@ -1,0 +1,100 @@
+{
+  "generated_at": "2026-04-22T13:59:46.076390",
+  "overall_status": "attention_required",
+  "safe_to_run_nightly_cycle": false,
+  "safe_to_run_execution_plane_without_update_review": false,
+  "repos": [
+    {
+      "name": "control_plane",
+      "role": "governance_and_prompts",
+      "repo_path": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion",
+      "remote": "origin",
+      "expected_branch": "main",
+      "repo_exists": true,
+      "status": "attention_required",
+      "fetch_ok": true,
+      "fetch_error": "",
+      "current_branch": "main",
+      "branch_matches_expected": true,
+      "head_sha": "23a06433dca999fe95bfca40b6ab5bd48119a8fb",
+      "remote_ref": "origin/main",
+      "remote_head_sha": "23a06433dca999fe95bfca40b6ab5bd48119a8fb",
+      "remote_ref_exists": true,
+      "ahead_count": 0,
+      "behind_count": 0,
+      "dirty": true,
+      "dirty_file_count": 9,
+      "dirty_files_preview": [
+        "M README.md",
+        " M docs/NEW_MACHINE_CODEX_PROMPTS.md",
+        " M docs/NIGHTLY_OPERATOR_PLAYBOOK.md",
+        " M docs/NIGHTLY_OPERATOR_PROMPT.md",
+        "?? cleanroom/code/qqq_options_30d_cleanroom/build_repo_update_registry.py",
+        "?? cleanroom/code/qqq_options_30d_cleanroom/launch_repo_update_check.ps1",
+        "?? docs/REPO_UPDATE_CHECK_PROMPT.md",
+        "?? docs/REPO_UPDATE_CONTROL.md",
+        "?? docs/repo_updates/"
+      ],
+      "required_commits": [],
+      "present_required_commits": [],
+      "missing_required_commits": [],
+      "safe_to_run_without_update_review": false,
+      "recommendation": "Review or stash local modifications before integrating GitHub updates."
+    },
+    {
+      "name": "execution_repo",
+      "role": "paper_runner_runtime",
+      "repo_path": "C:\\Users\\rabisaab\\OneDrive\\CodexAlpaca\\downloads_remaining_20260417\\folders\\codexalpaca_repo",
+      "remote": "origin",
+      "expected_branch": "codex/qqq-paper-portfolio",
+      "repo_exists": true,
+      "status": "up_to_date",
+      "fetch_ok": true,
+      "fetch_error": "",
+      "current_branch": "codex/qqq-paper-portfolio",
+      "branch_matches_expected": true,
+      "head_sha": "bdd7663e2a7ec7a27c1dbef511a5f378bdcb4179",
+      "remote_ref": "origin/codex/qqq-paper-portfolio",
+      "remote_head_sha": "bdd7663e2a7ec7a27c1dbef511a5f378bdcb4179",
+      "remote_ref_exists": true,
+      "ahead_count": 0,
+      "behind_count": 0,
+      "dirty": false,
+      "dirty_file_count": 0,
+      "dirty_files_preview": [],
+      "required_commits": [
+        "50764cf",
+        "4292514",
+        "f6d6168",
+        "8037710",
+        "bdd7663"
+      ],
+      "present_required_commits": [
+        "50764cf",
+        "4292514",
+        "f6d6168",
+        "8037710",
+        "bdd7663"
+      ],
+      "missing_required_commits": [],
+      "safe_to_run_without_update_review": true,
+      "recommendation": "No GitHub update action is required right now."
+    }
+  ],
+  "summary": {
+    "repo_count": 2,
+    "up_to_date_repo_count": 1,
+    "update_required_repo_count": 0,
+    "attention_required_repo_count": 1,
+    "fully_current_repos": [
+      "execution_repo"
+    ],
+    "update_required_repos": [],
+    "attention_required_repos": [
+      "control_plane"
+    ]
+  },
+  "overall_actions": [
+    "Resolve local branch, fetch, or dirty-worktree issues for: `control_plane`."
+  ]
+}
