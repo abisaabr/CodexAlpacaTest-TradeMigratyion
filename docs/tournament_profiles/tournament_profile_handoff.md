@@ -2,7 +2,7 @@
 
 ## Resolution
 
-- Generated at: `2026-04-22T16:07:00.489805`
+- Generated at: `2026-04-22T16:45:35.273653`
 - Requested profile: `auto`
 - Resolved profile: `down_choppy_coverage_ranked`
 - Resolution mode: `auto_recommended`
@@ -12,7 +12,7 @@
 - Preferred research bias: `defined_risk_and_premium_defense`
 - Recommended executable profile: `down_choppy_coverage_ranked`
 - Recommended executable profiles: `down_choppy_coverage_ranked`
-- Deprioritized executable profiles: `none`
+- Deprioritized executable profiles: `opening_30m_convexity_butterfly`
 
 ## Execution Policy Inputs
 
@@ -115,7 +115,7 @@
 ### opening_30m_convexity_butterfly
 
 - Score: `-1420`
-- Executable now: `false`
+- Executable now: `true`
 - Execution risk tier: `aggressive`
 - Entry friction sensitivity: `high`
 - Exit model dependency: `high`

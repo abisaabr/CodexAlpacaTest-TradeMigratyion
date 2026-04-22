@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T16:17:28.782239`
+- Generated at: `2026-04-22T16:45:36.811354`
 - Repo update status: `ready`
 - Current unlocked profile: `down_choppy_coverage_ranked`
 - Execution posture: `caution`
@@ -58,19 +58,19 @@
 - Gates:
   - If the unlock handoff changes the current resolved profile, stop and re-evaluate the overnight plan before launching research.
 
-### Wire governed execution for `opening_30m_convexity_butterfly`.
+### Wire governed execution for `opening_30m_single_vs_multileg`.
 
 - Code: `phase_2_research_unlock_progress`
 - Owner: `current_research_machine`
-- Objective: Clear the implementation blocker on `opening_30m_convexity_butterfly` so the remaining unlock path is governed only by execution evidence and session trust.
-- Primary target profile: `opening_30m_convexity_butterfly`
+- Objective: Clear the implementation blocker on `opening_30m_single_vs_multileg` so the remaining unlock path is governed only by execution evidence and session trust.
+- Primary target profile: `opening_30m_single_vs_multileg`
 - Actions:
-  - Add a governed executable entrypoint for `opening_30m_convexity_butterfly` instead of leaving it tracked-only in policy.
+  - Add a governed executable entrypoint for `opening_30m_single_vs_multileg` instead of leaving it tracked-only in policy.
   - Make sure the new path participates in the same nightly-operator control plane, lineage, validation, and morning-handoff chain.
   - Refresh the tournament profile registry, tournament profile handoff, tournament unlock registry, and tournament unlock handoff after wiring is complete.
 - Success criteria:
-  - `opening_30m_convexity_butterfly` no longer carries `implementation_not_wired` in the unlock registry.
-  - `opening_30m_convexity_butterfly` is executable in code, even if execution evidence still blocks activation.
+  - `opening_30m_single_vs_multileg` no longer carries `implementation_not_wired` in the unlock registry.
+  - `opening_30m_single_vs_multileg` is executable in code, even if execution evidence still blocks activation.
   - The governed operator artifacts regenerate cleanly after the new profile wiring.
 - Gates:
   - Do this through the governed control-plane path, not as an ad hoc side script.

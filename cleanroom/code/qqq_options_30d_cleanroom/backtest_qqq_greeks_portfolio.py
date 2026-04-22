@@ -129,6 +129,18 @@ OPENING_WINDOW_PREMIUM_DEFENSE_STRATEGY_NAMES = {
     "put_butterfly_same_day_conservative",
 }
 
+OPENING_WINDOW_CONVEXITY_BUTTERFLY_STRATEGY_NAMES = {
+    "put_backspread_next_expiry",
+    "put_backspread_next_expiry_aggressive",
+    "broken_wing_put_butterfly_next_expiry",
+    "long_straddle_same_day",
+    "long_straddle_next_expiry",
+    "long_strangle_same_day",
+    "long_strangle_next_expiry",
+    "put_butterfly_same_day",
+    "put_butterfly_same_day_conservative",
+}
+
 CANDIDATE_TRADE_COLUMNS = (
     "strategy",
     "family",
@@ -1254,6 +1266,13 @@ def build_delta_strategies(
             strategy
             for strategy in strategies
             if strategy.name in OPENING_WINDOW_PREMIUM_DEFENSE_STRATEGY_NAMES
+        ]
+
+    if strategy_set == "opening_window_convexity_butterfly":
+        strategies = [
+            strategy
+            for strategy in strategies
+            if strategy.name in OPENING_WINDOW_CONVEXITY_BUTTERFLY_STRATEGY_NAMES
         ]
 
     deduped: dict[str, DeltaStrategy] = {}

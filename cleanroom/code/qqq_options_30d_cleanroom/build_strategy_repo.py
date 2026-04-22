@@ -20,8 +20,9 @@ STRATEGY_SETS = (
     "down_choppy_only",
     "down_choppy_exhaustive",
     "opening_window_premium_defense",
+    "opening_window_convexity_butterfly",
 )
-SELECTION_PROFILES = ("balanced", "down_choppy_focus", "opening_window_defensive")
+SELECTION_PROFILES = ("balanced", "down_choppy_focus", "opening_window_defensive", "opening_window_convexity")
 
 
 def build_parser() -> argparse.ArgumentParser:

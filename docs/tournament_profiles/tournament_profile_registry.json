@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T16:07:00.368773",
+  "generated_at": "2026-04-22T16:45:35.050584",
   "default_profile": "down_choppy_coverage_ranked",
   "active_profiles": [
     "down_choppy_coverage_ranked",
@@ -9,6 +9,7 @@
     "balanced_family_expansion_benchmark",
     "down_choppy_coverage_ranked",
     "down_choppy_full_ready",
+    "opening_30m_convexity_butterfly",
     "opening_30m_premium_defense"
   ],
   "planned_profiles": [
@@ -216,8 +217,8 @@
     },
     {
       "profile_id": "opening_30m_convexity_butterfly",
-      "status": "planned",
-      "executable_now": false,
+      "status": "partial",
+      "executable_now": true,
       "objective": "Focused opening-session convexity and butterfly profile for early expansion or reversal moves.",
       "regime_focus": [
         "down",
@@ -225,8 +226,8 @@
       ],
       "session_focus": "opening_30m",
       "execution_window": "first_30_minutes",
-      "entrypoint": "planned_profile",
-      "underlying_program": "not_yet_wired",
+      "entrypoint": "launch_nightly_operator_cycle.ps1",
+      "underlying_program": "launch_down_choppy_program.ps1",
       "discovery_source": "coverage_ranked",
       "bootstrap_ready_universe": true,
       "strategy_sets": [
@@ -249,7 +250,7 @@
       "requires_exit_telemetry": true,
       "preferred_machine_now": "current_research_machine",
       "preferred_machine_target": "new_machine",
-      "notes": "Cleanest planned tournament for testing whether early-session expansion favors long-vol and butterfly structures more than plain long puts.",
+      "notes": "Governed execution is now wired through the nightly operator, but activation still depends on broad broker-audited execution evidence and reliable exit telemetry.",
       "families": [
         "Put backspread",
         "Long straddle",

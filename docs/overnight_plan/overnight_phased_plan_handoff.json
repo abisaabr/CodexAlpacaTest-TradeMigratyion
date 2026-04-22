@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-04-22T16:17:28.782239",
+  "generated_at": "2026-04-22T16:45:36.811354",
   "plan_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\overnight_plan\\overnight_phased_plan.json",
   "current_unlocked_profile": "down_choppy_coverage_ranked",
   "repo_update_status": "ready",
   "execution_posture": "caution",
   "execution_evidence_contract_status": "gapped",
-  "research_machine_mission": "Wire governed execution for `opening_30m_convexity_butterfly`.",
+  "research_machine_mission": "Wire governed execution for `opening_30m_single_vs_multileg`.",
   "new_machine_mission": "Produce the next trusted broker-audited execution evidence package.",
   "blocked_profiles_must_remain_blocked": [
     "opening_30m_premium_defense",
@@ -22,7 +22,7 @@
   ],
   "operator_actions": [
     "Keep running `down_choppy_coverage_ranked` as the governed overnight default.",
-    "Clear the implementation blocker on `opening_30m_convexity_butterfly` so the remaining unlock path is governed only by execution evidence and session trust.",
+    "Clear the implementation blocker on `opening_30m_single_vs_multileg` so the remaining unlock path is governed only by execution evidence and session trust.",
     "The execution plane should focus on landing fresh trusted paper-runner evidence that removes the current audit and evidence-floor blockers from the nearest unlock targets.",
     "Rebuild reconciliation, calibration, unlock, workplan, and execution evidence artifacts after the next trusted session lands.",
     "Do not activate blocked profiles or mutate the live manifest during the overnight cycle."

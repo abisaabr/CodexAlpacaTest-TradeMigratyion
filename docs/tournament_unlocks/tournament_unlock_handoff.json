@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T16:07:00.501558",
+  "generated_at": "2026-04-22T16:45:35.505013",
   "registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_registry.json",
   "current_resolved_profile": "down_choppy_coverage_ranked",
   "execution_posture": "caution",
@@ -190,15 +190,14 @@
     },
     {
       "profile_id": "opening_30m_convexity_butterfly",
-      "status": "planned",
-      "executable_now": false,
-      "activation_state": "implementation_and_policy_blocked",
+      "status": "partial",
+      "executable_now": true,
+      "activation_state": "policy_blocked",
       "recommendation_level": "blocked",
       "resolved_now": false,
       "current_score": -1420,
-      "unmet_requirement_count": 6,
+      "unmet_requirement_count": 5,
       "blocker_codes": [
-        "implementation_not_wired",
         "execution_evidence_floor",
         "risk_tier_cap",
         "broker_order_audit_coverage",
@@ -206,13 +205,6 @@
         "exit_telemetry"
       ],
       "blockers": [
-        {
-          "blocker_code": "implementation_not_wired",
-          "summary": "Profile is tracked in governance but does not yet have a governed executable entrypoint.",
-          "category": "implementation",
-          "current": "planned",
-          "required": "executable_now"
-        },
         {
           "blocker_code": "execution_evidence_floor",
           "summary": "Current execution evidence `limited_entry_only` is below this profile's floor `broad`.",
@@ -250,12 +242,6 @@
         }
       ],
       "next_unlock_objectives": [
-        {
-          "objective_code": "wire_profile_entrypoint",
-          "summary": "Wire this profile into an executable governed entrypoint and launch path before trying to activate it.",
-          "category": "implementation",
-          "priority": 1
-        },
         {
           "objective_code": "upgrade_execution_evidence_to_broad",
           "summary": "Upgrade execution evidence from `limited_entry_only` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts.",
@@ -475,9 +461,9 @@
       "affected_profile_count": 4
     },
     {
-      "objective_code": "wire_profile_entrypoint",
-      "summary": "Wire this profile into an executable governed entrypoint and launch path before trying to activate it.",
-      "category": "implementation",
+      "objective_code": "upgrade_execution_evidence_to_broad",
+      "summary": "Upgrade execution evidence from `limited_entry_only` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts.",
+      "category": "evidence",
       "priority": 1,
       "affected_profile_count": 2
     }
@@ -488,6 +474,6 @@
     "Upgrade execution evidence from `limited_entry_only` to at least `entry_and_reconciliation` through fresh trusted paper sessions and reconciliation artifacts.",
     "Land fresh trusted paper sessions with broker-order audit coverage so broker-audited profiles can activate.",
     "Land fresh trusted paper sessions with broker account-activity audit coverage so broker-audited profiles can activate.",
-    "Wire this profile into an executable governed entrypoint and launch path before trying to activate it."
+    "Upgrade execution evidence from `limited_entry_only` to at least `broad` through fresh trusted paper sessions and reconciliation artifacts."
   ]
 }

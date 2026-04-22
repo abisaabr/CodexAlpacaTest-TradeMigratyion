@@ -9,13 +9,13 @@ param(
     [switch]$BootstrapReadyUniverse = $true,
     [ValidateSet("full_ready", "coverage_ranked")]
     [string]$DiscoverySource = "full_ready",
-    [ValidateSet("down_choppy_only", "opening_window_premium_defense")]
+    [ValidateSet("down_choppy_only", "opening_window_premium_defense", "opening_window_convexity_butterfly")]
     [string]$Phase1StrategySet = "down_choppy_only",
-    [ValidateSet("down_choppy_focus", "opening_window_defensive")]
+    [ValidateSet("down_choppy_focus", "opening_window_defensive", "opening_window_convexity")]
     [string]$Phase1SelectionProfile = "down_choppy_focus",
-    [ValidateSet("down_choppy_exhaustive", "opening_window_premium_defense")]
+    [ValidateSet("down_choppy_exhaustive", "opening_window_premium_defense", "opening_window_convexity_butterfly")]
     [string]$Phase2StrategySet = "down_choppy_exhaustive",
-    [ValidateSet("down_choppy_focus", "opening_window_defensive")]
+    [ValidateSet("down_choppy_focus", "opening_window_defensive", "opening_window_convexity")]
     [string]$Phase2SelectionProfile = "down_choppy_focus",
     [string]$Phase1AllowedFamilies = "",
     [string]$CoveragePlannerPath = "",
