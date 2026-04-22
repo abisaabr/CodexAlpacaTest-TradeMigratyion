@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T17:36:17.563532",
+  "generated_at": "2026-04-22T17:46:26.208537",
   "contract_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_evidence\\execution_evidence_contract.json",
   "current_unlocked_profile": "down_choppy_coverage_ranked",
   "contract_status": "gapped",
@@ -31,6 +31,20 @@
       "summary": "Broker/local economics comparison must be available when broker activity audit exists.",
       "required": "broker_local_cashflow_comparable = true",
       "current": false,
+      "passed": false
+    },
+    {
+      "check_id": "runner_unlock_baseline",
+      "summary": "The session must be produced by a clean runner checkout that stamps the current unlock baseline.",
+      "required": "runner_unlock_baseline_met = true",
+      "current": false,
+      "passed": false
+    },
+    {
+      "check_id": "latest_session_fresh_for_unlock",
+      "summary": "The latest traded session must be recent enough to count toward unlock progression.",
+      "required": "latest_traded_session_age_days <= 5",
+      "current": 6,
       "passed": false
     },
     {

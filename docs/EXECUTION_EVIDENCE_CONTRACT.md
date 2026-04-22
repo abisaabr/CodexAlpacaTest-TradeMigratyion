@@ -26,6 +26,7 @@ The execution evidence contract says what a qualifying next session must actuall
 
 - what artifacts must exist
 - what trust checks must pass
+- whether the session came from a clean runner checkout that stamped the current unlock baseline
 - whether the latest traded session already satisfies the contract
 - what gaps still prevent that session from teaching research or helping unlock the next profile tier
 

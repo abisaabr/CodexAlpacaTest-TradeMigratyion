@@ -4,7 +4,7 @@ Use this handoff when the new machine needs to bring the live paper runner up to
 
 ## Scope
 
-This handoff covers six runner-side upgrades that were implemented on branch `codex/qqq-paper-portfolio` in the main runtime repo:
+This handoff covers seven runner-side upgrades that were implemented on branch `codex/qqq-paper-portfolio` in the main runtime repo:
 
 1. `50764cf` - `Add Alpaca multi-leg order routing to paper runner`
 2. `4292514` - `Align paper runner with Alpaca option fee model`
@@ -12,6 +12,7 @@ This handoff covers six runner-side upgrades that were implemented on branch `co
 4. `8037710` - `Harden multileg exit reconciliation`
 5. `bdd7663` - `Add broker order audit to session summary`
 6. `1e72e18` - `Add Alpaca trade activity audit to runner`
+7. `3d1de76` - `Stamp runner sessions with unlock baseline metadata`
 
 Target repo on the new machine:
 - `C:\Users\<you>\Downloads\codexalpaca_repo`
@@ -129,6 +130,20 @@ Why this matters:
 - it helps distinguish order-state reconciliation from actual account activity reconciliation
 - it creates the right raw material for execution calibration and research feedback loops
 
+### 7. Runner Unlock-Baseline Stamp
+
+The paper runner's session summary now carries explicit runner-baseline metadata so the control plane can tell whether a paper session is unlock-grade evidence or just legacy calibration evidence.
+
+Behavior change:
+- each session summary now records a runner capability epoch and label
+- the bundle also records the runner repo commit, branch, dirty state, and whether repo metadata was available
+- the control plane can now reject older or dirty-runner sessions as unlock-grade evidence even if they still contain usable local trade history
+
+Why this matters:
+- it prevents pre-upgrade paper sessions from accidentally unlocking broker-audited tournament tiers
+- it gives the new machine a concrete by-session provenance stamp instead of inferring trust only from missing files
+- it makes the morning brief more honest about the difference between calibration evidence and unlock evidence
+
 ## Why This Matters
 
 These six changes close a major research-to-execution gap:
@@ -138,6 +153,7 @@ These six changes close a major research-to-execution gap:
 - routine combo exits now degrade into an explicit cleanup path instead of silently stalling on a not-filled combo order
 - cleanup sizing and startup/EOD suppression are safer when combo exits partially fill
 - session closeout now leaves behind an auditable broker-order, broker-activity, and ending-position packet instead of only local event history
+- session closeout now also leaves behind a runner-baseline stamp so the control plane can distinguish legacy evidence from unlock-grade evidence
 
 Without these changes, multi-leg strategies can look valid in research while still being distorted in live runner accounting or routed as if they were single-leg trades.
 
@@ -163,7 +179,7 @@ Use these sources when verifying fee and order assumptions:
 
 1. Open `C:\Users\<you>\Downloads\codexalpaca_repo`.
 2. Fetch `origin/codex/qqq-paper-portfolio`.
-3. Confirm that commits `50764cf`, `4292514`, `f6d6168`, `8037710`, `bdd7663`, and `1e72e18` are present.
+3. Confirm that commits `50764cf`, `4292514`, `f6d6168`, `8037710`, `bdd7663`, `1e72e18`, and `3d1de76` are present.
 4. If the machine is intentionally tracking a different branch, inspect and cherry-pick or merge these changes deliberately.
 5. Run `python -m pytest -q`.
 6. Summarize:
@@ -172,6 +188,7 @@ Use these sources when verifying fee and order assumptions:
    - whether a not-filled multi-leg exit now degrades into cleanup instead of stalling
    - whether combo close-order detection now inspects `mleg` legs and cleanup sizing now prefers live broker quantities
    - whether the session bundle now includes a broker-order audit, broker account-activity audit, and ending broker-position snapshot
+   - whether the session bundle now includes runner unlock-baseline metadata with a clean repo stamp
    - whether local runner events, Alpaca order state, and Alpaca trade activity reconcile cleanly enough for paper-runner use
    - whether the full test suite is green
    - whether any local operational config should stay unchanged before market open

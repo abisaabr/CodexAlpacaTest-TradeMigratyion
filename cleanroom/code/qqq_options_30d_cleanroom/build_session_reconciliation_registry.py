@@ -29,6 +29,8 @@ DEFAULT_RUNNER_REPO_ROOT = first_existing_path(
 DEFAULT_REPORTS_ROOT = DEFAULT_RUNNER_REPO_ROOT / "reports" / "multi_ticker_portfolio" / "runs"
 DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "session_reconciliation"
 CONTRACT_MULTIPLIER = 100.0
+REQUIRED_UNLOCK_RUNNER_CAPABILITY_EPOCH = 1
+REQUIRED_UNLOCK_RUNNER_CAPABILITY_LABEL = "broker_audited_session_bundle_v1"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -229,6 +231,8 @@ def session_reasons(summary_payload: dict[str, Any], session: dict[str, Any]) ->
         caution.append("broker_activity_audit_gap")
     if traded and session["broker_activity_audit_available"] and not session["broker_local_cashflow_comparable"]:
         caution.append("broker_local_cashflow_not_comparable")
+    if traded and not session["runner_unlock_baseline_met"]:
+        caution.append("runner_unlock_baseline_gap")
     if traded and session["broker_status_mismatch_count"] > 0:
         caution.append("broker_status_mismatch")
     if traded and session["local_order_without_broker_match_count"] > 0:
@@ -316,6 +320,19 @@ def build_session_row(run_dir: Path) -> dict[str, Any]:
     ending_position_rows = load_csv_rows(ending_positions_path)
     local_cashflow_summary = build_local_cashflow_summary(completed_rows)
     broker_cashflow_summary = build_broker_activity_cashflow_summary(broker_activity_rows)
+    runner_capability_epoch = parse_int(summary_payload.get("runner_capability_epoch"))
+    runner_capability_label = str(summary_payload.get("runner_capability_label") or "").strip()
+    runner_repo_commit = str(summary_payload.get("runner_repo_commit") or "").strip()
+    runner_repo_branch = str(summary_payload.get("runner_repo_branch") or "").strip()
+    runner_repo_dirty = bool(summary_payload.get("runner_repo_dirty", False))
+    runner_repo_metadata_available = bool(summary_payload.get("runner_repo_metadata_available", False))
+    runner_unlock_baseline_met = (
+        runner_capability_epoch is not None
+        and runner_capability_epoch >= REQUIRED_UNLOCK_RUNNER_CAPABILITY_EPOCH
+        and runner_capability_label == REQUIRED_UNLOCK_RUNNER_CAPABILITY_LABEL
+        and runner_repo_metadata_available
+        and not runner_repo_dirty
+    )
 
     cleanup_summary = dict(summary_payload.get("end_of_day_cleanup") or {})
     session_kind = determine_session_kind(summary_payload)
@@ -390,6 +407,13 @@ def build_session_row(run_dir: Path) -> dict[str, Any]:
         "broker_local_cashflow_delta": round_float(broker_local_cashflow_delta),
         "broker_local_cashflow_delta_abs": round_float(broker_local_cashflow_delta_abs),
         "broker_local_cashflow_tolerance": round_float(broker_local_cashflow_tolerance),
+        "runner_capability_epoch": runner_capability_epoch,
+        "runner_capability_label": runner_capability_label,
+        "runner_repo_commit": runner_repo_commit,
+        "runner_repo_branch": runner_repo_branch,
+        "runner_repo_dirty": runner_repo_dirty,
+        "runner_repo_metadata_available": runner_repo_metadata_available,
+        "runner_unlock_baseline_met": runner_unlock_baseline_met,
         "broker_partially_filled_order_count": broker_partially_filled_order_count,
         "broker_activity_partial_fill_count": broker_activity_partial_fill_count,
         "partial_fill_count": broker_partially_filled_order_count + broker_activity_partial_fill_count,
@@ -446,6 +470,11 @@ def flatten_sessions_for_csv(sessions: list[dict[str, Any]]) -> list[dict[str, A
                 "broker_local_cashflow_comparable": session["broker_local_cashflow_comparable"],
                 "broker_local_cashflow_delta": session["broker_local_cashflow_delta"],
                 "broker_local_cashflow_tolerance": session["broker_local_cashflow_tolerance"],
+                "runner_capability_epoch": session["runner_capability_epoch"],
+                "runner_capability_label": session["runner_capability_label"],
+                "runner_repo_commit": session["runner_repo_commit"],
+                "runner_repo_dirty": session["runner_repo_dirty"],
+                "runner_unlock_baseline_met": session["runner_unlock_baseline_met"],
                 "partial_fill_count": session["partial_fill_count"],
                 "ending_broker_position_count": session["ending_broker_position_count"],
                 "forced_exit_failure_count": session["forced_exit_failure_count"],
@@ -489,6 +518,10 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Sessions with broker-order audit: `{summary['broker_order_audit_session_count']}`")
     lines.append(f"- Sessions with broker-activity audit: `{summary['broker_activity_audit_session_count']}`")
     lines.append(f"- Sessions with broker/local cashflow comparison: `{summary['broker_cashflow_comparable_session_count']}`")
+    lines.append(f"- Sessions meeting runner unlock baseline: `{summary['runner_unlock_baseline_session_count']}`")
+    lines.append(
+        f"- Trusted traded sessions meeting full audit + runner unlock baseline: `{summary['trusted_full_unlock_ready_session_count']}`"
+    )
     lines.append(f"- Residual broker positions: `{summary['ending_broker_position_count_total']}`")
     lines.append(
         f"- Mean absolute realized reconciliation delta: `{summary['realized_reconciliation_delta_abs_mean']}`"
@@ -534,6 +567,9 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     )
     lines.append(
         f"- Missing broker/local cashflow comparison on broker-audited traded sessions: `{', '.join(data_quality['missing_broker_cashflow_comparison_dates']) or 'none'}`"
+    )
+    lines.append(
+        f"- Missing runner unlock baseline on traded sessions: `{', '.join(data_quality['missing_runner_unlock_baseline_dates']) or 'none'}`"
     )
     lines.append("")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -600,6 +636,13 @@ def build_findings(summary: dict[str, Any], data_quality: dict[str, Any]) -> lis
                 "message": f"Broker/local cashflow comparison was not available for broker-audited traded session(s): `{', '.join(data_quality['missing_broker_cashflow_comparison_dates'])}`.",
             }
         )
+    if summary["trusted_full_unlock_ready_session_count"] == 0:
+        findings.append(
+            {
+                "type": "runner_unlock_baseline_gap",
+                "message": "No trusted traded session currently satisfies the full broker-audited unlock baseline on a clean, stamped runner checkout, so blocked tournament profiles should remain blocked.",
+            }
+        )
     return findings
 
 
@@ -628,6 +671,16 @@ def main() -> None:
     trusted_trade_sessions = [row for row in traded_sessions if row["trust_tier"] == "trusted"]
     caution_sessions = [row for row in sessions if row["trust_tier"] == "caution"]
     review_required_sessions = [row for row in sessions if row["trust_tier"] == "review_required"]
+    runner_unlock_baseline_sessions = [row for row in sessions if row["runner_unlock_baseline_met"]]
+    trusted_full_unlock_ready_sessions = [
+        row
+        for row in traded_sessions
+        if row["trust_tier"] == "trusted"
+        and row["broker_order_audit_available"]
+        and row["broker_activity_audit_available"]
+        and row["broker_local_cashflow_comparable"]
+        and row["runner_unlock_baseline_met"]
+    ]
 
     missing_broker_order_audit_dates = [
         row["trade_date"]
@@ -643,6 +696,11 @@ def main() -> None:
         row["trade_date"]
         for row in traded_sessions
         if row["broker_activity_audit_available"] and not row["broker_local_cashflow_comparable"]
+    ]
+    missing_runner_unlock_baseline_dates = [
+        row["trade_date"]
+        for row in traded_sessions
+        if not row["runner_unlock_baseline_met"]
     ]
 
     realized_reconciliation_deltas = [row["realized_reconciliation_delta_abs"] for row in traded_sessions]
@@ -679,6 +737,8 @@ def main() -> None:
             "broker_cashflow_comparable_session_count": sum(
                 1 for row in sessions if row["broker_local_cashflow_comparable"]
             ),
+            "runner_unlock_baseline_session_count": len(runner_unlock_baseline_sessions),
+            "trusted_full_unlock_ready_session_count": len(trusted_full_unlock_ready_sessions),
             "completed_trade_count_total": sum(int(row["completed_trade_count"]) for row in sessions),
             "broker_status_mismatch_count_total": sum(int(row["broker_status_mismatch_count"]) for row in sessions),
             "local_order_without_broker_match_count_total": sum(
@@ -714,6 +774,7 @@ def main() -> None:
             "missing_broker_order_audit_dates": missing_broker_order_audit_dates,
             "missing_broker_activity_audit_dates": missing_broker_activity_audit_dates,
             "missing_broker_cashflow_comparison_dates": missing_broker_cashflow_comparison_dates,
+            "missing_runner_unlock_baseline_dates": missing_runner_unlock_baseline_dates,
         },
         "sessions": sessions_sorted,
     }

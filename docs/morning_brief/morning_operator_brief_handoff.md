@@ -19,5 +19,5 @@
 - Use `trusted_and_cautious_sessions` when deciding which paper-runner sessions should influence research calibration and tournament policy.
 - Treat broker-order audit coverage as incomplete and avoid over-trusting clean local order logs alone.
 - Treat broker account-activity coverage as incomplete and avoid over-trusting local fill telemetry alone.
+- Treat pre-baseline or dirty-runner sessions as calibration-only evidence, not unlock-grade evidence for blocked tournament profiles.
 - Use `raised` entry-fill penalties while observed entry friction remains around 0.80% mean absolute slippage and 0.65% mean adverse event slippage.
-- Keep exit-side execution modeling conservative until explicit exit slippage telemetry becomes reliable.

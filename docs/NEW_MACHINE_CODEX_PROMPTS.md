@@ -43,6 +43,7 @@ Before deciding what the new machine should do next, also read `docs/TOURNAMENT_
 Before trying to produce the next trusted paper session, also read `docs/EXECUTION_EVIDENCE_CONTRACT.md` and inspect `docs/execution_evidence/execution_evidence_contract_handoff.md` so the machine knows exactly what the next session must leave behind to count as unlock-worthy evidence.
 Before starting an overnight mission, also read `docs/OVERNIGHT_PHASED_PLAN.md` and inspect `docs/overnight_plan/overnight_phased_plan_handoff.md` so the new machine can align itself with tonight's current unlocked profile, execution evidence mission, and by-morning success definition instead of improvising its own night plan.
 Do not treat a planned or executable profile as automatically safe to activate just because it is listed in the registry; also respect the profile's execution evidence floor, broker-audit requirements, and exit-telemetry requirements from the current tournament profile handoff.
+Treat a paper session as unlock-grade evidence only if its session summary is stamped with the current runner unlock baseline from a clean runner checkout; older or dirty-runner sessions are still useful for calibration, but not for clearing blocked tournament tiers.
 
 ## 6. Run The Family-Expansion Tournament Conveyor
 
@@ -183,7 +184,7 @@ Read first:
 
 Then, in C:\Users\<you>\Downloads\codexalpaca_repo, act as the execution-plane Codex operator and bring the paper runner up to the current execution baseline.
 
-Fetch `origin/codex/qqq-paper-portfolio`, verify whether commits `50764cf`, `4292514`, `f6d6168`, `8037710`, `bdd7663`, and `1e72e18` are present, and if not, integrate them deliberately from that branch without changing unrelated strategy logic or risk settings.
+Fetch `origin/codex/qqq-paper-portfolio`, verify whether commits `50764cf`, `4292514`, `f6d6168`, `8037710`, `bdd7663`, `1e72e18`, and `3d1de76` are present, and if not, integrate them deliberately from that branch without changing unrelated strategy logic or risk settings.
 
 Verify that the runner now includes:
 - combo-native Alpaca `mleg` entry and exit routing in `alpaca_lab/multi_ticker_portfolio/trader.py`
@@ -194,6 +195,7 @@ Verify that the runner now includes:
 - a broker-order audit in the session summary output path
 - a broker account-activity audit in the session summary output path
 - an ending broker-position snapshot in the session summary output path
+- runner capability metadata in the session summary output path, including the current unlock-baseline stamp and clean repo state
 
 Then run:
 - `python -m pytest -q`
@@ -242,6 +244,7 @@ In C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion:
    - whether execution posture should tighten, stay the same, or improve
    - whether any broker-order, broker-activity, cleanup, or residual-position mismatches need human review
    - whether any broker/local cashflow drift is large enough that those sessions should not automatically teach research policy
+   - whether the latest traded session satisfies the runner unlock baseline or remains calibration-only evidence
    - whether any review-required sessions should be excluded from automatic research learning before calibration is refreshed
 5. If the reconciliation or calibration artifacts changed materially, prepare only those distilled artifacts for commit.
 6. Do not commit raw session exhaust, raw order logs, or raw intraday trade activity.

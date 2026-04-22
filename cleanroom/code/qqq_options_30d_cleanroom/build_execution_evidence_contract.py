@@ -14,6 +14,7 @@ DEFAULT_SESSION_REGISTRY_JSON = REPO_ROOT / "docs" / "session_reconciliation" / 
 DEFAULT_SESSION_HANDOFF_JSON = REPO_ROOT / "docs" / "session_reconciliation" / "session_reconciliation_handoff.json"
 DEFAULT_EXECUTION_HANDOFF_JSON = REPO_ROOT / "docs" / "execution_calibration" / "execution_calibration_handoff.json"
 DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "execution_evidence"
+MAX_UNLOCK_SESSION_AGE_DAYS = 5
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -129,6 +130,13 @@ def build_checks(
         int(session.get("completed_trade_count", 0) or 0),
     )
     add_check(
+        "runner_unlock_baseline",
+        "The session must be produced by a clean runner checkout that stamps the current unlock baseline.",
+        "runner_unlock_baseline_met = true",
+        bool_ok(session.get("runner_unlock_baseline_met")),
+        session.get("runner_unlock_baseline_met"),
+    )
+    add_check(
         "review_scope_preserved",
         "Trusted learning scope must remain at least `trusted_and_cautious_sessions` after the session refresh.",
         "trusted_learning_scope in {trusted_and_cautious_sessions, all_recent_sessions}",
@@ -137,6 +145,14 @@ def build_checks(
             "all_recent_sessions",
         },
         (session_handoff.get("policy") or {}).get("trusted_learning_scope"),
+    )
+    latest_session_age_days = session_handoff.get("latest_traded_session_age_days")
+    add_check(
+        "latest_session_fresh_for_unlock",
+        "The latest traded session must be recent enough to count toward unlock progression.",
+        f"latest_traded_session_age_days <= {MAX_UNLOCK_SESSION_AGE_DAYS}",
+        isinstance(latest_session_age_days, int) and latest_session_age_days <= MAX_UNLOCK_SESSION_AGE_DAYS,
+        latest_session_age_days,
     )
     add_check(
         "evidence_strength_progress",
@@ -169,6 +185,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Execution mission title: {payload['execution_mission_title']}")
     lines.append(f"- Contract status: `{payload['contract_status']}`")
     lines.append(f"- Latest traded session used: `{payload['latest_traded_session_date'] or 'none'}`")
+    lines.append(f"- Latest traded session age days: `{payload['latest_traded_session_age_days']}`")
     lines.append("")
     lines.append("## Required Checks")
     lines.append("")
@@ -209,6 +226,7 @@ def main() -> None:
         "current_unlocked_profile": workplan.get("current_unlocked_profile"),
         "execution_mission_title": ((workplan.get("execution_plane_mission") or {}).get("title")),
         "latest_traded_session_date": (latest_session or {}).get("trade_date"),
+        "latest_traded_session_age_days": session_handoff.get("latest_traded_session_age_days"),
         "contract_status": "ready" if not failed_checks else "gapped",
         "checks": checks,
         "failed_checks": failed_checks,

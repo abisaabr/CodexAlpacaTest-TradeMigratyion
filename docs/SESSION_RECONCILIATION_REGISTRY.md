@@ -19,6 +19,7 @@ What it measures:
 - whether realized reconciled PnL matches completed-trade economics closely enough
 - whether broker-order audit and broker-activity audit were present on traded sessions
 - whether broker activity cashflow matches local completed-trade cashflow closely enough when broker activity audit exists
+- whether the session was produced by a clean runner checkout that stamped the current unlock baseline
 - whether broker/local mismatches, partial fills, cleanup pressure, or residual positions were observed
 
 Trust tiers:
@@ -30,5 +31,6 @@ Trust tiers:
 Institutional use:
 - refresh this before or alongside execution calibration
 - use it to decide whether recent sessions should tighten research assumptions
+- do not let pre-baseline or dirty-runner sessions count as unlock-grade evidence for blocked tournament profiles
 - do not let broker/local economics drift sessions loosen tournament selection, fill assumptions, or promotion conclusions
 - do not let `review_required` sessions loosen tournament selection, fill assumptions, or promotion conclusions

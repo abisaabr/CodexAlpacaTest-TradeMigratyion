@@ -40,6 +40,7 @@ This registry is the control-plane source of truth for what the paper runner has
 - `high` `guardrail_pressure`: Severe-loss flatten triggered in 1 session(s). That is a clear signal to pressure-test aggressive opening debit exposure and portfolio loss caps.
 - `medium` `broker_audit_gap`: Session-level broker order audit artifacts are not present yet in the execution sample. Entry-side calibration is useful today, but combo-exit and reconciliation policy should still stay conservative until upgraded session bundles accumulate.
 - `medium` `broker_activity_audit_gap`: Session-level broker account-activity audit artifacts are not present yet in the execution sample. That means the control plane still lacks a second source of truth for fills beyond local events and broker order snapshots.
+- `medium` `runner_unlock_baseline_gap`: Trusted session bundles do not yet include a clean runner-baseline stamp, so unlock-grade evidence should remain blocked even when older paper evidence exists.
 - `medium` `loss_cluster`: Losses are concentrated in a small set of strategies: qqq__slow__orb_long_put_same_day (-507.50), pltr__fast__trend_long_put_next_expiry (-498.90), tsla__fast__trend_long_put_next_expiry (-196.30). Those are the best immediate candidates for tighter calibration or challenger replacement pressure.
 
 ## Top 10 Entry Slippage Clusters By Ticker

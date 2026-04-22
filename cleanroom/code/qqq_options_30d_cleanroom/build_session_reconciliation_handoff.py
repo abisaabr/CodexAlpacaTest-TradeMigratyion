@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -36,6 +37,7 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
     broker_order_gap = bool((payload.get("data_quality") or {}).get("missing_broker_order_audit_dates"))
     broker_activity_gap = bool((payload.get("data_quality") or {}).get("missing_broker_activity_audit_dates"))
     broker_cashflow_gap = bool((payload.get("data_quality") or {}).get("missing_broker_cashflow_comparison_dates"))
+    runner_unlock_baseline_gap = bool((payload.get("data_quality") or {}).get("missing_runner_unlock_baseline_dates"))
     residual_positions = int(summary.get("ending_broker_position_count_total", 0) or 0) > 0
     economics_delta = float(summary.get("realized_reconciliation_delta_abs_total", 0.0) or 0.0) > 0.05
     broker_economics_delta = int(summary.get("broker_local_cashflow_delta_review_required_count", 0) or 0) > 0
@@ -54,7 +56,7 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
 
     if review_required_recent or residual_positions or economics_delta or broker_economics_delta:
         posture = "review_required"
-    elif caution_recent or broker_order_gap or broker_activity_gap or broker_cashflow_gap or mismatch_pressure or partial_fill_pressure or cleanup_pressure:
+    elif caution_recent or broker_order_gap or broker_activity_gap or broker_cashflow_gap or runner_unlock_baseline_gap or mismatch_pressure or partial_fill_pressure or cleanup_pressure:
         posture = "caution"
     else:
         posture = "stable"
@@ -82,6 +84,7 @@ def determine_posture(payload: dict[str, Any]) -> dict[str, Any]:
             "broker_order_audit_gap": broker_order_gap,
             "broker_activity_audit_gap": broker_activity_gap,
             "broker_cashflow_comparison_gap": broker_cashflow_gap,
+            "runner_unlock_baseline_gap": runner_unlock_baseline_gap,
             "residual_positions": residual_positions,
             "economics_delta": economics_delta,
             "broker_economics_delta": broker_economics_delta,
@@ -117,6 +120,8 @@ def policy_recommendations(payload: dict[str, Any], posture: dict[str, Any]) -> 
         operator_actions.append("Treat broker account-activity coverage as incomplete and avoid over-trusting local fill telemetry alone.")
     if flags.get("broker_cashflow_comparison_gap"):
         operator_actions.append("Treat broker/local economics reconciliation as incomplete and avoid letting broker-audited sessions loosen research policy until cashflow comparison is available.")
+    if flags.get("runner_unlock_baseline_gap"):
+        operator_actions.append("Treat pre-baseline or dirty-runner sessions as calibration-only evidence, not unlock-grade evidence for blocked tournament profiles.")
     if flags.get("broker_economics_delta"):
         operator_actions.append("Do not let broker/local cashflow drift sessions relax slippage, fill-capacity, or promotion posture until the economics mismatch is explained.")
     if flags.get("mismatch_pressure"):
@@ -157,6 +162,9 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Generated at: `{payload['generated_at']}`")
     lines.append(f"- Posture: `{posture['overall_session_reconciliation_posture']}`")
     lines.append(f"- Evidence strength: `{posture['evidence_strength']}`")
+    lines.append(f"- Latest traded session: `{payload.get('latest_traded_session_date') or 'none'}`")
+    lines.append(f"- Latest traded session age days: `{payload.get('latest_traded_session_age_days')}`")
+    lines.append(f"- Freshness posture: `{payload.get('freshness_posture')}`")
     lines.append("")
     lines.append("## Flags")
     lines.append("")
@@ -195,11 +203,41 @@ def main() -> None:
     registry = json.loads(registry_path.read_text(encoding="utf-8"))
     posture = determine_posture(registry)
     policy = policy_recommendations(registry, posture)
+    recent_trade_sessions = sorted(
+        [
+            row
+            for row in list(registry.get("sessions") or [])
+            if isinstance(row, dict) and str(row.get("session_kind")) == "traded"
+        ],
+        key=lambda row: str(row.get("trade_date", "")),
+        reverse=True,
+    )
+    latest_traded_session = recent_trade_sessions[0] if recent_trade_sessions else {}
+    latest_traded_session_date = str(latest_traded_session.get("trade_date", "") or "").strip()
+    latest_traded_session_age_days = None
+    freshness_posture = "none"
+    if latest_traded_session_date:
+        try:
+            latest_date = datetime.fromisoformat(latest_traded_session_date).date()
+            latest_traded_session_age_days = (datetime.now().date() - latest_date).days
+        except ValueError:
+            latest_traded_session_age_days = None
+        if latest_traded_session_age_days is None:
+            freshness_posture = "unknown"
+        elif latest_traded_session_age_days <= 2:
+            freshness_posture = "fresh"
+        elif latest_traded_session_age_days <= 5:
+            freshness_posture = "aging"
+        else:
+            freshness_posture = "stale"
     handoff = {
         "generated_at": registry.get("generated_at"),
         "registry_json": str(registry_path),
         "posture": posture,
         "policy": policy,
+        "latest_traded_session_date": latest_traded_session_date,
+        "latest_traded_session_age_days": latest_traded_session_age_days,
+        "freshness_posture": freshness_posture,
         "sessions_needing_attention": top_review_sessions(registry, int(args.top_n)),
     }
 

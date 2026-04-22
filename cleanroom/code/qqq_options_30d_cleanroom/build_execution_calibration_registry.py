@@ -342,6 +342,15 @@ def build_findings(payload: dict[str, Any]) -> list[dict[str, Any]]:
             }
         )
 
+    if int(summary.get("trusted_sessions_with_runner_unlock_baseline", 0) or 0) == 0:
+        findings.append(
+            {
+                "priority": "medium",
+                "type": "runner_unlock_baseline_gap",
+                "message": "Trusted session bundles do not yet include a clean runner-baseline stamp, so unlock-grade evidence should remain blocked even when older paper evidence exists.",
+            }
+        )
+
     if broker_status_mismatch_count > 0 or unmatched_local_order_count > 0 or ending_broker_position_count > 0:
         findings.append(
             {
@@ -727,12 +736,16 @@ def build_payload(
     trusted_broker_local_cashflow_rows = [
         row for row in trusted_trade_session_rows if bool(row.get("broker_local_cashflow_comparable"))
     ]
+    trusted_runner_unlock_baseline_rows = [
+        row for row in trusted_trade_session_rows if bool(row.get("runner_unlock_baseline_met"))
+    ]
     trusted_full_audit_bundle_rows = [
         row
         for row in trusted_trade_session_rows
         if bool(row.get("broker_order_audit_available"))
         and bool(row.get("broker_activity_audit_available"))
         and bool(row.get("broker_local_cashflow_comparable"))
+        and bool(row.get("runner_unlock_baseline_met"))
     ]
 
     payload = {
@@ -757,6 +770,7 @@ def build_payload(
             "trusted_sessions_with_broker_order_audit": len(trusted_broker_order_audit_rows),
             "trusted_sessions_with_broker_activity_audit": len(trusted_broker_activity_audit_rows),
             "trusted_sessions_with_broker_local_cashflow_comparison": len(trusted_broker_local_cashflow_rows),
+            "trusted_sessions_with_runner_unlock_baseline": len(trusted_runner_unlock_baseline_rows),
             "trusted_sessions_with_full_audit_bundle": len(trusted_full_audit_bundle_rows),
             "date_span": {"start": run_dirs[0].name if run_dirs else "", "end": run_dirs[-1].name if run_dirs else ""},
             "completed_trade_count": sum(int(row["completed_trade_count"]) for row in sessions),
@@ -823,6 +837,11 @@ def build_payload(
             "missing_broker_activity_audit_dates": missing_broker_activity_audit_dates,
             "missing_ending_broker_position_dates": missing_ending_broker_position_dates,
             "missing_session_reconciliation_dates": missing_session_reconciliation_dates,
+            "missing_runner_unlock_baseline_dates": [
+                str(row.get("trade_date", "")).strip()
+                for row in trusted_trade_session_rows
+                if not bool(row.get("runner_unlock_baseline_met"))
+            ],
             "included_session_dates": included_session_dates,
             "excluded_session_dates": excluded_session_dates,
             "trusted_full_audit_bundle_dates": [

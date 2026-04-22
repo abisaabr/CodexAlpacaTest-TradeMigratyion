@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T17:36:17.969682",
+  "generated_at": "2026-04-22T17:46:26.635722",
   "repo_update_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\repo_updates\\repo_update_handoff.json",
   "unlock_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_handoff.json",
   "workplan_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_workplan_handoff.json",
@@ -130,6 +130,14 @@
         {
           "check_id": "broker_local_cashflow_comparable",
           "summary": "Broker/local economics comparison must be available when broker activity audit exists."
+        },
+        {
+          "check_id": "runner_unlock_baseline",
+          "summary": "The session must be produced by a clean runner checkout that stamps the current unlock baseline."
+        },
+        {
+          "check_id": "latest_session_fresh_for_unlock",
+          "summary": "The latest traded session must be recent enough to count toward unlock progression."
         },
         {
           "check_id": "evidence_strength_progress",

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T17:36:15.987782",
+  "generated_at": "2026-04-22T17:46:24.708340",
   "runner_repo_root": "C:\\Users\\rabisaab\\OneDrive\\CodexAlpaca\\downloads_remaining_20260417\\folders\\codexalpaca_repo",
   "reports_root": "C:\\Users\\rabisaab\\OneDrive\\CodexAlpaca\\downloads_remaining_20260417\\folders\\codexalpaca_repo\\reports\\multi_ticker_portfolio",
   "top_n": 10,
@@ -23,6 +23,7 @@
     "trusted_sessions_with_broker_order_audit": 0,
     "trusted_sessions_with_broker_activity_audit": 0,
     "trusted_sessions_with_broker_local_cashflow_comparison": 0,
+    "trusted_sessions_with_runner_unlock_baseline": 0,
     "trusted_sessions_with_full_audit_bundle": 0,
     "date_span": {
       "start": "2026-04-12",
@@ -146,6 +147,9 @@
       "2026-04-14",
       "2026-04-15",
       "2026-04-17"
+    ],
+    "missing_runner_unlock_baseline_dates": [
+      "2026-04-16"
     ],
     "included_session_dates": [
       "2026-04-16"
@@ -2503,6 +2507,11 @@
       "priority": "medium",
       "type": "broker_activity_audit_gap",
       "message": "Session-level broker account-activity audit artifacts are not present yet in the execution sample. That means the control plane still lacks a second source of truth for fills beyond local events and broker order snapshots."
+    },
+    {
+      "priority": "medium",
+      "type": "runner_unlock_baseline_gap",
+      "message": "Trusted session bundles do not yet include a clean runner-baseline stamp, so unlock-grade evidence should remain blocked even when older paper evidence exists."
     },
     {
       "priority": "medium",

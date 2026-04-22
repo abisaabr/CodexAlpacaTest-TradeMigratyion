@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T17:36:15.546876",
+  "generated_at": "2026-04-22T17:46:24.304302",
   "registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\session_reconciliation\\session_reconciliation_registry.json",
   "posture": {
     "overall_session_reconciliation_posture": "caution",
@@ -10,6 +10,7 @@
       "broker_order_audit_gap": true,
       "broker_activity_audit_gap": true,
       "broker_cashflow_comparison_gap": false,
+      "runner_unlock_baseline_gap": true,
       "residual_positions": false,
       "economics_delta": false,
       "broker_economics_delta": false,
@@ -24,9 +25,13 @@
     "operator_actions": [
       "Use `trusted_and_cautious_sessions` when deciding which paper-runner sessions should influence research calibration and tournament policy.",
       "Treat broker-order audit coverage as incomplete and avoid over-trusting clean local order logs alone.",
-      "Treat broker account-activity coverage as incomplete and avoid over-trusting local fill telemetry alone."
+      "Treat broker account-activity coverage as incomplete and avoid over-trusting local fill telemetry alone.",
+      "Treat pre-baseline or dirty-runner sessions as calibration-only evidence, not unlock-grade evidence for blocked tournament profiles."
     ]
   },
+  "latest_traded_session_date": "2026-04-16",
+  "latest_traded_session_age_days": 6,
+  "freshness_posture": "stale",
   "sessions_needing_attention": [
     {
       "trade_date": "2026-04-16",
@@ -70,6 +75,13 @@
       "broker_local_cashflow_delta": null,
       "broker_local_cashflow_delta_abs": null,
       "broker_local_cashflow_tolerance": null,
+      "runner_capability_epoch": null,
+      "runner_capability_label": "",
+      "runner_repo_commit": "",
+      "runner_repo_branch": "",
+      "runner_repo_dirty": false,
+      "runner_repo_metadata_available": false,
+      "runner_unlock_baseline_met": false,
       "broker_partially_filled_order_count": 0,
       "broker_activity_partial_fill_count": 0,
       "partial_fill_count": 0,
@@ -83,6 +95,7 @@
       "caution_reasons": [
         "broker_order_audit_gap",
         "broker_activity_audit_gap",
+        "runner_unlock_baseline_gap",
         "guardrail_manual_review",
         "severe_loss_flatten_triggered"
       ],

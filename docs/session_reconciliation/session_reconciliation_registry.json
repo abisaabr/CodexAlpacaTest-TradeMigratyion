@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-22T17:36:15.546876",
+  "generated_at": "2026-04-22T17:46:24.304302",
   "runner_repo_root": "C:\\Users\\rabisaab\\OneDrive\\CodexAlpaca\\downloads_remaining_20260417\\folders\\codexalpaca_repo",
   "reports_root": "C:\\Users\\rabisaab\\OneDrive\\CodexAlpaca\\downloads_remaining_20260417\\folders\\codexalpaca_repo\\reports\\multi_ticker_portfolio\\runs",
   "top_n": 10,
@@ -13,6 +13,8 @@
     "broker_order_audit_session_count": 0,
     "broker_activity_audit_session_count": 0,
     "broker_cashflow_comparable_session_count": 0,
+    "runner_unlock_baseline_session_count": 0,
+    "trusted_full_unlock_ready_session_count": 0,
     "completed_trade_count_total": 5,
     "broker_status_mismatch_count_total": 0,
     "local_order_without_broker_match_count_total": 0,
@@ -39,7 +41,10 @@
     "missing_broker_activity_audit_dates": [
       "2026-04-16"
     ],
-    "missing_broker_cashflow_comparison_dates": []
+    "missing_broker_cashflow_comparison_dates": [],
+    "missing_runner_unlock_baseline_dates": [
+      "2026-04-16"
+    ]
   },
   "sessions": [
     {
@@ -84,6 +89,13 @@
       "broker_local_cashflow_delta": null,
       "broker_local_cashflow_delta_abs": null,
       "broker_local_cashflow_tolerance": null,
+      "runner_capability_epoch": null,
+      "runner_capability_label": "",
+      "runner_repo_commit": "",
+      "runner_repo_branch": "",
+      "runner_repo_dirty": false,
+      "runner_repo_metadata_available": false,
+      "runner_unlock_baseline_met": false,
       "broker_partially_filled_order_count": 0,
       "broker_activity_partial_fill_count": 0,
       "partial_fill_count": 0,
@@ -97,6 +109,7 @@
       "caution_reasons": [
         "broker_order_audit_gap",
         "broker_activity_audit_gap",
+        "runner_unlock_baseline_gap",
         "guardrail_manual_review",
         "severe_loss_flatten_triggered"
       ],
@@ -145,6 +158,13 @@
       "broker_local_cashflow_delta": null,
       "broker_local_cashflow_delta_abs": null,
       "broker_local_cashflow_tolerance": null,
+      "runner_capability_epoch": null,
+      "runner_capability_label": "",
+      "runner_repo_commit": "",
+      "runner_repo_branch": "",
+      "runner_repo_dirty": false,
+      "runner_repo_metadata_available": false,
+      "runner_unlock_baseline_met": false,
       "broker_partially_filled_order_count": 0,
       "broker_activity_partial_fill_count": 0,
       "partial_fill_count": 0,
@@ -201,6 +221,13 @@
       "broker_local_cashflow_delta": null,
       "broker_local_cashflow_delta_abs": null,
       "broker_local_cashflow_tolerance": null,
+      "runner_capability_epoch": null,
+      "runner_capability_label": "",
+      "runner_repo_commit": "",
+      "runner_repo_branch": "",
+      "runner_repo_dirty": false,
+      "runner_repo_metadata_available": false,
+      "runner_unlock_baseline_met": false,
       "broker_partially_filled_order_count": 0,
       "broker_activity_partial_fill_count": 0,
       "partial_fill_count": 0,
@@ -224,6 +251,10 @@
     {
       "type": "broker_activity_audit_gap",
       "message": "Broker-activity audit is missing for traded session(s): `2026-04-16`."
+    },
+    {
+      "type": "runner_unlock_baseline_gap",
+      "message": "No trusted traded session currently satisfies the full broker-audited unlock baseline on a clean, stamped runner checkout, so blocked tournament profiles should remain blocked."
     }
   ]
 }
