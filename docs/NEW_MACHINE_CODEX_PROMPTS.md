@@ -87,6 +87,8 @@ Treat any lane that exits without `master_summary.json` as failed even when the 
 The same expectation now applies to direct launchers and orchestrators like `launch_down_choppy_family_wave.ps1` and `run_core_strategy_expansion_overnight.py`, so ad hoc program runs still leave behind the same audit packet.
 Once a down/choppy program finishes, use `queue_live_book_validation_after_program.ps1` or `validate_program_live_book.py` to turn the completed program root into an incremental shared-account review packet before touching the live manifest.
 If that program produces zero shortlist or phase-2 survivors, treat the follow-on validation and hardening review as a successful no-op: write the packets, keep the live manifest unchanged, and use the shortlist diagnostics to decide whether to relax thresholds or broaden the next wave.
+After validation and hardening review, build a non-destructive replacement plan with `build_live_book_replacement_plan.py` so the next morning’s live-book decision is an explicit `review_add` / `review_replace` packet instead of an ad hoc interpretation of the review JSON.
+Expect the resumed Phase 2 follow-on watcher to run the full chain `validation -> hardening review -> replacement plan`; `build_active_program_report.py` should surface all three statuses while the program is still active.
 
 Before assigning subagents for a new large wave, refresh the current operating model with `build_agent_operating_model.py` and use `docs/AGENT_OPERATING_MODEL.md` as the source of truth for role ownership, handoff artifacts, and the rule that only the Promotion Steward may write the live manifest.
 

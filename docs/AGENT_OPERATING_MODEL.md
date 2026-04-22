@@ -21,6 +21,8 @@
 - While a long-running program is active, use `build_active_program_report.py` against the program root so operators can see live lane PIDs, active tickers, stale activity, and exited-without-summary failures without scraping each lane manually.
 - After a down/choppy program reaches a terminal state, `queue_live_book_validation_after_program.ps1` should hand off into `validate_program_live_book.py` so shared-account review starts from the completed program artifacts instead of manual ticker copy/paste.
 - If a program finishes with zero shortlist or phase-2 survivors, validation and hardening review should still complete as a documented no-op, leaving behind explicit packets that say no live-book changes are recommended.
+- After validation and hardening review, build a non-destructive replacement plan with `build_live_book_replacement_plan.py` so operators get an explicit `review_add` / `review_replace` packet before any manifest-writing step is considered.
+- The resumed Phase 2 follow-on watcher should carry the full chain `validation -> hardening review -> replacement plan`, and `build_active_program_report.py` should surface replacement-plan status alongside validation and review while the program is still active.
 - Promotion requires friction-aware results plus portfolio-context validation.
 - Checkpoint reuse is allowed only when the run signature still matches.
 - Build a phase-specific launch pack with `build_agent_wave_launch_pack.py` before starting a large discovery wave, then use `launch_agent_wave.ps1` so execution follows the generated pack instead of ad hoc commands.
@@ -209,6 +211,8 @@
 - `Phase 3 - Balanced Expansion`: Balanced Expansion
   - feeds: Reporting Steward, Shared-Account Validator
 - `Phase 4 - Shared-Account Validation`: Shared-Account Validator
+  - feeds: Reporting Steward, Promotion Steward
+- `Phase 4.5 - Replacement Planning`: Reporting Steward
   - feeds: Promotion Steward
 - `Phase 5 - Promotion`: Promotion Steward
 
@@ -230,3 +234,6 @@
   - `run_registry_attention.csv`
   - `run_registry_runs.csv`
   - `run_registry_ticker_states.csv`
+  - `live_book_validation.json`
+  - `live_book_hardening_review.json`
+  - `live_book_replacement_plan.json`

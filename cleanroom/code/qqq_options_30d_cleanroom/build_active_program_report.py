@@ -93,7 +93,7 @@ def effective_followon_statuses(
     review_status: dict[str, Any],
     resume_followon_status: dict[str, Any],
     lane_source: str,
-) -> tuple[dict[str, str], dict[str, str]]:
+) -> tuple[dict[str, str], dict[str, str], dict[str, str]]:
     validation_effective = {
         "phase": str(validation_status.get("phase", "")),
         "message": str(validation_status.get("message", "")),
@@ -103,6 +103,11 @@ def effective_followon_statuses(
         "phase": str(review_status.get("phase", "")),
         "message": str(review_status.get("message", "")),
         "updated_at_iso": str(review_status.get("updated_at", "")),
+    }
+    replacement_effective = {
+        "phase": "",
+        "message": "",
+        "updated_at_iso": "",
     }
 
     resume_phase = str(resume_followon_status.get("phase", ""))
@@ -121,6 +126,11 @@ def effective_followon_statuses(
                 "message": "Waiting for resumed validation to finish before hardening review starts.",
                 "updated_at_iso": resume_updated,
             }
+            replacement_effective = {
+                "phase": "pending_resume",
+                "message": "Waiting for resumed validation and hardening review before replacement planning starts.",
+                "updated_at_iso": resume_updated,
+            }
         elif resume_phase == "validating":
             validation_effective = {
                 "phase": "validating",
@@ -130,6 +140,11 @@ def effective_followon_statuses(
             review_effective = {
                 "phase": "pending_resume",
                 "message": "Waiting for resumed validation to finish before hardening review starts.",
+                "updated_at_iso": resume_updated,
+            }
+            replacement_effective = {
+                "phase": "pending_resume",
+                "message": "Waiting for resumed validation and hardening review before replacement planning starts.",
                 "updated_at_iso": resume_updated,
             }
         elif resume_phase == "reviewing":
@@ -143,6 +158,27 @@ def effective_followon_statuses(
                 "message": resume_message or "Building the hardening review from the resumed Phase 2 path.",
                 "updated_at_iso": resume_updated,
             }
+            replacement_effective = {
+                "phase": "pending_resume",
+                "message": "Waiting for resumed hardening review before replacement planning starts.",
+                "updated_at_iso": resume_updated,
+            }
+        elif resume_phase == "planning_replacement":
+            validation_effective = {
+                "phase": "completed_resume",
+                "message": "Validation completed through the resumed Phase 2 path.",
+                "updated_at_iso": resume_updated,
+            }
+            review_effective = {
+                "phase": "completed_resume",
+                "message": "Hardening review completed through the resumed Phase 2 path.",
+                "updated_at_iso": resume_updated,
+            }
+            replacement_effective = {
+                "phase": "planning_replacement",
+                "message": resume_message or "Building the replacement plan from the resumed Phase 2 path.",
+                "updated_at_iso": resume_updated,
+            }
         elif resume_phase == "completed":
             validation_effective = {
                 "phase": "completed_resume",
@@ -152,6 +188,11 @@ def effective_followon_statuses(
             review_effective = {
                 "phase": "completed_resume",
                 "message": "Hardening review completed through the resumed Phase 2 path.",
+                "updated_at_iso": resume_updated,
+            }
+            replacement_effective = {
+                "phase": "completed_resume",
+                "message": "Replacement plan completed through the resumed Phase 2 path.",
                 "updated_at_iso": resume_updated,
             }
         elif resume_phase == "failed":
@@ -165,8 +206,13 @@ def effective_followon_statuses(
                 "message": "Resumed Phase 2 follow-on failed before hardening review could complete.",
                 "updated_at_iso": resume_updated,
             }
+            replacement_effective = {
+                "phase": "failed_resume",
+                "message": "Resumed Phase 2 follow-on failed before replacement planning could complete.",
+                "updated_at_iso": resume_updated,
+            }
 
-    return validation_effective, review_effective
+    return validation_effective, review_effective, replacement_effective
 
 
 def summarize_phase_statuses(research_dir: Path) -> dict[str, Any]:
@@ -300,6 +346,9 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
     review_status = load_status(
         program_root / "live_book_validation" / "hardening_review" / "hardening_review_followon_status.json"
     )
+    replacement_plan_status = load_status(
+        program_root / "live_book_validation" / "hardening_review" / "replacement_plan" / "replacement_plan_followon_status.json"
+    )
     resume_followon_status = load_status(program_root / "phase2_resume_followon_status.json")
 
     lane_source = "phase1"
@@ -317,12 +366,18 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
         if launch_phase:
             program_phase = f"phase2_resumed:{launch_phase}"
 
-    validation_effective, review_effective = effective_followon_statuses(
+    validation_effective, review_effective, replacement_effective = effective_followon_statuses(
         validation_status=validation_status,
         review_status=review_status,
         resume_followon_status=resume_followon_status,
         lane_source=lane_source,
     )
+    if replacement_plan_status and not replacement_effective["phase"]:
+        replacement_effective = {
+            "phase": str(replacement_plan_status.get("phase", "")),
+            "message": str(replacement_plan_status.get("message", "")),
+            "updated_at_iso": str(replacement_plan_status.get("updated_at", "")),
+        }
 
     summarized_lanes = [summarize_lane(dict(row), stale_cutoff=stale_cutoff) for row in lane_rows if isinstance(row, dict)]
     attention_items: list[dict[str, Any]] = []
@@ -350,6 +405,7 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
         "phase2_launch_status_path": existing_path(program_root / "phase2" / "launch_pack" / "launch_status.json"),
         "validation_status": validation_effective,
         "hardening_review_status": review_effective,
+        "replacement_plan_status": replacement_effective,
         "phase2_resume_followon_status": {
             "phase": str(resume_followon_status.get("phase", "")),
             "message": str(resume_followon_status.get("message", "")),
@@ -379,6 +435,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         "",
         f"- Validation: `{payload['validation_status']['phase']}` | {payload['validation_status']['message']}",
         f"- Hardening review: `{payload['hardening_review_status']['phase']}` | {payload['hardening_review_status']['message']}",
+        f"- Replacement plan: `{payload['replacement_plan_status']['phase']}` | {payload['replacement_plan_status']['message']}",
         f"- Phase 2 resume watcher: `{payload['phase2_resume_followon_status']['phase']}` | {payload['phase2_resume_followon_status']['message']}",
         "",
         "## Lanes",
