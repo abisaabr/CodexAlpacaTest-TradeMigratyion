@@ -93,7 +93,7 @@ def effective_followon_statuses(
     review_status: dict[str, Any],
     resume_followon_status: dict[str, Any],
     lane_source: str,
-) -> tuple[dict[str, str], dict[str, str], dict[str, str]]:
+) -> tuple[dict[str, str], dict[str, str], dict[str, str], dict[str, str]]:
     validation_effective = {
         "phase": str(validation_status.get("phase", "")),
         "message": str(validation_status.get("message", "")),
@@ -105,6 +105,11 @@ def effective_followon_statuses(
         "updated_at_iso": str(review_status.get("updated_at", "")),
     }
     replacement_effective = {
+        "phase": "",
+        "message": "",
+        "updated_at_iso": "",
+    }
+    handoff_effective = {
         "phase": "",
         "message": "",
         "updated_at_iso": "",
@@ -131,6 +136,11 @@ def effective_followon_statuses(
                 "message": "Waiting for resumed validation and hardening review before replacement planning starts.",
                 "updated_at_iso": resume_updated,
             }
+            handoff_effective = {
+                "phase": "pending_resume",
+                "message": "Waiting for resumed validation, hardening review, and replacement planning before morning handoff starts.",
+                "updated_at_iso": resume_updated,
+            }
         elif resume_phase == "validating":
             validation_effective = {
                 "phase": "validating",
@@ -145,6 +155,11 @@ def effective_followon_statuses(
             replacement_effective = {
                 "phase": "pending_resume",
                 "message": "Waiting for resumed validation and hardening review before replacement planning starts.",
+                "updated_at_iso": resume_updated,
+            }
+            handoff_effective = {
+                "phase": "pending_resume",
+                "message": "Waiting for resumed validation, hardening review, and replacement planning before morning handoff starts.",
                 "updated_at_iso": resume_updated,
             }
         elif resume_phase == "reviewing":
@@ -163,6 +178,11 @@ def effective_followon_statuses(
                 "message": "Waiting for resumed hardening review before replacement planning starts.",
                 "updated_at_iso": resume_updated,
             }
+            handoff_effective = {
+                "phase": "pending_resume",
+                "message": "Waiting for resumed replacement planning before morning handoff starts.",
+                "updated_at_iso": resume_updated,
+            }
         elif resume_phase == "planning_replacement":
             validation_effective = {
                 "phase": "completed_resume",
@@ -177,6 +197,32 @@ def effective_followon_statuses(
             replacement_effective = {
                 "phase": "planning_replacement",
                 "message": resume_message or "Building the replacement plan from the resumed Phase 2 path.",
+                "updated_at_iso": resume_updated,
+            }
+            handoff_effective = {
+                "phase": "pending_resume",
+                "message": "Waiting for resumed replacement planning before morning handoff starts.",
+                "updated_at_iso": resume_updated,
+            }
+        elif resume_phase == "building_morning_handoff":
+            validation_effective = {
+                "phase": "completed_resume",
+                "message": "Validation completed through the resumed Phase 2 path.",
+                "updated_at_iso": resume_updated,
+            }
+            review_effective = {
+                "phase": "completed_resume",
+                "message": "Hardening review completed through the resumed Phase 2 path.",
+                "updated_at_iso": resume_updated,
+            }
+            replacement_effective = {
+                "phase": "completed_resume",
+                "message": "Replacement plan completed through the resumed Phase 2 path.",
+                "updated_at_iso": resume_updated,
+            }
+            handoff_effective = {
+                "phase": "building_morning_handoff",
+                "message": resume_message or "Building the morning handoff packet from the resumed Phase 2 path.",
                 "updated_at_iso": resume_updated,
             }
         elif resume_phase == "completed":
@@ -195,6 +241,11 @@ def effective_followon_statuses(
                 "message": "Replacement plan completed through the resumed Phase 2 path.",
                 "updated_at_iso": resume_updated,
             }
+            handoff_effective = {
+                "phase": "completed_resume",
+                "message": "Morning handoff completed through the resumed Phase 2 path.",
+                "updated_at_iso": resume_updated,
+            }
         elif resume_phase == "failed":
             validation_effective = {
                 "phase": "failed_resume",
@@ -211,8 +262,13 @@ def effective_followon_statuses(
                 "message": "Resumed Phase 2 follow-on failed before replacement planning could complete.",
                 "updated_at_iso": resume_updated,
             }
+            handoff_effective = {
+                "phase": "failed_resume",
+                "message": "Resumed Phase 2 follow-on failed before the morning handoff could complete.",
+                "updated_at_iso": resume_updated,
+            }
 
-    return validation_effective, review_effective, replacement_effective
+    return validation_effective, review_effective, replacement_effective, handoff_effective
 
 
 def summarize_phase_statuses(research_dir: Path) -> dict[str, Any]:
@@ -349,6 +405,9 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
     replacement_plan_status = load_status(
         program_root / "live_book_validation" / "hardening_review" / "replacement_plan" / "replacement_plan_followon_status.json"
     )
+    morning_handoff_status = load_status(
+        program_root / "live_book_validation" / "hardening_review" / "morning_handoff" / "morning_handoff_followon_status.json"
+    )
     resume_followon_status = load_status(program_root / "phase2_resume_followon_status.json")
 
     lane_source = "phase1"
@@ -366,7 +425,7 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
         if launch_phase:
             program_phase = f"phase2_resumed:{launch_phase}"
 
-    validation_effective, review_effective, replacement_effective = effective_followon_statuses(
+    validation_effective, review_effective, replacement_effective, handoff_effective = effective_followon_statuses(
         validation_status=validation_status,
         review_status=review_status,
         resume_followon_status=resume_followon_status,
@@ -377,6 +436,12 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
             "phase": str(replacement_plan_status.get("phase", "")),
             "message": str(replacement_plan_status.get("message", "")),
             "updated_at_iso": str(replacement_plan_status.get("updated_at", "")),
+        }
+    if morning_handoff_status and not handoff_effective["phase"]:
+        handoff_effective = {
+            "phase": str(morning_handoff_status.get("phase", "")),
+            "message": str(morning_handoff_status.get("message", "")),
+            "updated_at_iso": str(morning_handoff_status.get("updated_at", "")),
         }
 
     summarized_lanes = [summarize_lane(dict(row), stale_cutoff=stale_cutoff) for row in lane_rows if isinstance(row, dict)]
@@ -406,6 +471,7 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
         "validation_status": validation_effective,
         "hardening_review_status": review_effective,
         "replacement_plan_status": replacement_effective,
+        "morning_handoff_status": handoff_effective,
         "phase2_resume_followon_status": {
             "phase": str(resume_followon_status.get("phase", "")),
             "message": str(resume_followon_status.get("message", "")),
@@ -436,6 +502,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         f"- Validation: `{payload['validation_status']['phase']}` | {payload['validation_status']['message']}",
         f"- Hardening review: `{payload['hardening_review_status']['phase']}` | {payload['hardening_review_status']['message']}",
         f"- Replacement plan: `{payload['replacement_plan_status']['phase']}` | {payload['replacement_plan_status']['message']}",
+        f"- Morning handoff: `{payload['morning_handoff_status']['phase']}` | {payload['morning_handoff_status']['message']}",
         f"- Phase 2 resume watcher: `{payload['phase2_resume_followon_status']['phase']}` | {payload['phase2_resume_followon_status']['message']}",
         "",
         "## Lanes",

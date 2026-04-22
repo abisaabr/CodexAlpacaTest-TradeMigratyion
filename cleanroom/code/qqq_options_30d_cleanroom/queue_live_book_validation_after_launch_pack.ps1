@@ -4,6 +4,8 @@ param(
     [string]$ValidationOutputDir = "",
     [string]$ReviewOutputDir = "",
     [string]$LiveManifestPath = "C:\Users\rabisaab\Downloads\codexalpaca_repo\config\strategy_manifests\multi_ticker_portfolio_live.yaml",
+    [string]$PaperRunnerGatePath = "",
+    [string]$PaperRunnerTargetDate = "",
     [int]$PollSeconds = 60,
     [int]$TimeoutMinutes = 720
 )
@@ -26,6 +28,7 @@ $programRootPath = [System.IO.Path]::GetFullPath($ProgramRoot)
 $validatorPath = Join-Path $scriptRoot "validate_program_live_book.py"
 $hardeningBuilderPath = Join-Path $scriptRoot "build_live_book_hardening_review.py"
 $replacementBuilderPath = Join-Path $scriptRoot "build_live_book_replacement_plan.py"
+$morningHandoffBuilderPath = Join-Path $scriptRoot "build_live_book_morning_handoff.py"
 $runRegistryReporterPath = Join-Path $scriptRoot "build_run_registry_report.py"
 $defaultOutputRoot = Join-Path $scriptRoot "output"
 $defaultRegistryPath = Join-Path $defaultOutputRoot "run_registry.jsonl"
@@ -44,6 +47,7 @@ else {
     $reviewRoot = [System.IO.Path]::GetFullPath($ReviewOutputDir)
 }
 $replacementPlanRoot = Join-Path $reviewRoot "replacement_plan"
+$morningHandoffRoot = Join-Path $reviewRoot "morning_handoff"
 
 $statusPath = Join-Path $programRootPath "phase2_resume_followon_status.json"
 $logPath = Join-Path $programRootPath "phase2_resume_followon.log"
@@ -53,7 +57,27 @@ $deadline = (Get-Date).AddMinutes($TimeoutMinutes)
 New-Item -ItemType Directory -Force -Path $validationRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $reviewRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $replacementPlanRoot | Out-Null
+New-Item -ItemType Directory -Force -Path $morningHandoffRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $runRegistryReportDir | Out-Null
+
+if ([string]::IsNullOrWhiteSpace($PaperRunnerGatePath)) {
+    $PaperRunnerGatePath = Join-Path $defaultOutputRoot "paper_runner_gate.json"
+}
+else {
+    $PaperRunnerGatePath = [System.IO.Path]::GetFullPath($PaperRunnerGatePath)
+}
+
+function Get-NextWeekdayDate {
+    $candidate = (Get-Date).Date.AddDays(1)
+    while ($candidate.DayOfWeek -in @([System.DayOfWeek]::Saturday, [System.DayOfWeek]::Sunday)) {
+        $candidate = $candidate.AddDays(1)
+    }
+    return $candidate.ToString("yyyy-MM-dd")
+}
+
+if ([string]::IsNullOrWhiteSpace($PaperRunnerTargetDate)) {
+    $PaperRunnerTargetDate = Get-NextWeekdayDate
+}
 
 function Write-Log {
     param([string]$Message)
@@ -75,9 +99,41 @@ function Write-Status {
         program_root = $programRootPath
         validation_output_dir = $validationRoot
         review_output_dir = $reviewRoot
+        replacement_plan_output_dir = $replacementPlanRoot
+        morning_handoff_output_dir = $morningHandoffRoot
         run_registry_report_dir = $runRegistryReportDir
     }
     $payload | ConvertTo-Json -Depth 6 | Set-Content -Path $statusPath
+}
+
+function Write-PaperRunnerGate {
+    param(
+        [string]$Status,
+        [string]$Phase,
+        [string]$Message
+    )
+
+    $gateDir = Split-Path -Parent $PaperRunnerGatePath
+    if (-not [string]::IsNullOrWhiteSpace($gateDir)) {
+        New-Item -ItemType Directory -Force -Path $gateDir | Out-Null
+    }
+
+    $payload = [ordered]@{
+        status = $Status
+        phase = $Phase
+        message = $Message
+        target_trade_date = $PaperRunnerTargetDate
+        updated_at = (Get-Date).ToString("o")
+        program_root = $programRootPath
+        pack_path = $packFile
+        launch_status_path = $launchStatusPath
+        validation_output_dir = $validationRoot
+        review_output_dir = $reviewRoot
+        replacement_plan_output_dir = $replacementPlanRoot
+        morning_handoff_output_dir = $morningHandoffRoot
+        followon_status_path = $statusPath
+    }
+    $payload | ConvertTo-Json -Depth 6 | Set-Content -Path $PaperRunnerGatePath
 }
 
 function Invoke-RunRegistryReport {
@@ -134,6 +190,7 @@ function Summarize-LaneRows {
 
 Write-Log "Waiting for phase 2 launch pack completion in $packRoot"
 Write-Status -Phase "waiting" -Message "Waiting for the Phase 2 launch pack to reach a terminal state."
+Write-PaperRunnerGate -Status "pending" -Phase "waiting" -Message "Waiting for the Phase 2 launch pack to reach a terminal state."
 Invoke-RunRegistryReport
 
 $launchPayload = $null
@@ -155,6 +212,7 @@ while ((Get-Date) -lt $deadline) {
             $failedLaneIds = @($failedRows | ForEach-Object { [string]$_.lane_id })
             Write-Log ("Phase 2 launch pack completed with failing lanes: " + ($failedLaneIds -join ", "))
             Write-Status -Phase "failed" -Message ("Phase 2 launch pack completed with failing lanes: " + ($failedLaneIds -join ", "))
+            Write-PaperRunnerGate -Status "failed" -Phase "failed" -Message ("Phase 2 launch pack completed with failing lanes: " + ($failedLaneIds -join ", "))
             Invoke-RunRegistryReport
             exit 2
         }
@@ -169,6 +227,7 @@ while ((Get-Date) -lt $deadline) {
             if ($laneSummary.running_count -gt 0) {
                 $laneText = if ($laneSummary.running_lane_ids.Count -gt 0) { $laneSummary.running_lane_ids -join ", " } else { "active lanes" }
                 Write-Status -Phase "phase2_running" -Message ("Phase 2 lanes still running: " + $laneText)
+                Write-PaperRunnerGate -Status "pending" -Phase "phase2_running" -Message ("Phase 2 lanes still running: " + $laneText)
             }
             if ($runningRows.Count -eq 0) {
                 $failedRows = @(
@@ -181,6 +240,7 @@ while ((Get-Date) -lt $deadline) {
                     $failedLaneIds = @($failedRows | ForEach-Object { [string]$_.lane_id })
                     Write-Log ("Phase 2 lane runners exited without required outputs: " + ($failedLaneIds -join ", "))
                     Write-Status -Phase "failed" -Message ("Phase 2 lane runners exited without required outputs: " + ($failedLaneIds -join ", "))
+                    Write-PaperRunnerGate -Status "failed" -Phase "failed" -Message ("Phase 2 lane runners exited without required outputs: " + ($failedLaneIds -join ", "))
                     Invoke-RunRegistryReport
                     exit 5
                 }
@@ -192,6 +252,7 @@ while ((Get-Date) -lt $deadline) {
     if ($phase -eq "preflight_failed") {
         Write-Log "Phase 2 launch pack failed preflight."
         Write-Status -Phase "failed" -Message "Phase 2 launch pack failed preflight."
+        Write-PaperRunnerGate -Status "failed" -Phase "failed" -Message "Phase 2 launch pack failed preflight."
         Invoke-RunRegistryReport
         exit 3
     }
@@ -201,11 +262,13 @@ while ((Get-Date) -lt $deadline) {
 if ($null -eq $launchPayload -or [string]$launchPayload.phase -ne "completed") {
     Write-Log "Timed out waiting for the Phase 2 launch pack to complete."
     Write-Status -Phase "failed" -Message "Timed out waiting for the Phase 2 launch pack to complete."
+    Write-PaperRunnerGate -Status "failed" -Phase "failed" -Message "Timed out waiting for the Phase 2 launch pack to complete."
     Invoke-RunRegistryReport
     exit 4
 }
 
 Write-Status -Phase "validating" -Message "Running live-book validation against the current manifest."
+Write-PaperRunnerGate -Status "pending" -Phase "validating" -Message "Running live-book validation against the current manifest."
 Invoke-RunRegistryReport
 
 & python $validatorPath `
@@ -217,11 +280,13 @@ if ($LASTEXITCODE -ne 0) {
     $validationExitCode = $LASTEXITCODE
     Write-Log "Live-book validation failed with exit code $validationExitCode."
     Write-Status -Phase "failed" -Message "Live-book validation failed."
+    Write-PaperRunnerGate -Status "failed" -Phase "failed" -Message "Live-book validation failed."
     Invoke-RunRegistryReport
     exit $validationExitCode
 }
 
 Write-Status -Phase "reviewing" -Message "Building live-book hardening review packet."
+Write-PaperRunnerGate -Status "pending" -Phase "reviewing" -Message "Building live-book hardening review packet."
 Invoke-RunRegistryReport
 
 & python $hardeningBuilderPath `
@@ -233,11 +298,13 @@ if ($LASTEXITCODE -ne 0) {
     $reviewExitCode = $LASTEXITCODE
     Write-Log "Hardening review build failed with exit code $reviewExitCode."
     Write-Status -Phase "failed" -Message "Hardening review build failed."
+    Write-PaperRunnerGate -Status "failed" -Phase "failed" -Message "Hardening review build failed."
     Invoke-RunRegistryReport
     exit $reviewExitCode
 }
 
 Write-Status -Phase "planning_replacement" -Message "Building live-book replacement plan."
+Write-PaperRunnerGate -Status "pending" -Phase "planning_replacement" -Message "Building live-book replacement plan."
 Invoke-RunRegistryReport
 
 & python $replacementBuilderPath `
@@ -250,11 +317,32 @@ if ($LASTEXITCODE -ne 0) {
     $replacementExitCode = $LASTEXITCODE
     Write-Log "Replacement plan build failed with exit code $replacementExitCode."
     Write-Status -Phase "failed" -Message "Replacement plan build failed."
+    Write-PaperRunnerGate -Status "failed" -Phase "failed" -Message "Replacement plan build failed."
     Invoke-RunRegistryReport
     exit $replacementExitCode
 }
 
-Write-Log "Phase 2 follow-on validation, hardening review, and replacement plan completed successfully."
-Write-Status -Phase "completed" -Message "Phase 2 follow-on validation, hardening review, and replacement plan completed successfully."
+Write-Status -Phase "building_morning_handoff" -Message "Building morning handoff packet."
+Write-PaperRunnerGate -Status "pending" -Phase "building_morning_handoff" -Message "Building morning handoff packet."
+Invoke-RunRegistryReport
+
+& python $morningHandoffBuilderPath `
+    --validation-dir $validationRoot `
+    --review-dir $reviewRoot `
+    --replacement-plan-dir $replacementPlanRoot `
+    --output-dir $morningHandoffRoot
+
+if ($LASTEXITCODE -ne 0) {
+    $handoffExitCode = $LASTEXITCODE
+    Write-Log "Morning handoff build failed with exit code $handoffExitCode."
+    Write-Status -Phase "failed" -Message "Morning handoff build failed."
+    Write-PaperRunnerGate -Status "failed" -Phase "failed" -Message "Morning handoff build failed."
+    Invoke-RunRegistryReport
+    exit $handoffExitCode
+}
+
+Write-Log "Phase 2 follow-on validation, hardening review, replacement plan, and morning handoff completed successfully."
+Write-Status -Phase "completed" -Message "Phase 2 follow-on validation, hardening review, replacement plan, and morning handoff completed successfully."
+Write-PaperRunnerGate -Status "completed" -Phase "completed" -Message "Phase 2 follow-on validation, hardening review, replacement plan, and morning handoff completed successfully."
 Invoke-RunRegistryReport
 exit 0
