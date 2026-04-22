@@ -130,6 +130,100 @@ def configure_execution_slippage_calibration(calibration_context: dict[str, obje
     return get_execution_slippage_calibration()
 
 
+def estimate_entry_fill_outcome(
+    price: float,
+    context: dict[str, object] | None = None,
+    *,
+    leg_count: int = 1,
+    requested_quantity: int = 1,
+) -> dict[str, object]:
+    context = context or {}
+    trade_count = float(context.get("trade_count", 0.0) or 0.0)
+    volume = float(context.get("volume", 0.0) or 0.0)
+    has_trade_bar = bool(context.get("has_trade_bar", True))
+    is_synthetic_bar = bool(context.get("is_synthetic_bar", False))
+    session_has_any_trade = bool(context.get("session_has_any_trade", True))
+    minute_index = int(context.get("minute_index", EARLY_SESSION_MINUTES))
+
+    fill_score = 0.92
+    if trade_count <= 0:
+        fill_score -= 0.40
+    elif trade_count <= 2:
+        fill_score -= 0.24
+    elif trade_count <= 5:
+        fill_score -= 0.12
+    elif trade_count >= 20:
+        fill_score += 0.04
+
+    if volume <= 0:
+        fill_score -= 0.30
+    elif volume <= 10:
+        fill_score -= 0.14
+    elif volume <= 25:
+        fill_score -= 0.06
+    elif volume >= 100:
+        fill_score += 0.04
+
+    if not has_trade_bar:
+        fill_score -= 0.30
+    if is_synthetic_bar:
+        fill_score -= 0.18
+    if not session_has_any_trade:
+        fill_score -= 0.20
+    if minute_index < EARLY_SESSION_MINUTES:
+        fill_score -= 0.08
+    elif minute_index >= MINUTES_PER_RTH_SESSION - LATE_SESSION_MINUTES:
+        fill_score -= 0.04
+
+    if leg_count >= 4:
+        fill_score -= 0.18
+    elif leg_count == 3:
+        fill_score -= 0.10
+    elif leg_count == 2:
+        fill_score -= 0.05
+
+    if requested_quantity > 1:
+        fill_score -= min(0.30, 0.04 * (requested_quantity - 1))
+
+    abs_price = abs(float(price))
+    if abs_price < 0.15:
+        fill_score -= 0.12
+    elif abs_price < 0.30:
+        fill_score -= 0.08
+
+    calibration = EXECUTION_SLIPPAGE_CALIBRATION
+    if bool(calibration.get("enabled")):
+        entry_multiplier = float(calibration.get("entry_multiplier", 1.0))
+        fill_score -= min(0.20, max(0.0, entry_multiplier - 1.0) * 0.35)
+        if calibration.get("overall_execution_posture") == "caution":
+            fill_score -= 0.02
+
+    fill_probability = max(0.02, min(0.99, fill_score))
+    if fill_probability >= 0.88:
+        fill_ratio = 1.0
+    elif fill_probability >= 0.72:
+        fill_ratio = 0.75
+    elif fill_probability >= 0.55:
+        fill_ratio = 0.50
+    elif fill_probability >= 0.35:
+        fill_ratio = 0.25
+    else:
+        fill_ratio = 0.0
+
+    max_fill_quantity = int(math.floor(max(0.0, requested_quantity) * fill_ratio))
+    if fill_ratio > 0.0 and requested_quantity > 0 and max_fill_quantity == 0:
+        max_fill_quantity = 1
+    max_fill_quantity = min(max_fill_quantity, max(0, int(requested_quantity)))
+
+    return {
+        "fill_probability_estimate": round(fill_probability, 4),
+        "fill_ratio_estimate": round(fill_ratio, 4),
+        "max_fill_quantity": int(max_fill_quantity),
+        "leg_count": int(max(1, leg_count)),
+        "requested_quantity": int(max(0, requested_quantity)),
+    }
+
+
 def estimate_execution_slippage(price: float, context: dict[str, object] | None = None) -> float:
     context = context or {}
     base_slippage = max(MIN_SLIPPAGE, price * SLIPPAGE_RATE)
@@ -810,6 +904,7 @@ def simulate_strategy(
         "missing_leg": 0,
         "synthetic_entry": 0,
         "sizing": 0,
+        "entry_unfilled": 0,
         "missing_exit_prices": 0,
     }
 
@@ -878,9 +973,29 @@ def simulate_strategy(
             continue
 
         risk_budget = equity * strategy.risk_fraction
-        quantity = min(strategy.max_contracts, math.floor(risk_budget / max_loss_per_combo))
-        if quantity < 1:
+        requested_quantity = min(strategy.max_contracts, math.floor(risk_budget / max_loss_per_combo))
+        if requested_quantity < 1:
             skipped_counts["sizing"] += 1
+            equity_curve.append({"strategy": strategy.name, "trade_date": ctx.trade_date, "equity": equity})
+            continue
+
+        weakest_entry_context = {
+            "trade_count": min(float(leg.get("entry_trade_count", 0.0)) for leg in legs),
+            "volume": min(float(leg.get("entry_volume", 0.0)) for leg in legs),
+            "has_trade_bar": all(bool(leg.get("entry_has_trade_bar", True)) for leg in legs),
+            "is_synthetic_bar": any(bool(leg.get("entry_is_synthetic_bar", False)) for leg in legs),
+            "session_has_any_trade": all(bool(leg.get("session_has_any_trade", True)) for leg in legs),
+            "minute_index": int(entry_idx),
+        }
+        fill_outcome = estimate_entry_fill_outcome(
+            abs(entry_net_premium),
+            weakest_entry_context,
+            leg_count=len(legs),
+            requested_quantity=requested_quantity,
+        )
+        quantity = int(fill_outcome["max_fill_quantity"])
+        if quantity < 1:
+            skipped_counts["entry_unfilled"] += 1
             equity_curve.append({"strategy": strategy.name, "trade_date": ctx.trade_date, "equity": equity})
             continue
 
@@ -1006,7 +1121,10 @@ def simulate_strategy(
                 "entry_time_et": entry_timestamp.isoformat(),
                 "exit_time_et": exit_timestamp.isoformat(),
                 "exit_reason": exit_reason,
+                "requested_quantity": requested_quantity,
                 "quantity": quantity,
+                "entry_fill_probability_estimate": round(float(fill_outcome["fill_probability_estimate"]), 4),
+                "entry_fill_ratio_estimate": round(float(fill_outcome["fill_ratio_estimate"]), 4),
                 "legs": " | ".join(leg_strings),
                 "entry_underlying": round(float(ctx.frame.loc[entry_idx, "qqq_close"]), 4),
                 "exit_underlying": round(float(ctx.frame.loc[exit_idx, "qqq_close"]), 4),
@@ -1179,6 +1297,7 @@ def write_report(
         )
     else:
         lines.append("- Execution slippage calibration: unavailable; static fill penalties were used.")
+    lines.append("- Fill realism: deterministic no-fill / partial-fill limits are applied from weakest-leg liquidity, combo complexity, requested size, and current execution posture.")
     lines.append(f"- Assumptions JSON: `{assumptions_path.name}`")
     lines.append("")
     lines.append("## Strategy Summary")
@@ -1272,7 +1391,10 @@ def main() -> None:
                 "entry_time_et",
                 "exit_time_et",
                 "exit_reason",
+                "requested_quantity",
                 "quantity",
+                "entry_fill_probability_estimate",
+                "entry_fill_ratio_estimate",
                 "legs",
                 "entry_underlying",
                 "exit_underlying",
@@ -1337,6 +1459,21 @@ def main() -> None:
         "minimum_slippage_per_option": MIN_SLIPPAGE,
         "premium_bucket_slippage_multipliers": PREMIUM_BUCKET_SLIPPAGE_MULTIPLIERS,
         "execution_slippage_calibration": get_execution_slippage_calibration(),
+        "execution_fill_model": {
+            "type": "deterministic_fill_capacity_v1",
+            "driver_inputs": [
+                "trade_count",
+                "volume",
+                "has_trade_bar",
+                "is_synthetic_bar",
+                "session_has_any_trade",
+                "minute_index",
+                "leg_count",
+                "requested_quantity",
+                "premium_bucket",
+                "execution_posture",
+            ],
+        },
         "early_session_minutes": EARLY_SESSION_MINUTES,
         "late_session_minutes": LATE_SESSION_MINUTES,
         "execution_model": "liquidity_aware_phase1",

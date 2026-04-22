@@ -19,6 +19,7 @@ from backtest_qqq_option_strategies import (
     buy_fill,
     close_cashflow,
     combo_entry_net_premium,
+    estimate_entry_fill_outcome,
     estimate_alpaca_option_order_fees,
     estimate_combo_bounds,
     load_daily_universe,
@@ -133,6 +134,13 @@ CANDIDATE_TRADE_COLUMNS = (
     "premium_bucket",
     "is_sub_015_premium",
     "is_sub_030_premium",
+    "entry_trade_count_min",
+    "entry_volume_min",
+    "entry_has_all_trade_bars",
+    "entry_has_any_synthetic_leg",
+    "entry_session_has_all_trades",
+    "entry_fill_probability_estimate",
+    "entry_fill_ratio_estimate",
     "entry_broker_commission_per_combo",
     "exit_broker_commission_per_combo",
     "total_broker_commission_per_combo",
@@ -1539,6 +1547,22 @@ def generate_candidate_trades(
             entry_net_premium = combo_entry_net_premium(legs)
             entry_raw_net_premium = combo_entry_raw_net_premium(legs)
             max_loss_per_combo, max_profit_per_combo = estimate_combo_bounds(legs=legs, entry_net_premium=entry_net_premium)
+            weakest_entry_context = {
+                "trade_count": min(float(leg.get("entry_trade_count", 0.0)) for leg in legs),
+                "volume": min(float(leg.get("entry_volume", 0.0)) for leg in legs),
+                "has_trade_bar": all(bool(leg.get("entry_has_trade_bar", True)) for leg in legs),
+                "is_synthetic_bar": any(bool(leg.get("entry_is_synthetic_bar", False)) for leg in legs),
+                "session_has_any_trade": all(bool(leg.get("session_has_any_trade", True)) for leg in legs),
+                "minute_index": int(entry_idx),
+            }
+            fill_outcome = estimate_entry_fill_outcome(
+                abs(entry_net_premium),
+                weakest_entry_context,
+                leg_count=len(legs),
+                requested_quantity=1,
+            )
+            if int(fill_outcome["max_fill_quantity"]) < 1:
+                continue
 
             symbol_frames: dict[str, pd.DataFrame] = {}
             for leg in legs:
@@ -1704,6 +1728,13 @@ def generate_candidate_trades(
                     "premium_bucket": classify_premium_bucket(abs_entry_net_premium),
                     "is_sub_015_premium": abs_entry_net_premium < 0.15,
                     "is_sub_030_premium": abs_entry_net_premium < 0.30,
+                    "entry_trade_count_min": round(float(weakest_entry_context["trade_count"]), 4),
+                    "entry_volume_min": round(float(weakest_entry_context["volume"]), 4),
+                    "entry_has_all_trade_bars": bool(weakest_entry_context["has_trade_bar"]),
+                    "entry_has_any_synthetic_leg": bool(weakest_entry_context["is_synthetic_bar"]),
+                    "entry_session_has_all_trades": bool(weakest_entry_context["session_has_any_trade"]),
+                    "entry_fill_probability_estimate": round(float(fill_outcome["fill_probability_estimate"]), 4),
+                    "entry_fill_ratio_estimate": round(float(fill_outcome["fill_ratio_estimate"]), 4),
                     "entry_broker_commission_per_combo": round(entry_broker_commission_per_combo, 4),
                     "exit_broker_commission_per_combo": round(exit_broker_commission_per_combo, 4),
                     "total_broker_commission_per_combo": round(total_broker_commission_per_combo, 4),
@@ -1865,6 +1896,9 @@ def run_portfolio_allocator(
                     portfolio_trades.append(
                         {
                             **position["trade"],
+                            "requested_quantity": int(position.get("requested_quantity", quantity)),
+                            "entry_fill_probability_estimate": round(float(position.get("fill_probability_estimate", position["trade"].get("entry_fill_probability_estimate", 1.0))), 4),
+                            "entry_fill_ratio_estimate": round(float(position.get("fill_ratio_estimate", position["trade"].get("entry_fill_ratio_estimate", 1.0))), 4),
                             "quantity": quantity,
                             "portfolio_net_pnl": round(realized_net, 4),
                             "equity_after_exit": round(cash, 4),
@@ -1905,7 +1939,22 @@ def run_portfolio_allocator(
                     else:
                         quantity_by_cash = strategy.max_contracts
 
-                    quantity = min(strategy.max_contracts, quantity_by_risk, quantity_by_cash)
+                    requested_quantity = min(strategy.max_contracts, quantity_by_risk, quantity_by_cash)
+                    fill_context = {
+                        "trade_count": float(getattr(row, "entry_trade_count_min", 0.0)),
+                        "volume": float(getattr(row, "entry_volume_min", 0.0)),
+                        "has_trade_bar": bool(getattr(row, "entry_has_all_trade_bars", True)),
+                        "is_synthetic_bar": bool(getattr(row, "entry_has_any_synthetic_leg", False)),
+                        "session_has_any_trade": bool(getattr(row, "entry_session_has_all_trades", True)),
+                        "minute_index": int(row.entry_minute),
+                    }
+                    fill_outcome = estimate_entry_fill_outcome(
+                        float(getattr(row, "abs_entry_net_premium", 0.0)),
+                        fill_context,
+                        leg_count=int(getattr(row, "leg_count", 1)),
+                        requested_quantity=requested_quantity,
+                    )
+                    quantity = min(requested_quantity, int(fill_outcome["max_fill_quantity"]))
                     if quantity < 1:
                         continue
 
@@ -1913,6 +1962,9 @@ def run_portfolio_allocator(
                     open_positions.append(
                         {
                             "trade": row._asdict(),
+                            "requested_quantity": requested_quantity,
+                            "fill_probability_estimate": float(fill_outcome["fill_probability_estimate"]),
+                            "fill_ratio_estimate": float(fill_outcome["fill_ratio_estimate"]),
                             "quantity": quantity,
                             "exit_minute": int(row.exit_minute),
                             "entry_cash_per_combo": float(row.entry_cash_per_combo),
