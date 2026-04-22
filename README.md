@@ -12,6 +12,7 @@ What this repo contains:
 - A machine-readable agent governance registry for split axis, machine ownership, and production-state permissions
 - A machine-readable tournament profile registry for approved active and planned institutional research cycles
 - A machine-readable tournament profile handoff packet so the nightly operator can resolve the active cycle from execution posture instead of prompt drift
+- A machine-readable tournament unlock registry and handoff packet so the operator can see what evidence or implementation work is still blocking the next research tier
 - A machine-readable execution calibration registry for feeding paper-runner fill, guardrail, and loss evidence back into the research/control planes
 - A concise execution calibration handoff packet so nightly operators can act on posture and policy guidance instead of raw execution metrics alone
 - A machine-readable repo update registry and handoff packet so the new machine can systematically check GitHub drift before paper-runner or nightly work

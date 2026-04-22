@@ -22,6 +22,9 @@ Before assigning agent work, refresh and inspect:
 - `docs/TOURNAMENT_PROFILE_REGISTRY.md`
 - `docs/tournament_profiles/tournament_profile_registry.md`
 - `docs/tournament_profiles/tournament_profile_handoff.md`
+- `docs/TOURNAMENT_UNLOCK_REGISTRY.md`
+- `docs/tournament_unlocks/tournament_unlock_registry.md`
+- `docs/tournament_unlocks/tournament_unlock_handoff.md`
 
 It is written for the current two-machine setup:
 - current research machine = primary research plane
@@ -85,6 +88,10 @@ Required outputs:
 - `tournament_profile_registry.md`
 - `tournament_profile_handoff.json`
 - `tournament_profile_handoff.md`
+- `tournament_unlock_registry.json`
+- `tournament_unlock_registry.md`
+- `tournament_unlock_handoff.json`
+- `tournament_unlock_handoff.md`
 - `strategy_family_registry.json`
 - `strategy_family_registry.md`
 - `strategy_family_handoff.json`
@@ -103,6 +110,7 @@ Tasks:
 - confirm deterministic fill-capacity / no-fill logic is active so challenger sizing reflects weak-leg liquidity and combo complexity instead of assuming every requested size fills
 - confirm exit-cleanup degradation is active so larger multi-leg positions can realize worse-than-combo exits when liquidity would not plausibly clear the whole order at the scheduled mark
 - refresh the tournament profile registry and tournament profile handoff so profile choice is resolved from approved executable profiles plus current execution posture
+- refresh the tournament unlock registry and tournament unlock handoff so the operator can see what evidence or implementation work still blocks the next tournament tier
 - refresh the formal family registry
 - refresh the family handoff packet
 - refresh ticker-family coverage
@@ -254,6 +262,7 @@ The new machine should not become the sole source of strategy invention yet.
 Before signing off on a nightly run, confirm:
 - execution calibration refreshed
 - tournament profile policy refreshed
+- tournament unlock policy refreshed
 - family registry refreshed
 - family handoff refreshed
 - coverage refreshed

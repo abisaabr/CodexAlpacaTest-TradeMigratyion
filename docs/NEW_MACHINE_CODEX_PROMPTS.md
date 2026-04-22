@@ -38,6 +38,7 @@ Before running the paper runner or a governed nightly cycle, also read `docs/REP
 Before refreshing execution policy from paper-runner evidence, also read `docs/SESSION_RECONCILIATION_REGISTRY.md` and inspect `docs/session_reconciliation/session_reconciliation_handoff.md` so review-required sessions do not loosen research policy or promotion conclusions.
 Before choosing or running a major nightly cycle, also read `docs/EXECUTION_CALIBRATION_REGISTRY.md` and inspect `docs/execution_calibration/execution_calibration_handoff.md` so current paper-runner fill, guardrail, and loss evidence can feed the next research run instead of being ignored.
 Before choosing a nightly research cycle, also read `docs/TOURNAMENT_PROFILE_REGISTRY.md` and inspect `docs/tournament_profiles/tournament_profile_handoff.md` so the machine uses an approved executable tournament profile that is also aligned with the current execution posture.
+Before choosing or escalating to a more aggressive nightly research cycle, also read `docs/TOURNAMENT_UNLOCK_REGISTRY.md` and inspect `docs/tournament_unlocks/tournament_unlock_handoff.md` so the machine can explain exactly what evidence or implementation work still blocks the next profile tier.
 Do not treat a planned or executable profile as automatically safe to activate just because it is listed in the registry; also respect the profile's execution evidence floor, broker-audit requirements, and exit-telemetry requirements from the current tournament profile handoff.
 
 ## 6. Run The Family-Expansion Tournament Conveyor
@@ -312,11 +313,42 @@ Then act as the Tournament Policy Steward for the new machine.
 1. Refresh:
    - `docs/execution_calibration/execution_calibration_handoff.md`
    - `docs/tournament_profiles/tournament_profile_handoff.md`
+   - `docs/tournament_unlocks/tournament_unlock_handoff.md`
 2. Report:
    - which tournament profile is allowed tonight
    - which executable profiles are available but not preferred
    - which planned or partial profiles are still policy-blocked
    - the specific missing evidence or audit gates blocking each higher-risk profile
    - what the new machine needs to produce next so those blocked profiles can be reconsidered
+3. Do not start trading, do not modify the live manifest, and do not change strategy or risk policy in this step.
+```
+
+## 13. Report What Unlocks The Next Tournament Tier
+
+```text
+Open these sibling folders and use them together:
+
+1. C:\Users\<you>\Downloads\codexalpaca_repo
+2. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs/SESSION_RECONCILIATION_REGISTRY.md
+- docs/EXECUTION_CALIBRATION_REGISTRY.md
+- docs/TOURNAMENT_PROFILE_REGISTRY.md
+- docs/TOURNAMENT_UNLOCK_REGISTRY.md
+
+Then act as the Tournament Unlock Steward for the new machine.
+
+1. Refresh:
+   - `docs/session_reconciliation/session_reconciliation_handoff.md`
+   - `docs/execution_calibration/execution_calibration_handoff.md`
+   - `docs/tournament_profiles/tournament_profile_handoff.md`
+   - `docs/tournament_unlocks/tournament_unlock_handoff.md`
+2. Report:
+   - which profile is unlocked now
+   - which profiles are available but not preferred
+   - the closest next unlock targets
+   - the exact missing evidence, audit coverage, telemetry, risk-ceiling, or implementation work blocking each target
+   - the smallest next evidence package the new machine should try to produce to unlock the next tier
 3. Do not start trading, do not modify the live manifest, and do not change strategy or risk policy in this step.
 ```

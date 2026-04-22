@@ -18,6 +18,7 @@ Read first:
 - docs/SESSION_RECONCILIATION_REGISTRY.md
 - docs/EXECUTION_CALIBRATION_REGISTRY.md
 - docs/TOURNAMENT_PROFILE_REGISTRY.md
+- docs/TOURNAMENT_UNLOCK_REGISTRY.md
 - docs/NIGHTLY_OPERATOR_PLAYBOOK.md
 - docs/AGENT_OPERATING_MODEL.md
 - docs/STRATEGY_FAMILY_REGISTRY.md
@@ -28,14 +29,15 @@ Your job is to run one disciplined nightly cycle that:
 2. refreshes the session reconciliation registry and handoff from paper-runner session bundles
 3. refreshes the execution calibration registry and execution calibration handoff from paper-runner evidence, using the fresh session-reconciliation handoff so review-required sessions, including broker/local economics-drift sessions, do not loosen research policy
 4. refreshes the tournament profile registry and tournament profile handoff, respecting execution evidence floors and audit gates before activating more aggressive or opening-window profiles
-5. refreshes the family registry and handoff packet
-6. refreshes the ticker coverage view
-7. materializes any missing priority symbols when needed
-8. runs the next family discovery wave
-9. runs exhaustive follow-up on survivors
-10. validates challengers against the current live champion book
-11. builds hardening review, replacement plan, and morning handoff packets
-12. leaves the live manifest unchanged unless I explicitly approve a reviewed add/replace packet
+5. refreshes the tournament unlock registry and tournament unlock handoff so the machine can explain what evidence or implementation work still blocks the next profile tier
+6. refreshes the family registry and handoff packet
+7. refreshes the ticker coverage view
+8. materializes any missing priority symbols when needed
+9. runs the next family discovery wave
+10. runs exhaustive follow-up on survivors
+11. validates challengers against the current live champion book
+12. builds hardening review, replacement plan, and morning handoff packets
+13. leaves the live manifest unchanged unless I explicitly approve a reviewed add/replace packet
 
 Hard rules:
 - Do not auto-promote strategies into the live manifest.
@@ -52,23 +54,26 @@ Execution order:
 5. Run `build_execution_calibration_handoff.py`
 6. Run `build_tournament_profile_registry.py`
 7. Run `build_tournament_profile_handoff.py`
-8. Run `build_strategy_family_registry.py`
-9. Run `build_strategy_family_handoff.py`
-10. Run `build_ticker_family_coverage.py`
-11. If needed, run `materialize_backtester_ready.py`
-12. Build and validate the Phase 1 launch pack
-13. Run the discovery lanes
-14. Build the shortlist
-15. Build and validate the Phase 2 launch pack
-16. Run exhaustive follow-up
-17. Run shared-account validation
-18. Build hardening review
-19. Build replacement plan
-20. Build morning handoff
-21. Refresh the run-registry packet and active-program packet where appropriate
+8. Run `build_tournament_unlock_registry.py`
+9. Run `build_tournament_unlock_handoff.py`
+10. Run `build_strategy_family_registry.py`
+11. Run `build_strategy_family_handoff.py`
+12. Run `build_ticker_family_coverage.py`
+13. If needed, run `materialize_backtester_ready.py`
+14. Build and validate the Phase 1 launch pack
+15. Run the discovery lanes
+16. Build the shortlist
+17. Build and validate the Phase 2 launch pack
+18. Run exhaustive follow-up
+19. Run shared-account validation
+20. Build hardening review
+21. Build replacement plan
+22. Build morning handoff
+23. Refresh the run-registry packet and active-program packet where appropriate
 
 Prefer using `cleanroom/code/qqq_options_30d_cleanroom/launch_nightly_operator_cycle.ps1` as the top-level entrypoint when it is available, so the cycle is executed as one governed operator flow instead of a loose sequence of manual steps. If you need to inspect or repair a phase, do that surgically, then return to the top-level cycle.
 Use the tournament profile registry and tournament profile handoff together so the machine resolves the nightly cycle from approved executable profiles plus current execution posture, instead of treating profile choice as a static prompt default.
+Use the tournament unlock registry and tournament unlock handoff to explain what evidence or implementation work still blocks the next profile tier, instead of inferring unlock conditions from scattered reasons or score penalties.
 
 Output requirements:
 - show what ran

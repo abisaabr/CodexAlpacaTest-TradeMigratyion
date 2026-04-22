@@ -13,6 +13,8 @@ This repo keeps a machine-readable tournament profile registry so the nightly op
   - `docs/tournament_profiles/tournament_profile_registry.md`
   - `docs/tournament_profiles/tournament_profile_handoff.json`
   - `docs/tournament_profiles/tournament_profile_handoff.md`
+  - `docs/tournament_unlocks/tournament_unlock_registry.json`
+  - `docs/tournament_unlocks/tournament_unlock_handoff.json`
 
 ## Why It Exists
 
@@ -38,6 +40,7 @@ Use this registry before large waves to answer:
 - should discovery be split by family or by ticker here?
 - is the new machine allowed to own this cycle yet?
 - does live execution evidence currently favor safer or more aggressive profiles?
+- what exact evidence or implementation work is still missing before the next profile tier can unlock?
 
 ## Refresh Command
 
@@ -46,12 +49,15 @@ From the repo root:
 ```powershell
 python .\cleanroom\code\qqq_options_30d_cleanroom\build_tournament_profile_registry.py
 python .\cleanroom\code\qqq_options_30d_cleanroom\build_tournament_profile_handoff.py
+python .\cleanroom\code\qqq_options_30d_cleanroom\build_tournament_unlock_registry.py
+python .\cleanroom\code\qqq_options_30d_cleanroom\build_tournament_unlock_handoff.py
 ```
 
 ## Current Policy
 
 - `auto` should resolve through `tournament_profile_handoff.json` before a nightly cycle launches
 - execution-aware profile selection should respect explicit evidence floors and audit requirements, not just soft score preferences
+- the tournament unlock handoff should be treated as the machine-readable answer to "what unlocks the next tournament tier?"
 - `down_choppy_coverage_ranked` is the default active institutional nightly profile and the current execution-aware recommendation when posture is cautious
 - `down_choppy_full_ready` is the fallback active profile when the ready universe is already broad enough
 - opening-window profiles are intentionally tracked as planned until their session-specific execution wiring is complete
