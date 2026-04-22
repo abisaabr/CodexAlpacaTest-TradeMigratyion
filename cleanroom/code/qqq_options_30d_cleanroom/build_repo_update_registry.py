@@ -100,7 +100,7 @@ def classify_repo_status(
 
 
 def normalize_status_path(line: str) -> str:
-    text = line.strip()
+    text = line.rstrip("\r\n")
     if len(text) < 4:
         return ""
     path = text[3:].strip()
