@@ -44,6 +44,7 @@ Open these sibling folders and use them together:
 Treat qqq_options_30d_cleanroom as the research workspace. Verify that the cleanroom contains the conveyor scripts:
 - materialize_backtester_ready.py
 - build_ticker_family_coverage.py
+- build_strategy_family_registry.py
 - build_agent_operating_model.py
 - build_run_registry_report.py
 - build_agent_wave_launch_pack.py
@@ -76,6 +77,7 @@ Prefer using launch_down_choppy_program.ps1 as the operator entrypoint for the d
 If the ready universe is smaller than the staged/registry universe, use materialize_backtester_ready.py or the bootstrap path inside launch_down_choppy_program.ps1 to materialize the planner's highest-priority staged/registry symbols into backtester_ready before launching the next discovery wave.
 
 Before launching the next large wave, run build_ticker_family_coverage.py to refresh the 159-symbol ticker-family coverage matrix and use its `next_wave_plan.json` / `next_wave_commands.ps1` outputs to choose under-tested families and symbols instead of repeating already-covered combinations.
+Before designing a new family-expansion wave, run `build_strategy_family_registry.py` and inspect `docs/strategy_family_registry/strategy_family_registry.md` plus `docs/STRATEGY_FAMILY_STEWARD.md` so family priorities come from the current codebase plus the current live-manifest overlay instead of memory.
 
 Each large batch should leave behind a `run_manifest.json` inside its `research_dir` plus an append-only `run_registry.jsonl` under the cleanroom `output` root. Use those files to verify machine lineage, code lineage, input fingerprints, ticker completion state, and the final shared-account snapshot before trusting or promoting results.
 
@@ -92,6 +94,7 @@ Then build a single morning handoff packet with `build_live_book_morning_handoff
 Expect the resumed Phase 2 follow-on watcher to run the full chain `validation -> hardening review -> replacement plan -> morning handoff`; `build_active_program_report.py` should surface all four statuses while the program is still active.
 
 Before assigning subagents for a new large wave, refresh the current operating model with `build_agent_operating_model.py` and use `docs/AGENT_OPERATING_MODEL.md` as the source of truth for role ownership, handoff artifacts, and the rule that only the Promotion Steward may write the live manifest.
+Before assigning family-specific discovery work, refresh the GitHub-backed family registry with `build_strategy_family_registry.py` and inspect `docs/strategy_family_registry/strategy_family_registry.md` so both machines use the same family-level source of truth for gaps, live overlap, and steward actions.
 
 Before executing Phase 1 discovery, use `build_agent_wave_launch_pack.py` to generate an exact launch pack from the current operating model plus the current coverage-ranked plan, then use `launch_agent_wave.ps1` against that pack so lane commands, logs, and research directories stay reproducible. `launch_agent_wave.ps1` should run `validate_agent_wave_pack.py` automatically so missing ready datasets, mismatched command args, duplicate output paths, or governance drift fail before any lane starts. For the strictest workflow, pass explicit source files into the pack builder and add `--require-explicit-sources` so the build never silently falls back to the latest matching artifact. For a breadth-first discovery wave, prefer `--refresh-coverage --allocation-mode breadth --coverage-top-ready-per-lane 40` so the four lanes spread across more unique ready symbols instead of reusing the same small cohort.
 

@@ -26,6 +26,7 @@
 - The resumed Phase 2 follow-on watcher should carry the full chain `validation -> hardening review -> replacement plan -> morning handoff`, and `build_active_program_report.py` should surface morning-handoff status alongside validation, review, and replacement planning while the program is still active.
 - Promotion requires friction-aware results plus portfolio-context validation.
 - Checkpoint reuse is allowed only when the run signature still matches.
+- Refresh the formal strategy-family registry with `build_strategy_family_registry.py` before major family-expansion waves or live-book review so family priorities are driven by the current codebase plus the current live-manifest overlay.
 - Build a phase-specific launch pack with `build_agent_wave_launch_pack.py` before starting a large discovery wave, then use `launch_agent_wave.ps1` so execution follows the generated pack instead of ad hoc commands.
 - After `build_family_wave_shortlist.py` produces `phase2_plan.json`, build a second exact pack with `build_phase2_agent_wave_pack.py` and run it through `launch_agent_wave.ps1` so the exhaustive follow-up lanes keep the same provenance, logs, and single-writer governance.
 - `launch_agent_wave.ps1` should run `validate_agent_wave_pack.py` automatically before either dry-run or execution so missing ready datasets, broken command args, duplicate paths, or governance drift fail fast.
@@ -47,6 +48,18 @@
 - Success gate: Coverage gaps, ready-universe counts, and family priorities are refreshed before any new wave launches.
 - Hands off to: Data Prep Steward, Bear Directional, Bear Premium, Bear Convexity, Butterfly Lab
 - Notes: Owns universe accounting and decides which families/symbols are still under-tested.
+
+### Strategy Family Steward
+
+- Lane type: `control_plane`
+- Parallelism: `1`
+- Writes live state: `false`
+- Scripts: `build_strategy_repo.py, build_strategy_family_registry.py, build_ticker_family_coverage.py`
+- Inputs: strategy_repo.json snapshots, current live manifest, ticker_family_coverage.md
+- Outputs: strategy_family_registry.json, strategy_family_registry.md, family priority list
+- Success gate: The formal family registry is refreshed before major family-expansion waves or live-book review.
+- Hands off to: Strategy Architect, Inventory Steward, Reporting Steward
+- Notes: Single owner of the GitHub-backed family taxonomy, live-overlay snapshot, and per-family research priority labels.
 
 ### Data Prep Steward
 
@@ -202,7 +215,9 @@
 ## Phase Flow
 
 - `Phase 0 - Inventory Refresh`: Inventory Steward
-  - feeds: Data Prep Steward, Strategy Architect, Discovery lanes
+  - feeds: Strategy Family Steward, Data Prep Steward, Strategy Architect, Discovery lanes
+- `Phase 0.25 - Family Registry`: Strategy Family Steward
+  - feeds: Strategy Architect, Discovery lanes, Reporting Steward
 - `Phase 0.5 - Data Prep`: Data Prep Steward
   - feeds: Inventory Steward, Discovery lanes
 - `Phase 1 - Discovery`: Discovery lanes
@@ -232,6 +247,9 @@
   - `shared-account comparison`
   - `current live manifest snapshot`
 - Reporting outputs:
+  - `strategy_family_registry.json`
+  - `strategy_family_registry.md`
+  - `strategy_family_registry.csv`
   - `run_registry_report.json`
   - `run_registry_report.md`
   - `run_registry_attention.csv`
