@@ -176,11 +176,12 @@ Read first:
 
 Then, in C:\Users\<you>\Downloads\codexalpaca_repo, act as the execution-plane Codex operator and bring the paper runner up to the current execution baseline.
 
-Fetch `origin/codex/qqq-paper-portfolio`, verify whether commits `50764cf` and `4292514` are present, and if not, integrate them deliberately from that branch without changing unrelated strategy logic or risk settings.
+Fetch `origin/codex/qqq-paper-portfolio`, verify whether commits `50764cf`, `4292514`, and `f6d6168` are present, and if not, integrate them deliberately from that branch without changing unrelated strategy logic or risk settings.
 
 Verify that the runner now includes:
 - combo-native Alpaca `mleg` entry and exit routing in `alpaca_lab/multi_ticker_portfolio/trader.py`
 - Alpaca-aligned option fee modeling in the same file
+- cleanup fallback for not-filled multi-leg combo exits in the same file
 
 Then run:
 - `python -m pytest -q`
@@ -188,6 +189,7 @@ Then run:
 At the end, report:
 - whether the runner now supports true multi-leg combo execution
 - whether the fee model is aligned with Alpaca's current options fee posture
+- whether a not-filled combo exit now degrades into cleanup instead of stalling
 - whether the full suite is green
 - whether the machine is safe to keep using as the execution-plane paper runner
 

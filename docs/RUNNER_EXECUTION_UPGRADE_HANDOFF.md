@@ -4,10 +4,11 @@ Use this handoff when the new machine needs to bring the live paper runner up to
 
 ## Scope
 
-This handoff covers two runner-side upgrades that were implemented on branch `codex/qqq-paper-portfolio` in the main runtime repo:
+This handoff covers three runner-side upgrades that were implemented on branch `codex/qqq-paper-portfolio` in the main runtime repo:
 
 1. `50764cf` - `Add Alpaca multi-leg order routing to paper runner`
 2. `4292514` - `Align paper runner with Alpaca option fee model`
+3. `f6d6168` - `Add multileg exit cleanup fallback`
 
 Target repo on the new machine:
 - `C:\Users\<you>\Downloads\codexalpaca_repo`
@@ -52,12 +53,30 @@ This now flows through:
 - completed trade records
 - trade-event telemetry
 
+### 3. Combo Exit Cleanup Fallback
+
+The paper runner no longer treats a not-filled multi-leg combo exit as a dead end.
+
+Behavior change:
+- routine multi-leg exits still try the normal combo `mleg` limit ladder first
+- if that combo exit does not fill, `_run_exit()` now falls back immediately into the known-trade cleanup path
+- the cleanup closes each leg deliberately and records the trade as `via_cleanup=True`
+- exit telemetry now distinguishes:
+  - clean combo exits
+  - combo exits that missed and degraded into cleanup
+  - the cleanup trigger reason `combo_exit_not_filled`
+
+Important boundary:
+- this is still a deterministic safeguard path, not a partial-combo reconciliation engine
+- startup/EOD order-state reconciliation still deserves extra care around partially filled combo exits
+
 ## Why This Matters
 
-These two changes close a major research-to-execution gap:
+These three changes close a major research-to-execution gap:
 - the cleanroom can now research defined-risk and multi-leg structures more realistically
 - the paper runner can now express those structures at the broker in a combo-native way
 - live runner economics are much closer to Alpaca's actual options fee posture
+- routine combo exits now degrade into an explicit cleanup path instead of silently stalling on a not-filled combo order
 
 Without these changes, multi-leg strategies can look valid in research while still being distorted in live runner accounting or routed as if they were single-leg trades.
 
@@ -70,7 +89,7 @@ python -m pytest -q
 ```
 
 Expected result at the time of this handoff:
-- `104 passed`
+- `105 passed`
 
 ## Official Alpaca Sources
 
@@ -83,12 +102,13 @@ Use these sources when verifying fee and order assumptions:
 
 1. Open `C:\Users\<you>\Downloads\codexalpaca_repo`.
 2. Fetch `origin/codex/qqq-paper-portfolio`.
-3. Confirm that commits `50764cf` and `4292514` are present.
+3. Confirm that commits `50764cf`, `4292514`, and `f6d6168` are present.
 4. If the machine is intentionally tracking a different branch, inspect and cherry-pick or merge these changes deliberately.
 5. Run `python -m pytest -q`.
 6. Summarize:
    - whether the runner now supports combo-native `mleg` orders
    - whether the runner fee model is Alpaca-aligned
+   - whether a not-filled multi-leg exit now degrades into cleanup instead of stalling
    - whether the full test suite is green
    - whether any local operational config should stay unchanged before market open
 
