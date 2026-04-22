@@ -2,6 +2,8 @@
 
 ## Machine Budget
 
+Use `docs/INSTITUTIONAL_OPERATING_BLUEPRINT.md` as the higher-level system charter for which machine owns which plane, what gets automated, and what remains human-gated.
+
 - Logical CPUs: 16
 - Total RAM: 63.46 GB
 - Free RAM at plan time: 33.45 GB

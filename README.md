@@ -9,6 +9,7 @@ What this repo contains:
 - A public-safe runtime handoff bundle with no `.env`
 - Cleanroom research scripts
 - A formal GitHub-backed strategy-family registry for cataloging family coverage, live-book overlay, and next research priorities
+- An institutional operating blueprint for machine roles, automation boundaries, and champion/challenger governance
 - The current cleanroom tournament conveyor scripts for chained family-expansion runs
 - Cleanroom run-lineage support so large research batches emit `run_manifest.json` plus an append-only `run_registry.jsonl`
 - Cleanroom run-registry reporting so operators can summarize run history, lineage, ticker states, and terminal outcomes with `build_run_registry_report.py`
