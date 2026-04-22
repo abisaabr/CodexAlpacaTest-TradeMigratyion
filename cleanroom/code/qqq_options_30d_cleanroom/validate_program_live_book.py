@@ -21,7 +21,7 @@ STANDARD_TERMINAL_PHASES = {"complete", "complete_phase1_only", "complete_no_pha
 
 def default_live_manifest_path() -> Path:
     candidates = [
-        Path(r"C:\Users\rabisaab\Downloads\codexalpaca_repo\config\strategy_manifests\multi_ticker_portfolio_live.yaml"),
+        ROOT.parent / "codexalpaca_repo" / "config" / "strategy_manifests" / "multi_ticker_portfolio_live.yaml",
         Path(r"C:\Users\rabisaab\OneDrive\CodexAlpaca\downloads_remaining_20260417\folders\codexalpaca_repo\config\strategy_manifests\multi_ticker_portfolio_live.yaml"),
     ]
     for candidate in candidates:
@@ -204,12 +204,18 @@ def collect_phase2_candidate_sources(program_root: Path) -> tuple[dict[str, dict
             selected_bear_count = len((promoted.get("selected_bear") or []))
             selected_choppy_count = len((promoted.get("selected_choppy") or []))
             selected_total_count = selected_bull_count + selected_bear_count + selected_choppy_count
+            ticker_lower = ticker.lower()
             candidate_row = {
                 "ticker": ticker,
                 "source": "phase2",
                 "lane_id": lane_id,
                 "summary_path": str(summary_path),
                 "research_dir": str(research_dir),
+                "candidate_trades_path": str(research_dir / f"{ticker_lower}_candidate_trades.csv"),
+                "regime_summary_path": str(research_dir / f"{ticker_lower}_regime_summary.csv"),
+                "wide_parquet_path": str(
+                    research_dir / "input_workspace" / f"{ticker_lower}_365d_option_1min_wide_backtest.parquet"
+                ),
                 "summary_score": score,
                 "selected_bull_count": selected_bull_count,
                 "selected_bear_count": selected_bear_count,
@@ -255,6 +261,7 @@ def invoke_incremental_validation(
     candidates: list[str],
     output_dir: Path,
     top_combo_count: int,
+    candidate_source_json: Path | None = None,
 ) -> None:
     command = [
         sys.executable,
@@ -266,6 +273,8 @@ def invoke_incremental_validation(
         "--top-combo-count",
         str(top_combo_count),
     ]
+    if candidate_source_json is not None:
+        command.extend(["--candidate-source-json", str(candidate_source_json)])
     subprocess.run(command, cwd=ROOT, check=True)
 
 
@@ -412,11 +421,14 @@ def main() -> None:
     incremental_rows: list[dict[str, str]] = []
     combo_rows: list[dict[str, str]] = []
     if candidates:
+        candidate_source_json = output_dir / "validation_candidate_sources.json"
+        write_json(candidate_source_json, candidate_source_map)
         invoke_incremental_validation(
             eval_script=eval_script,
             candidates=candidates,
             output_dir=output_dir,
             top_combo_count=args.top_combo_count,
+            candidate_source_json=candidate_source_json,
         )
         incremental_rows = read_csv_rows(output_dir / "incremental_results.csv")
         combo_rows = read_csv_rows(output_dir / "combo_results.csv")
