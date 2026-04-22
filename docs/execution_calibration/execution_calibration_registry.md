@@ -14,6 +14,11 @@ This registry is the control-plane source of truth for what the paper runner has
 - Completed trades: `5`
 - Reconciliation attempts: `690`
 - Event rows: `6235`
+- Sessions with broker-order audit: `0`
+- Broker orders audited: `0`
+- Broker status mismatches: `0`
+- Local orders without broker match: `0`
+- Ending broker positions: `0`
 - Entry fills: `5`
 - Exit fills: `5`
 - Guardrail fires: `61`
@@ -25,6 +30,7 @@ This registry is the control-plane source of truth for what the paper runner has
 
 - `high` `telemetry_gap`: Exit slippage is still not captured reliably in the condensed runner artifacts. Entry-side calibration is actionable today, but exit-side execution modeling should remain conservative until expected exit pricing and exit slippage are logged consistently.
 - `high` `guardrail_pressure`: Severe-loss flatten triggered in 1 session(s). That is a clear signal to pressure-test aggressive opening debit exposure and portfolio loss caps.
+- `medium` `broker_audit_gap`: Session-level broker order audit artifacts are not present yet in the execution sample. Entry-side calibration is useful today, but combo-exit and reconciliation policy should still stay conservative until upgraded session bundles accumulate.
 - `medium` `loss_cluster`: Losses are concentrated in a small set of strategies: qqq__slow__orb_long_put_same_day (-507.50), pltr__fast__trend_long_put_next_expiry (-498.90), tsla__fast__trend_long_put_next_expiry (-196.30). Those are the best immediate candidates for tighter calibration or challenger replacement pressure.
 
 ## Top 10 Entry Slippage Clusters By Ticker
@@ -45,13 +51,13 @@ This registry is the control-plane source of truth for what the paper runner has
 
 ## Session Health
 
-- `2026-04-12`: startup `pending`, completed trades `0`, guardrail fires `0`, blocked new entries `false`, severe-loss flatten `false`
-- `2026-04-13`: startup `passed`, completed trades `0`, guardrail fires `0`, blocked new entries `false`, severe-loss flatten `false`
-- `2026-04-14`: startup `passed`, completed trades `0`, guardrail fires `0`, blocked new entries `false`, severe-loss flatten `false`
-- `2026-04-15`: startup `passed`, completed trades `0`, guardrail fires `0`, blocked new entries `true`, severe-loss flatten `false`
-- `2026-04-16`: startup `passed`, completed trades `5`, guardrail fires `61`, blocked new entries `true`, severe-loss flatten `true`
-- `2026-04-17`: startup `passed`, completed trades `0`, guardrail fires `0`, blocked new entries `false`, severe-loss flatten `false`
-- `2026-04-21`: startup `pending`, completed trades `0`, guardrail fires `0`, blocked new entries `false`, severe-loss flatten `false`
+- `2026-04-12`: startup `pending`, completed trades `0`, guardrail fires `0`, broker mismatches `0`, unmatched local orders `0`, ending broker positions `0`, blocked new entries `false`, severe-loss flatten `false`
+- `2026-04-13`: startup `passed`, completed trades `0`, guardrail fires `0`, broker mismatches `0`, unmatched local orders `0`, ending broker positions `0`, blocked new entries `false`, severe-loss flatten `false`
+- `2026-04-14`: startup `passed`, completed trades `0`, guardrail fires `0`, broker mismatches `0`, unmatched local orders `0`, ending broker positions `0`, blocked new entries `false`, severe-loss flatten `false`
+- `2026-04-15`: startup `passed`, completed trades `0`, guardrail fires `0`, broker mismatches `0`, unmatched local orders `0`, ending broker positions `0`, blocked new entries `true`, severe-loss flatten `false`
+- `2026-04-16`: startup `passed`, completed trades `5`, guardrail fires `61`, broker mismatches `0`, unmatched local orders `0`, ending broker positions `0`, blocked new entries `true`, severe-loss flatten `true`
+- `2026-04-17`: startup `passed`, completed trades `0`, guardrail fires `0`, broker mismatches `0`, unmatched local orders `0`, ending broker positions `0`, blocked new entries `false`, severe-loss flatten `false`
+- `2026-04-21`: startup `pending`, completed trades `0`, guardrail fires `0`, broker mismatches `0`, unmatched local orders `0`, ending broker positions `0`, blocked new entries `false`, severe-loss flatten `false`
 
 ## Data Quality
 
@@ -60,5 +66,7 @@ This registry is the control-plane source of truth for what the paper runner has
 - Missing completed-trade dates: `2026-04-12, 2026-04-13, 2026-04-14, 2026-04-15, 2026-04-17, 2026-04-21`
 - Missing state dates: `none`
 - Missing event-log dates: `2026-04-12, 2026-04-21`
+- Missing broker-order audit dates: `none`
+- Missing ending-broker-position dates: `none`
 - Current runner telemetry is materially stronger on entry-side calibration than exit-side slippage calibration.
 

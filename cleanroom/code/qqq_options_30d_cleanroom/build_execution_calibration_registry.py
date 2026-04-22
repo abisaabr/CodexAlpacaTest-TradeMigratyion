@@ -253,6 +253,11 @@ def build_findings(payload: dict[str, Any]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     summary = payload["summary"]
     data_quality = payload["data_quality"]
+    broker_audit_sessions = int(summary.get("sessions_with_broker_order_audit", 0) or 0)
+    broker_status_mismatch_count = int(summary.get("broker_status_mismatch_count_total", 0) or 0)
+    broker_partial_fill_count = int(summary.get("broker_partially_filled_order_count_total", 0) or 0)
+    unmatched_local_order_count = int(summary.get("local_order_without_broker_match_count_total", 0) or 0)
+    ending_broker_position_count = int(summary.get("ending_broker_position_count_total", 0) or 0)
 
     if data_quality["exit_slippage_observations"] == 0:
         findings.append(
@@ -269,6 +274,34 @@ def build_findings(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 "priority": "high",
                 "type": "guardrail_pressure",
                 "message": f"Severe-loss flatten triggered in {summary['severe_loss_flatten_session_count']} session(s). That is a clear signal to pressure-test aggressive opening debit exposure and portfolio loss caps.",
+            }
+        )
+
+    if broker_audit_sessions == 0:
+        findings.append(
+            {
+                "priority": "medium",
+                "type": "broker_audit_gap",
+                "message": "Session-level broker order audit artifacts are not present yet in the execution sample. Entry-side calibration is useful today, but combo-exit and reconciliation policy should still stay conservative until upgraded session bundles accumulate.",
+            }
+        )
+
+    if broker_status_mismatch_count > 0 or unmatched_local_order_count > 0 or ending_broker_position_count > 0:
+        findings.append(
+            {
+                "priority": "high",
+                "type": "reconciliation_pressure",
+                "message": "Broker/runtime reconciliation pressure is visible in the current execution sample. Session summaries show "
+                f"`{broker_status_mismatch_count}` broker-status mismatches, `{unmatched_local_order_count}` local order references without broker matches, and `{ending_broker_position_count}` ending broker positions. Combo-heavy challengers should stay on tighter review until these counts stabilize.",
+            }
+        )
+
+    if broker_partial_fill_count > 0:
+        findings.append(
+            {
+                "priority": "medium",
+                "type": "partial_fill_pressure",
+                "message": f"Broker audit captured `{broker_partial_fill_count}` partially filled order(s). That is a useful warning to keep multi-leg cleanup and size-cap assumptions conservative, especially in opening-window profiles.",
             }
         )
 
@@ -336,6 +369,8 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
     missing_completed_trade_dates: list[str] = []
     missing_state_dates: list[str] = []
     missing_event_dates: list[str] = []
+    missing_broker_order_audit_dates: list[str] = []
+    missing_ending_broker_position_dates: list[str] = []
 
     severe_loss_flatten_session_count = 0
     attempt_context: dict[str, dict[str, str]] = {}
@@ -346,12 +381,16 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
         reconciliation_path = run_dir / "multi_ticker_portfolio_session_summary_trade_reconciliation.csv"
         completed_path = run_dir / "multi_ticker_portfolio_session_summary_completed_trades.csv"
         events_path = run_dir / "trade_reconciliation_events.json"
+        broker_order_audit_path = run_dir / "multi_ticker_portfolio_session_summary_broker_order_audit.csv"
+        ending_broker_positions_path = run_dir / "multi_ticker_portfolio_session_summary_ending_broker_positions.csv"
         state_path = state_root / f"session_{trade_date}.json"
 
         summary_payload = load_json_object(summary_path)
         reconciliation_rows = load_csv_rows(reconciliation_path)
         completed_rows = load_csv_rows(completed_path)
         event_rows = load_json_array(events_path)
+        broker_order_audit_rows = load_csv_rows(broker_order_audit_path)
+        ending_broker_position_rows = load_csv_rows(ending_broker_positions_path)
         state_payload = load_json_object(state_path)
 
         if not summary_payload:
@@ -364,6 +403,10 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
             missing_state_dates.append(trade_date)
         if not event_rows:
             missing_event_dates.append(trade_date)
+        if "broker_order_audit_available" in summary_payload and not broker_order_audit_path.exists():
+            missing_broker_order_audit_dates.append(trade_date)
+        if "ending_broker_position_count" in summary_payload and not ending_broker_positions_path.exists():
+            missing_ending_broker_position_dates.append(trade_date)
 
         if summary_payload:
             startup_statuses[str(summary_payload.get("startup_check_status", "")).strip() or "unknown"] += 1
@@ -469,6 +512,21 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
                 "completed_trade_count": len(completed_rows),
                 "reconciliation_row_count": len(reconciliation_rows),
                 "event_row_count": len(event_rows),
+                "broker_order_audit_available": bool(summary_payload.get("broker_order_audit_available", False)),
+                "broker_order_count": parse_int(summary_payload.get("broker_order_count"))
+                or len(broker_order_audit_rows),
+                "broker_multileg_order_count": parse_int(summary_payload.get("broker_multileg_order_count"))
+                or 0,
+                "broker_partially_filled_order_count": parse_int(summary_payload.get("broker_partially_filled_order_count"))
+                or 0,
+                "broker_status_mismatch_count": parse_int(summary_payload.get("broker_status_mismatch_count"))
+                or 0,
+                "local_order_without_broker_match_count": parse_int(
+                    summary_payload.get("local_order_without_broker_match_count")
+                )
+                or 0,
+                "ending_broker_position_count": parse_int(summary_payload.get("ending_broker_position_count"))
+                or len(ending_broker_position_rows),
                 "guardrail_fire_count": parse_int(summary_payload.get("guardrail_fire_count")) or 0,
                 "entry_fill_count": parse_int(summary_payload.get("entry_fill_count")) or 0,
                 "exit_fill_count": parse_int(summary_payload.get("exit_fill_count")) or 0,
@@ -492,10 +550,21 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
             "sessions_with_reconciliation": len(run_dirs) - len(missing_reconciliation_dates),
             "sessions_with_completed_trades": sum(1 for row in sessions if row["completed_trade_count"] > 0),
             "sessions_with_event_logs": len(run_dirs) - len(missing_event_dates),
+            "sessions_with_broker_order_audit": sum(1 for row in sessions if row["broker_order_audit_available"]),
             "date_span": {"start": run_dirs[0].name if run_dirs else "", "end": run_dirs[-1].name if run_dirs else ""},
             "completed_trade_count": sum(int(row["completed_trade_count"]) for row in sessions),
             "reconciliation_row_count": sum(int(row["reconciliation_row_count"]) for row in sessions),
             "event_row_count": sum(int(row["event_row_count"]) for row in sessions),
+            "broker_order_count_total": sum(int(row["broker_order_count"]) for row in sessions),
+            "broker_multileg_order_count_total": sum(int(row["broker_multileg_order_count"]) for row in sessions),
+            "broker_partially_filled_order_count_total": sum(
+                int(row["broker_partially_filled_order_count"]) for row in sessions
+            ),
+            "broker_status_mismatch_count_total": sum(int(row["broker_status_mismatch_count"]) for row in sessions),
+            "local_order_without_broker_match_count_total": sum(
+                int(row["local_order_without_broker_match_count"]) for row in sessions
+            ),
+            "ending_broker_position_count_total": sum(int(row["ending_broker_position_count"]) for row in sessions),
             "entry_fill_count": sum(int(row["entry_fill_count"]) for row in sessions),
             "exit_fill_count": sum(int(row["exit_fill_count"]) for row in sessions),
             "signal_attempt_count": summary_counter["signal_attempt_count"],
@@ -528,6 +597,8 @@ def build_payload(*, runner_repo_root: Path, reports_root: Path, top_n: int) -> 
             "missing_completed_trade_dates": missing_completed_trade_dates,
             "missing_state_dates": missing_state_dates,
             "missing_event_dates": missing_event_dates,
+            "missing_broker_order_audit_dates": missing_broker_order_audit_dates,
+            "missing_ending_broker_position_dates": missing_ending_broker_position_dates,
         },
         "sessions": sorted(sessions, key=lambda row: row["trade_date"]),
         "by_ticker": finalize_group_rows(by_ticker, "ticker"),
@@ -623,6 +694,11 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Completed trades: `{summary['completed_trade_count']}`")
     lines.append(f"- Reconciliation attempts: `{summary['reconciliation_row_count']}`")
     lines.append(f"- Event rows: `{summary['event_row_count']}`")
+    lines.append(f"- Sessions with broker-order audit: `{summary['sessions_with_broker_order_audit']}`")
+    lines.append(f"- Broker orders audited: `{summary['broker_order_count_total']}`")
+    lines.append(f"- Broker status mismatches: `{summary['broker_status_mismatch_count_total']}`")
+    lines.append(f"- Local orders without broker match: `{summary['local_order_without_broker_match_count_total']}`")
+    lines.append(f"- Ending broker positions: `{summary['ending_broker_position_count_total']}`")
     lines.append(f"- Entry fills: `{summary['entry_fill_count']}`")
     lines.append(f"- Exit fills: `{summary['exit_fill_count']}`")
     lines.append(f"- Guardrail fires: `{summary['guardrail_fire_count_total']}`")
@@ -649,7 +725,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append("")
     for row in payload["sessions"]:
         lines.append(
-            f"- `{row['trade_date']}`: startup `{row['startup_check_status'] or 'unknown'}`, completed trades `{row['completed_trade_count']}`, guardrail fires `{row['guardrail_fire_count']}`, blocked new entries `{str(bool(row['blocked_new_entries'])).lower()}`, severe-loss flatten `{str(bool(row['severe_loss_flatten_triggered'])).lower()}`"
+            f"- `{row['trade_date']}`: startup `{row['startup_check_status'] or 'unknown'}`, completed trades `{row['completed_trade_count']}`, guardrail fires `{row['guardrail_fire_count']}`, broker mismatches `{row['broker_status_mismatch_count']}`, unmatched local orders `{row['local_order_without_broker_match_count']}`, ending broker positions `{row['ending_broker_position_count']}`, blocked new entries `{str(bool(row['blocked_new_entries'])).lower()}`, severe-loss flatten `{str(bool(row['severe_loss_flatten_triggered'])).lower()}`"
         )
     if not payload["sessions"]:
         lines.append("- No session artifacts were found.")
@@ -661,6 +737,8 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Missing completed-trade dates: `{', '.join(data_quality['missing_completed_trade_dates']) or 'none'}`")
     lines.append(f"- Missing state dates: `{', '.join(data_quality['missing_state_dates']) or 'none'}`")
     lines.append(f"- Missing event-log dates: `{', '.join(data_quality['missing_event_dates']) or 'none'}`")
+    lines.append(f"- Missing broker-order audit dates: `{', '.join(data_quality['missing_broker_order_audit_dates']) or 'none'}`")
+    lines.append(f"- Missing ending-broker-position dates: `{', '.join(data_quality['missing_ending_broker_position_dates']) or 'none'}`")
     lines.append("- Current runner telemetry is materially stronger on entry-side calibration than exit-side slippage calibration.")
     lines.append("")
 

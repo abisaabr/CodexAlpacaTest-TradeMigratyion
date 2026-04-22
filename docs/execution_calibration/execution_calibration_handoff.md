@@ -12,6 +12,9 @@
 - `high_guardrail_pressure`: `true`
 - `elevated_entry_friction`: `true`
 - `exit_telemetry_gap`: `true`
+- `reconciliation_pressure`: `false`
+- `partial_fill_pressure`: `false`
+- `broker_audit_gap`: `true`
 
 ## Policy Guidance
 
@@ -28,6 +31,7 @@
 - Keep exit-side execution modeling conservative until explicit exit slippage telemetry becomes reliable.
 - Favor premium-defense and defined-risk opening-window challengers before adding more aggressive debit-heavy opening profiles.
 - Treat current execution evidence as directional rather than fully authoritative because the completed-trade sample is still small.
+- Treat broker-order audit coverage itself as a telemetry gap until upgraded session bundles start landing from the execution machine.
 
 ## Top Entry Slippage Clusters
 

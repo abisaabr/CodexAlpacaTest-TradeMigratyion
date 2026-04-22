@@ -26,6 +26,8 @@ From the execution repo:
 - `reports/multi_ticker_portfolio/runs/*/multi_ticker_portfolio_session_summary.json`
 - `reports/multi_ticker_portfolio/runs/*/multi_ticker_portfolio_session_summary_trade_reconciliation.csv`
 - `reports/multi_ticker_portfolio/runs/*/multi_ticker_portfolio_session_summary_completed_trades.csv`
+- `reports/multi_ticker_portfolio/runs/*/multi_ticker_portfolio_session_summary_broker_order_audit.csv`
+- `reports/multi_ticker_portfolio/runs/*/multi_ticker_portfolio_session_summary_ending_broker_positions.csv`
 - `reports/multi_ticker_portfolio/runs/*/trade_reconciliation_events.json`
 - `reports/multi_ticker_portfolio/state/session_*.json`
 
@@ -35,6 +37,7 @@ Refresh this registry before major nightly research cycles so the operator can:
 - tighten fill assumptions when live entry friction is worse than expected
 - identify opening-window execution pressure
 - spot loss clusters that deserve challenger pressure
+- surface combo-exit reconciliation pressure such as broker-status mismatches, unmatched local orders, partial fills, and residual broker positions
 - keep guardrail behavior visible in the control plane
 
 Then build the execution calibration handoff so the nightly operator has a concise policy posture, not just raw metrics.
@@ -44,6 +47,7 @@ That handoff is not just advisory anymore. The cleanroom now consumes it in four
 - the fill model in `cleanroom/code/qqq_options_30d_cleanroom/backtest_qqq_option_strategies.py` raises entry and exit slippage multipliers in a governed, phase-aware way so the simulator itself becomes more conservative under the same posture
 - the deterministic fill-capacity layer in that same cleanroom stack can now reject obviously unfillable signals and cap requested size when combo complexity and weak-leg liquidity say the market would not reasonably fill the full request
 - the exit path can now degrade from a clean combo exit into a cleanup-style exit when liquidity suggests the full position would not clear cleanly at the scheduled combo mark
+- the operator policy layer can now keep combo-heavy profiles on a tighter leash when upgraded runner bundles show reconciliation pressure or partial-fill stress in the broker-order audit
 
 Primary handoff builder:
 - `cleanroom/code/qqq_options_30d_cleanroom/build_execution_calibration_handoff.py`
@@ -54,7 +58,8 @@ The current runner artifacts are much stronger on entry-side calibration than ex
 
 That means:
 - entry-fill calibration is actionable today
-- exit-side modeling should stay conservative until expected exit pricing and exit slippage are captured more consistently
+- broker-order audit and ending-position telemetry are now useful for reconciliation pressure and cleanup realism
+- exit-side price slippage modeling should still stay conservative until expected exit pricing and exit slippage are captured more consistently
 
 The registry should surface that limitation clearly instead of pretending we have better evidence than we do.
 
