@@ -25,6 +25,9 @@ Before assigning agent work, refresh and inspect:
 - `docs/TOURNAMENT_UNLOCK_REGISTRY.md`
 - `docs/tournament_unlocks/tournament_unlock_registry.md`
 - `docs/tournament_unlocks/tournament_unlock_handoff.md`
+- `docs/TOURNAMENT_UNLOCK_WORKPLAN.md`
+- `docs/tournament_unlocks/tournament_unlock_workplan.md`
+- `docs/tournament_unlocks/tournament_unlock_workplan_handoff.md`
 
 It is written for the current two-machine setup:
 - current research machine = primary research plane
@@ -92,6 +95,10 @@ Required outputs:
 - `tournament_unlock_registry.md`
 - `tournament_unlock_handoff.json`
 - `tournament_unlock_handoff.md`
+- `tournament_unlock_workplan.json`
+- `tournament_unlock_workplan.md`
+- `tournament_unlock_workplan_handoff.json`
+- `tournament_unlock_workplan_handoff.md`
 - `strategy_family_registry.json`
 - `strategy_family_registry.md`
 - `strategy_family_handoff.json`
@@ -111,6 +118,7 @@ Tasks:
 - confirm exit-cleanup degradation is active so larger multi-leg positions can realize worse-than-combo exits when liquidity would not plausibly clear the whole order at the scheduled mark
 - refresh the tournament profile registry and tournament profile handoff so profile choice is resolved from approved executable profiles plus current execution posture
 - refresh the tournament unlock registry and tournament unlock handoff so the operator can see what evidence or implementation work still blocks the next tournament tier
+- refresh the tournament unlock workplan and workplan handoff so the research plane and execution plane each get one explicit next mission
 - refresh the formal family registry
 - refresh the family handoff packet
 - refresh ticker-family coverage
@@ -263,6 +271,7 @@ Before signing off on a nightly run, confirm:
 - execution calibration refreshed
 - tournament profile policy refreshed
 - tournament unlock policy refreshed
+- tournament unlock workplan refreshed
 - family registry refreshed
 - family handoff refreshed
 - coverage refreshed

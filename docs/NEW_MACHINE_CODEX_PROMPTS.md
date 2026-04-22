@@ -39,6 +39,7 @@ Before refreshing execution policy from paper-runner evidence, also read `docs/S
 Before choosing or running a major nightly cycle, also read `docs/EXECUTION_CALIBRATION_REGISTRY.md` and inspect `docs/execution_calibration/execution_calibration_handoff.md` so current paper-runner fill, guardrail, and loss evidence can feed the next research run instead of being ignored.
 Before choosing a nightly research cycle, also read `docs/TOURNAMENT_PROFILE_REGISTRY.md` and inspect `docs/tournament_profiles/tournament_profile_handoff.md` so the machine uses an approved executable tournament profile that is also aligned with the current execution posture.
 Before choosing or escalating to a more aggressive nightly research cycle, also read `docs/TOURNAMENT_UNLOCK_REGISTRY.md` and inspect `docs/tournament_unlocks/tournament_unlock_handoff.md` so the machine can explain exactly what evidence or implementation work still blocks the next profile tier.
+Before deciding what the new machine should do next, also read `docs/TOURNAMENT_UNLOCK_WORKPLAN.md` and inspect `docs/tournament_unlocks/tournament_unlock_workplan_handoff.md` so the execution plane follows the current evidence mission instead of improvising one.
 Do not treat a planned or executable profile as automatically safe to activate just because it is listed in the registry; also respect the profile's execution evidence floor, broker-audit requirements, and exit-telemetry requirements from the current tournament profile handoff.
 
 ## 6. Run The Family-Expansion Tournament Conveyor
@@ -351,4 +352,34 @@ Then act as the Tournament Unlock Steward for the new machine.
    - the exact missing evidence, audit coverage, telemetry, risk-ceiling, or implementation work blocking each target
    - the smallest next evidence package the new machine should try to produce to unlock the next tier
 3. Do not start trading, do not modify the live manifest, and do not change strategy or risk policy in this step.
+```
+
+## 14. Run The Current Execution Evidence Mission
+
+```text
+Open these sibling folders and use them together:
+
+1. C:\Users\<you>\Downloads\codexalpaca_repo
+2. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs/SESSION_RECONCILIATION_REGISTRY.md
+- docs/EXECUTION_CALIBRATION_REGISTRY.md
+- docs/TOURNAMENT_UNLOCK_REGISTRY.md
+- docs/TOURNAMENT_UNLOCK_WORKPLAN.md
+
+Then act as the execution-plane mission operator for the new machine.
+
+1. Refresh:
+   - `docs/session_reconciliation/session_reconciliation_handoff.md`
+   - `docs/execution_calibration/execution_calibration_handoff.md`
+   - `docs/tournament_unlocks/tournament_unlock_handoff.md`
+   - `docs/tournament_unlocks/tournament_unlock_workplan_handoff.md`
+2. Read the current execution-plane mission from the workplan handoff.
+3. Report:
+   - the current unlocked profile that should remain in use
+   - the current execution-plane evidence mission
+   - the exact artifacts the next trusted session must leave behind
+   - the completion gates that would let the control plane reconsider the next blocked profile
+4. Do not modify the live manifest, do not change strategy or risk policy, and do not start trading in this step.
 ```

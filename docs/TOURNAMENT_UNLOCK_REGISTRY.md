@@ -39,6 +39,7 @@ Use this registry when you want a precise answer to:
 - what is the closest next profile we could unlock?
 - what exact evidence still blocks opening-window or aggressive profiles?
 - should the new machine spend the next session producing trusted broker audits or should the research machine spend the next session wiring a profile?
+- when do we want that blocker-clearing work split explicitly into a research-plane mission and an execution-plane mission?
 
 ## Refresh Command
 
@@ -54,3 +55,4 @@ python .\cleanroom\code\qqq_options_30d_cleanroom\build_tournament_unlock_handof
 - treat the unlock registry as the control-plane answer to "what evidence unlocks the next tournament tier?"
 - do not activate a profile just because it appears in the tournament profile registry; confirm its blockers are cleared in the unlock handoff
 - use the unlock handoff to choose the next evidence milestone for the new machine after each paper-runner session
+- use the unlock workplan when you want that blocker-clearing work split cleanly between the research plane and the execution plane

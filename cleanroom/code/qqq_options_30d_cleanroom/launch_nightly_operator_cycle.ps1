@@ -50,6 +50,8 @@ $tournamentProfileBuilderPath = Join-Path $scriptRoot "build_tournament_profile_
 $tournamentProfileHandoffBuilderPath = Join-Path $scriptRoot "build_tournament_profile_handoff.py"
 $tournamentUnlockBuilderPath = Join-Path $scriptRoot "build_tournament_unlock_registry.py"
 $tournamentUnlockHandoffBuilderPath = Join-Path $scriptRoot "build_tournament_unlock_handoff.py"
+$tournamentUnlockWorkplanBuilderPath = Join-Path $scriptRoot "build_tournament_unlock_workplan.py"
+$tournamentUnlockWorkplanHandoffBuilderPath = Join-Path $scriptRoot "build_tournament_unlock_workplan_handoff.py"
 $coverageBuilderPath = Join-Path $scriptRoot "build_ticker_family_coverage.py"
 $programLauncherPath = Join-Path $scriptRoot "launch_down_choppy_program.ps1"
 $validatorPath = Join-Path $scriptRoot "validate_program_live_book.py"
@@ -172,6 +174,20 @@ function Write-Status {
         tournament_unlock_handoff_json =
             if (Test-Path $tournamentUnlockHandoffJsonPath) {
                 $tournamentUnlockHandoffJsonPath
+            }
+            else {
+                ""
+            }
+        tournament_unlock_workplan_json =
+            if (Test-Path $tournamentUnlockWorkplanJsonPath) {
+                $tournamentUnlockWorkplanJsonPath
+            }
+            else {
+                ""
+            }
+        tournament_unlock_workplan_handoff_json =
+            if (Test-Path $tournamentUnlockWorkplanHandoffJsonPath) {
+                $tournamentUnlockWorkplanHandoffJsonPath
             }
             else {
                 ""
@@ -348,6 +364,8 @@ $sessionReconciliationHandoffJsonPath = Join-Path $sessionReconciliationRoot "se
 $executionCalibrationHandoffJsonPath = Join-Path $executionCalibrationRoot "execution_calibration_handoff.json"
 $tournamentProfileHandoffJsonPath = Join-Path $tournamentProfileRoot "tournament_profile_handoff.json"
 $tournamentUnlockHandoffJsonPath = Join-Path $tournamentUnlockRoot "tournament_unlock_handoff.json"
+$tournamentUnlockWorkplanJsonPath = Join-Path $tournamentUnlockRoot "tournament_unlock_workplan.json"
+$tournamentUnlockWorkplanHandoffJsonPath = Join-Path $tournamentUnlockRoot "tournament_unlock_workplan_handoff.json"
 $programStatusPath = Join-Path $programRootPath "program_status.json"
 $phase2PackPath = Join-Path $programRootPath "phase2\launch_pack\phase2_agent_wave_pack.json"
 $phase2PackStatusPath = Join-Path $programRootPath "phase2\launch_pack\launch_status.json"
@@ -604,7 +622,33 @@ if (-not (Test-Path $tournamentUnlockHandoffJsonPath)) {
     throw "Tournament unlock handoff JSON was not created at $tournamentUnlockHandoffJsonPath"
 }
 
+Write-Status -Phase "refreshing_tournament_unlock_workplan" -Message "Refreshing the two-machine tournament unlock workplan."
+
+$tournamentUnlockWorkplanArgs = @(
+    "--unlock-registry-json", $tournamentUnlockJsonPath,
+    "--unlock-handoff-json", $tournamentUnlockHandoffJsonPath,
+    "--report-dir", $tournamentUnlockRoot
+)
+Invoke-PythonStep -ScriptPath $tournamentUnlockWorkplanBuilderPath -Arguments $tournamentUnlockWorkplanArgs -FailureMessage "Failed to refresh tournament unlock workplan."
+
+if (-not (Test-Path $tournamentUnlockWorkplanJsonPath)) {
+    throw "Tournament unlock workplan JSON was not created at $tournamentUnlockWorkplanJsonPath"
+}
+
+Write-Status -Phase "refreshing_tournament_unlock_workplan_handoff" -Message "Refreshing the tournament unlock workplan handoff."
+
+$tournamentUnlockWorkplanHandoffArgs = @(
+    "--workplan-json", $tournamentUnlockWorkplanJsonPath,
+    "--report-dir", $tournamentUnlockRoot
+)
+Invoke-PythonStep -ScriptPath $tournamentUnlockWorkplanHandoffBuilderPath -Arguments $tournamentUnlockWorkplanHandoffArgs -FailureMessage "Failed to build tournament unlock workplan handoff."
+
+if (-not (Test-Path $tournamentUnlockWorkplanHandoffJsonPath)) {
+    throw "Tournament unlock workplan handoff JSON was not created at $tournamentUnlockWorkplanHandoffJsonPath"
+}
+
 $cycleManifest.tournament_unlock_handoff_json = $tournamentUnlockHandoffJsonPath
+ $cycleManifest.tournament_unlock_workplan_handoff_json = $tournamentUnlockWorkplanHandoffJsonPath
 Write-JsonFile -Path $manifestPath -Payload $cycleManifest
 
 Write-Status -Phase "refreshing_family_registry" -Message "Refreshing the strategy family registry."
@@ -693,6 +737,8 @@ Write-Status -Phase "planned" -Message "Nightly operator cycle planned successfu
         tournament_profile_handoff_json = $tournamentProfileHandoffJsonPath
         tournament_unlock_json = $tournamentUnlockJsonPath
         tournament_unlock_handoff_json = $tournamentUnlockHandoffJsonPath
+        tournament_unlock_workplan_json = $tournamentUnlockWorkplanJsonPath
+        tournament_unlock_workplan_handoff_json = $tournamentUnlockWorkplanHandoffJsonPath
         resolved_tournament_profile = $resolvedTournamentProfile
         coverage_plan_json = $coveragePlanPath
         program_status_path = $programStatusPath
@@ -812,6 +858,8 @@ $finalPayload = [ordered]@{
     tournament_profile_handoff_json = $tournamentProfileHandoffJsonPath
     tournament_unlock_json = $tournamentUnlockJsonPath
     tournament_unlock_handoff_json = $tournamentUnlockHandoffJsonPath
+    tournament_unlock_workplan_json = $tournamentUnlockWorkplanJsonPath
+    tournament_unlock_workplan_handoff_json = $tournamentUnlockWorkplanHandoffJsonPath
     coverage_plan_json = $coveragePlanPath
     phase2_pack_json =
         if (Test-Path $phase2PackPath) {
@@ -851,6 +899,8 @@ Write-Status -Phase "completed" -Message "Nightly operator cycle completed succe
         tournament_profile_handoff_json = $tournamentProfileHandoffJsonPath
         tournament_unlock_json = $tournamentUnlockJsonPath
         tournament_unlock_handoff_json = $tournamentUnlockHandoffJsonPath
+        tournament_unlock_workplan_json = $tournamentUnlockWorkplanJsonPath
+        tournament_unlock_workplan_handoff_json = $tournamentUnlockWorkplanHandoffJsonPath
         resolved_tournament_profile = $resolvedTournamentProfile
         coverage_plan_json = $coveragePlanPath
         validation_json = $validationJsonPath

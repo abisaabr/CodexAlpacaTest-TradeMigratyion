@@ -1,0 +1,107 @@
+{
+  "generated_at": "2026-04-22T15:24:54.950502",
+  "unlock_registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_registry.json",
+  "unlock_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_handoff.json",
+  "current_unlocked_profile": "down_choppy_coverage_ranked",
+  "available_but_not_preferred": [
+    "down_choppy_full_ready"
+  ],
+  "research_plane_mission": {
+    "owner": "current_research_machine",
+    "mission_code": "wire_next_unlock_profile",
+    "title": "Wire governed execution for `opening_30m_premium_defense`.",
+    "primary_target_profile": "opening_30m_premium_defense",
+    "summary": "Clear the implementation blocker on `opening_30m_premium_defense` so the remaining unlock path is governed only by execution evidence and session trust.",
+    "actions": [
+      "Add a governed executable entrypoint for `opening_30m_premium_defense` instead of leaving it tracked-only in policy.",
+      "Make sure the new path participates in the same nightly-operator control plane, lineage, validation, and morning-handoff chain.",
+      "Refresh the tournament profile registry, tournament profile handoff, tournament unlock registry, and tournament unlock handoff after wiring is complete."
+    ],
+    "success_criteria": [
+      "`opening_30m_premium_defense` no longer carries `implementation_not_wired` in the unlock registry.",
+      "`opening_30m_premium_defense` is executable in code, even if execution evidence still blocks activation.",
+      "The governed operator artifacts regenerate cleanly after the new profile wiring."
+    ]
+  },
+  "execution_plane_mission": {
+    "owner": "new_machine_execution_plane",
+    "mission_code": "produce_next_unlock_evidence_package",
+    "title": "Produce the next trusted broker-audited execution evidence package.",
+    "primary_target_profiles": [
+      "opening_30m_premium_defense",
+      "balanced_family_expansion_benchmark"
+    ],
+    "summary": "The execution plane should focus on landing fresh trusted paper-runner evidence that removes the current audit and evidence-floor blockers from the nearest unlock targets.",
+    "actions": [
+      "Run the current unlocked profile without changing live strategy selection, risk policy, or the live manifest.",
+      "Ensure the session bundle captures broker-order audit, broker account-activity audit, and ending broker-position snapshot artifacts.",
+      "Immediately rerun session reconciliation, execution calibration, tournament unlock registry, and tournament unlock handoff after the next trusted session lands.",
+      "Treat trusted broker-order and broker-activity audit coverage as the primary missing evidence package.",
+      "Aim to improve execution evidence beyond `limited_entry_only` by landing a trusted, fully reconciled paper session."
+    ],
+    "success_criteria": [
+      "At least one fresh trusted paper session lands with broker-order audit coverage.",
+      "At least one fresh trusted paper session lands with broker account-activity audit coverage.",
+      "The refreshed session reconciliation handoff remains `trusted_and_cautious_sessions` or better without flipping the new session to `review_required`.",
+      "The refreshed execution calibration handoff improves the evidence floor or removes audit-gap blockers for the nearest unlock target."
+    ],
+    "current_unlocked_profile": "down_choppy_coverage_ranked",
+    "available_but_not_preferred": [
+      "down_choppy_full_ready"
+    ]
+  },
+  "completion_gates": [
+    {
+      "profile_id": "opening_30m_premium_defense",
+      "activation_state": "implementation_and_policy_blocked",
+      "required_clearances": [
+        "implementation_not_wired",
+        "execution_evidence_floor",
+        "broker_order_audit_coverage",
+        "broker_activity_audit_coverage"
+      ],
+      "next_unlock_objectives": [
+        "wire_profile_entrypoint",
+        "upgrade_execution_evidence_to_entry_and_reconciliation",
+        "land_trusted_broker_order_audit_sessions",
+        "land_trusted_broker_activity_audit_sessions"
+      ]
+    },
+    {
+      "profile_id": "balanced_family_expansion_benchmark",
+      "activation_state": "implementation_and_policy_blocked",
+      "required_clearances": [
+        "implementation_not_wired",
+        "execution_evidence_floor",
+        "broker_order_audit_coverage",
+        "broker_activity_audit_coverage"
+      ],
+      "next_unlock_objectives": [
+        "wire_profile_entrypoint",
+        "upgrade_execution_evidence_to_entry_and_reconciliation",
+        "land_trusted_broker_order_audit_sessions",
+        "land_trusted_broker_activity_audit_sessions"
+      ]
+    },
+    {
+      "profile_id": "opening_30m_convexity_butterfly",
+      "activation_state": "implementation_and_policy_blocked",
+      "required_clearances": [
+        "implementation_not_wired",
+        "execution_evidence_floor",
+        "risk_tier_cap",
+        "broker_order_audit_coverage",
+        "broker_activity_audit_coverage",
+        "exit_telemetry"
+      ],
+      "next_unlock_objectives": [
+        "wire_profile_entrypoint",
+        "upgrade_execution_evidence_to_broad",
+        "raise_execution_risk_ceiling_to_aggressive",
+        "land_trusted_broker_order_audit_sessions",
+        "land_trusted_broker_activity_audit_sessions",
+        "land_reliable_exit_telemetry"
+      ]
+    }
+  ]
+}
