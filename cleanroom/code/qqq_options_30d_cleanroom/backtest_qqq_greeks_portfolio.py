@@ -15,13 +15,16 @@ from backtest_qqq_option_strategies import (
     MINUTES_PER_RTH_SESSION,
     STARTING_EQUITY,
     SIGNAL_DISPATCH,
+    aggregate_fill_context,
     build_day_contexts,
+    build_cleanup_exit_contexts,
     buy_fill,
     close_cashflow,
     combo_entry_net_premium,
     estimate_entry_fill_outcome,
     estimate_alpaca_option_order_fees,
     estimate_combo_bounds,
+    estimate_exit_fill_outcome,
     load_daily_universe,
     load_wide_data,
     open_cashflow,
@@ -141,6 +144,14 @@ CANDIDATE_TRADE_COLUMNS = (
     "entry_session_has_all_trades",
     "entry_fill_probability_estimate",
     "entry_fill_ratio_estimate",
+    "exit_trade_count_min",
+    "exit_volume_min",
+    "exit_has_all_trade_bars",
+    "exit_has_any_synthetic_leg",
+    "exit_session_has_all_trades",
+    "exit_fill_probability_estimate",
+    "exit_fill_ratio_estimate",
+    "exit_fill_status",
     "entry_broker_commission_per_combo",
     "exit_broker_commission_per_combo",
     "total_broker_commission_per_combo",
@@ -170,8 +181,12 @@ CANDIDATE_TRADE_COLUMNS = (
     "total_slippage_per_combo",
     "total_friction_per_combo",
     "friction_pct_of_entry_premium",
+    "scheduled_exit_cash_per_combo",
+    "cleanup_exit_cash_per_combo",
     "gross_pnl_per_combo",
     "net_pnl_per_combo",
+    "scheduled_net_pnl_per_combo",
+    "cleanup_net_pnl_per_combo",
     "max_loss_per_combo",
     "max_profit_per_combo",
     "gross_return_on_risk_pct",
@@ -1584,6 +1599,10 @@ def generate_candidate_trades(
             net_pnl_per_combo = 0.0
             exit_prices_raw: list[float] | None = None
             exit_contexts: list[dict[str, object]] | None = None
+            cleanup_exit_contexts: list[dict[str, object]] | None = None
+            exit_fill_outcome: dict[str, object] | None = None
+            cleanup_exit_cash_per_combo = 0.0
+            scheduled_exit_cash_per_combo = 0.0
 
             for idx in range(entry_idx + 1, hard_exit_idx + 1):
                 current_prices: list[float] = []
@@ -1617,11 +1636,30 @@ def generate_candidate_trades(
                 if not available:
                     continue
 
-                current_exit_cash = close_cashflow(
+                current_scheduled_exit_cash_per_combo = close_cashflow(
                     legs=legs,
                     exit_prices_raw=current_prices,
                     quantity=1,
                     exit_contexts=current_exit_contexts,
+                )
+                weakest_exit_context = aggregate_fill_context(current_exit_contexts, idx)
+                current_exit_fill_outcome = estimate_exit_fill_outcome(
+                    min(abs(float(price)) for price in current_prices),
+                    weakest_exit_context,
+                    leg_count=len(legs),
+                    requested_quantity=1,
+                )
+                current_cleanup_exit_contexts = build_cleanup_exit_contexts(current_exit_contexts, idx)
+                current_cleanup_exit_cash_per_combo = close_cashflow(
+                    legs=legs,
+                    exit_prices_raw=current_prices,
+                    quantity=1,
+                    exit_contexts=current_cleanup_exit_contexts,
+                )
+                current_exit_cash = (
+                    current_scheduled_exit_cash_per_combo
+                    if int(current_exit_fill_outcome["max_fill_quantity"]) >= 1
+                    else current_cleanup_exit_cash_per_combo
                 )
                 current_exit_raw_cash = raw_close_cashflow(legs=legs, exit_prices_raw=current_prices, quantity=1)
                 current_net_pnl = (
@@ -1640,6 +1678,10 @@ def generate_candidate_trades(
                     net_pnl_per_combo = current_net_pnl
                     exit_prices_raw = list(current_prices)
                     exit_contexts = list(current_exit_contexts)
+                    cleanup_exit_contexts = list(current_cleanup_exit_contexts)
+                    exit_fill_outcome = current_exit_fill_outcome
+                    cleanup_exit_cash_per_combo = current_cleanup_exit_cash_per_combo
+                    scheduled_exit_cash_per_combo = current_scheduled_exit_cash_per_combo
                     break
                 if current_net_pnl <= -stop_dollars:
                     exit_idx = idx
@@ -1649,6 +1691,10 @@ def generate_candidate_trades(
                     net_pnl_per_combo = current_net_pnl
                     exit_prices_raw = list(current_prices)
                     exit_contexts = list(current_exit_contexts)
+                    cleanup_exit_contexts = list(current_cleanup_exit_contexts)
+                    exit_fill_outcome = current_exit_fill_outcome
+                    cleanup_exit_cash_per_combo = current_cleanup_exit_cash_per_combo
+                    scheduled_exit_cash_per_combo = current_scheduled_exit_cash_per_combo
                     break
 
                 exit_idx = idx
@@ -1657,8 +1703,12 @@ def generate_candidate_trades(
                 net_pnl_per_combo = current_net_pnl
                 exit_prices_raw = list(current_prices)
                 exit_contexts = list(current_exit_contexts)
+                cleanup_exit_contexts = list(current_cleanup_exit_contexts)
+                exit_fill_outcome = current_exit_fill_outcome
+                cleanup_exit_cash_per_combo = current_cleanup_exit_cash_per_combo
+                scheduled_exit_cash_per_combo = current_scheduled_exit_cash_per_combo
 
-            if exit_idx is None or exit_prices_raw is None or exit_contexts is None:
+            if exit_idx is None or exit_prices_raw is None or exit_contexts is None or cleanup_exit_contexts is None or exit_fill_outcome is None:
                 continue
 
             entry_time = ctx.frame.loc[entry_idx, "timestamp_et"]
@@ -1670,6 +1720,18 @@ def generate_candidate_trades(
             total_commission_per_combo = total_fees_per_combo
             total_friction_per_combo = total_slippage_per_combo + total_commission_per_combo
             gross_pnl_per_combo = entry_raw_cash_per_combo + exit_raw_cash_per_combo
+            scheduled_net_pnl_per_combo = (
+                entry_cash_per_combo
+                + scheduled_exit_cash_per_combo
+                - entry_total_fees_per_combo
+                - exit_total_fees_per_combo
+            )
+            cleanup_net_pnl_per_combo = (
+                entry_cash_per_combo
+                + cleanup_exit_cash_per_combo
+                - entry_total_fees_per_combo
+                - exit_total_fees_per_combo
+            )
             friction_pct_of_entry_premium = (
                 (total_friction_per_combo / (abs_entry_net_premium * 100.0)) * 100.0
                 if abs_entry_net_premium > 0.0
@@ -1681,11 +1743,18 @@ def generate_candidate_trades(
                 else 0.0
             )
             leg_payload: list[dict[str, object]] = []
-            for leg, exit_price_raw, exit_context in zip(legs, exit_prices_raw, exit_contexts):
-                exit_fill = (
+            exit_fill_status = "full" if int(exit_fill_outcome["max_fill_quantity"]) >= 1 else "cleanup_only"
+            weakest_exit_context = aggregate_fill_context(exit_contexts, exit_idx)
+            for leg, exit_price_raw, exit_context, cleanup_context in zip(legs, exit_prices_raw, exit_contexts, cleanup_exit_contexts):
+                scheduled_exit_fill = (
                     sell_fill(float(exit_price_raw), context=exit_context)
                     if leg["side"] == "long"
                     else buy_fill(float(exit_price_raw), context=exit_context)
+                )
+                cleanup_exit_fill = (
+                    sell_fill(float(exit_price_raw), context=cleanup_context)
+                    if leg["side"] == "long"
+                    else buy_fill(float(exit_price_raw), context=cleanup_context)
                 )
                 leg_payload.append(
                     {
@@ -1693,7 +1762,9 @@ def generate_candidate_trades(
                         "entry_price_raw": round(float(leg["entry_price_raw"]), 4),
                         "entry_price_fill": round(float(leg["entry_price_fill"]), 4),
                         "exit_price_raw": round(float(exit_price_raw), 4),
-                        "exit_price_fill": round(float(exit_fill), 4),
+                        "scheduled_exit_price_fill": round(float(scheduled_exit_fill), 4),
+                        "cleanup_exit_price_fill": round(float(cleanup_exit_fill), 4),
+                        "exit_price_fill": round(float(cleanup_exit_fill if exit_fill_status == "cleanup_only" else scheduled_exit_fill), 4),
                         "exit_trade_count": round(float(exit_context["trade_count"]), 4),
                         "exit_volume": round(float(exit_context["volume"]), 4),
                         "exit_has_trade_bar": bool(exit_context["has_trade_bar"]),
@@ -1735,6 +1806,14 @@ def generate_candidate_trades(
                     "entry_session_has_all_trades": bool(weakest_entry_context["session_has_any_trade"]),
                     "entry_fill_probability_estimate": round(float(fill_outcome["fill_probability_estimate"]), 4),
                     "entry_fill_ratio_estimate": round(float(fill_outcome["fill_ratio_estimate"]), 4),
+                    "exit_trade_count_min": round(float(weakest_exit_context["trade_count"]), 4),
+                    "exit_volume_min": round(float(weakest_exit_context["volume"]), 4),
+                    "exit_has_all_trade_bars": bool(weakest_exit_context["has_trade_bar"]),
+                    "exit_has_any_synthetic_leg": bool(weakest_exit_context["is_synthetic_bar"]),
+                    "exit_session_has_all_trades": bool(weakest_exit_context["session_has_any_trade"]),
+                    "exit_fill_probability_estimate": round(float(exit_fill_outcome["fill_probability_estimate"]), 4),
+                    "exit_fill_ratio_estimate": round(float(exit_fill_outcome["fill_ratio_estimate"]), 4),
+                    "exit_fill_status": exit_fill_status,
                     "entry_broker_commission_per_combo": round(entry_broker_commission_per_combo, 4),
                     "exit_broker_commission_per_combo": round(exit_broker_commission_per_combo, 4),
                     "total_broker_commission_per_combo": round(total_broker_commission_per_combo, 4),
@@ -1764,8 +1843,12 @@ def generate_candidate_trades(
                     "total_slippage_per_combo": round(total_slippage_per_combo, 4),
                     "total_friction_per_combo": round(total_friction_per_combo, 4),
                     "friction_pct_of_entry_premium": round(friction_pct_of_entry_premium, 4),
+                    "scheduled_exit_cash_per_combo": round(scheduled_exit_cash_per_combo, 4),
+                    "cleanup_exit_cash_per_combo": round(cleanup_exit_cash_per_combo, 4),
                     "gross_pnl_per_combo": round(gross_pnl_per_combo, 4),
                     "net_pnl_per_combo": round(net_pnl_per_combo, 4),
+                    "scheduled_net_pnl_per_combo": round(scheduled_net_pnl_per_combo, 4),
+                    "cleanup_net_pnl_per_combo": round(cleanup_net_pnl_per_combo, 4),
                     "max_loss_per_combo": round(max_loss_per_combo, 4),
                     "max_profit_per_combo": round(max_profit_per_combo, 4),
                     "gross_return_on_risk_pct": round(gross_return_on_risk_pct, 4),
@@ -1889,16 +1972,44 @@ def run_portfolio_allocator(
             for position in open_positions:
                 if position["exit_minute"] == minute_index:
                     quantity = int(position["quantity"])
-                    cash += quantity * (
-                        float(position["exit_cash_per_combo"]) - float(position["exit_total_fees_per_combo"])
+                    fill_context = {
+                        "trade_count": float(position["trade"].get("exit_trade_count_min", 0.0)),
+                        "volume": float(position["trade"].get("exit_volume_min", 0.0)),
+                        "has_trade_bar": bool(position["trade"].get("exit_has_all_trade_bars", True)),
+                        "is_synthetic_bar": bool(position["trade"].get("exit_has_any_synthetic_leg", False)),
+                        "session_has_any_trade": bool(position["trade"].get("exit_session_has_all_trades", True)),
+                        "minute_index": int(position["exit_minute"]),
+                    }
+                    exit_fill_outcome = estimate_exit_fill_outcome(
+                        float(position["trade"].get("abs_entry_net_premium", 0.0)),
+                        fill_context,
+                        leg_count=int(position["trade"].get("leg_count", 1)),
+                        requested_quantity=quantity,
                     )
-                    realized_net = quantity * float(position["net_pnl_per_combo"])
+                    exit_filled_quantity = min(quantity, int(exit_fill_outcome["max_fill_quantity"]))
+                    exit_cleanup_quantity = max(0, quantity - exit_filled_quantity)
+                    cash += (
+                        exit_filled_quantity
+                        * (float(position["scheduled_exit_cash_per_combo"]) - float(position["exit_total_fees_per_combo"]))
+                    )
+                    cash += (
+                        exit_cleanup_quantity
+                        * (float(position["cleanup_exit_cash_per_combo"]) - float(position["exit_total_fees_per_combo"]))
+                    )
+                    realized_net = (
+                        exit_filled_quantity * float(position["scheduled_net_pnl_per_combo"])
+                        + exit_cleanup_quantity * float(position["cleanup_net_pnl_per_combo"])
+                    )
                     portfolio_trades.append(
                         {
                             **position["trade"],
                             "requested_quantity": int(position.get("requested_quantity", quantity)),
                             "entry_fill_probability_estimate": round(float(position.get("fill_probability_estimate", position["trade"].get("entry_fill_probability_estimate", 1.0))), 4),
                             "entry_fill_ratio_estimate": round(float(position.get("fill_ratio_estimate", position["trade"].get("entry_fill_ratio_estimate", 1.0))), 4),
+                            "exit_fill_probability_estimate": round(float(exit_fill_outcome["fill_probability_estimate"]), 4),
+                            "exit_fill_ratio_estimate": round(float(exit_fill_outcome["fill_ratio_estimate"]), 4),
+                            "exit_filled_quantity": int(exit_filled_quantity),
+                            "exit_cleanup_quantity": int(exit_cleanup_quantity),
                             "quantity": quantity,
                             "portfolio_net_pnl": round(realized_net, 4),
                             "equity_after_exit": round(cash, 4),
@@ -1969,6 +2080,8 @@ def run_portfolio_allocator(
                             "exit_minute": int(row.exit_minute),
                             "entry_cash_per_combo": float(row.entry_cash_per_combo),
                             "exit_cash_per_combo": float(row.exit_cash_per_combo),
+                            "scheduled_exit_cash_per_combo": float(getattr(row, "scheduled_exit_cash_per_combo", row.exit_cash_per_combo)),
+                            "cleanup_exit_cash_per_combo": float(getattr(row, "cleanup_exit_cash_per_combo", row.exit_cash_per_combo)),
                             "entry_total_fees_per_combo": entry_total_fees_per_combo,
                             "exit_total_fees_per_combo": exit_total_fees_per_combo,
                             "entry_commission_per_combo": float(
@@ -1978,6 +2091,8 @@ def run_portfolio_allocator(
                                 getattr(row, "exit_commission_per_combo", exit_total_fees_per_combo)
                             ),
                             "net_pnl_per_combo": float(row.net_pnl_per_combo),
+                            "scheduled_net_pnl_per_combo": float(getattr(row, "scheduled_net_pnl_per_combo", row.net_pnl_per_combo)),
+                            "cleanup_net_pnl_per_combo": float(getattr(row, "cleanup_net_pnl_per_combo", row.net_pnl_per_combo)),
                             "max_loss_per_combo": max_loss_per_combo,
                             "mark_to_market": {int(key): float(value) for key, value in json.loads(row.mark_to_market_json).items()},
                         }

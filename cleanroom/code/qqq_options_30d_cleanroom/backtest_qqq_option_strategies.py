@@ -130,12 +130,13 @@ def configure_execution_slippage_calibration(calibration_context: dict[str, obje
     return get_execution_slippage_calibration()
 
 
-def estimate_entry_fill_outcome(
+def estimate_order_fill_outcome(
     price: float,
     context: dict[str, object] | None = None,
     *,
     leg_count: int = 1,
     requested_quantity: int = 1,
+    phase: str = "entry",
 ) -> dict[str, object]:
     context = context or {}
     trade_count = float(context.get("trade_count", 0.0) or 0.0)
@@ -145,45 +146,47 @@ def estimate_entry_fill_outcome(
     session_has_any_trade = bool(context.get("session_has_any_trade", True))
     minute_index = int(context.get("minute_index", EARLY_SESSION_MINUTES))
 
-    fill_score = 0.92
+    is_exit = phase.lower().startswith("exit")
+    fill_score = 0.92 if not is_exit else 0.95
     if trade_count <= 0:
-        fill_score -= 0.40
+        fill_score -= 0.40 if not is_exit else 0.34
     elif trade_count <= 2:
-        fill_score -= 0.24
+        fill_score -= 0.24 if not is_exit else 0.20
     elif trade_count <= 5:
-        fill_score -= 0.12
+        fill_score -= 0.12 if not is_exit else 0.10
     elif trade_count >= 20:
         fill_score += 0.04
 
     if volume <= 0:
-        fill_score -= 0.30
+        fill_score -= 0.30 if not is_exit else 0.26
     elif volume <= 10:
-        fill_score -= 0.14
+        fill_score -= 0.14 if not is_exit else 0.11
     elif volume <= 25:
         fill_score -= 0.06
     elif volume >= 100:
         fill_score += 0.04
 
     if not has_trade_bar:
-        fill_score -= 0.30
+        fill_score -= 0.30 if not is_exit else 0.24
     if is_synthetic_bar:
-        fill_score -= 0.18
+        fill_score -= 0.18 if not is_exit else 0.16
     if not session_has_any_trade:
-        fill_score -= 0.20
+        fill_score -= 0.20 if not is_exit else 0.18
     if minute_index < EARLY_SESSION_MINUTES:
-        fill_score -= 0.08
+        fill_score -= 0.08 if not is_exit else 0.05
     elif minute_index >= MINUTES_PER_RTH_SESSION - LATE_SESSION_MINUTES:
-        fill_score -= 0.04
+        fill_score -= 0.04 if not is_exit else 0.06
 
     if leg_count >= 4:
-        fill_score -= 0.18
+        fill_score -= 0.18 if not is_exit else 0.20
     elif leg_count == 3:
-        fill_score -= 0.10
+        fill_score -= 0.10 if not is_exit else 0.12
     elif leg_count == 2:
         fill_score -= 0.05
 
     if requested_quantity > 1:
-        fill_score -= min(0.30, 0.04 * (requested_quantity - 1))
+        per_unit_penalty = 0.04 if not is_exit else 0.05
+        fill_score -= min(0.30, per_unit_penalty * (requested_quantity - 1))
 
     abs_price = abs(float(price))
     if abs_price < 0.15:
@@ -193,8 +196,10 @@ def estimate_entry_fill_outcome(
 
     calibration = EXECUTION_SLIPPAGE_CALIBRATION
     if bool(calibration.get("enabled")):
-        entry_multiplier = float(calibration.get("entry_multiplier", 1.0))
-        fill_score -= min(0.20, max(0.0, entry_multiplier - 1.0) * 0.35)
+        calibration_multiplier = float(
+            calibration.get("exit_multiplier", 1.0) if is_exit else calibration.get("entry_multiplier", 1.0)
+        )
+        fill_score -= min(0.20, max(0.0, calibration_multiplier - 1.0) * 0.35)
         if calibration.get("overall_execution_posture") == "caution":
             fill_score -= 0.02
 
@@ -221,7 +226,77 @@ def estimate_entry_fill_outcome(
         "max_fill_quantity": int(max_fill_quantity),
         "leg_count": int(max(1, leg_count)),
         "requested_quantity": int(max(0, requested_quantity)),
+        "phase": phase,
     }
+
+
+def estimate_entry_fill_outcome(
+    price: float,
+    context: dict[str, object] | None = None,
+    *,
+    leg_count: int = 1,
+    requested_quantity: int = 1,
+) -> dict[str, object]:
+    return estimate_order_fill_outcome(
+        price,
+        context,
+        leg_count=leg_count,
+        requested_quantity=requested_quantity,
+        phase="entry",
+    )
+
+
+def estimate_exit_fill_outcome(
+    price: float,
+    context: dict[str, object] | None = None,
+    *,
+    leg_count: int = 1,
+    requested_quantity: int = 1,
+) -> dict[str, object]:
+    return estimate_order_fill_outcome(
+        price,
+        context,
+        leg_count=leg_count,
+        requested_quantity=requested_quantity,
+        phase="exit",
+    )
+
+
+def aggregate_fill_context(contexts: list[dict[str, object]], minute_index: int) -> dict[str, object]:
+    if not contexts:
+        return {
+            "trade_count": 0.0,
+            "volume": 0.0,
+            "has_trade_bar": False,
+            "is_synthetic_bar": True,
+            "session_has_any_trade": False,
+            "minute_index": int(minute_index),
+        }
+    return {
+        "trade_count": min(float(context.get("trade_count", 0.0) or 0.0) for context in contexts),
+        "volume": min(float(context.get("volume", 0.0) or 0.0) for context in contexts),
+        "has_trade_bar": all(bool(context.get("has_trade_bar", True)) for context in contexts),
+        "is_synthetic_bar": any(bool(context.get("is_synthetic_bar", False)) for context in contexts),
+        "session_has_any_trade": all(bool(context.get("session_has_any_trade", True)) for context in contexts),
+        "minute_index": int(minute_index),
+    }
+
+
+def build_cleanup_exit_contexts(exit_contexts: list[dict[str, object]], minute_index: int) -> list[dict[str, object]]:
+    cleanup_contexts: list[dict[str, object]] = []
+    for context in exit_contexts:
+        cleanup_contexts.append(
+            {
+                **context,
+                "trade_count": 0.0,
+                "volume": 0.0,
+                "has_trade_bar": False,
+                "is_synthetic_bar": True,
+                "minute_index": int(minute_index),
+                "execution_phase": "exit_cleanup",
+            }
+        )
+    return cleanup_contexts
 
 
 def estimate_execution_slippage(price: float, context: dict[str, object] | None = None) -> float:
@@ -1010,8 +1085,14 @@ def simulate_strategy(
         exit_reason = "time_exit"
         exit_prices_raw: list[float] | None = None
         exit_contexts: list[dict[str, object]] | None = None
+        cleanup_exit_contexts: list[dict[str, object]] | None = None
         exit_cash = 0.0
         net_pnl = 0.0
+        exit_fill_outcome: dict[str, object] | None = None
+        scheduled_exit_cash_per_combo = 0.0
+        cleanup_exit_cash_per_combo = 0.0
+        filled_exit_quantity = 0
+        cleanup_exit_quantity = 0
 
         for idx in range(entry_idx + 1, hard_exit_idx + 1):
             current_prices: list[float] = []
@@ -1043,11 +1124,31 @@ def simulate_strategy(
             if not all_available:
                 continue
 
-            current_exit_cash = close_cashflow(
+            current_exit_cash_per_combo = close_cashflow(
                 legs=legs,
                 exit_prices_raw=current_prices,
-                quantity=quantity,
+                quantity=1,
                 exit_contexts=current_exit_contexts,
+            )
+            weakest_exit_context = aggregate_fill_context(current_exit_contexts, idx)
+            current_exit_fill_outcome = estimate_exit_fill_outcome(
+                min(abs(float(price)) for price in current_prices),
+                weakest_exit_context,
+                leg_count=len(legs),
+                requested_quantity=quantity,
+            )
+            current_cleanup_exit_contexts = build_cleanup_exit_contexts(current_exit_contexts, idx)
+            current_cleanup_exit_cash_per_combo = close_cashflow(
+                legs=legs,
+                exit_prices_raw=current_prices,
+                quantity=1,
+                exit_contexts=current_cleanup_exit_contexts,
+            )
+            current_filled_exit_quantity = int(current_exit_fill_outcome["max_fill_quantity"])
+            current_cleanup_exit_quantity = max(0, quantity - current_filled_exit_quantity)
+            current_exit_cash = (
+                current_filled_exit_quantity * current_exit_cash_per_combo
+                + current_cleanup_exit_quantity * current_cleanup_exit_cash_per_combo
             )
             current_net_pnl = entry_cash + current_exit_cash - fee_total
 
@@ -1056,8 +1157,14 @@ def simulate_strategy(
                 exit_reason = "profit_target"
                 exit_prices_raw = current_prices
                 exit_contexts = current_exit_contexts
+                cleanup_exit_contexts = current_cleanup_exit_contexts
                 exit_cash = current_exit_cash
                 net_pnl = current_net_pnl
+                exit_fill_outcome = current_exit_fill_outcome
+                scheduled_exit_cash_per_combo = current_exit_cash_per_combo
+                cleanup_exit_cash_per_combo = current_cleanup_exit_cash_per_combo
+                filled_exit_quantity = current_filled_exit_quantity
+                cleanup_exit_quantity = current_cleanup_exit_quantity
                 break
 
             if current_net_pnl <= -stop_dollars:
@@ -1065,17 +1172,29 @@ def simulate_strategy(
                 exit_reason = "stop_loss"
                 exit_prices_raw = current_prices
                 exit_contexts = current_exit_contexts
+                cleanup_exit_contexts = current_cleanup_exit_contexts
                 exit_cash = current_exit_cash
                 net_pnl = current_net_pnl
+                exit_fill_outcome = current_exit_fill_outcome
+                scheduled_exit_cash_per_combo = current_exit_cash_per_combo
+                cleanup_exit_cash_per_combo = current_cleanup_exit_cash_per_combo
+                filled_exit_quantity = current_filled_exit_quantity
+                cleanup_exit_quantity = current_cleanup_exit_quantity
                 break
 
             exit_idx = idx
             exit_prices_raw = current_prices
             exit_contexts = current_exit_contexts
+            cleanup_exit_contexts = current_cleanup_exit_contexts
             exit_cash = current_exit_cash
             net_pnl = current_net_pnl
+            exit_fill_outcome = current_exit_fill_outcome
+            scheduled_exit_cash_per_combo = current_exit_cash_per_combo
+            cleanup_exit_cash_per_combo = current_cleanup_exit_cash_per_combo
+            filled_exit_quantity = current_filled_exit_quantity
+            cleanup_exit_quantity = current_cleanup_exit_quantity
 
-        if exit_idx is None or exit_prices_raw is None or exit_contexts is None:
+        if exit_idx is None or exit_prices_raw is None or exit_contexts is None or cleanup_exit_contexts is None or exit_fill_outcome is None:
             skipped_counts["missing_exit_prices"] += 1
             equity_curve.append({"strategy": strategy.name, "trade_date": ctx.trade_date, "equity": equity})
             continue
@@ -1086,7 +1205,22 @@ def simulate_strategy(
         exit_timestamp = ctx.frame.loc[exit_idx, "timestamp_et"]
 
         leg_strings: list[str] = []
-        for leg, exit_price, exit_context in zip(legs, exit_prices_raw, exit_contexts):
+        exit_fill_status = (
+            "full"
+            if cleanup_exit_quantity == 0
+            else ("cleanup_only" if filled_exit_quantity == 0 else "partial_cleanup")
+        )
+        for leg, exit_price, exit_context, cleanup_context in zip(legs, exit_prices_raw, exit_contexts, cleanup_exit_contexts):
+            clean_exit_fill = (
+                sell_fill(exit_price, context=exit_context)
+                if leg["side"] == "long"
+                else buy_fill(exit_price, context=exit_context)
+            )
+            cleanup_exit_fill = (
+                sell_fill(exit_price, context=cleanup_context)
+                if leg["side"] == "long"
+                else buy_fill(exit_price, context=cleanup_context)
+            )
             leg_strings.append(
                 json.dumps(
                     {
@@ -1098,14 +1232,9 @@ def simulate_strategy(
                         "entry_price_raw": round(float(leg["entry_price_raw"]), 4),
                         "entry_price_fill": round(float(leg["entry_price_fill"]), 4),
                         "exit_price_raw": round(float(exit_price), 4),
-                        "exit_price_fill": round(
-                            float(
-                                sell_fill(exit_price, context=exit_context)
-                                if leg["side"] == "long"
-                                else buy_fill(exit_price, context=exit_context)
-                            ),
-                            4,
-                        ),
+                        "scheduled_exit_price_fill": round(float(clean_exit_fill), 4),
+                        "cleanup_exit_price_fill": round(float(cleanup_exit_fill), 4),
+                        "exit_price_fill": round(float(cleanup_exit_fill if cleanup_exit_quantity > 0 and filled_exit_quantity == 0 else clean_exit_fill), 4),
                     },
                     sort_keys=True,
                 )
@@ -1121,10 +1250,15 @@ def simulate_strategy(
                 "entry_time_et": entry_timestamp.isoformat(),
                 "exit_time_et": exit_timestamp.isoformat(),
                 "exit_reason": exit_reason,
+                "exit_fill_status": exit_fill_status,
                 "requested_quantity": requested_quantity,
                 "quantity": quantity,
                 "entry_fill_probability_estimate": round(float(fill_outcome["fill_probability_estimate"]), 4),
                 "entry_fill_ratio_estimate": round(float(fill_outcome["fill_ratio_estimate"]), 4),
+                "exit_fill_probability_estimate": round(float(exit_fill_outcome["fill_probability_estimate"]), 4),
+                "exit_fill_ratio_estimate": round(float(exit_fill_outcome["fill_ratio_estimate"]), 4),
+                "exit_filled_quantity": filled_exit_quantity,
+                "exit_cleanup_quantity": cleanup_exit_quantity,
                 "legs": " | ".join(leg_strings),
                 "entry_underlying": round(float(ctx.frame.loc[entry_idx, "qqq_close"]), 4),
                 "exit_underlying": round(float(ctx.frame.loc[exit_idx, "qqq_close"]), 4),
@@ -1162,6 +1296,8 @@ def simulate_strategy(
                 "entry_total_fees": round(entry_fee_breakdown.total_fees, 4),
                 "exit_total_fees": round(exit_fee_breakdown.total_fees, 4),
                 "commission_total": round(fee_total, 2),
+                "scheduled_exit_cashflow": round(filled_exit_quantity * scheduled_exit_cash_per_combo, 2),
+                "cleanup_exit_cashflow": round(cleanup_exit_quantity * cleanup_exit_cash_per_combo, 2),
                 "net_pnl": round(net_pnl, 2),
                 "max_loss_per_combo": round(max_loss_per_combo, 2),
                 "max_profit_per_combo": round(max_profit_per_combo, 2),
@@ -1391,10 +1527,15 @@ def main() -> None:
                 "entry_time_et",
                 "exit_time_et",
                 "exit_reason",
+                "exit_fill_status",
                 "requested_quantity",
                 "quantity",
                 "entry_fill_probability_estimate",
                 "entry_fill_ratio_estimate",
+                "exit_fill_probability_estimate",
+                "exit_fill_ratio_estimate",
+                "exit_filled_quantity",
+                "exit_cleanup_quantity",
                 "legs",
                 "entry_underlying",
                 "exit_underlying",
@@ -1423,6 +1564,8 @@ def main() -> None:
                 "entry_total_fees",
                 "exit_total_fees",
                 "commission_total",
+                "scheduled_exit_cashflow",
+                "cleanup_exit_cashflow",
                 "net_pnl",
                 "max_loss_per_combo",
                 "max_profit_per_combo",
@@ -1460,7 +1603,7 @@ def main() -> None:
         "premium_bucket_slippage_multipliers": PREMIUM_BUCKET_SLIPPAGE_MULTIPLIERS,
         "execution_slippage_calibration": get_execution_slippage_calibration(),
         "execution_fill_model": {
-            "type": "deterministic_fill_capacity_v1",
+            "type": "deterministic_fill_capacity_v2",
             "driver_inputs": [
                 "trade_count",
                 "volume",
@@ -1473,10 +1616,15 @@ def main() -> None:
                 "premium_bucket",
                 "execution_posture",
             ],
+            "supports": [
+                "entry_no_fill",
+                "entry_partial_fill",
+                "exit_cleanup_degradation",
+            ],
         },
         "early_session_minutes": EARLY_SESSION_MINUTES,
         "late_session_minutes": LATE_SESSION_MINUTES,
-        "execution_model": "liquidity_aware_phase1",
+        "execution_model": "liquidity_aware_phase2",
         "complete_trade_dates": [ctx.trade_date.isoformat() for ctx in day_contexts],
         "strategies": [
             {
