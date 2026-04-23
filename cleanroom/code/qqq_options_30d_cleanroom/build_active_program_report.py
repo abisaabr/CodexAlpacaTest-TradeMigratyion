@@ -46,6 +46,13 @@ def iso_or_blank(moment: datetime | None) -> str:
     return moment.isoformat() if moment is not None else ""
 
 
+def minutes_since(reference: datetime, moment: datetime | None) -> float | None:
+    if moment is None:
+        return None
+    delta_minutes = (reference - moment).total_seconds() / 60.0
+    return round(max(delta_minutes, 0.0), 1)
+
+
 def latest_iso_timestamp(*values: Any) -> str:
     moments = [parse_iso_timestamp(value) for value in values]
     valid_moments = [moment for moment in moments if moment is not None]
@@ -335,7 +342,9 @@ def summarize_phase_statuses(research_dir: Path) -> dict[str, Any]:
 def summarize_lane(
     lane_row: dict[str, Any],
     *,
+    now: datetime,
     stale_cutoff: datetime,
+    stale_minutes: int,
 ) -> dict[str, Any]:
     research_dir = Path(str(lane_row.get("research_dir", "")).strip())
     stdout_path = Path(str(lane_row.get("stdout_path", "")).strip()) if lane_row.get("stdout_path") else None
@@ -361,18 +370,35 @@ def summarize_lane(
         parse_iso_timestamp(phase_info.get("active_updated_at_iso")),
     ]
     latest_activity = max([moment for moment in activity_moments if moment is not None], default=None)
+    latest_activity_age_minutes = minutes_since(now, latest_activity)
     pid = int(lane_row["pid"]) if lane_row.get("pid") not in (None, "") else None
     process_running = process_is_running(pid)
 
     attention: list[str] = []
     if process_running is False and not master_summary_path.exists():
         attention.append("exited_without_master_summary")
+    if process_running is True and latest_activity is None:
+        attention.append("missing_activity_heartbeat")
     if process_running is True and latest_activity is not None and latest_activity < stale_cutoff:
         attention.append("activity_stale")
     if stdout_path is not None and not stdout_path.exists():
         attention.append("missing_stdout_log")
     if research_log_path.exists() and phase_info["phase_status_count"] == 0:
         attention.append("missing_phase_status_files")
+
+    if process_running is True:
+        if latest_activity is None:
+            lane_health = "heartbeat_missing"
+        elif latest_activity < stale_cutoff:
+            lane_health = "stale"
+        else:
+            lane_health = "healthy"
+    elif process_running is False and master_summary_path.exists():
+        lane_health = "completed"
+    elif process_running is False:
+        lane_health = "exited_incomplete"
+    else:
+        lane_health = "unknown"
 
     return {
         "lane_id": str(lane_row.get("lane_id", "")),
@@ -388,7 +414,10 @@ def summarize_lane(
         "stdout_tail": tail_nonempty_lines(stdout_path) if stdout_path is not None else [],
         "stderr_tail": tail_nonempty_lines(stderr_path) if stderr_path is not None else [],
         "research_log_tail": tail_nonempty_lines(research_log_path),
+        "lane_health": lane_health,
         "latest_activity_at_iso": iso_or_blank(latest_activity),
+        "latest_activity_age_minutes": latest_activity_age_minutes,
+        "stale_threshold_minutes": stale_minutes,
         "phase_status_count": phase_info["phase_status_count"],
         "phase_status_counts": phase_info["status_counts"],
         "active_ticker": phase_info["active_ticker"],
@@ -455,7 +484,11 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
             "updated_at_iso": str(morning_handoff_status.get("updated_at", "")),
         }
 
-    summarized_lanes = [summarize_lane(dict(row), stale_cutoff=stale_cutoff) for row in lane_rows if isinstance(row, dict)]
+    summarized_lanes = [
+        summarize_lane(dict(row), now=now, stale_cutoff=stale_cutoff, stale_minutes=stale_minutes)
+        for row in lane_rows
+        if isinstance(row, dict)
+    ]
     attention_items: list[dict[str, Any]] = []
     for lane in summarized_lanes:
         for token in lane["attention"]:
@@ -466,6 +499,9 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
                     "research_dir": lane["research_dir"],
                     "active_ticker": lane["active_ticker"],
                     "active_phase": lane["active_phase"],
+                    "lane_health": lane["lane_health"],
+                    "latest_activity_at_iso": lane["latest_activity_at_iso"],
+                    "latest_activity_age_minutes": lane["latest_activity_age_minutes"],
                 }
             )
 
@@ -503,6 +539,9 @@ def build_payload(program_root: Path, *, stale_minutes: int) -> dict[str, Any]:
         },
         "lane_count": len(summarized_lanes),
         "running_lane_count": sum(1 for lane in summarized_lanes if lane.get("process_running") is True),
+        "healthy_lane_count": sum(1 for lane in summarized_lanes if lane.get("lane_health") == "healthy"),
+        "stale_lane_count": sum(1 for lane in summarized_lanes if lane.get("lane_health") == "stale"),
+        "heartbeat_missing_lane_count": sum(1 for lane in summarized_lanes if lane.get("lane_health") == "heartbeat_missing"),
         "attention_count": len(attention_items),
         "attention_items": attention_items,
         "lanes": summarized_lanes,
@@ -517,8 +556,11 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         f"- Program phase: `{payload['program_phase']}`",
         f"- Program updated: `{payload['program_updated_at_iso']}`",
         f"- Lane source: `{payload['lane_source']}`",
+        f"- Stale threshold: `{payload['stale_minutes']}` minutes",
         f"- Lane count: `{payload['lane_count']}`",
         f"- Running lanes: `{payload['running_lane_count']}`",
+        f"- Healthy lanes: `{payload['healthy_lane_count']}`",
+        f"- Stale lanes: `{payload['stale_lane_count']}`",
         f"- Attention items: `{payload['attention_count']}`",
         "",
         "## Follow-On Status",
@@ -534,8 +576,14 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     ]
 
     for lane in payload["lanes"]:
+        latest_age = lane["latest_activity_age_minutes"]
+        latest_age_text = (
+            f"{latest_age:.1f}m ago"
+            if isinstance(latest_age, (int, float))
+            else "unknown age"
+        )
         lines.append(
-            f"- `{lane['lane_id']}` | pid `{lane['pid']}` | running `{lane['process_running']}` | active `{lane['active_ticker']}` / `{lane['active_phase']}` | latest `{lane['latest_activity_at_iso']}`"
+            f"- `{lane['lane_id']}` | pid `{lane['pid']}` | running `{lane['process_running']}` | health `{lane['lane_health']}` | active `{lane['active_ticker']}` / `{lane['active_phase']}` | latest `{lane['latest_activity_at_iso']}` ({latest_age_text})"
         )
         if lane["active_message"]:
             lines.append(f"  - message: {lane['active_message']}")
@@ -554,7 +602,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         lines.extend(["", "## Attention", ""])
         for item in payload["attention_items"]:
             lines.append(
-                f"- `{item['type']}` on `{item['lane_id']}` | ticker `{item['active_ticker']}` | phase `{item['active_phase']}` | dir `{item['research_dir']}`"
+                f"- `{item['type']}` on `{item['lane_id']}` | health `{item['lane_health']}` | ticker `{item['active_ticker']}` | phase `{item['active_phase']}` | latest `{item['latest_activity_at_iso']}` | age `{item['latest_activity_age_minutes']}`m | dir `{item['research_dir']}`"
             )
 
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -576,6 +624,9 @@ def main() -> None:
                 "program_phase": payload["program_phase"],
                 "lane_count": payload["lane_count"],
                 "running_lane_count": payload["running_lane_count"],
+                "healthy_lane_count": payload["healthy_lane_count"],
+                "stale_lane_count": payload["stale_lane_count"],
+                "heartbeat_missing_lane_count": payload["heartbeat_missing_lane_count"],
                 "attention_count": payload["attention_count"],
             },
             indent=2,
