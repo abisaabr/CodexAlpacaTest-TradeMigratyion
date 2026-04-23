@@ -1007,3 +1007,30 @@ Then act as the sanctioned VM execution-window steward.
    - the exact post-session assimilation command
 4. Do not start the broker-facing session in this step unless the operator explicitly says to launch it.
 ```
+
+## 32. Clear The Exclusive VM Execution Window
+
+```text
+Open:
+
+1. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs\GCP_EXECUTION_EXCLUSIVE_WINDOW.md
+- docs\gcp_foundation\gcp_execution_exclusive_window_status.md
+- docs\gcp_foundation\gcp_execution_trusted_validation_session_status.md
+- docs\gcp_foundation\gcp_execution_trusted_validation_launch_pack.md
+
+Then act as the sanctioned VM execution-window steward.
+
+1. Use `cleanroom\code\qqq_options_30d_cleanroom\clear_gcp_execution_exclusive_window.ps1` to remove the exclusive-window attestation after the session window is over.
+2. Refresh:
+   - `docs\gcp_foundation\gcp_execution_exclusive_window_status.md`
+   - `docs\gcp_foundation\gcp_execution_trusted_validation_session_status.md`
+   - `docs\gcp_foundation\gcp_execution_trusted_validation_launch_pack.md`
+3. Report:
+   - whether the exclusive window is back to `awaiting_operator_confirmation`
+   - whether trusted validation readiness is back to `awaiting_exclusive_execution_window`
+   - whether the launch pack is back to `awaiting_window_arm`
+4. Do not start trading or open a new execution window in this step.
+```

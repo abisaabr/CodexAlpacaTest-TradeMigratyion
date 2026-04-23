@@ -9,6 +9,7 @@ Create one governed execution window for `vm-execution-paper-01` so the first tr
 ## Preferred Entrypoint
 
 - `cleanroom/code/qqq_options_30d_cleanroom/arm_gcp_execution_exclusive_window.ps1`
+- `cleanroom/code/qqq_options_30d_cleanroom/clear_gcp_execution_exclusive_window.ps1`
 
 ## Why This Exists
 
@@ -39,6 +40,7 @@ That means the first broker-facing VM session still needs an explicit human-cont
 - do not start a broker-facing session until the exclusive window packet is explicit
 - do not run concurrent paper-account sessions across the sanctioned VM and the temporary parallel path
 - follow immediately with governed post-session assimilation
+- clear the attestation after the window is over so stale state cannot be mistaken for an active launch window
 
 ## Preferred Packet
 

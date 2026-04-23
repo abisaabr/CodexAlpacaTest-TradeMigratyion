@@ -2,13 +2,13 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T16:30:32-04:00`
+- Generated at: `2026-04-23T16:39:36-04:00`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
 - Window state: `awaiting_operator_attestation`
 - Window status: `awaiting_operator_confirmation`
 - Parallel runtime exception: `active_temporary_exception`
-- Attestation path: `C:\Users\abisa\Downloads\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\docs\gcp_foundation\gcp_execution_exclusive_window_attestation.json`
+- Attestation path: `docs/gcp_foundation/gcp_execution_exclusive_window_attestation.json`
 - Template window minutes: `45`
 
 ## Required Assertions
@@ -31,9 +31,9 @@
 {
   "window_id": "trusted-validation-session-vm-execution-paper-01",
   "confirmed_by": "user@example.com",
-  "confirmed_at": "2026-04-23T16:30:32-04:00",
-  "window_starts_at": "2026-04-23T16:30:32-04:00",
-  "window_expires_at": "2026-04-23T17:15:32-04:00",
+  "confirmed_at": "2026-04-23T16:39:36-04:00",
+  "window_starts_at": "2026-04-23T16:39:36-04:00",
+  "window_expires_at": "2026-04-23T17:24:36-04:00",
   "target_vm_name": "vm-execution-paper-01",
   "scope": "paper_account_single_writer",
   "assertions": {
@@ -48,6 +48,6 @@
 
 ## Next Actions
 
-- Populate `C:\Users\abisa\Downloads\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\docs\gcp_foundation\gcp_execution_exclusive_window_attestation.json` with a bounded exclusive-window attestation before starting the first trusted validation session.
+- Populate `docs/gcp_foundation/gcp_execution_exclusive_window_attestation.json` with a bounded exclusive-window attestation before starting the first trusted validation session.
 - Keep the temporary parallel runtime exception frozen and do not run concurrent broker-facing execution across the sanctioned and exception paths.
 - Run governed post-session assimilation immediately after the trusted validation session ends.
