@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T16:05:39.766174-04:00`
+- Generated at: `2026-04-23T16:13:57.014237-04:00`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
 - Readiness: `awaiting_exclusive_execution_window`
@@ -40,7 +40,8 @@ cd /opt/codexalpaca/codexalpaca_repo && ./.venv/bin/python scripts/run_multi_tic
 
 ## Next Actions
 
+- Refresh the governed exclusive execution-window packet before the first broker-facing VM session.
 - Keep the shared execution lease in dry-run posture; do not switch default enforcement on as part of the first trusted validation session.
-- Use the VM only in an explicitly exclusive paper-account window for the first trusted validation session.
+- Use the trusted validation launch pack only inside an explicitly exclusive paper-account window.
 - Run governed post-session assimilation immediately after the session finishes.
 - Do not promote the VM to canonical execution until the trusted session evidence is reviewed cleanly.

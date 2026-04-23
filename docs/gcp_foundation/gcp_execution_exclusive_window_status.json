@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-04-23T16:13:56.749936-04:00",
+  "project_id": "codexalpaca",
+  "vm_name": "vm-execution-paper-01",
+  "window_state": "operator_confirmation_required",
+  "confirmed_by": "",
+  "window_start": "",
+  "window_end": "",
+  "parallel_path_state": "unknown",
+  "trusted_validation_readiness": "awaiting_exclusive_execution_window",
+  "access_readiness": "ready_for_operator_validation",
+  "parallel_exception_state": "active_temporary_exception",
+  "exclusive_window_status": "awaiting_operator_confirmation",
+  "gate_checks": [
+    {
+      "name": "trusted_validation_gate_ready",
+      "status": "passed"
+    },
+    {
+      "name": "operator_access_ready",
+      "status": "passed"
+    },
+    {
+      "name": "parallel_runtime_serialization_required",
+      "status": "operator_required"
+    },
+    {
+      "name": "parallel_runtime_path_paused_for_window",
+      "status": "operator_required"
+    },
+    {
+      "name": "exclusive_window_metadata_recorded",
+      "status": "operator_required"
+    }
+  ],
+  "control_notes": [
+    "The first trusted validation session should stay serialized because the temporary parallel runtime exception is still active.",
+    "The cloud shared execution lease is proven only in dry-run mode today; do not treat this window as permission to turn lease enforcement on by default.",
+    "The window should end with governed post-session assimilation before any promotion or policy interpretation."
+  ],
+  "next_actions": [
+    "Record who is confirming the exclusive window and the exact start/end timestamps.",
+    "Explicitly pause or rule out the temporary parallel runtime path for the full session window.",
+    "Only after those facts are recorded should the trusted validation launch pack move to ready-for-launch."
+  ]
+}

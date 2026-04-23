@@ -166,8 +166,9 @@ def main() -> None:
         ],
         "remaining_gates": remaining_gates,
         "next_actions": [
+            "Refresh the governed exclusive execution-window packet before the first broker-facing VM session.",
             "Keep the shared execution lease in dry-run posture; do not switch default enforcement on as part of the first trusted validation session.",
-            "Use the VM only in an explicitly exclusive paper-account window for the first trusted validation session.",
+            "Use the trusted validation launch pack only inside an explicitly exclusive paper-account window.",
             "Run governed post-session assimilation immediately after the session finishes.",
             "Do not promote the VM to canonical execution until the trusted session evidence is reviewed cleanly.",
         ],
