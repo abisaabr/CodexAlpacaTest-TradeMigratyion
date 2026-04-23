@@ -112,11 +112,11 @@ Do not let important state exist only in:
 
 ## Immediate Priority Order
 
-1. merge or integrate the trusted validation operator packet
-2. arm a bounded exclusive execution window only when ready to use it
-3. run the first sanctioned VM trusted validation session
-4. assimilate immediately
-5. apply loser-trade learning and promotion policy before scaling strategy breadth
+1. arm a bounded exclusive execution window only when ready to use it
+2. run the first sanctioned VM trusted validation session
+3. assimilate immediately
+4. apply loser-trade learning and promotion policy before scaling strategy breadth
+5. expand research breadth only after the evidence loop remains clean
 
 ## Continuity Standard
 

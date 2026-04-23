@@ -18,18 +18,17 @@
 ## Current Open Follow-Through
 
 - Research and strategy governance packets are on canonical `main`
-- Trusted validation operator packet is currently on branch `codex/trusted-validation-operator-packet`
-- If that branch is not yet merged, the takeover machine should inspect and merge or integrate it before arming the first exclusive window
+- Trusted validation operator packet is now on canonical `main`
+- The next operator boundary is the bounded exclusive-window arm step, not a missing control-plane merge
 
 ## Immediate Safe Next Steps
 
 1. Confirm canonical `main` is current.
-2. Review or merge the trusted validation operator packet branch if still unmerged.
-3. When the paper account is truly available, arm a bounded exclusive execution window.
-4. Re-read the refreshed execution packets.
-5. Run the first sanctioned VM trusted validation session.
-6. Run post-session assimilation immediately.
-7. Close the window and mirror refreshed packets.
+2. When the paper account is truly available, arm a bounded exclusive execution window.
+3. Re-read the refreshed execution packets.
+4. Run the first sanctioned VM trusted validation session.
+5. Run post-session assimilation immediately.
+6. Close the window and mirror refreshed packets.
 
 ## Do Not Do Next
 
