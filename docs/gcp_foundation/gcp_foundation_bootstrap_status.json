@@ -1,0 +1,76 @@
+{
+  "generated_at": "2026-04-23T13:39:29.360788-04:00",
+  "project_id": "codexalpaca",
+  "project_number": "922745393036",
+  "bootstrap_service_account": "sa-bootstrap-admin@codexalpaca.iam.gserviceaccount.com",
+  "region": "us-east1",
+  "resource_results": [
+    {
+      "resource": "network",
+      "name": "vpc-codex-core",
+      "action": "created"
+    },
+    {
+      "resource": "subnet",
+      "name": "subnet-us-east1-core",
+      "action": "created",
+      "cidr": "10.10.0.0/20"
+    },
+    {
+      "resource": "bucket",
+      "name": "codexalpaca-data-us",
+      "action": "created",
+      "versioning": false
+    },
+    {
+      "resource": "bucket",
+      "name": "codexalpaca-artifacts-us",
+      "action": "created",
+      "versioning": false
+    },
+    {
+      "resource": "bucket",
+      "name": "codexalpaca-control-us",
+      "action": "created",
+      "versioning": true
+    },
+    {
+      "resource": "bucket",
+      "name": "codexalpaca-backups-us",
+      "action": "created",
+      "versioning": true
+    },
+    {
+      "resource": "service_account",
+      "name": "sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "action": "created"
+    },
+    {
+      "resource": "service_account",
+      "name": "sa-research-batch@codexalpaca.iam.gserviceaccount.com",
+      "action": "created"
+    },
+    {
+      "resource": "service_account",
+      "name": "sa-orchestrator@codexalpaca.iam.gserviceaccount.com",
+      "action": "created"
+    },
+    {
+      "resource": "service_account",
+      "name": "sa-ci-deployer@codexalpaca.iam.gserviceaccount.com",
+      "action": "created"
+    },
+    {
+      "resource": "artifact_registry",
+      "name": "trading",
+      "action": "created",
+      "region": "us-east1"
+    }
+  ],
+  "next_actions": [
+    "Reserve the execution static IP and create the validation-only execution VM next.",
+    "Create runtime secrets in Secret Manager before cloud execution cut-in.",
+    "Sync the current control-plane packet into the long-term control bucket.",
+    "Rerun the GCP foundation readiness audit after any IAM or resource changes."
+  ]
+}
