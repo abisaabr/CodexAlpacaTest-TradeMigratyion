@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T15:55:37.304993-04:00`
+- Generated at: `2026-04-23T16:14:47.151242-04:00`
 - Project ID: `codexalpaca`
 - Implementation phase: `foundation-phase14-lease-helper-implementation`
 - Recommended lease: `gcs_generation_match_lease`
@@ -14,7 +14,7 @@
 
 - Path: `C:\Users\abisa\Downloads\codexalpaca_repo_gcp_lease_lane_refreshed`
 - Branch: `codex/qqq-paper-portfolio`
-- Commit: `a92ee16cf446`
+- Commit: `a6cf50aa424a`
 - Dirty: `False`
 
 ## Implementation Findings
@@ -35,7 +35,7 @@
 ## Validation
 
 - Targeted tests: `80 passed`
-- Full suite: `not run in this step (scoped governance suite only)`
+- Full suite: `80 passed`
 - Targeted command: `python -m pytest -q tests/test_execution_ownership.py tests/test_execution_failover.py tests/test_multi_ticker_portfolio.py tests/test_run_multi_ticker_health_check.py`
 - Full suite command: `python -m pytest -q`
 

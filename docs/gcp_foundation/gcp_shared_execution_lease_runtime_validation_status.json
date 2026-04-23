@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-04-23T16:14:47.726382-04:00",
+  "project_id": "codexalpaca",
+  "runtime_validation_phase": "foundation-phase17-lease-dry-run-validation",
+  "runtime_validation_status": "validated_not_enforced",
+  "lease_live": false,
+  "implementation_status": "optional_gcs_store_wiring_landed_not_validated",
+  "runtime_wiring_status": "optional_backend_wired_not_enforced",
+  "latest_review_state": "passed",
+  "latest_run_id": "vm-execution-paper-01-20260423-160102",
+  "latest_validation_result_gcs_prefix": "gs://codexalpaca-control-us/bootstrap/2026-04-23/foundation-phase17-lease-dry-run-validation/vm-execution-paper-01-20260423-160102",
+  "guardrails": [
+    "Keep the default trader path on the file lease until the sanctioned VM dry-run is green and separately promoted.",
+    "Do not widen the temporary parallel-runtime exception onto the cloud lease path.",
+    "Do not treat the cloud shared execution lease as live from runtime validation alone."
+  ],
+  "next_step": {
+    "name": "trusted_validation_session",
+    "description": "Use the sanctioned VM in an explicitly exclusive paper window for the first broker-audited trusted validation session."
+  }
+}

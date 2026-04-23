@@ -70,6 +70,7 @@ def build_payload(runner_repo_root: Path, full_suite_summary: str) -> dict[str, 
     trader_text = load_text(runner_repo_root / "alpaca_lab" / "multi_ticker_portfolio" / "trader.py")
     health_check_text = load_text(runner_repo_root / "scripts" / "run_multi_ticker_health_check.py")
     standby_text = load_text(runner_repo_root / "scripts" / "run_multi_ticker_standby_failover_check.py")
+    failover_text = load_text(runner_repo_root / "alpaca_lab" / "execution" / "failover.py")
     pyproject = tomllib.loads(load_text(runner_repo_root / "pyproject.toml"))
     gcp_extra = list(pyproject.get("project", {}).get("optional-dependencies", {}).get("gcp", []))
 
@@ -98,8 +99,10 @@ def build_payload(runner_repo_root: Path, full_suite_summary: str) -> dict[str, 
             "env_gcs_uri_override_present": "MULTI_TICKER_OWNERSHIP_GCS_LEASE_URI" in config_text,
             "trader_optional_wiring_present": "GCSGenerationMatchLeaseStore.from_gcs_uri" in trader_text,
             "default_file_lease_still_present": "if ownership.lease_backend == \"file\":" in trader_text,
-            "health_check_still_file_lease_based": "FileOwnershipLease(" in health_check_text,
-            "standby_check_still_file_lease_based": "lease_path=config.ownership.lease_path" in standby_text,
+            "health_check_supports_gcs_backend": 'ownership.lease_backend == "gcs_generation_match"' in health_check_text,
+            "health_check_default_path_still_file_scoped": "FileOwnershipLease(" in health_check_text,
+            "standby_check_passes_lease_backend": "lease_backend=config.ownership.lease_backend" in standby_text,
+            "standby_check_rejects_non_file_backend": "non_file_ownership_backend_not_supported" in failover_text,
             "gcp_extra_declared": any("google-cloud-storage" in item for item in gcp_extra),
         },
         "validation": {
@@ -109,7 +112,8 @@ def build_payload(runner_repo_root: Path, full_suite_summary: str) -> dict[str, 
         "guardrails": [
             "The default trader path still remains on the file lease unless ownership.lease_backend is explicitly switched.",
             "The GCS lease backend still depends on explicit config and the optional 'gcp' dependency path.",
-            "Health-check and standby failover scripts remain aligned to the file-lease path until a separate sanctioned migration says otherwise.",
+            "Health-check now understands the non-default GCS backend, but the default posture is still the file lease unless explicitly overridden.",
+            "Standby failover remains intentionally file-scoped and rejects non-file ownership backends while the temporary parallel-runtime exception is in force.",
             "This wiring does not by itself clear the project for broker-facing cloud lease enforcement.",
         ],
         "next_step": {
@@ -169,13 +173,13 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
     lines.append("")
     lines.append("- The sanctioned runner now has a real optional GCS-backed execution lease path.")
     lines.append("- The default trader path is still unchanged and remains on the file lease.")
-    lines.append("- Local safety tooling still points at the file-lease model, which is intentional at this phase.")
+    lines.append("- Health-check supports the non-default GCS backend, while standby failover still rejects non-file backends by design.")
     lines.append("")
     lines.append("## Operator Rule")
     lines.append("")
     lines.append("- Treat the GCS runtime wiring as VM-only dry-run ready, not broker-facing ready.")
     lines.append("- Do not flip the backend globally.")
-    lines.append("- Do not migrate workstation health-check or standby tooling to GCS until that move is separately sanctioned.")
+    lines.append("- Do not widen the temporary parallel-runtime exception onto the cloud lease path.")
     lines.append("")
     lines.append("## Next Step")
     lines.append("")

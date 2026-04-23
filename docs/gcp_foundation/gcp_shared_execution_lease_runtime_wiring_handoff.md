@@ -4,13 +4,13 @@
 
 - The sanctioned runner now has a real optional GCS-backed execution lease path.
 - The default trader path is still unchanged and remains on the file lease.
-- Local safety tooling still points at the file-lease model, which is intentional at this phase.
+- Health-check supports the non-default GCS backend, while standby failover still rejects non-file backends by design.
 
 ## Operator Rule
 
 - Treat the GCS runtime wiring as VM-only dry-run ready, not broker-facing ready.
 - Do not flip the backend globally.
-- Do not migrate workstation health-check or standby tooling to GCS until that move is separately sanctioned.
+- Do not widen the temporary parallel-runtime exception onto the cloud lease path.
 
 ## Next Step
 

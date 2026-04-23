@@ -2,12 +2,12 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T15:41:10.137329-04:00`
+- Generated at: `2026-04-23T16:14:47.390090-04:00`
 - Project ID: `codexalpaca`
 - Runtime wiring phase: `foundation-phase16-lease-runtime-wiring`
 - Runtime wiring status: `optional_backend_wired_not_enforced`
 - Runner branch: `codex/qqq-paper-portfolio`
-- Runner commit: `4d15f6ae872a`
+- Runner commit: `a6cf50aa424a`
 - Runner dirty: `False`
 
 ## Wiring Findings
@@ -19,20 +19,23 @@
 - `env_gcs_uri_override_present`: `True`
 - `trader_optional_wiring_present`: `True`
 - `default_file_lease_still_present`: `True`
-- `health_check_still_file_lease_based`: `True`
-- `standby_check_still_file_lease_based`: `True`
+- `health_check_supports_gcs_backend`: `True`
+- `health_check_default_path_still_file_scoped`: `True`
+- `standby_check_passes_lease_backend`: `True`
+- `standby_check_rejects_non_file_backend`: `True`
 - `gcp_extra_declared`: `True`
 
 ## Validation
 
-- Full suite: `123 passed`
+- Full suite: `80 passed`
 - Full suite command: `python -m pytest -q`
 
 ## Guardrails
 
 - The default trader path still remains on the file lease unless ownership.lease_backend is explicitly switched.
 - The GCS lease backend still depends on explicit config and the optional 'gcp' dependency path.
-- Health-check and standby failover scripts remain aligned to the file-lease path until a separate sanctioned migration says otherwise.
+- Health-check now understands the non-default GCS backend, but the default posture is still the file lease unless explicitly overridden.
+- Standby failover remains intentionally file-scoped and rejects non-file ownership backends while the temporary parallel-runtime exception is in force.
 - This wiring does not by itself clear the project for broker-facing cloud lease enforcement.
 
 ## Next Step

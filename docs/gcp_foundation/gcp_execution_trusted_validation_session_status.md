@@ -2,21 +2,22 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T16:20:38.254583-04:00`
+- Generated at: `2026-04-23T16:23:35.715164-04:00`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
 - Readiness: `awaiting_exclusive_execution_window`
 - Runner branch: `codex/qqq-paper-portfolio`
 - Runner commit: `a6cf50aa424a51440f5744ec0c634150e82fc7c0`
 - Exclusive window status: `awaiting_operator_confirmation`
+- Lease runtime validation: `validated_not_enforced`
 
 ## Gates
 
 - `operator_access_ready`: `passed`
 - `headless_validation_green`: `passed`
+- `shared_lease_dry_run_green`: `passed`
 - `runtime_secret_containers_seeded`: `passed`
 - `runner_branch_published`: `passed`
-- `shared_execution_lease_dry_run_green`: `passed`
 - `exclusive_execution_window_confirmed`: `operator_required`
 
 ## Proposed VM Command
