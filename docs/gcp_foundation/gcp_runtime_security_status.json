@@ -1,0 +1,188 @@
+{
+  "generated_at": "2026-04-23T13:49:10.379123-04:00",
+  "project_id": "codexalpaca",
+  "bootstrap_service_account": "sa-bootstrap-admin@codexalpaca.iam.gserviceaccount.com",
+  "secret_results": [
+    {
+      "secret_id": "execution-alpaca-paper-api-key",
+      "required": true,
+      "secret_action": "existing",
+      "seeded": true,
+      "version_action": "existing_version_present"
+    },
+    {
+      "secret_id": "execution-alpaca-paper-secret-key",
+      "required": true,
+      "secret_action": "created",
+      "seeded": true,
+      "version_action": "seeded_initial_version"
+    },
+    {
+      "secret_id": "notification-discord-webhook-url",
+      "required": false,
+      "secret_action": "created",
+      "seeded": true,
+      "version_action": "seeded_initial_version"
+    },
+    {
+      "secret_id": "notification-ntfy-access-token",
+      "required": false,
+      "secret_action": "created",
+      "seeded": false,
+      "version_action": "pending_value"
+    },
+    {
+      "secret_id": "notification-email-password",
+      "required": false,
+      "secret_action": "created",
+      "seeded": false,
+      "version_action": "pending_value"
+    }
+  ],
+  "secret_access_results": [
+    {
+      "secret_id": "execution-alpaca-paper-api-key",
+      "member": "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "action": "queued_project_scope_fallback",
+      "scope": "project"
+    },
+    {
+      "secret_id": "execution-alpaca-paper-secret-key",
+      "member": "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "action": "queued_project_scope_fallback",
+      "scope": "project"
+    },
+    {
+      "secret_id": "notification-discord-webhook-url",
+      "member": "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "action": "queued_project_scope_fallback",
+      "scope": "project"
+    },
+    {
+      "secret_id": "notification-ntfy-access-token",
+      "member": "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "action": "queued_project_scope_fallback",
+      "scope": "project"
+    },
+    {
+      "secret_id": "notification-email-password",
+      "member": "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "action": "queued_project_scope_fallback",
+      "scope": "project"
+    }
+  ],
+  "project_iam_results": [
+    {
+      "role": "roles/logging.logWriter",
+      "member": "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "role": "roles/monitoring.metricWriter",
+      "member": "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "role": "roles/logging.logWriter",
+      "member": "serviceAccount:sa-research-batch@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "role": "roles/monitoring.metricWriter",
+      "member": "serviceAccount:sa-research-batch@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "role": "roles/logging.logWriter",
+      "member": "serviceAccount:sa-orchestrator@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "role": "roles/monitoring.metricWriter",
+      "member": "serviceAccount:sa-orchestrator@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "role": "roles/artifactregistry.writer",
+      "member": "serviceAccount:sa-ci-deployer@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "role": "roles/artifactregistry.reader",
+      "member": "serviceAccount:sa-research-batch@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "role": "roles/artifactregistry.reader",
+      "member": "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "role": "roles/secretmanager.secretAccessor",
+      "member": "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    }
+  ],
+  "bucket_iam_results": [
+    {
+      "bucket": "codexalpaca-data-us",
+      "role": "roles/storage.objectViewer",
+      "member": "serviceAccount:sa-research-batch@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "bucket": "codexalpaca-artifacts-us",
+      "role": "roles/storage.objectAdmin",
+      "member": "serviceAccount:sa-research-batch@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "bucket": "codexalpaca-artifacts-us",
+      "role": "roles/storage.objectAdmin",
+      "member": "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "bucket": "codexalpaca-artifacts-us",
+      "role": "roles/storage.objectViewer",
+      "member": "serviceAccount:sa-orchestrator@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "bucket": "codexalpaca-control-us",
+      "role": "roles/storage.objectAdmin",
+      "member": "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "bucket": "codexalpaca-control-us",
+      "role": "roles/storage.objectAdmin",
+      "member": "serviceAccount:sa-orchestrator@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "bucket": "codexalpaca-control-us",
+      "role": "roles/storage.objectViewer",
+      "member": "serviceAccount:sa-research-batch@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "bucket": "codexalpaca-backups-us",
+      "role": "roles/storage.objectAdmin",
+      "member": "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "bucket": "codexalpaca-backups-us",
+      "role": "roles/storage.objectViewer",
+      "member": "serviceAccount:sa-orchestrator@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    }
+  ],
+  "next_actions": [
+    "Create the reserved execution static IP and the validation-only execution VM next.",
+    "Teach the execution VM bootstrap to pull Secret Manager values into its runtime environment.",
+    "Add Workflow and Batch-specific service-account impersonation bindings when the orchestrator resources are created.",
+    "Sync the runtime security status packet into the control bucket and GitHub so the other machine can follow the exact cloud state."
+  ]
+}
