@@ -5,6 +5,8 @@ Use this procedure when a governed overnight program completed Phase 1 discovery
 Preferred entrypoint:
 - `cleanroom/code/qqq_options_30d_cleanroom/resume_program_phase2_from_phase1.ps1`
 
+The nightly operator can also fall into this recovery path automatically when `launch_nightly_operator_cycle.ps1` is run with `-AllowPhase2ResumeFromArtifacts` enabled and the failure is specifically a completed-Phase-1 / failed-Phase-2-pack situation.
+
 ## When To Use It
 
 This is the right recovery path when all of the following are true:

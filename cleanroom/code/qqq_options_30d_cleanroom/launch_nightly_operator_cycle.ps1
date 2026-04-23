@@ -8,6 +8,7 @@ param(
     [string]$PaperRunnerTargetDate = "",
     [string]$PythonExe = "python",
     [switch]$Execute,
+    [switch]$AllowPhase2ResumeFromArtifacts = $true,
     [switch]$BootstrapReadyUniverse = $true,
     [ValidateSet("auto", "down_choppy_coverage_ranked", "down_choppy_full_ready", "opening_30m_premium_defense", "opening_30m_single_vs_multileg", "opening_30m_convexity_butterfly", "balanced_family_expansion_benchmark")]
     [string]$TournamentProfile = "auto",
@@ -58,6 +59,7 @@ $overnightPhasedPlanBuilderPath = Join-Path $scriptRoot "build_overnight_phased_
 $overnightPhasedPlanHandoffBuilderPath = Join-Path $scriptRoot "build_overnight_phased_plan_handoff.py"
 $coverageBuilderPath = Join-Path $scriptRoot "build_ticker_family_coverage.py"
 $defaultProgramLauncherPath = Join-Path $scriptRoot "launch_down_choppy_program.ps1"
+$phase2ResumePath = Join-Path $scriptRoot "resume_program_phase2_from_phase1.ps1"
 $validatorPath = Join-Path $scriptRoot "validate_program_live_book.py"
 $hardeningBuilderPath = Join-Path $scriptRoot "build_live_book_hardening_review.py"
 $replacementBuilderPath = Join-Path $scriptRoot "build_live_book_replacement_plan.py"
@@ -340,6 +342,79 @@ function Refresh-ActiveProgramReport {
     & $PythonExe $activeProgramReporterPath --program-root $programRootPath --report-dir $activeProgramReportDir | Out-Null
 }
 
+function Test-Phase2ResumeEligibility {
+    if (-not $AllowPhase2ResumeFromArtifacts) {
+        return $false
+    }
+    if (-not (Test-Path $phase2ResumePath)) {
+        return $false
+    }
+
+    $programManifestCandidate = Join-Path $programRootPath "program_manifest.json"
+    $phase1StatusCandidate = Join-Path $programRootPath "phase1_status.json"
+    $phase2PlanCandidate = Join-Path $programRootPath "shortlist\phase2_plan.json"
+    $shortlistCandidate = Join-Path $programRootPath "shortlist\family_wave_shortlist.json"
+
+    foreach ($candidate in @($programManifestCandidate, $phase1StatusCandidate, $phase2PlanCandidate, $shortlistCandidate)) {
+        if (-not (Test-Path $candidate)) {
+            return $false
+        }
+    }
+
+    try {
+        $phase1Status = Get-Content -Path $phase1StatusCandidate -Raw | ConvertFrom-Json
+        if ([string]$phase1Status.phase -ne "phase1_discovery_complete") {
+            return $false
+        }
+
+        $programStatus = Get-Content -Path $programStatusPath -Raw | ConvertFrom-Json
+        $programPhase = [string]$programStatus.phase
+        $programMessage = [string]$programStatus.message
+        if ($programPhase -notlike "failed*") {
+            return $false
+        }
+        if ($programMessage -notmatch "phase 2 launch pack") {
+            return $false
+        }
+    }
+    catch {
+        return $false
+    }
+
+    return $true
+}
+
+function Invoke-Phase2ResumeFromArtifacts {
+    Write-Status -Phase "phase2_resume_recovery" -Message "Attempting governed Phase 2 resume from completed Phase 1 artifacts."
+    Write-PaperRunnerGate -Status "pending" -Phase "phase2_resume_recovery" -Message "Attempting governed Phase 2 resume from completed Phase 1 artifacts."
+
+    $resumeArgs = @(
+        "-ProgramRoot", $programRootPath,
+        "-CycleRoot", $cycleRootPath,
+        "-PythonExe", $PythonExe,
+        "-LiveManifestPath", $LiveManifestPath,
+        "-Execute"
+    )
+    Invoke-PowerShellStep -ScriptPath $phase2ResumePath -Arguments $resumeArgs -FailureMessage "Governed Phase 2 resume failed."
+
+    Refresh-ActiveProgramReport
+    Invoke-RunRegistryReport -ReportDir $runRegistryReportDir -ManifestRoots @(
+        $cycleRootPath,
+        $programRootPath,
+        $validationRoot,
+        $reviewRoot,
+        $replacementPlanRoot,
+        $morningHandoffRoot
+    )
+
+    Write-Status -Phase "phase2_resume_running" -Message "Governed Phase 2 resume launched successfully from completed Phase 1 artifacts." -Extra @{
+        phase2_resume_script = $phase2ResumePath
+        phase2_resume_status_path = (Join-Path $programRootPath "phase2_resume_status.json")
+        phase2_resume_followon_status_path = (Join-Path $programRootPath "phase2_resume_followon_status.json")
+    }
+    Write-PaperRunnerGate -Status "pending" -Phase "phase2_resume_running" -Message "Governed Phase 2 resume is running from completed Phase 1 artifacts."
+}
+
 if ([string]::IsNullOrWhiteSpace($ReadyBaseDir)) {
     $ReadyBaseDir = Resolve-PreferredPath -Candidates @($siblingReadyBaseDir, $oneDriveReadyBaseDir) -Fallback $siblingReadyBaseDir
 }
@@ -452,6 +527,7 @@ New-Item -ItemType Directory -Force -Path $activeProgramReportDir | Out-Null
 $cycleManifest = [ordered]@{
     created_at = (Get-Date).ToString("o")
     execute = [bool]$Execute
+    allow_phase2_resume_from_artifacts = [bool]$AllowPhase2ResumeFromArtifacts
     repo_root = $repoRoot
     workspace_root = $workspaceRoot
     runner_repo_root = $RunnerRepoRoot
@@ -947,7 +1023,16 @@ if ($BootstrapReadyUniverse) {
     $programArgs += "-BootstrapReadyUniverse"
 }
 $programArgs += @($resolvedProgramExtraArgs)
-Invoke-PowerShellStep -ScriptPath $resolvedProgramLauncherPath -Arguments $programArgs -FailureMessage "Nightly discovery/exhaustive program failed."
+try {
+    Invoke-PowerShellStep -ScriptPath $resolvedProgramLauncherPath -Arguments $programArgs -FailureMessage "Nightly discovery/exhaustive program failed."
+}
+catch {
+    if (Test-Phase2ResumeEligibility) {
+        Invoke-Phase2ResumeFromArtifacts
+        exit 0
+    }
+    throw
+}
 
 Refresh-ActiveProgramReport
 Invoke-RunRegistryReport -ReportDir $runRegistryReportDir -ManifestRoots @($cycleRootPath, $programRootPath)

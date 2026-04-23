@@ -168,6 +168,8 @@ Run one full nightly research cycle that:
 - keeps the live manifest unchanged unless a reviewed approval step happens
 
 Prefer using `cleanroom/code/qqq_options_30d_cleanroom/launch_nightly_operator_cycle.ps1` as the top-level entrypoint. Treat GitHub-backed docs and packets as the source of truth. Keep discovery parallel, keep production decisions serialized, and treat any lane without `master_summary.json` as failed. Let the nightly operator resolve the tournament profile in `auto` mode unless I explicitly ask for a different executable profile.
+
+If a governed nightly cycle completed Phase 1 but failed specifically while building the Phase 2 launch pack, prefer the governed recovery path in `resume_program_phase2_from_phase1.ps1` over rerunning discovery. When appropriate, the nightly operator may use its `-AllowPhase2ResumeFromArtifacts` path to fall into that recovery mode automatically.
 ```
 
 ## 9. Apply The Current Runner Execution Upgrades

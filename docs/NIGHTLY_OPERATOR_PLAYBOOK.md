@@ -236,6 +236,7 @@ Tasks:
 Go / no-go:
 - do not use this path if Phase 1 artifacts are incomplete or untrusted
 - do not bypass validation to force a broken Phase 2 pack into execution
+- when `launch_nightly_operator_cycle.ps1` is run with `-AllowPhase2ResumeFromArtifacts`, allow it to trigger this recovery path automatically only for the narrow case where Phase 1 is complete and the failure is specifically the Phase 2 pack build path
 
 ### Phase 3: Shared-Account Validation
 
