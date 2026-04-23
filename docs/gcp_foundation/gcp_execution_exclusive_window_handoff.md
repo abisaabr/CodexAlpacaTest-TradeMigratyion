@@ -3,7 +3,7 @@
 - Window state: `awaiting_operator_attestation`
 - Window status: `awaiting_operator_confirmation`
 - VM name: `vm-execution-paper-01`
-- Attestation path: `C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\docs\gcp_foundation\gcp_execution_exclusive_window_attestation.json`
+- Attestation path: `C:\Users\abisa\Downloads\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\docs\gcp_foundation\gcp_execution_exclusive_window_attestation.json`
 
 ## Operator Rule
 

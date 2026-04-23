@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -12,6 +12,7 @@ REPO_ROOT = SCRIPT_DIR.parents[2]
 DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "gcp_foundation"
 DEFAULT_PROJECT_ID = "codexalpaca"
 DEFAULT_VM_NAME = "vm-execution-paper-01"
+DEFAULT_TEMPLATE_WINDOW_MINUTES = 45
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -21,6 +22,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--project-id", default=DEFAULT_PROJECT_ID)
     parser.add_argument("--vm-name", default=DEFAULT_VM_NAME)
     parser.add_argument("--report-dir", default=str(DEFAULT_REPORT_DIR))
+    parser.add_argument("--template-window-minutes", type=int, default=DEFAULT_TEMPLATE_WINDOW_MINUTES)
     return parser
 
 
@@ -35,72 +37,33 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
-def write_markdown(path: Path, payload: dict[str, Any]) -> None:
-    lines: list[str] = []
-    lines.append("# GCP Execution Exclusive Window Status")
-    lines.append("")
-    lines.append("## Snapshot")
-    lines.append("")
-    lines.append(f"- Generated at: `{payload['generated_at']}`")
-    lines.append(f"- Project ID: `{payload['project_id']}`")
-    lines.append(f"- VM name: `{payload['vm_name']}`")
-    lines.append(f"- Window state: `{payload['exclusive_window_state']}`")
-    lines.append(f"- Window status: `{payload['exclusive_window_status']}`")
-    lines.append(f"- Parallel runtime exception: `{payload['parallel_runtime_exception_state']}`")
-    lines.append(f"- Attestation path: `{payload['attestation_json_path']}`")
-    lines.append("")
-    if payload.get("attestation_summary"):
-        summary = payload["attestation_summary"]
-        lines.append("## Current Attestation")
-        lines.append("")
-        lines.append(f"- Confirmed by: `{summary.get('confirmed_by')}`")
-        lines.append(f"- Confirmed at: `{summary.get('confirmed_at')}`")
-        lines.append(f"- Window starts at: `{summary.get('window_starts_at')}`")
-        lines.append(f"- Window expires at: `{summary.get('window_expires_at')}`")
-        lines.append(f"- Scope: `{summary.get('scope')}`")
-        lines.append("")
-    lines.append("## Required Assertions")
-    lines.append("")
-    for row in list(payload.get("required_assertions") or []):
-        lines.append(f"- `{row}`")
-    lines.append("")
-    lines.append("## Guardrails")
-    lines.append("")
-    for row in list(payload.get("guardrails") or []):
-        lines.append(f"- {row}")
-    lines.append("")
-    lines.append("## Attestation Template")
-    lines.append("")
-    lines.append("```json")
-    lines.append(json.dumps(payload["attestation_template"], indent=2))
-    lines.append("```")
-    lines.append("")
-    lines.append("## Next Actions")
-    lines.append("")
-    for row in list(payload.get("next_actions") or []):
-        lines.append(f"- {row}")
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+def build_attestation_template(
+    *, current_time: datetime, vm_name: str, template_window_minutes: int
+) -> dict[str, Any]:
+    if template_window_minutes <= 0:
+        raise ValueError("template_window_minutes must be positive.")
+    window_expires_at = current_time + timedelta(minutes=template_window_minutes)
+    return {
+        "window_id": f"trusted-validation-session-{vm_name}",
+        "confirmed_by": "user@example.com",
+        "confirmed_at": current_time.isoformat(),
+        "window_starts_at": current_time.isoformat(),
+        "window_expires_at": window_expires_at.isoformat(),
+        "target_vm_name": vm_name,
+        "scope": "paper_account_single_writer",
+        "assertions": {
+            "no_other_machine_active": True,
+            "parallel_exception_path_not_running_broker_session": True,
+            "session_starts_only_on_sanctioned_vm": True,
+            "post_session_assimilation_reserved": True,
+        },
+        "notes": "Bounded exclusive window for the first sanctioned GCP trusted validation session.",
+    }
 
 
-def write_handoff(path: Path, payload: dict[str, Any]) -> None:
-    lines = [
-        "# GCP Execution Exclusive Window Handoff",
-        "",
-        f"- Window state: `{payload['exclusive_window_state']}`",
-        f"- Window status: `{payload['exclusive_window_status']}`",
-        f"- VM name: `{payload['vm_name']}`",
-        f"- Attestation path: `{payload['attestation_json_path']}`",
-        "",
-        "## Operator Rule",
-        "",
-        "- Do not start the first trusted validation paper session unless this packet says `confirmed_active_window`.",
-        "- Keep the window bounded to a single sanctioned writer on `vm-execution-paper-01`.",
-        "- Run governed post-session assimilation immediately after the session ends.",
-    ]
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-
-
-def normalize_attestation(attestation: dict[str, Any], vm_name: str) -> tuple[str, dict[str, Any], list[str]]:
+def normalize_attestation(
+    attestation: dict[str, Any], vm_name: str, *, now: datetime | None = None
+) -> tuple[str, dict[str, Any], list[str]]:
     required_assertions = [
         "no_other_machine_active",
         "parallel_exception_path_not_running_broker_session",
@@ -168,31 +131,31 @@ def normalize_attestation(attestation: dict[str, Any], vm_name: str) -> tuple[st
     if errors:
         return "invalid_attestation", summary, errors
 
-    now = datetime.now().astimezone()
+    current_time = now or datetime.now().astimezone()
     assert starts_at_dt is not None
     assert expires_at_dt is not None
     if starts_at_dt.tzinfo is None:
-        starts_at_dt = starts_at_dt.replace(tzinfo=now.tzinfo)
+        starts_at_dt = starts_at_dt.replace(tzinfo=current_time.tzinfo)
     if expires_at_dt.tzinfo is None:
-        expires_at_dt = expires_at_dt.replace(tzinfo=now.tzinfo)
-    if now < starts_at_dt:
+        expires_at_dt = expires_at_dt.replace(tzinfo=current_time.tzinfo)
+    if current_time < starts_at_dt:
         return "confirmed_future_window", summary, errors
-    if now >= expires_at_dt:
+    if current_time >= expires_at_dt:
         return "expired_window", summary, errors
     return "confirmed_active_window", summary, errors
 
 
-def main() -> None:
-    args = build_parser().parse_args()
-    report_dir = Path(args.report_dir).resolve()
-    report_dir.mkdir(parents=True, exist_ok=True)
-
-    exception_status = read_json(report_dir / "gcp_parallel_runtime_exception_status.json")
-    attestation_json_path = report_dir / "gcp_execution_exclusive_window_attestation.json"
-    attestation = read_json(attestation_json_path)
-
-    window_state, attestation_summary, validation_errors = normalize_attestation(attestation, args.vm_name)
-    exception_state = str(exception_status.get("exception_state") or "unknown")
+def build_payload(
+    *,
+    project_id: str,
+    vm_name: str,
+    exception_state: str,
+    attestation_json_path: Path,
+    attestation: dict[str, Any],
+    now: datetime,
+    template_window_minutes: int,
+) -> dict[str, Any]:
+    window_state, attestation_summary, validation_errors = normalize_attestation(attestation, vm_name, now=now)
 
     next_actions = [
         f"Populate `{attestation_json_path}` with a bounded exclusive-window attestation before starting the first trusted validation session.",
@@ -220,7 +183,6 @@ def main() -> None:
     elif window_state == "invalid_attestation":
         next_actions = [*validation_errors, "Repair the attestation JSON before treating the exclusive execution window as active."]
 
-    current_time = datetime.now().astimezone().replace(microsecond=0)
     state_to_status = {
         "awaiting_operator_attestation": "awaiting_operator_confirmation",
         "invalid_attestation": "blocked",
@@ -229,10 +191,10 @@ def main() -> None:
         "expired_window": "blocked",
     }
     exclusive_window_status = state_to_status.get(window_state, "blocked")
-    payload = {
-        "generated_at": datetime.now().astimezone().isoformat(),
-        "project_id": args.project_id,
-        "vm_name": args.vm_name,
+    return {
+        "generated_at": now.isoformat(),
+        "project_id": project_id,
+        "vm_name": vm_name,
         "exclusive_window_state": window_state,
         "exclusive_window_status": exclusive_window_status,
         "parallel_runtime_exception_state": exception_state,
@@ -252,24 +214,99 @@ def main() -> None:
             "Do not treat the attestation as open-ended; it must have start and expiry timestamps.",
             "Do not promote the VM to canonical execution from the first trusted validation session alone.",
         ],
-        "attestation_template": {
-            "window_id": f"trusted-validation-session-{args.vm_name}",
-            "confirmed_by": "user@example.com",
-            "confirmed_at": current_time.isoformat(),
-            "window_starts_at": current_time.isoformat(),
-            "window_expires_at": current_time.isoformat(),
-            "target_vm_name": args.vm_name,
-            "scope": "paper_account_single_writer",
-            "assertions": {
-                "no_other_machine_active": True,
-                "parallel_exception_path_not_running_broker_session": True,
-                "session_starts_only_on_sanctioned_vm": True,
-                "post_session_assimilation_reserved": True,
-            },
-            "notes": "Bounded exclusive window for the first sanctioned GCP trusted validation session.",
-        },
+        "template_window_minutes": template_window_minutes,
+        "attestation_template": build_attestation_template(
+            current_time=now,
+            vm_name=vm_name,
+            template_window_minutes=template_window_minutes,
+        ),
         "next_actions": next_actions,
     }
+
+
+def write_markdown(path: Path, payload: dict[str, Any]) -> None:
+    lines: list[str] = []
+    lines.append("# GCP Execution Exclusive Window Status")
+    lines.append("")
+    lines.append("## Snapshot")
+    lines.append("")
+    lines.append(f"- Generated at: `{payload['generated_at']}`")
+    lines.append(f"- Project ID: `{payload['project_id']}`")
+    lines.append(f"- VM name: `{payload['vm_name']}`")
+    lines.append(f"- Window state: `{payload['exclusive_window_state']}`")
+    lines.append(f"- Window status: `{payload['exclusive_window_status']}`")
+    lines.append(f"- Parallel runtime exception: `{payload['parallel_runtime_exception_state']}`")
+    lines.append(f"- Attestation path: `{payload['attestation_json_path']}`")
+    lines.append(f"- Template window minutes: `{payload['template_window_minutes']}`")
+    lines.append("")
+    if payload.get("attestation_summary"):
+        summary = payload["attestation_summary"]
+        lines.append("## Current Attestation")
+        lines.append("")
+        lines.append(f"- Confirmed by: `{summary.get('confirmed_by')}`")
+        lines.append(f"- Confirmed at: `{summary.get('confirmed_at')}`")
+        lines.append(f"- Window starts at: `{summary.get('window_starts_at')}`")
+        lines.append(f"- Window expires at: `{summary.get('window_expires_at')}`")
+        lines.append(f"- Scope: `{summary.get('scope')}`")
+        lines.append("")
+    lines.append("## Required Assertions")
+    lines.append("")
+    for row in list(payload.get("required_assertions") or []):
+        lines.append(f"- `{row}`")
+    lines.append("")
+    lines.append("## Guardrails")
+    lines.append("")
+    for row in list(payload.get("guardrails") or []):
+        lines.append(f"- {row}")
+    lines.append("")
+    lines.append("## Attestation Template")
+    lines.append("")
+    lines.append("```json")
+    lines.append(json.dumps(payload["attestation_template"], indent=2))
+    lines.append("```")
+    lines.append("")
+    lines.append("## Next Actions")
+    lines.append("")
+    for row in list(payload.get("next_actions") or []):
+        lines.append(f"- {row}")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_handoff(path: Path, payload: dict[str, Any]) -> None:
+    lines = [
+        "# GCP Execution Exclusive Window Handoff",
+        "",
+        f"- Window state: `{payload['exclusive_window_state']}`",
+        f"- Window status: `{payload['exclusive_window_status']}`",
+        f"- VM name: `{payload['vm_name']}`",
+        f"- Attestation path: `{payload['attestation_json_path']}`",
+        "",
+        "## Operator Rule",
+        "",
+        "- Do not start the first trusted validation paper session unless this packet says `confirmed_active_window`.",
+        "- Keep the window bounded to a single sanctioned writer on `vm-execution-paper-01`.",
+        "- Run governed post-session assimilation immediately after the session ends.",
+    ]
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def main() -> None:
+    args = build_parser().parse_args()
+    report_dir = Path(args.report_dir).resolve()
+    report_dir.mkdir(parents=True, exist_ok=True)
+
+    exception_status = read_json(report_dir / "gcp_parallel_runtime_exception_status.json")
+    attestation_json_path = report_dir / "gcp_execution_exclusive_window_attestation.json"
+    attestation = read_json(attestation_json_path)
+    payload = build_payload(
+        project_id=args.project_id,
+        vm_name=args.vm_name,
+        exception_state=str(exception_status.get("exception_state") or "unknown"),
+        attestation_json_path=attestation_json_path,
+        attestation=attestation,
+        now=datetime.now().astimezone().replace(microsecond=0),
+        template_window_minutes=args.template_window_minutes,
+    )
 
     write_json(report_dir / "gcp_execution_exclusive_window_status.json", payload)
     write_markdown(report_dir / "gcp_execution_exclusive_window_status.md", payload)
