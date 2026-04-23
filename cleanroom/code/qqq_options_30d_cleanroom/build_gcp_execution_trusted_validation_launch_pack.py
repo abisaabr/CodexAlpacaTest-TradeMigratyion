@@ -184,7 +184,7 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         "## Operator Rule",
         "",
         "- This pack prepares the first sanctioned trusted validation session but does not auto-start it.",
-        "- Do not use this pack unless the exclusive-window packet says `confirmed_active_window` and this packet says `ready_to_launch`.",
+        "- Do not use this pack unless the exclusive-window packet says `ready_for_launch` and this packet says `ready_to_launch`.",
         "- Run post-session assimilation immediately after the broker-facing session ends.",
     ]
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
