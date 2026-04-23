@@ -13,10 +13,11 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_PRIMARY_OUTPUT = ROOT / "output"
+REPO_ROOT = ROOT.parents[2]
+DEFAULT_PRIMARY_OUTPUT = REPO_ROOT / "output"
 DEFAULT_SECONDARY_OUTPUT = Path(r"C:\Users\rabisaab\OneDrive - First American Corporation\qqq_options_30d_cleanroom\output")
 DEFAULT_BACKTESTER_READY = DEFAULT_SECONDARY_OUTPUT / "backtester_ready"
-DEFAULT_STRATEGY_REPO_JSON = ROOT / "output" / "strategy_repo_build_strategy_repo_20260421" / "strategy_repo.json"
+DEFAULT_STRATEGY_REPO_JSON = DEFAULT_PRIMARY_OUTPUT / "strategy_repo_build_strategy_repo_20260421" / "strategy_repo.json"
 
 
 DOWN_CHOPPY_PRIORITY_FAMILIES = [
@@ -81,6 +82,8 @@ def get_memory_profile() -> dict[str, float]:
 
 
 def chunk_list(values: list[str], chunk_count: int) -> list[list[str]]:
+    if not values:
+        return []
     if chunk_count <= 0:
         return [values]
     size = math.ceil(len(values) / chunk_count)
@@ -129,7 +132,7 @@ def load_strategy_repo(path: Path) -> dict[str, Any]:
 
 
 def resolve_strategy_repo_json(path: Path, *, primary_output_dir: Path, backtester_ready_dir: Path) -> Path:
-    if path.exists():
+    if path and path.is_file():
         return path
     existing = sorted(primary_output_dir.rglob("strategy_repo.json"), key=lambda candidate: candidate.stat().st_mtime, reverse=True)
     if existing:

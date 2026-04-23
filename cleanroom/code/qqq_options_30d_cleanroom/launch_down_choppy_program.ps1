@@ -36,15 +36,18 @@ param(
 $ErrorActionPreference = "Stop"
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+$repoRoot = [System.IO.Path]::GetFullPath((Join-Path $scriptRoot "..\..\.."))
 $familyWaveLauncherPath = Join-Path $scriptRoot "launch_down_choppy_family_wave.ps1"
 $shortlistBuilderPath = Join-Path $scriptRoot "build_family_wave_shortlist.py"
 $phase2PackBuilderPath = Join-Path $scriptRoot "build_phase2_agent_wave_pack.py"
+$agentShardingPlanBuilderPath = Join-Path $scriptRoot "build_agent_sharding_plan.py"
+$agentOperatingModelBuilderPath = Join-Path $scriptRoot "build_agent_operating_model.py"
 $agentWaveLauncherPath = Join-Path $scriptRoot "launch_agent_wave.ps1"
 $runRegistryReporterPath = Join-Path $scriptRoot "build_run_registry_report.py"
 $defaultCoveragePlannerPath = Join-Path $scriptRoot "build_ticker_family_coverage.py"
 $materializerPath = Join-Path $scriptRoot "materialize_backtester_ready.py"
 $runnerPath = Join-Path $scriptRoot "run_core_strategy_expansion_overnight.py"
-$defaultOutputRoot = Join-Path $scriptRoot "output"
+$defaultOutputRoot = Join-Path $repoRoot "output"
 $defaultRegistryPath = Join-Path $defaultOutputRoot "run_registry.jsonl"
 
 function Write-JsonFile {
@@ -875,13 +878,48 @@ if (-not (Test-Path $phase2PlanPath)) {
     throw "phase 2 plan was not created at $phase2PlanPath"
 }
 
+$agentShardingPlanRoot = Join-Path $programRootPath "agent_sharding_plan"
+$agentOperatingModelRoot = Join-Path $programRootPath "agent_operating_model"
+$agentShardingPlanPath = Join-Path $agentShardingPlanRoot "agent_sharding_plan.json"
+$agentOperatingModelPath = Join-Path $agentOperatingModelRoot "agent_operating_model.json"
+$shortlistJsonPath = Join-Path $shortlistRoot "family_wave_shortlist.json"
+
+& $PythonExe $agentShardingPlanBuilderPath `
+    --primary-output-dir $defaultOutputRoot `
+    --secondary-output-dir $SecondaryOutputDir `
+    --backtester-ready-dir $ReadyBaseDir `
+    --output-dir $agentShardingPlanRoot | Out-Null
+
+if ($LASTEXITCODE -ne 0) {
+    throw "failed to build agent sharding plan for phase 2"
+}
+
+if (-not (Test-Path $agentShardingPlanPath)) {
+    throw "agent sharding plan was not created at $agentShardingPlanPath"
+}
+
+& $PythonExe $agentOperatingModelBuilderPath `
+    --agent-plan-json $agentShardingPlanPath `
+    --output-dir $agentOperatingModelRoot | Out-Null
+
+if ($LASTEXITCODE -ne 0) {
+    throw "failed to build agent operating model for phase 2"
+}
+
+if (-not (Test-Path $agentOperatingModelPath)) {
+    throw "agent operating model was not created at $agentOperatingModelPath"
+}
+
 & $PythonExe $phase2PackBuilderPath `
     --phase2-plan-json $phase2PlanPath `
+    --shortlist-json $shortlistJsonPath `
+    --operating-model-json $agentOperatingModelPath `
     --output-dir $phase2PackRoot `
     --research-root (Join-Path $phase2Root "lanes") `
     --runner-path $runnerPath `
     --ready-base-dir $ReadyBaseDir `
-    --python-exe $PythonExe | Out-Null
+    --python-exe $PythonExe `
+    --require-explicit-sources | Out-Null
 
 if ($LASTEXITCODE -ne 0) {
     throw "failed to build phase 2 launch pack"

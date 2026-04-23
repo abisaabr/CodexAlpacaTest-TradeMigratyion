@@ -8,8 +8,9 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_OUTPUT_ROOT = ROOT / "output"
-DEFAULT_PLAN_JSON = ROOT / "output" / "agent_sharding_plan_20260421_159" / "agent_sharding_plan.json"
+REPO_ROOT = ROOT.parents[2]
+DEFAULT_OUTPUT_ROOT = REPO_ROOT / "output"
+DEFAULT_PLAN_JSON = DEFAULT_OUTPUT_ROOT / "agent_sharding_plan_20260421_159" / "agent_sharding_plan.json"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -30,7 +31,7 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 
 def resolve_agent_plan_json(path: Path, output_root: Path) -> Path:
-    if path.exists():
+    if path and path.is_file():
         return path
     candidates = sorted(
         output_root.rglob("agent_sharding_plan.json"),

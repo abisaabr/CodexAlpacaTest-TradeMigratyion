@@ -11,14 +11,15 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_OUTPUT_ROOT = ROOT / "output"
+REPO_ROOT = ROOT.parents[2]
+DEFAULT_OUTPUT_ROOT = REPO_ROOT / "output"
 DEFAULT_READY_BASE_DIR = Path(
     r"C:\Users\rabisaab\OneDrive - First American Corporation\qqq_options_30d_cleanroom\output\backtester_ready"
 )
 DEFAULT_RUNNER_PATH = ROOT / "run_core_strategy_expansion_overnight.py"
 DEFAULT_COVERAGE_PLANNER_PATH = ROOT / "build_ticker_family_coverage.py"
-DEFAULT_OPERATING_MODEL_JSON = ROOT / "output" / "agent_operating_model_20260421_main" / "agent_operating_model.json"
-DEFAULT_COVERAGE_PLAN_JSON = ROOT / "output" / "ticker_family_coverage_20260421_post_materialize_wave3" / "next_wave_plan.json"
+DEFAULT_OPERATING_MODEL_JSON = DEFAULT_OUTPUT_ROOT / "agent_operating_model_20260421_main" / "agent_operating_model.json"
+DEFAULT_COVERAGE_PLAN_JSON = DEFAULT_OUTPUT_ROOT / "ticker_family_coverage_20260421_post_materialize_wave3" / "next_wave_plan.json"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -116,7 +117,7 @@ def refresh_coverage_plan(
 
 
 def resolve_latest_json(path: Path, pattern: str) -> Path:
-    if path.exists():
+    if path and path.is_file():
         return path
     candidates = sorted(DEFAULT_OUTPUT_ROOT.rglob(pattern), key=lambda candidate: candidate.stat().st_mtime, reverse=True)
     if not candidates:
@@ -132,7 +133,7 @@ def resolve_source_json(
 ) -> Path:
     if raw_value:
         candidate = Path(raw_value).resolve()
-        if candidate.exists():
+        if candidate.is_file():
             return candidate
         if require_explicit:
             raise FileNotFoundError(f"explicit source path does not exist: {candidate}")
