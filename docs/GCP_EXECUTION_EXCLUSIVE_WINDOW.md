@@ -6,6 +6,10 @@ This runbook turns the first sanctioned VM paper session into an explicit, seria
 
 Create one governed execution window for `vm-execution-paper-01` so the first trusted validation session runs without ambiguity about who owns the shared paper account during that session.
 
+## Preferred Entrypoint
+
+- `cleanroom/code/qqq_options_30d_cleanroom/arm_gcp_execution_exclusive_window.ps1`
+
 ## Why This Exists
 
 - the sanctioned VM is technically ready enough to attempt the first trusted validation paper session
@@ -27,6 +31,7 @@ That means the first broker-facing VM session still needs an explicit human-cont
 - window start timestamp
 - window end timestamp
 - whether the temporary parallel runtime path is paused or absent for the window
+- the attestation JSON under `docs/gcp_foundation/gcp_execution_exclusive_window_attestation.json`
 
 ## Rules
 

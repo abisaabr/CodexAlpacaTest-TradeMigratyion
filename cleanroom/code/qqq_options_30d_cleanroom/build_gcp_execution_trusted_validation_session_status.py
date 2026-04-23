@@ -102,7 +102,17 @@ def main() -> None:
 
     runner_branch = git_output(runner_repo_root, "rev-parse", "--abbrev-ref", "HEAD")
     runner_commit = git_output(runner_repo_root, "rev-parse", "HEAD")
-    exclusive_window_status = str(exclusive_window.get("exclusive_window_status") or "missing")
+    exclusive_window_status = str(exclusive_window.get("exclusive_window_status") or "").strip()
+    if not exclusive_window_status:
+        exclusive_window_state = str(exclusive_window.get("exclusive_window_state") or "").strip()
+        state_to_status = {
+            "awaiting_operator_attestation": "awaiting_operator_confirmation",
+            "invalid_attestation": "blocked",
+            "confirmed_future_window": "awaiting_window_start",
+            "confirmed_active_window": "ready_for_launch",
+            "expired_window": "blocked",
+        }
+        exclusive_window_status = state_to_status.get(exclusive_window_state, "missing")
     exclusive_window_gate_status = "operator_required"
     if exclusive_window_status == "ready_for_launch":
         exclusive_window_gate_status = "passed"

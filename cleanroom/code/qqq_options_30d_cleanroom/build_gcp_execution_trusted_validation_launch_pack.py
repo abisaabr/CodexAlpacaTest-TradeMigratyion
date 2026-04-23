@@ -13,6 +13,7 @@ DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "gcp_foundation"
 DEFAULT_PROJECT_ID = "codexalpaca"
 DEFAULT_VM_NAME = "vm-execution-paper-01"
 DEFAULT_ZONE = "us-east1-b"
+DEFAULT_RUNNER_REPO_ROOT = Path(r"C:\Users\rabisaab\OneDrive\CodexAlpaca\downloads_remaining_20260417\folders\codexalpaca_repo")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -23,6 +24,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--vm-name", default=DEFAULT_VM_NAME)
     parser.add_argument("--zone", default=DEFAULT_ZONE)
     parser.add_argument("--report-dir", default=str(DEFAULT_REPORT_DIR))
+    parser.add_argument("--runner-repo-root", default=str(DEFAULT_RUNNER_REPO_ROOT))
     return parser
 
 
@@ -50,6 +52,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Runner branch: `{payload['runner_branch']}`")
     lines.append(f"- Runner commit: `{payload['runner_commit']}`")
     lines.append(f"- Exclusive window state: `{payload['exclusive_window_state']}`")
+    lines.append(f"- Exclusive window status: `{payload['exclusive_window_status']}`")
     lines.append("")
     lines.append("## Commands")
     lines.append("")
@@ -95,12 +98,13 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
 
 def write_handoff(path: Path, payload: dict[str, Any]) -> None:
     lines = [
-        "# GCP Execution Trusted Validation Launch Pack Handoff",
+        "# GCP Execution Trusted Validation Launch Handoff",
         "",
         f"- Launch pack state: `{payload['launch_pack_state']}`",
         f"- VM name: `{payload['vm_name']}`",
         f"- Runner commit: `{payload['runner_commit']}`",
         f"- Exclusive window state: `{payload['exclusive_window_state']}`",
+        f"- Exclusive window status: `{payload['exclusive_window_status']}`",
         "",
         "## Operator Rule",
         "",
@@ -115,21 +119,22 @@ def main() -> None:
     args = build_parser().parse_args()
     report_dir = Path(args.report_dir).resolve()
     report_dir.mkdir(parents=True, exist_ok=True)
+    runner_repo_root = Path(args.runner_repo_root).resolve()
 
     trusted_status = read_json(report_dir / "gcp_execution_trusted_validation_session_status.json")
     exclusive_window = read_json(report_dir / "gcp_execution_exclusive_window_status.json")
 
     readiness = str(trusted_status.get("trusted_validation_readiness") or "blocked")
     exclusive_window_state = str(exclusive_window.get("exclusive_window_state") or "missing")
+    exclusive_window_status = str(exclusive_window.get("exclusive_window_status") or "missing")
 
     launch_pack_state = "blocked"
-    if readiness == "ready_for_manual_launch" and exclusive_window_state == "confirmed_active_window":
-        launch_pack_state = "ready_for_manual_launch"
+    if readiness == "ready_for_manual_launch" and exclusive_window_status == "ready_for_launch":
+        launch_pack_state = "ready_to_launch"
     elif readiness == "awaiting_exclusive_execution_window":
-        launch_pack_state = "awaiting_window_attestation"
+        launch_pack_state = "awaiting_window_arm"
 
     control_plane_root = str(REPO_ROOT)
-    runner_repo_root = "<runner-repo-root>"
     launch_script_path = REPO_ROOT / "cleanroom" / "code" / "qqq_options_30d_cleanroom" / "launch_post_session_assimilation.ps1"
     operator_ssh_command = (
         f"gcloud compute ssh {args.vm_name} --project {args.project_id} --zone {args.zone} --tunnel-through-iap"
@@ -162,8 +167,10 @@ def main() -> None:
         "vm_name": args.vm_name,
         "runner_branch": trusted_status.get("runner_branch"),
         "runner_commit": trusted_status.get("runner_commit"),
+        "runner_repo_root": str(runner_repo_root),
         "trusted_validation_readiness": readiness,
         "exclusive_window_state": exclusive_window_state,
+        "exclusive_window_status": exclusive_window_status,
         "launch_pack_state": launch_pack_state,
         "operator_ssh_command": operator_ssh_command,
         "vm_session_command": vm_session_command,
@@ -184,9 +191,9 @@ def main() -> None:
         ],
     }
 
-    write_json(report_dir / "gcp_execution_trusted_validation_launch_pack_status.json", payload)
-    write_markdown(report_dir / "gcp_execution_trusted_validation_launch_pack_status.md", payload)
-    write_handoff(report_dir / "gcp_execution_trusted_validation_launch_pack_handoff.md", payload)
+    write_json(report_dir / "gcp_execution_trusted_validation_launch_pack.json", payload)
+    write_markdown(report_dir / "gcp_execution_trusted_validation_launch_pack.md", payload)
+    write_handoff(report_dir / "gcp_execution_trusted_validation_launch_handoff.md", payload)
     print(json.dumps(payload, indent=2))
 
 

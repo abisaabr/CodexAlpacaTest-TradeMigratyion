@@ -2,32 +2,51 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T16:13:56.749936-04:00`
+- Generated at: `2026-04-23T16:20:37.974712-04:00`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
-- Exclusive window status: `awaiting_operator_confirmation`
-- Window state input: `operator_confirmation_required`
-- Confirmed by: `pending`
-- Window start: `pending`
-- Window end: `pending`
-- Parallel path state: `unknown`
+- Window state: `awaiting_operator_attestation`
+- Window status: `awaiting_operator_confirmation`
+- Parallel runtime exception: `active_temporary_exception`
+- Attestation path: `C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\docs\gcp_foundation\gcp_execution_exclusive_window_attestation.json`
 
-## Gates
+## Required Assertions
 
-- `trusted_validation_gate_ready`: `passed`
-- `operator_access_ready`: `passed`
-- `parallel_runtime_serialization_required`: `operator_required`
-- `parallel_runtime_path_paused_for_window`: `operator_required`
-- `exclusive_window_metadata_recorded`: `operator_required`
+- `no_other_machine_active`
+- `parallel_exception_path_not_running_broker_session`
+- `session_starts_only_on_sanctioned_vm`
+- `post_session_assimilation_reserved`
 
-## Control Notes
+## Guardrails
 
-- The first trusted validation session should stay serialized because the temporary parallel runtime exception is still active.
-- The cloud shared execution lease is proven only in dry-run mode today; do not treat this window as permission to turn lease enforcement on by default.
-- The window should end with governed post-session assimilation before any promotion or policy interpretation.
+- Bound the window to one sanctioned writer on `vm-execution-paper-01`.
+- Do not start a concurrent broker-facing session on the temporary exception path.
+- Do not treat the attestation as open-ended; it must have start and expiry timestamps.
+- Do not promote the VM to canonical execution from the first trusted validation session alone.
+
+## Attestation Template
+
+```json
+{
+  "window_id": "trusted-validation-session-vm-execution-paper-01",
+  "confirmed_by": "user@example.com",
+  "confirmed_at": "2026-04-23T16:20:37-04:00",
+  "window_starts_at": "2026-04-23T16:20:37-04:00",
+  "window_expires_at": "2026-04-23T16:20:37-04:00",
+  "target_vm_name": "vm-execution-paper-01",
+  "scope": "paper_account_single_writer",
+  "assertions": {
+    "no_other_machine_active": true,
+    "parallel_exception_path_not_running_broker_session": true,
+    "session_starts_only_on_sanctioned_vm": true,
+    "post_session_assimilation_reserved": true
+  },
+  "notes": "Bounded exclusive window for the first sanctioned GCP trusted validation session."
+}
+```
 
 ## Next Actions
 
-- Record who is confirming the exclusive window and the exact start/end timestamps.
-- Explicitly pause or rule out the temporary parallel runtime path for the full session window.
-- Only after those facts are recorded should the trusted validation launch pack move to ready-for-launch.
+- Populate `C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\docs\gcp_foundation\gcp_execution_exclusive_window_attestation.json` with a bounded exclusive-window attestation before starting the first trusted validation session.
+- Keep the temporary parallel runtime exception frozen and do not run concurrent broker-facing execution across the sanctioned and exception paths.
+- Run governed post-session assimilation immediately after the trusted validation session ends.

@@ -2,20 +2,43 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T16:14:02.387924-04:00`
-- Launch pack state: `awaiting_window_arm`
+- Generated at: `2026-04-23T16:21:04.513747-04:00`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
-- Zone: `us-east1-b`
+- Launch pack state: `awaiting_window_arm`
 - Runner branch: `codex/qqq-paper-portfolio`
 - Runner commit: `a6cf50aa424a51440f5744ec0c634150e82fc7c0`
+- Exclusive window state: `awaiting_operator_attestation`
 - Exclusive window status: `awaiting_operator_confirmation`
 
-## Operator Commands
+## Commands
 
-- IAP SSH: `gcloud compute ssh vm-execution-paper-01 --project codexalpaca --zone us-east1-b --tunnel-through-iap`
-- Trusted validation launch: `gcloud compute ssh vm-execution-paper-01 --project codexalpaca --zone us-east1-b --tunnel-through-iap --command "cd /opt/codexalpaca/codexalpaca_repo && ./.venv/bin/python scripts/run_multi_ticker_portfolio_paper_trader.py --portfolio-config config/multi_ticker_paper_portfolio.yaml --submit-paper-orders"`
-- Post-session assimilation: `powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\cleanroom\code\qqq_options_30d_cleanroom\launch_post_session_assimilation.ps1" -ControlPlaneRoot "C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion" -RunnerRepoRoot "C:\Users\rabisaab\OneDrive\CodexAlpaca\downloads_remaining_20260417\folders\codexalpaca_repo"`
+### Operator SSH
+
+```bash
+gcloud compute ssh vm-execution-paper-01 --project codexalpaca --zone us-east1-b --tunnel-through-iap
+```
+
+### VM Session Command
+
+```bash
+cd /opt/codexalpaca/codexalpaca_repo && ./.venv/bin/python scripts/run_multi_ticker_portfolio_paper_trader.py --portfolio-config config/multi_ticker_paper_portfolio.yaml --submit-paper-orders
+```
+
+### Post-Session Assimilation
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\cleanroom\code\qqq_options_30d_cleanroom\launch_post_session_assimilation.ps1" -ControlPlaneRoot "C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion" -RunnerRepoRoot "C:\Users\rabisaab\OneDrive\CodexAlpaca\downloads_remaining_20260417\folders\codexalpaca_repo"
+```
+
+## Operator Steps
+
+- Do not start the session yet; this pack is in preparation mode until the exclusive execution window is actively confirmed.
+- Confirm the exclusive-window packet says `confirmed_active_window` and the trusted-validation readiness packet says `ready_for_manual_launch`.
+- SSH to `vm-execution-paper-01` through IAP.
+- Run the trusted validation session command on the VM without changing strategy selection or risk policy.
+- When the session ends, run governed post-session assimilation from the control-plane machine.
+- Review the refreshed morning brief, execution calibration handoff, tournament unlock handoff, and execution evidence contract before any promotion decision.
 
 ## Required Evidence
 
@@ -25,15 +48,16 @@
 - `shutdown reconciliation`
 - `completed trade table with broker/local cashflow comparison`
 
-## By-Window Success
+## Review Targets
 
-- The VM session exits and leaves a fresh runner bundle under the multi_ticker_portfolio reports tree.
-- The session leaves the full broker-audited evidence package: order audit, activity audit, ending positions, reconciliation inputs, and broker/local economics comparison.
-- Governed post-session assimilation refreshes morning_brief, unlock, workplan, and execution-evidence packets without relaxing policy automatically.
-- The refreshed morning brief still matches the evidence honestly, even if the result is to keep blocked profiles blocked.
+- `C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\docs\morning_brief\morning_operator_brief.md`
+- `C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\docs\execution_calibration\execution_calibration_handoff.md`
+- `C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\docs\tournament_unlocks\tournament_unlock_handoff.md`
+- `C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\docs\execution_evidence\execution_evidence_contract_handoff.md`
 
-## Next Actions
+## Guardrails
 
-- Arm the exclusive execution window first, then use this launch pack unchanged.
-- Keep the parallel runtime exception paused or otherwise ruled out for the full session window.
-- Once the window is explicit, run the trusted validation launch command and then the assimilation command.
+- Do not auto-start trading from this packet.
+- Keep the shared execution lease in dry-run posture for the first trusted validation session.
+- Do not widen the temporary parallel-runtime exception.
+- Do not promote the VM to canonical execution from this launch alone.

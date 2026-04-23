@@ -45,6 +45,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Project ID: `{payload['project_id']}`")
     lines.append(f"- VM name: `{payload['vm_name']}`")
     lines.append(f"- Window state: `{payload['exclusive_window_state']}`")
+    lines.append(f"- Window status: `{payload['exclusive_window_status']}`")
     lines.append(f"- Parallel runtime exception: `{payload['parallel_runtime_exception_state']}`")
     lines.append(f"- Attestation path: `{payload['attestation_json_path']}`")
     lines.append("")
@@ -86,6 +87,7 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         "# GCP Execution Exclusive Window Handoff",
         "",
         f"- Window state: `{payload['exclusive_window_state']}`",
+        f"- Window status: `{payload['exclusive_window_status']}`",
         f"- VM name: `{payload['vm_name']}`",
         f"- Attestation path: `{payload['attestation_json_path']}`",
         "",
@@ -219,11 +221,20 @@ def main() -> None:
         next_actions = [*validation_errors, "Repair the attestation JSON before treating the exclusive execution window as active."]
 
     current_time = datetime.now().astimezone().replace(microsecond=0)
+    state_to_status = {
+        "awaiting_operator_attestation": "awaiting_operator_confirmation",
+        "invalid_attestation": "blocked",
+        "confirmed_future_window": "awaiting_window_start",
+        "confirmed_active_window": "ready_for_launch",
+        "expired_window": "blocked",
+    }
+    exclusive_window_status = state_to_status.get(window_state, "blocked")
     payload = {
         "generated_at": datetime.now().astimezone().isoformat(),
         "project_id": args.project_id,
         "vm_name": args.vm_name,
         "exclusive_window_state": window_state,
+        "exclusive_window_status": exclusive_window_status,
         "parallel_runtime_exception_state": exception_state,
         "attestation_json_path": str(attestation_json_path),
         "attestation_present": bool(attestation),

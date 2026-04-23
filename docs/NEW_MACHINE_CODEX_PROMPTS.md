@@ -973,3 +973,37 @@ Then act as the sanctioned VM execution steward.
    - what by-window success looks like
 4. Do not launch the broker-facing session in this step unless the operator explicitly confirms the exclusive window is armed.
 ```
+
+## 31. Arm The Exclusive VM Execution Window
+
+```text
+Open:
+
+1. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs\GCP_EXECUTION_EXCLUSIVE_WINDOW.md
+- docs\GCP_EXECUTION_TRUSTED_VALIDATION_SESSION.md
+- docs\GCP_EXECUTION_TRUSTED_VALIDATION_LAUNCH_PACK.md
+- docs\gcp_foundation\gcp_execution_exclusive_window_status.md
+- docs\gcp_foundation\gcp_execution_trusted_validation_session_status.md
+
+Then act as the sanctioned VM execution-window steward.
+
+1. Use `cleanroom\code\qqq_options_30d_cleanroom\arm_gcp_execution_exclusive_window.ps1` to record:
+   - who is confirming the window
+   - window start timestamp
+   - window end timestamp
+   - that the temporary parallel runtime path is paused or absent for the window
+2. Refresh:
+   - `docs\gcp_foundation\gcp_execution_exclusive_window_status.md`
+   - `docs\gcp_foundation\gcp_execution_trusted_validation_session_status.md`
+   - `docs\gcp_foundation\gcp_execution_trusted_validation_launch_pack.md`
+3. Report:
+   - whether the exclusive window is now `ready_for_launch`
+   - whether trusted validation readiness is now `ready_for_manual_launch`
+   - whether the launch pack is now `ready_to_launch`
+   - the exact trusted validation VM command
+   - the exact post-session assimilation command
+4. Do not start the broker-facing session in this step unless the operator explicitly says to launch it.
+```
