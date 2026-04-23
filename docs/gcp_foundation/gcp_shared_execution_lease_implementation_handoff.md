@@ -2,16 +2,17 @@
 
 ## Current Read
 
-- The sanctioned runner now contains a tested generation-match ownership seam.
-- The default trader path is still unchanged and continues to use the file lease.
-- This is the right intermediate posture: implementation exists, enforcement does not.
+- The sanctioned runner now contains an optional GCS-backed ownership store behind explicit non-default config.
+- The default trader path still remains on the file lease unless that non-default backend is explicitly selected.
+- The health-check path now understands the non-default lease backend, while standby failover remains intentionally file-scoped.
+- This is the right intermediate posture: implementation exists, but the cloud lease is still not live.
 
 ## Operator Rule
 
-- Treat the helper as dry-run ready, not broker-facing ready.
-- Do not present the cloud shared execution lease as live until a sanctioned GCS store is wired and validated.
+- Treat the optional GCS lease path as implementation-ready, not broker-facing ready.
+- Do not present the cloud shared execution lease as live until the sanctioned GCS object has been validated with generation preconditions.
 - Keep the trusted validation-session gate and the parallel-runtime exception controls in force.
 
 ## Next Step
 
-- Build the optional GCS-backed ObjectLeaseStore, keep it behind explicit config, and validate it before any promotion decision.
+- Validate the sanctioned GCS-backed ObjectLeaseStore against the real lease object before any promotion decision.
