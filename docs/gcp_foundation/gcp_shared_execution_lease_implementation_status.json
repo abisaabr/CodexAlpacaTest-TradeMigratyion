@@ -1,0 +1,54 @@
+{
+  "generated_at": "2026-04-23T15:26:10.853208-04:00",
+  "project_id": "codexalpaca",
+  "implementation_phase": "foundation-phase14-lease-helper-implementation",
+  "recommended_lease": "gcs_generation_match_lease",
+  "lease_object": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+  "implementation_status": "dry_run_helper_landed",
+  "enforcement_state": "off_by_default",
+  "runner_repo": {
+    "path": "C:\\Users\\rabisaab\\OneDrive\\CodexAlpaca\\downloads_remaining_20260417\\folders\\codexalpaca_repo",
+    "branch": "codex/qqq-paper-portfolio",
+    "commit": "fba001594de70d327c5019ee2f8ae79e6886a5c4",
+    "short_commit": "fba001594de7",
+    "dirty": false,
+    "metadata_available": true
+  },
+  "implementation_findings": {
+    "generation_match_helper_present": true,
+    "renew_present": true,
+    "release_present": true,
+    "generation_field_present": true,
+    "new_tests_present": true,
+    "default_trader_path_is_still_file_lease": true,
+    "google_cloud_storage_dependency_present": false
+  },
+  "validation": {
+    "targeted_tests": "15 passed",
+    "full_suite": "117 passed",
+    "targeted_commands": [
+      "python -m pytest -q tests/test_execution_ownership.py tests/test_execution_failover.py"
+    ],
+    "full_suite_command": "python -m pytest -q"
+  },
+  "current_guardrails": [
+    "Do not switch the multi-ticker trader to the generation-match lease by default yet.",
+    "Do not start broker-facing cloud execution from the lease helper alone.",
+    "Keep the current trusted validation-session gate in force until the shared lease is wired and validated.",
+    "Treat the new ownership helper as a sanctioned seam for dry-run and store-level validation first."
+  ],
+  "next_build_step": {
+    "name": "optional_gcs_store_wiring",
+    "description": "Implement a sanctioned GCS-backed ObjectLeaseStore and wire it into the runner behind an explicit non-default config switch.",
+    "requirements": [
+      "Add a deliberate cloud storage dependency path or a sanctioned sidecar helper instead of implicit runtime coupling.",
+      "Validate acquire, renew, release, and stale takeover against the real GCS object with generation preconditions.",
+      "Keep enforcement disabled by default until both workstation and VM dry-run packets are clean."
+    ]
+  },
+  "institutional_read": [
+    "The runner now has a clean compare-and-set ownership seam that matches the control-plane lease contract.",
+    "The sanctioned execution path is still protected because the default trader path remains on the file lease.",
+    "The next step is optional store wiring and dry-run validation, not immediate cloud execution promotion."
+  ]
+}
