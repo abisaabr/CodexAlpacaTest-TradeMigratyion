@@ -1,0 +1,139 @@
+{
+  "generated_at": "2026-04-23T13:25:15.380485-04:00",
+  "foundation_status": "bootstrap_storage_only",
+  "project": {
+    "credentials_json": "C:\\Users\\rabisaab\\Downloads\\codexalpaca-1ebfbe0eaa7b.json",
+    "project_id": "codexalpaca",
+    "client_email": "ramzi-service-account@codexalpaca.iam.gserviceaccount.com",
+    "credentials_present": true,
+    "token_mint_status": "ok",
+    "token_expiry": "2026-04-23T18:25:09.488294"
+  },
+  "region": "us-east1",
+  "bootstrap_bucket": "codexalpaca-transfer-922745393036",
+  "available_capabilities": [
+    "cloud_storage_bucket_list",
+    "bootstrap_bucket_access"
+  ],
+  "blocked_capabilities": [
+    "project_metadata",
+    "compute_engine",
+    "secret_manager",
+    "artifact_registry",
+    "cloud_batch",
+    "workflows",
+    "cloud_scheduler"
+  ],
+  "checks": [
+    {
+      "capability_key": "project_metadata",
+      "title": "Project metadata",
+      "category": "control",
+      "url": "https://cloudresourcemanager.googleapis.com/v1/projects/codexalpaca",
+      "success_requirement": "Read project metadata.",
+      "status": "api_disabled_or_not_enabled",
+      "available": false,
+      "http_status": 403,
+      "summary": "Cloud Resource Manager API has not been used in project 922745393036 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview?project=922745393036 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."
+    },
+    {
+      "capability_key": "cloud_storage_bucket_list",
+      "title": "Cloud Storage bucket list",
+      "category": "storage",
+      "url": "https://storage.googleapis.com/storage/v1/b?project=codexalpaca",
+      "success_requirement": "List project buckets.",
+      "status": "available",
+      "available": true,
+      "http_status": 200,
+      "summary": "API call succeeded."
+    },
+    {
+      "capability_key": "bootstrap_bucket_access",
+      "title": "Bootstrap transfer bucket access",
+      "category": "storage",
+      "url": "https://storage.googleapis.com/storage/v1/b/codexalpaca-transfer-922745393036",
+      "success_requirement": "Read bootstrap transfer bucket metadata.",
+      "status": "available",
+      "available": true,
+      "http_status": 200,
+      "summary": "API call succeeded."
+    },
+    {
+      "capability_key": "compute_engine",
+      "title": "Compute Engine foundation access",
+      "category": "execution",
+      "url": "https://compute.googleapis.com/compute/v1/projects/codexalpaca/global/networks",
+      "success_requirement": "Read or list Compute Engine network resources.",
+      "status": "api_disabled_or_not_enabled",
+      "available": false,
+      "http_status": 403,
+      "summary": "Compute Engine API has not been used in project codexalpaca before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=codexalpaca then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."
+    },
+    {
+      "capability_key": "secret_manager",
+      "title": "Secret Manager access",
+      "category": "secrets",
+      "url": "https://secretmanager.googleapis.com/v1/projects/codexalpaca/secrets",
+      "success_requirement": "Read or list Secret Manager secrets.",
+      "status": "api_disabled_or_not_enabled",
+      "available": false,
+      "http_status": 403,
+      "summary": "Secret Manager API has not been used in project codexalpaca before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/secretmanager.googleapis.com/overview?project=codexalpaca then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."
+    },
+    {
+      "capability_key": "artifact_registry",
+      "title": "Artifact Registry access",
+      "category": "packaging",
+      "url": "https://artifactregistry.googleapis.com/v1/projects/codexalpaca/locations/us-east1/repositories",
+      "success_requirement": "Read or list Artifact Registry repositories.",
+      "status": "api_disabled_or_not_enabled",
+      "available": false,
+      "http_status": 403,
+      "summary": "Artifact Registry API has not been used in project codexalpaca before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/artifactregistry.googleapis.com/overview?project=codexalpaca then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."
+    },
+    {
+      "capability_key": "cloud_batch",
+      "title": "Cloud Batch access",
+      "category": "research",
+      "url": "https://batch.googleapis.com/v1/projects/codexalpaca/locations/us-east1/jobs",
+      "success_requirement": "Read or list Cloud Batch jobs.",
+      "status": "api_disabled_or_not_enabled",
+      "available": false,
+      "http_status": 403,
+      "summary": "Batch API has not been used in project codexalpaca before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/batch.googleapis.com/overview?project=codexalpaca then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."
+    },
+    {
+      "capability_key": "workflows",
+      "title": "Workflows access",
+      "category": "control",
+      "url": "https://workflows.googleapis.com/v1/projects/codexalpaca/locations/us-east1/workflows",
+      "success_requirement": "Read or list Workflows resources.",
+      "status": "api_disabled_or_not_enabled",
+      "available": false,
+      "http_status": 403,
+      "summary": "Workflows API has not been used in project codexalpaca before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/workflows.googleapis.com/overview?project=codexalpaca then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."
+    },
+    {
+      "capability_key": "cloud_scheduler",
+      "title": "Cloud Scheduler access",
+      "category": "control",
+      "url": "https://cloudscheduler.googleapis.com/v1/projects/codexalpaca/locations/us-east1/jobs",
+      "success_requirement": "Read or list Cloud Scheduler jobs.",
+      "status": "api_disabled_or_not_enabled",
+      "available": false,
+      "http_status": 403,
+      "summary": "Cloud Scheduler API has not been used in project codexalpaca before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudscheduler.googleapis.com/overview?project=codexalpaca then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."
+    }
+  ],
+  "next_actions": [
+    "Treat the current service account as a storage/bootstrap principal, not as the foundation-provisioning identity.",
+    "Use a higher-privilege human or bootstrap principal to create the VPC, execution VM, service accounts, Secret Manager resources, Artifact Registry, and orchestration services.",
+    "Enable or grant access to Compute Engine so the execution VM and static IP can be provisioned.",
+    "Enable or grant access to Secret Manager before moving Alpaca credentials out of workstation-local files.",
+    "Enable or grant access to Artifact Registry before containerizing research jobs for Batch.",
+    "Enable or grant access to Cloud Batch before migrating heavy research and backtests.",
+    "Enable or grant access to Workflows and Cloud Scheduler before moving governed orchestration into GCP.",
+    "Keep the bootstrap transfer bucket separate from the long-term data, artifacts, control, and backup buckets.",
+    "Provision dedicated service accounts for execution, research, orchestration, and deployment rather than overloading the current bootstrap key."
+  ]
+}

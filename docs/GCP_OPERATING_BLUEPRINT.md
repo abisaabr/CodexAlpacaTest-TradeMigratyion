@@ -10,6 +10,22 @@ The goal is not "move everything to one cloud machine." The goal is:
 - move secrets and runtime state out of ad hoc local-machine handling
 - keep GitHub as the governance layer while GCP becomes the execution and compute substrate
 
+## Foundation Readiness Gate
+
+Before provisioning the target cloud architecture, run the readiness audit in:
+
+- `docs/GCP_FOUNDATION_READINESS.md`
+
+That audit distinguishes:
+
+- storage/bootstrap capability
+
+from:
+
+- true foundation provisioning capability
+
+Do not assume that a credential able to access or create a Cloud Storage bucket can also provision the institutional runtime.
+
 ## Core Principle
 
 Run different project planes on different Google Cloud primitives:

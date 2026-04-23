@@ -12,6 +12,16 @@ The migration is successful when:
 - secrets are no longer anchored to workstation-local `.env` files
 - the control plane can still govern the project without loss of lineage
 
+## Preflight Gate
+
+Before Phase 0 begins, run the GCP foundation readiness builder chain described in:
+
+- `docs/GCP_FOUNDATION_READINESS.md`
+
+Do not confuse storage access with true cloud-foundation readiness.
+
+The rollout should not be called Phase-0 ready until the generated handoff says the project is at least `foundation_partial`, and ideally `foundation_ready`, or until a stronger bootstrap principal is explicitly chosen for provisioning.
+
 ## Phase 0: Foundation
 
 Objective:

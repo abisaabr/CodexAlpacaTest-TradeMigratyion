@@ -312,7 +312,88 @@ Hard rules:
 - do not change strategy selection or risk policy in this step
 ```
 
-## 12. Refresh Post-Session Reconciliation And Execution Policy
+## 12. Audit GCP Foundation Readiness
+
+```text
+Open:
+
+1. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs/GCP_OPERATING_BLUEPRINT.md
+- docs/GCP_MIGRATION_PLAN.md
+- docs/GCP_FOUNDATION_READINESS.md
+
+Act as the GCP readiness steward for project `codexalpaca`.
+
+Use the provided Google Cloud service-account credential to build the current readiness packet for:
+- Cloud Storage
+- Compute Engine
+- Secret Manager
+- Artifact Registry
+- Cloud Batch
+- Workflows
+- Cloud Scheduler
+
+Run the GCP foundation readiness builders, then inspect:
+- `docs/gcp_foundation/gcp_foundation_readiness.md`
+- `docs/gcp_foundation/gcp_foundation_readiness_handoff.md`
+
+Report:
+- whether the current credential is only suitable for storage/bootstrap use or is actually foundation-ready
+- which cloud capabilities are available now
+- which capabilities are still blocked
+- whether the project should proceed with Phase 0 foundation provisioning now or first switch to a stronger bootstrap identity
+
+Hard rules:
+- do not modify the live manifest
+- do not start trading
+- do not change strategy selection or risk policy in this step
+```
+
+## 13. Bootstrap The GCP Foundation With Admin Access
+
+```text
+Open:
+
+1. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs/GCP_OPERATING_BLUEPRINT.md
+- docs/GCP_MIGRATION_PLAN.md
+- docs/GCP_FOUNDATION_READINESS.md
+- docs/GCP_FOUNDATION_BOOTSTRAP.md
+- docs/gcp_foundation/gcp_foundation_readiness_handoff.md
+
+Act as the GCP bootstrap steward for project `codexalpaca`.
+
+Assume you are using a higher-privilege bootstrap identity, not the storage-only bootstrap key.
+
+Your job is to bootstrap the cloud foundation for the institutional target architecture:
+- enable required Google Cloud APIs
+- create the target VPC, subnet, and reserved execution static IP
+- create the role-separated long-term Cloud Storage buckets
+- create dedicated service accounts for execution, research, orchestration, and deployment
+- create Secret Manager and Artifact Registry foundations
+- create the initial execution VM in validation-only posture
+- establish basic budget and monitoring guardrails
+
+Use the exact naming and sequencing in:
+- docs/GCP_FOUNDATION_BOOTSTRAP.md
+
+At the end, report:
+- what resources were created
+- what APIs were enabled
+- what is still blocked
+- whether the project is now foundation-ready for execution-plane cut-in
+
+Hard rules:
+- do not modify the live manifest
+- do not start trading
+- do not change strategy selection or risk policy in this step
+```
+
+## 14. Refresh Post-Session Reconciliation And Execution Policy
 
 ```text
 Open these sibling folders and use them together:
@@ -360,7 +441,7 @@ Hard rules:
 - do not commit raw trade logs or raw session exhaust
 ```
 
-## 13. Resume A Failed Phase 2 Program From Completed Phase 1
+## 15. Resume A Failed Phase 2 Program From Completed Phase 1
 
 ```text
 Open these sibling folders and use them together:
@@ -404,7 +485,7 @@ Hard rules:
 - do not start trading
 ```
 
-## 14. Review Tonight's Overnight Mission
+## 16. Review Tonight's Overnight Mission
 
 ```text
 Open these sibling folders and use them together:
@@ -432,7 +513,7 @@ Then act as the overnight execution steward for the new machine.
 3. Do not modify the live manifest, do not change risk policy, and do not start trading in this step.
 ```
 
-## 15. Check GitHub Updates Before Open Or Nightly Work
+## 17. Check GitHub Updates Before Open Or Nightly Work
 
 ```text
 Open these sibling folders and use them together:
@@ -470,7 +551,7 @@ Hard rules:
 - do not change strategy selection or risk policy in this step
 ```
 
-## 16. Report Which Tournament Profiles Are Actually Unlocked
+## 18. Report Which Tournament Profiles Are Actually Unlocked
 
 ```text
 Open these sibling folders and use them together:
@@ -497,7 +578,7 @@ Then act as the Tournament Policy Steward for the new machine.
 3. Do not start trading, do not modify the live manifest, and do not change strategy or risk policy in this step.
 ```
 
-## 17. Report What Unlocks The Next Tournament Tier
+## 19. Report What Unlocks The Next Tournament Tier
 
 ```text
 Open these sibling folders and use them together:
@@ -527,7 +608,7 @@ Then act as the Tournament Unlock Steward for the new machine.
 3. Do not start trading, do not modify the live manifest, and do not change strategy or risk policy in this step.
 ```
 
-## 18. Run The Current Execution Evidence Mission
+## 20. Run The Current Execution Evidence Mission
 
 ```text
 Open these sibling folders and use them together:
@@ -558,7 +639,7 @@ Then act as the execution-plane mission operator for the new machine.
 4. Do not modify the live manifest, do not change strategy or risk policy, and do not start trading in this step.
 ```
 
-## 19. Run Governed Post-Session Assimilation
+## 21. Run Governed Post-Session Assimilation
 
 ```text
 Open these sibling folders and use them together:
