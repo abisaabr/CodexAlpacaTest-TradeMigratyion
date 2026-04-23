@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-04-23T14:12:29.257099-04:00",
+  "generated_at": "2026-04-23T14:22:22.754118-04:00",
   "project_id": "codexalpaca",
   "project_number": "922745393036",
   "instance_name": "vm-execution-paper-01",
   "zone": "us-east1-b",
   "bootstrap_service_account": "sa-bootstrap-admin@codexalpaca.iam.gserviceaccount.com",
-  "operator_principal": "",
+  "operator_principal": "serviceAccount:ramzi-service-account@codexalpaca.iam.gserviceaccount.com",
   "service_results": [
     {
       "service": "iap.googleapis.com",
-      "action": "enabled"
+      "action": "existing"
     },
     {
       "service": "oslogin.googleapis.com",
@@ -34,10 +34,36 @@
       "status": "ok"
     }
   ],
-  "iam_results": [],
-  "access_readiness": "ready_for_grant",
+  "iam_results": [
+    {
+      "scope": "project",
+      "role": "roles/iap.tunnelResourceAccessor",
+      "member": "serviceAccount:ramzi-service-account@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "scope": "project",
+      "role": "roles/compute.osAdminLogin",
+      "member": "serviceAccount:ramzi-service-account@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "scope": "project",
+      "role": "roles/compute.viewer",
+      "member": "serviceAccount:ramzi-service-account@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    },
+    {
+      "scope": "service_account",
+      "role": "roles/iam.serviceAccountUser",
+      "member": "serviceAccount:ramzi-service-account@codexalpaca.iam.gserviceaccount.com",
+      "resource": "sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "action": "bound"
+    }
+  ],
+  "access_readiness": "ready_for_operator_validation",
   "next_actions": [
-    "Provide the Google principal that should operate the VM so OS Login, IAP tunnel access, and serviceAccountUser can be granted explicitly.",
+    "Use the new operator principal to connect through gcloud compute ssh with --tunnel-through-iap.",
     "Keep inbound SSH restricted to IAP and do not open port 22 to the internet.",
     "Use the validation gate packet next, not ad hoc SSH commands, before trusting the VM for execution."
   ]
