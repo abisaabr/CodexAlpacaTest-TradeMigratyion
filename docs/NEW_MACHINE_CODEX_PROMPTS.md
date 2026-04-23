@@ -915,3 +915,26 @@ Then act as the cloud execution validation reviewer.
    - what must happen next before the VM can move toward a trusted validation session
 3. Do not start trading and do not promote the VM to canonical execution in this step.
 ```
+
+## 29. Review GCP Trusted Validation Session Readiness
+
+```text
+Open:
+
+1. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs\GCP_EXECUTION_TRUSTED_VALIDATION_SESSION.md
+- docs\gcp_foundation\gcp_execution_trusted_validation_session_status.md
+- docs\gcp_foundation\gcp_execution_vm_headless_validation_review_status.md
+
+Then act as the cloud execution readiness steward.
+
+1. Review whether the VM is ready for the first trusted validation paper session.
+2. Report:
+   - the current readiness state
+   - the pinned runner branch and commit
+   - the exact remaining gates before the session can start
+   - the required evidence the session must produce
+3. Do not start the session in this step unless the operator explicitly confirms an exclusive paper-account window.
+```
