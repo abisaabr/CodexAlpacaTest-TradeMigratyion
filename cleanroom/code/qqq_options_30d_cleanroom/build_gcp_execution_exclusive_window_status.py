@@ -62,7 +62,10 @@ def build_attestation_template(
 
 
 def normalize_attestation(
-    attestation: dict[str, Any], vm_name: str, *, now: datetime | None = None
+    attestation: dict[str, Any],
+    vm_name: str,
+    *,
+    current_time: datetime | None = None,
 ) -> tuple[str, dict[str, Any], list[str]]:
     required_assertions = [
         "no_other_machine_active",
@@ -131,7 +134,7 @@ def normalize_attestation(
     if errors:
         return "invalid_attestation", summary, errors
 
-    current_time = now or datetime.now().astimezone()
+    current_time = current_time or datetime.now().astimezone()
     assert starts_at_dt is not None
     assert expires_at_dt is not None
     if starts_at_dt.tzinfo is None:
@@ -149,16 +152,22 @@ def build_payload(
     *,
     project_id: str,
     vm_name: str,
-    exception_state: str,
-    attestation_json_path: Path,
+    exception_status: dict[str, Any],
     attestation: dict[str, Any],
-    now: datetime,
-    template_window_minutes: int,
+    attestation_relpath: str,
+    current_time: datetime | None = None,
+    template_window_minutes: int = DEFAULT_TEMPLATE_WINDOW_MINUTES,
 ) -> dict[str, Any]:
-    window_state, attestation_summary, validation_errors = normalize_attestation(attestation, vm_name, now=now)
+    current_time = current_time or datetime.now().astimezone().replace(microsecond=0)
+    window_state, attestation_summary, validation_errors = normalize_attestation(
+        attestation,
+        vm_name,
+        current_time=current_time,
+    )
+    exception_state = str(exception_status.get("exception_state") or "unknown")
 
     next_actions = [
-        f"Populate `{attestation_json_path}` with a bounded exclusive-window attestation before starting the first trusted validation session.",
+        f"Populate `{attestation_relpath}` with a bounded exclusive-window attestation before starting the first trusted validation session.",
         "Keep the temporary parallel runtime exception frozen and do not run concurrent broker-facing execution across the sanctioned and exception paths.",
         "Run governed post-session assimilation immediately after the trusted validation session ends.",
     ]
@@ -181,7 +190,10 @@ def build_payload(
             "Run governed post-session assimilation immediately after the trusted validation session ends.",
         ]
     elif window_state == "invalid_attestation":
-        next_actions = [*validation_errors, "Repair the attestation JSON before treating the exclusive execution window as active."]
+        next_actions = [
+            *validation_errors,
+            "Repair the attestation JSON before treating the exclusive execution window as active.",
+        ]
 
     state_to_status = {
         "awaiting_operator_attestation": "awaiting_operator_confirmation",
@@ -192,13 +204,13 @@ def build_payload(
     }
     exclusive_window_status = state_to_status.get(window_state, "blocked")
     return {
-        "generated_at": now.isoformat(),
+        "generated_at": current_time.isoformat(),
         "project_id": project_id,
         "vm_name": vm_name,
         "exclusive_window_state": window_state,
         "exclusive_window_status": exclusive_window_status,
         "parallel_runtime_exception_state": exception_state,
-        "attestation_json_path": str(attestation_json_path),
+        "attestation_json_path": attestation_relpath,
         "attestation_present": bool(attestation),
         "attestation_validation_errors": validation_errors,
         "attestation_summary": attestation_summary,
@@ -216,7 +228,7 @@ def build_payload(
         ],
         "template_window_minutes": template_window_minutes,
         "attestation_template": build_attestation_template(
-            current_time=now,
+            current_time=current_time,
             vm_name=vm_name,
             template_window_minutes=template_window_minutes,
         ),
@@ -283,7 +295,7 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         "",
         "## Operator Rule",
         "",
-        "- Do not start the first trusted validation paper session unless this packet says `confirmed_active_window`.",
+        "- Do not start the first trusted validation paper session unless this packet says `ready_for_launch`.",
         "- Keep the window bounded to a single sanctioned writer on `vm-execution-paper-01`.",
         "- Run governed post-session assimilation immediately after the session ends.",
     ]
@@ -297,14 +309,15 @@ def main() -> None:
 
     exception_status = read_json(report_dir / "gcp_parallel_runtime_exception_status.json")
     attestation_json_path = report_dir / "gcp_execution_exclusive_window_attestation.json"
+    attestation_relpath = "docs/gcp_foundation/gcp_execution_exclusive_window_attestation.json"
     attestation = read_json(attestation_json_path)
     payload = build_payload(
         project_id=args.project_id,
         vm_name=args.vm_name,
-        exception_state=str(exception_status.get("exception_state") or "unknown"),
-        attestation_json_path=attestation_json_path,
+        exception_status=exception_status,
         attestation=attestation,
-        now=datetime.now().astimezone().replace(microsecond=0),
+        attestation_relpath=attestation_relpath,
+        current_time=datetime.now().astimezone().replace(microsecond=0),
         template_window_minutes=args.template_window_minutes,
     )
 
