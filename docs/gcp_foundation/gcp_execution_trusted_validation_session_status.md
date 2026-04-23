@@ -2,12 +2,13 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T16:13:57.014237-04:00`
+- Generated at: `2026-04-23T16:17:04.828140-04:00`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
 - Readiness: `awaiting_exclusive_execution_window`
 - Runner branch: `codex/qqq-paper-portfolio`
 - Runner commit: `a6cf50aa424a51440f5744ec0c634150e82fc7c0`
+- Exclusive window status: `awaiting_operator_confirmation`
 
 ## Gates
 
@@ -34,7 +35,7 @@ cd /opt/codexalpaca/codexalpaca_repo && ./.venv/bin/python scripts/run_multi_tic
 
 ## Remaining Gates
 
-- An operator still needs to confirm that no other machine is actively running the shared paper account before the VM session starts.
+- An operator still needs to confirm an active exclusive execution window so no other machine is using the shared paper account when the VM session starts.
 - The shared execution lease is now proven in dry-run mode on the sanctioned VM, but enforcement is still intentionally off until a separate promotion decision says otherwise.
 - The session must be followed immediately by governed post-session assimilation before any promotion decision.
 

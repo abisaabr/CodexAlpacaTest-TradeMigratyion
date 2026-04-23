@@ -56,6 +56,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines.append(f"- Readiness: `{payload['trusted_validation_readiness']}`")
     lines.append(f"- Runner branch: `{payload['runner_branch']}`")
     lines.append(f"- Runner commit: `{payload['runner_commit']}`")
+    lines.append(f"- Exclusive window status: `{payload['exclusive_window_status']}`")
     lines.append("")
     lines.append("## Gates")
     lines.append("")
@@ -93,6 +94,7 @@ def main() -> None:
     access = read_json(report_dir / "gcp_execution_access_readiness_status.json")
     validation_review = read_json(report_dir / "gcp_execution_vm_headless_validation_review_status.json")
     lease_dry_run_review = read_json(report_dir / "gcp_execution_vm_lease_dry_run_validation_review_status.json")
+    exclusive_window = read_json(report_dir / "gcp_execution_exclusive_window_status.json")
     runtime_security = read_json(report_dir / "gcp_runtime_security_status.json")
     secret_results = list(runtime_security.get("secret_results") or [])
     required_secret_results = [row for row in secret_results if bool(row.get("required"))]
@@ -100,6 +102,12 @@ def main() -> None:
 
     runner_branch = git_output(runner_repo_root, "rev-parse", "--abbrev-ref", "HEAD")
     runner_commit = git_output(runner_repo_root, "rev-parse", "HEAD")
+    exclusive_window_status = str(exclusive_window.get("exclusive_window_status") or "missing")
+    exclusive_window_gate_status = "operator_required"
+    if exclusive_window_status == "ready_for_launch":
+        exclusive_window_gate_status = "passed"
+    elif exclusive_window_status == "blocked":
+        exclusive_window_gate_status = "blocked"
 
     gate_checks = [
         {
@@ -124,19 +132,30 @@ def main() -> None:
         },
         {
             "name": "exclusive_execution_window_confirmed",
-            "status": "operator_required",
+            "status": exclusive_window_gate_status,
         },
-    ]
-
-    remaining_gates = [
-        "An operator still needs to confirm that no other machine is actively running the shared paper account before the VM session starts.",
-        "The shared execution lease is now proven in dry-run mode on the sanctioned VM, but enforcement is still intentionally off until a separate promotion decision says otherwise.",
-        "The session must be followed immediately by governed post-session assimilation before any promotion decision.",
     ]
 
     readiness = "awaiting_exclusive_execution_window"
     if any(gate["status"] == "blocked" for gate in gate_checks):
         readiness = "blocked"
+    elif all(gate["status"] == "passed" for gate in gate_checks):
+        readiness = "ready_for_manual_launch"
+
+    remaining_gates = [
+        "The shared execution lease is now proven in dry-run mode on the sanctioned VM, but enforcement is still intentionally off until a separate promotion decision says otherwise.",
+        "The session must be followed immediately by governed post-session assimilation before any promotion decision.",
+    ]
+    if exclusive_window_gate_status != "passed":
+        remaining_gates.insert(
+            0,
+            "An operator still needs to confirm an active exclusive execution window so no other machine is using the shared paper account when the VM session starts.",
+        )
+    else:
+        remaining_gates.insert(
+            0,
+            "The exclusive execution window is active; keep the trusted validation session bounded to `vm-execution-paper-01` and end it inside the attested window.",
+        )
 
     trusted_validation_session_command = (
         "cd /opt/codexalpaca/codexalpaca_repo && "
@@ -151,6 +170,7 @@ def main() -> None:
         "runner_branch": runner_branch,
         "runner_commit": runner_commit,
         "trusted_validation_readiness": readiness,
+        "exclusive_window_status": exclusive_window_status,
         "gate_checks": gate_checks,
         "latest_validation_run_id": validation_review.get("run_id"),
         "latest_validation_review_state": validation_review.get("review_state"),
