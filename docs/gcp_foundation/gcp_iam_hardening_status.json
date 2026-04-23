@@ -1,0 +1,189 @@
+{
+  "generated_at": "2026-04-23T15:06:35.659197-04:00",
+  "project_id": "codexalpaca",
+  "phase1_readiness": "change_window_required",
+  "project_owner_principals": [
+    "serviceAccount:ramzi-service-account@codexalpaca.iam.gserviceaccount.com",
+    "serviceAccount:sa-bootstrap-admin@codexalpaca.iam.gserviceaccount.com",
+    "user:abisaabr19@gmail.com"
+  ],
+  "roles_by_principal": {
+    "serviceAccount:ramzi-service-account@codexalpaca.iam.gserviceaccount.com": [
+      "roles/compute.osAdminLogin",
+      "roles/compute.viewer",
+      "roles/iap.tunnelResourceAccessor",
+      "roles/owner"
+    ],
+    "serviceAccount:sa-bootstrap-admin@codexalpaca.iam.gserviceaccount.com": [
+      "roles/owner"
+    ],
+    "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com": [
+      "roles/artifactregistry.reader",
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter",
+      "roles/secretmanager.secretAccessor"
+    ],
+    "serviceAccount:sa-research-batch@codexalpaca.iam.gserviceaccount.com": [
+      "roles/artifactregistry.reader",
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter"
+    ],
+    "serviceAccount:sa-orchestrator@codexalpaca.iam.gserviceaccount.com": [
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter"
+    ],
+    "serviceAccount:sa-ci-deployer@codexalpaca.iam.gserviceaccount.com": [
+      "roles/artifactregistry.writer"
+    ],
+    "serviceAccount:multi-ticker-vm@codexalpaca.iam.gserviceaccount.com": [
+      "roles/artifactregistry.reader",
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter",
+      "roles/secretmanager.secretAccessor",
+      "roles/storage.objectAdmin"
+    ],
+    "user:abisaabr19@gmail.com": [
+      "roles/compute.osAdminLogin",
+      "roles/owner"
+    ]
+  },
+  "recommendations": [
+    {
+      "principal": "serviceAccount:ramzi-service-account@codexalpaca.iam.gserviceaccount.com",
+      "current_roles": [
+        "roles/compute.osAdminLogin",
+        "roles/compute.viewer",
+        "roles/iap.tunnelResourceAccessor",
+        "roles/owner"
+      ],
+      "target_state": "operator_access_only",
+      "recommended_roles": [
+        "roles/iap.tunnelResourceAccessor",
+        "roles/compute.osAdminLogin",
+        "roles/compute.viewer"
+      ],
+      "must_remove": [
+        "roles/owner"
+      ],
+      "rationale": "This principal is acting like an operator identity and should not keep project-wide Owner in steady state."
+    },
+    {
+      "principal": "serviceAccount:sa-bootstrap-admin@codexalpaca.iam.gserviceaccount.com",
+      "current_roles": [
+        "roles/owner"
+      ],
+      "target_state": "break_glass_only",
+      "recommended_roles": [],
+      "must_remove": [
+        "roles/owner"
+      ],
+      "rationale": "Bootstrap power should not remain standing after foundation setup. Preserve only as a documented break-glass path if still needed."
+    },
+    {
+      "principal": "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "current_roles": [
+        "roles/artifactregistry.reader",
+        "roles/logging.logWriter",
+        "roles/monitoring.metricWriter",
+        "roles/secretmanager.secretAccessor"
+      ],
+      "target_state": "runtime_scoped",
+      "recommended_roles": [
+        "roles/artifactregistry.reader",
+        "roles/logging.logWriter",
+        "roles/monitoring.metricWriter",
+        "roles/secretmanager.secretAccessor"
+      ],
+      "must_remove": [],
+      "rationale": "This is the sanctioned runtime identity and should remain narrowly scoped to execution runtime needs."
+    },
+    {
+      "principal": "serviceAccount:sa-research-batch@codexalpaca.iam.gserviceaccount.com",
+      "current_roles": [
+        "roles/artifactregistry.reader",
+        "roles/logging.logWriter",
+        "roles/monitoring.metricWriter"
+      ],
+      "target_state": "research_scoped",
+      "recommended_roles": [
+        "roles/artifactregistry.reader",
+        "roles/logging.logWriter",
+        "roles/monitoring.metricWriter"
+      ],
+      "must_remove": [],
+      "rationale": "This is the sanctioned research runtime identity and should stay limited to research execution needs."
+    },
+    {
+      "principal": "serviceAccount:sa-orchestrator@codexalpaca.iam.gserviceaccount.com",
+      "current_roles": [
+        "roles/logging.logWriter",
+        "roles/monitoring.metricWriter"
+      ],
+      "target_state": "orchestration_scoped",
+      "recommended_roles": [
+        "roles/logging.logWriter",
+        "roles/monitoring.metricWriter"
+      ],
+      "must_remove": [],
+      "rationale": "This identity should grow only through codified Workflows/Scheduler/Batch orchestration, not bootstrap privilege."
+    },
+    {
+      "principal": "serviceAccount:sa-ci-deployer@codexalpaca.iam.gserviceaccount.com",
+      "current_roles": [
+        "roles/artifactregistry.writer"
+      ],
+      "target_state": "delivery_scoped",
+      "recommended_roles": [
+        "roles/artifactregistry.writer"
+      ],
+      "must_remove": [],
+      "rationale": "This identity is appropriately narrow if Cloud Build or formal CI deployment becomes part of the sanctioned delivery path."
+    },
+    {
+      "principal": "serviceAccount:multi-ticker-vm@codexalpaca.iam.gserviceaccount.com",
+      "current_roles": [
+        "roles/artifactregistry.reader",
+        "roles/logging.logWriter",
+        "roles/monitoring.metricWriter",
+        "roles/secretmanager.secretAccessor",
+        "roles/storage.objectAdmin"
+      ],
+      "target_state": "quarantined_until_decision",
+      "recommended_roles": [],
+      "must_remove": [],
+      "rationale": "This identity belongs to the unmanaged parallel runtime and should not gain any additional privilege until that path is formally adopted or removed."
+    },
+    {
+      "principal": "user:abisaabr19@gmail.com",
+      "current_roles": [
+        "roles/compute.osAdminLogin",
+        "roles/owner"
+      ],
+      "target_state": "human_admin_review",
+      "recommended_roles": [
+        "roles/compute.osAdminLogin"
+      ],
+      "must_remove": [],
+      "rationale": "Human admin posture should be reviewed separately from runtime identities. Project Owner on a human can remain temporarily during bootstrap, but it should still be intentionally reviewed."
+    }
+  ],
+  "safe_cutover_order": [
+    "Take and store a fresh IAM policy snapshot before any mutation.",
+    "Confirm no bootstrap work is still in flight and no operator is depending on service-account Owner access.",
+    "Remove roles/owner from ramzi-service-account after confirming operator access is intact through IAP, OS Login, and serviceAccountUser on sanctioned runtime identities.",
+    "Remove roles/owner from sa-bootstrap-admin or convert it into an explicit break-glass identity with no standing use.",
+    "Re-run the IAM hardening packet and the GCP project-state audit immediately after the role changes.",
+    "Do not touch runtime-scoped service-account roles until the sanctioned execution session and orchestration plan are stable."
+  ],
+  "blockers": [
+    "ramzi-service-account still has project-level Owner.",
+    "sa-bootstrap-admin still has project-level Owner.",
+    "The quarantined multi-ticker-vm identity is still live in the project and should not be expanded before drift resolution."
+  ],
+  "hard_rules": [
+    "Do not remove Owner from service accounts during an unknown bootstrap or deployment window.",
+    "Do not grant new broad roles to quarantined identities.",
+    "Do not widen runtime identities to solve operator-access problems.",
+    "Re-run the project-state audit after every IAM hardening step."
+  ]
+}
