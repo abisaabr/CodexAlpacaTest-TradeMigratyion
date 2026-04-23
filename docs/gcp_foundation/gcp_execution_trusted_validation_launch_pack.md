@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T16:21:04.513747-04:00`
+- Generated at: `2026-04-23T16:27:14.841061-04:00`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
 - Launch pack state: `awaiting_window_arm`
@@ -10,6 +10,7 @@
 - Runner commit: `a6cf50aa424a51440f5744ec0c634150e82fc7c0`
 - Exclusive window state: `awaiting_operator_attestation`
 - Exclusive window status: `awaiting_operator_confirmation`
+- Lease runtime validation: `validated_not_enforced`
 
 ## Commands
 
@@ -28,7 +29,7 @@ cd /opt/codexalpaca/codexalpaca_repo && ./.venv/bin/python scripts/run_multi_tic
 ### Post-Session Assimilation
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\cleanroom\code\qqq_options_30d_cleanroom\launch_post_session_assimilation.ps1" -ControlPlaneRoot "C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion" -RunnerRepoRoot "C:\Users\rabisaab\OneDrive\CodexAlpaca\downloads_remaining_20260417\folders\codexalpaca_repo"
+powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Users\abisa\Downloads\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\cleanroom\code\qqq_options_30d_cleanroom\launch_post_session_assimilation.ps1" -ControlPlaneRoot "C:\Users\abisa\Downloads\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane" -RunnerRepoRoot "C:\Users\abisa\Downloads\codexalpaca_repo_gcp_lease_lane_refreshed"
 ```
 
 ## Operator Steps
@@ -50,10 +51,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Users\rabisaab\Downloads
 
 ## Review Targets
 
-- `C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\docs\morning_brief\morning_operator_brief.md`
-- `C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\docs\execution_calibration\execution_calibration_handoff.md`
-- `C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\docs\tournament_unlocks\tournament_unlock_handoff.md`
-- `C:\Users\rabisaab\Downloads\CodexAlpacaTest-TradeMigratyion\docs\execution_evidence\execution_evidence_contract_handoff.md`
+- `C:\Users\abisa\Downloads\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\docs\morning_brief\morning_operator_brief.md`
+- `C:\Users\abisa\Downloads\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\docs\execution_calibration\execution_calibration_handoff.md`
+- `C:\Users\abisa\Downloads\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\docs\tournament_unlocks\tournament_unlock_handoff.md`
+- `C:\Users\abisa\Downloads\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\docs\execution_evidence\execution_evidence_contract_handoff.md`
 
 ## Guardrails
 

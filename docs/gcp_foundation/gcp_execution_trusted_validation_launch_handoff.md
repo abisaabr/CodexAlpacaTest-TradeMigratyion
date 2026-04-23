@@ -9,5 +9,5 @@
 ## Operator Rule
 
 - This pack prepares the first sanctioned trusted validation session but does not auto-start it.
-- Do not use this pack unless the exclusive-window packet says `confirmed_active_window`.
+- Do not use this pack unless the exclusive-window packet says `confirmed_active_window` and this packet says `ready_to_launch`.
 - Run post-session assimilation immediately after the broker-facing session ends.

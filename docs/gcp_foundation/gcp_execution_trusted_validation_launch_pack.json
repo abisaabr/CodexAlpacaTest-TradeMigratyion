@@ -1,17 +1,19 @@
 {
-  "generated_at": "2026-04-23T16:21:04.513747-04:00",
+  "generated_at": "2026-04-23T16:27:14.841061-04:00",
   "project_id": "codexalpaca",
   "vm_name": "vm-execution-paper-01",
   "runner_branch": "codex/qqq-paper-portfolio",
   "runner_commit": "a6cf50aa424a51440f5744ec0c634150e82fc7c0",
-  "runner_repo_root": "C:\\Users\\rabisaab\\OneDrive\\CodexAlpaca\\downloads_remaining_20260417\\folders\\codexalpaca_repo",
+  "runner_repo_root": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed",
   "trusted_validation_readiness": "awaiting_exclusive_execution_window",
   "exclusive_window_state": "awaiting_operator_attestation",
   "exclusive_window_status": "awaiting_operator_confirmation",
+  "latest_lease_runtime_validation_status": "validated_not_enforced",
+  "latest_lease_validation_run_id": "vm-execution-paper-01-20260423-160102",
   "launch_pack_state": "awaiting_window_arm",
   "operator_ssh_command": "gcloud compute ssh vm-execution-paper-01 --project codexalpaca --zone us-east1-b --tunnel-through-iap",
   "vm_session_command": "cd /opt/codexalpaca/codexalpaca_repo && ./.venv/bin/python scripts/run_multi_ticker_portfolio_paper_trader.py --portfolio-config config/multi_ticker_paper_portfolio.yaml --submit-paper-orders",
-  "post_session_assimilation_command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\cleanroom\\code\\qqq_options_30d_cleanroom\\launch_post_session_assimilation.ps1\" -ControlPlaneRoot \"C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\" -RunnerRepoRoot \"C:\\Users\\rabisaab\\OneDrive\\CodexAlpaca\\downloads_remaining_20260417\\folders\\codexalpaca_repo\"",
+  "post_session_assimilation_command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\cleanroom\\code\\qqq_options_30d_cleanroom\\launch_post_session_assimilation.ps1\" -ControlPlaneRoot \"C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\" -RunnerRepoRoot \"C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed\"",
   "operator_steps": [
     "Do not start the session yet; this pack is in preparation mode until the exclusive execution window is actively confirmed.",
     "Confirm the exclusive-window packet says `confirmed_active_window` and the trusted-validation readiness packet says `ready_for_manual_launch`.",
@@ -28,10 +30,10 @@
     "completed trade table with broker/local cashflow comparison"
   ],
   "review_targets": [
-    "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\morning_brief\\morning_operator_brief.md",
-    "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_calibration\\execution_calibration_handoff.md",
-    "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_handoff.md",
-    "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_evidence\\execution_evidence_contract_handoff.md"
+    "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\morning_brief\\morning_operator_brief.md",
+    "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\execution_calibration\\execution_calibration_handoff.md",
+    "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\tournament_unlocks\\tournament_unlock_handoff.md",
+    "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\execution_evidence\\execution_evidence_contract_handoff.md"
   ],
   "guardrails": [
     "Do not auto-start trading from this packet.",
