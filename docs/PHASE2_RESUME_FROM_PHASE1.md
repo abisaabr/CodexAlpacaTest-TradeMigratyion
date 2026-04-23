@@ -62,6 +62,8 @@ When `-Execute` is used, the resume entrypoint will:
 That watcher writes:
 - `program/phase2_resume_followon_status.json`
 - `program/phase2_resume_followon.log`
+- refreshed `program/program_status.json` as the resumed follow-on advances through validation, review, replacement planning, and morning handoff
+- refreshed `cycle/nightly_operator_cycle_status.json` and `active_program_report/` so the run root stays truthful during the recovered path
 
 ## Safety Rules
 

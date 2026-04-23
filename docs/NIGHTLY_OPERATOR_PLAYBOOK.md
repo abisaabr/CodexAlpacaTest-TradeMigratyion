@@ -232,6 +232,7 @@ Tasks:
 - rebuild the Phase 2 launch pack from saved Phase 1 artifacts
 - relaunch Phase 2 without rerunning discovery
 - arm the resumed follow-on watcher so validation, hardening review, replacement planning, and morning handoff still happen
+- keep `program/program_status.json`, `cycle/nightly_operator_cycle_status.json`, and `active_program_report/` aligned with the resumed follow-on stages so the recovered run stays operator-truthful
 
 Go / no-go:
 - do not use this path if Phase 1 artifacts are incomplete or untrusted

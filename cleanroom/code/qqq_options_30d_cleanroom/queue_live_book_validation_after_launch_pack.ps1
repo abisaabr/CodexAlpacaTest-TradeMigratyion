@@ -20,18 +20,23 @@ if ([string]::IsNullOrWhiteSpace($ProgramRoot)) {
 }
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+$repoRoot = [System.IO.Path]::GetFullPath((Join-Path $scriptRoot "..\..\.."))
 $packFile = [System.IO.Path]::GetFullPath($PackPath)
 $packRoot = Split-Path -Parent $packFile
 $launchStatusPath = Join-Path $packRoot "launch_status.json"
 $programRootPath = [System.IO.Path]::GetFullPath($ProgramRoot)
+$cycleRootPath = Split-Path -Parent $programRootPath
 
 $validatorPath = Join-Path $scriptRoot "validate_program_live_book.py"
 $hardeningBuilderPath = Join-Path $scriptRoot "build_live_book_hardening_review.py"
 $replacementBuilderPath = Join-Path $scriptRoot "build_live_book_replacement_plan.py"
 $morningHandoffBuilderPath = Join-Path $scriptRoot "build_live_book_morning_handoff.py"
 $runRegistryReporterPath = Join-Path $scriptRoot "build_run_registry_report.py"
-$defaultOutputRoot = Join-Path $scriptRoot "output"
+$activeProgramReporterPath = Join-Path $scriptRoot "build_active_program_report.py"
+$defaultOutputRoot = Join-Path $repoRoot "output"
 $defaultRegistryPath = Join-Path $defaultOutputRoot "run_registry.jsonl"
+$programStatusPath = Join-Path $programRootPath "program_status.json"
+$cycleStatusPath = Join-Path $cycleRootPath "nightly_operator_cycle_status.json"
 
 if ([string]::IsNullOrWhiteSpace($ValidationOutputDir)) {
     $validationRoot = Join-Path $programRootPath "live_book_validation"
@@ -52,6 +57,7 @@ $morningHandoffRoot = Join-Path $reviewRoot "morning_handoff"
 $statusPath = Join-Path $programRootPath "phase2_resume_followon_status.json"
 $logPath = Join-Path $programRootPath "phase2_resume_followon.log"
 $runRegistryReportDir = Join-Path $programRootPath "phase2_resume_run_registry_report"
+$activeProgramReportDir = Join-Path $cycleRootPath "active_program_report"
 $deadline = (Get-Date).AddMinutes($TimeoutMinutes)
 
 New-Item -ItemType Directory -Force -Path $validationRoot | Out-Null
@@ -59,6 +65,7 @@ New-Item -ItemType Directory -Force -Path $reviewRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $replacementPlanRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $morningHandoffRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $runRegistryReportDir | Out-Null
+New-Item -ItemType Directory -Force -Path $activeProgramReportDir | Out-Null
 
 if ([string]::IsNullOrWhiteSpace($PaperRunnerGatePath)) {
     $PaperRunnerGatePath = Join-Path $defaultOutputRoot "paper_runner_gate.json"
@@ -85,6 +92,86 @@ function Write-Log {
     Add-Content -Path $logPath -Value "[$timestamp] $Message"
 }
 
+function Ensure-Property {
+    param(
+        [object]$Target,
+        [string]$Name,
+        [object]$Value
+    )
+    if ($Target.PSObject.Properties.Name -contains $Name) {
+        $Target.$Name = $Value
+    }
+    else {
+        $Target | Add-Member -NotePropertyName $Name -NotePropertyValue $Value
+    }
+}
+
+function Refresh-ActiveProgramReport {
+    if (-not (Test-Path $activeProgramReporterPath)) {
+        return
+    }
+    try {
+        & python $activeProgramReporterPath --program-root $programRootPath --report-dir $activeProgramReportDir | Out-Null
+    }
+    catch {
+        Write-Log "warning: failed to refresh active program report: $($_.Exception.Message)"
+    }
+}
+
+function Update-UpstreamStatus {
+    param(
+        [string]$FollowonPhase,
+        [string]$Message
+    )
+
+    $timestamp = (Get-Date).ToString("o")
+    $upstreamPhase =
+        switch ($FollowonPhase) {
+            "validating" { "validating" }
+            "reviewing" { "reviewing" }
+            "planning_replacement" { "planning_replacement" }
+            "building_morning_handoff" { "building_morning_handoff" }
+            "completed" { "completed" }
+            "failed" { "failed" }
+            default { "phase2_resume_running" }
+        }
+
+    $repairContext = [pscustomobject]@{
+        resumed_from_phase1_artifacts = $true
+        launch_status_path = $launchStatusPath
+        phase2_resume_followon_status_path = $statusPath
+    }
+
+    if (Test-Path $programStatusPath) {
+        $programStatus = Get-Content -Path $programStatusPath -Raw | ConvertFrom-Json
+    }
+    else {
+        $programStatus = [pscustomobject]@{}
+    }
+    Ensure-Property -Target $programStatus -Name "phase" -Value $upstreamPhase
+    Ensure-Property -Target $programStatus -Name "updated_at" -Value $timestamp
+    Ensure-Property -Target $programStatus -Name "message" -Value $Message
+    Ensure-Property -Target $programStatus -Name "phase2_resume_followon_status_path" -Value $statusPath
+    Ensure-Property -Target $programStatus -Name "repair_context" -Value $repairContext
+    ($programStatus | ConvertTo-Json -Depth 8) | Set-Content -Path $programStatusPath
+
+    if (Test-Path $cycleStatusPath) {
+        $cycleStatus = Get-Content -Path $cycleStatusPath -Raw | ConvertFrom-Json
+    }
+    else {
+        $cycleStatus = [pscustomobject]@{}
+    }
+    Ensure-Property -Target $cycleStatus -Name "phase" -Value $upstreamPhase
+    Ensure-Property -Target $cycleStatus -Name "updated_at" -Value $timestamp
+    Ensure-Property -Target $cycleStatus -Name "message" -Value $Message
+    Ensure-Property -Target $cycleStatus -Name "program_status_path" -Value $programStatusPath
+    Ensure-Property -Target $cycleStatus -Name "phase2_resume_followon_status_path" -Value $statusPath
+    Ensure-Property -Target $cycleStatus -Name "recovered_from_program_failure" -Value $true
+    ($cycleStatus | ConvertTo-Json -Depth 8) | Set-Content -Path $cycleStatusPath
+
+    Refresh-ActiveProgramReport
+}
+
 function Write-Status {
     param(
         [string]$Phase,
@@ -104,6 +191,7 @@ function Write-Status {
         run_registry_report_dir = $runRegistryReportDir
     }
     $payload | ConvertTo-Json -Depth 6 | Set-Content -Path $statusPath
+    Update-UpstreamStatus -FollowonPhase $Phase -Message $Message
 }
 
 function Write-PaperRunnerGate {
@@ -151,7 +239,12 @@ function Invoke-RunRegistryReport {
             $reportArgs += @("--manifest-root", $root)
         }
     }
-    & python @reportArgs | Out-Null
+    try {
+        & python @reportArgs | Out-Null
+    }
+    catch {
+        Write-Log "warning: failed to refresh run registry report: $($_.Exception.Message)"
+    }
 }
 
 function Get-LaunchPayload {
