@@ -431,7 +431,45 @@ Hard rules:
 - do not change strategy selection or risk policy in this step
 ```
 
-## 15. Refresh Post-Session Reconciliation And Execution Policy
+## 15. Bootstrap The GCP Execution Validation VM
+
+```text
+Open:
+
+1. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs/GCP_OPERATING_BLUEPRINT.md
+- docs/GCP_MIGRATION_PLAN.md
+- docs/GCP_EXECUTION_CUTIN.md
+- docs/gcp_foundation/gcp_foundation_bootstrap_status.md
+- docs/gcp_foundation/gcp_runtime_security_status.md
+
+Act as the GCP execution cut-in steward for project `codexalpaca`.
+
+Your job is to:
+- reserve the execution static IP
+- create the IAP-only SSH firewall rule for the execution host
+- create the validation-only execution VM
+- leave the VM in validation-only posture with no automatic trading start
+
+Then inspect:
+- `docs/gcp_foundation/gcp_execution_validation_vm_status.md`
+
+Report:
+- the reserved execution IP
+- whether the VM is running
+- what service account and machine type the VM uses
+- what remains before the VM can safely host the paper runner
+
+Hard rules:
+- do not start trading
+- do not modify the live manifest
+- do not change strategy selection or risk policy in this step
+- do not treat VM creation as cutover
+```
+
+## 16. Refresh Post-Session Reconciliation And Execution Policy
 
 ```text
 Open these sibling folders and use them together:
@@ -479,7 +517,7 @@ Hard rules:
 - do not commit raw trade logs or raw session exhaust
 ```
 
-## 16. Resume A Failed Phase 2 Program From Completed Phase 1
+## 17. Resume A Failed Phase 2 Program From Completed Phase 1
 
 ```text
 Open these sibling folders and use them together:
@@ -523,7 +561,7 @@ Hard rules:
 - do not start trading
 ```
 
-## 17. Review Tonight's Overnight Mission
+## 18. Review Tonight's Overnight Mission
 
 ```text
 Open these sibling folders and use them together:
@@ -551,7 +589,7 @@ Then act as the overnight execution steward for the new machine.
 3. Do not modify the live manifest, do not change risk policy, and do not start trading in this step.
 ```
 
-## 18. Check GitHub Updates Before Open Or Nightly Work
+## 19. Check GitHub Updates Before Open Or Nightly Work
 
 ```text
 Open these sibling folders and use them together:
@@ -589,7 +627,7 @@ Hard rules:
 - do not change strategy selection or risk policy in this step
 ```
 
-## 19. Report Which Tournament Profiles Are Actually Unlocked
+## 20. Report Which Tournament Profiles Are Actually Unlocked
 
 ```text
 Open these sibling folders and use them together:
@@ -616,7 +654,7 @@ Then act as the Tournament Policy Steward for the new machine.
 3. Do not start trading, do not modify the live manifest, and do not change strategy or risk policy in this step.
 ```
 
-## 20. Report What Unlocks The Next Tournament Tier
+## 21. Report What Unlocks The Next Tournament Tier
 
 ```text
 Open these sibling folders and use them together:
@@ -646,7 +684,7 @@ Then act as the Tournament Unlock Steward for the new machine.
 3. Do not start trading, do not modify the live manifest, and do not change strategy or risk policy in this step.
 ```
 
-## 21. Run The Current Execution Evidence Mission
+## 22. Run The Current Execution Evidence Mission
 
 ```text
 Open these sibling folders and use them together:
@@ -677,7 +715,7 @@ Then act as the execution-plane mission operator for the new machine.
 4. Do not modify the live manifest, do not change strategy or risk policy, and do not start trading in this step.
 ```
 
-## 22. Run Governed Post-Session Assimilation
+## 23. Run Governed Post-Session Assimilation
 
 ```text
 Open these sibling folders and use them together:

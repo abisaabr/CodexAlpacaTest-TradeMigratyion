@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-04-23T13:54:55.459182-04:00",
+  "project_id": "codexalpaca",
+  "bootstrap_service_account": "sa-bootstrap-admin@codexalpaca.iam.gserviceaccount.com",
+  "region": "us-east1",
+  "zone": "us-east1-b",
+  "resource_results": [
+    {
+      "resource": "static_ip",
+      "name": "ip-execution-paper-us-east1",
+      "action": "created",
+      "address": "34.139.193.220",
+      "status": "RESERVED",
+      "region": "us-east1"
+    },
+    {
+      "resource": "firewall_rule",
+      "name": "fw-allow-iap-ssh-execution",
+      "action": "created",
+      "network": "vpc-codex-core",
+      "source_ranges": "35.235.240.0/20"
+    },
+    {
+      "resource": "instance",
+      "name": "vm-execution-paper-01",
+      "action": "created",
+      "zone": "us-east1-b",
+      "status": "RUNNING",
+      "machine_type": "e2-standard-4",
+      "service_account": "sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "external_ip": "34.139.193.220"
+    }
+  ],
+  "phase_plan": [
+    {
+      "phase": "1",
+      "summary": "Reserve the execution static IP and keep it attached to the validation VM."
+    },
+    {
+      "phase": "2",
+      "summary": "Keep the VM validation-only with OS Login, Shielded VM, and IAP-only SSH."
+    },
+    {
+      "phase": "3",
+      "summary": "Teach the VM bootstrap to pull runtime credentials from Secret Manager instead of workstation .env."
+    },
+    {
+      "phase": "4",
+      "summary": "Run a trusted validation session and require a full runner evidence packet before cutover."
+    },
+    {
+      "phase": "5",
+      "summary": "Promote the VM to canonical execution only after the governed readiness gate is clean."
+    }
+  ],
+  "next_actions": [
+    "Teach the execution VM bootstrap to restore code and pull runtime secrets from Secret Manager.",
+    "Grant operator access with OS Login / IAP before interactive administration is needed.",
+    "Run validation-only checks on the VM and confirm outbound traffic uses the reserved static IP.",
+    "Keep the current workstation runner available until the VM clears the full trusted-session gate."
+  ]
+}
