@@ -1,0 +1,39 @@
+{
+  "generated_at": "2026-04-23T15:41:10.137329-04:00",
+  "project_id": "codexalpaca",
+  "runtime_wiring_phase": "foundation-phase16-lease-runtime-wiring",
+  "runtime_wiring_status": "optional_backend_wired_not_enforced",
+  "runner_repo": {
+    "path": "C:\\Users\\rabisaab\\OneDrive\\CodexAlpaca\\downloads_remaining_20260417\\folders\\codexalpaca_repo",
+    "branch": "codex/qqq-paper-portfolio",
+    "commit": "4d15f6ae872a4cdb4a2c616c44fd221e7049f931",
+    "short_commit": "4d15f6ae872a",
+    "dirty": false
+  },
+  "wiring_findings": {
+    "gcs_store_present": true,
+    "config_backend_switch_present": true,
+    "config_gcs_uri_present": true,
+    "env_backend_override_present": true,
+    "env_gcs_uri_override_present": true,
+    "trader_optional_wiring_present": true,
+    "default_file_lease_still_present": true,
+    "health_check_still_file_lease_based": true,
+    "standby_check_still_file_lease_based": true,
+    "gcp_extra_declared": true
+  },
+  "validation": {
+    "full_suite": "123 passed",
+    "full_suite_command": "python -m pytest -q"
+  },
+  "guardrails": [
+    "The default trader path still remains on the file lease unless ownership.lease_backend is explicitly switched.",
+    "The GCS lease backend still depends on explicit config and the optional 'gcp' dependency path.",
+    "Health-check and standby failover scripts remain aligned to the file-lease path until a separate sanctioned migration says otherwise.",
+    "This wiring does not by itself clear the project for broker-facing cloud lease enforcement."
+  ],
+  "next_step": {
+    "name": "vm_dry_run_gcs_lease_validation",
+    "description": "Install the runner with the gcp extra on vm-execution-paper-01, point ownership at the GCS lease object under explicit non-default config, and validate acquire/renew/release behavior without starting a broker-facing session."
+  }
+}
