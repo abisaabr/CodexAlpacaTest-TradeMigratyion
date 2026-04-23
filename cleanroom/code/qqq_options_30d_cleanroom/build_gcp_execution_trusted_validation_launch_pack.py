@@ -13,9 +13,6 @@ DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "gcp_foundation"
 DEFAULT_PROJECT_ID = "codexalpaca"
 DEFAULT_VM_NAME = "vm-execution-paper-01"
 DEFAULT_ZONE = "us-east1-b"
-DEFAULT_RUNNER_REPO_ROOT = REPO_ROOT.parent / "codexalpaca_repo"
-
-
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Build the manual launch pack for the first sanctioned GCP trusted validation session."
@@ -24,7 +21,6 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--vm-name", default=DEFAULT_VM_NAME)
     parser.add_argument("--zone", default=DEFAULT_ZONE)
     parser.add_argument("--report-dir", default=str(DEFAULT_REPORT_DIR))
-    parser.add_argument("--runner-repo-root", default=str(DEFAULT_RUNNER_REPO_ROOT))
     return parser
 
 
@@ -44,7 +40,6 @@ def build_payload(
     project_id: str,
     vm_name: str,
     zone: str,
-    runner_repo_root: Path,
     trusted_status: dict[str, Any],
     exclusive_window: dict[str, Any],
 ) -> dict[str, Any]:
@@ -58,8 +53,6 @@ def build_payload(
     elif readiness == "awaiting_exclusive_execution_window":
         launch_pack_state = "awaiting_window_arm"
 
-    control_plane_root = str(REPO_ROOT)
-    launch_script_path = REPO_ROOT / "cleanroom" / "code" / "qqq_options_30d_cleanroom" / "launch_post_session_assimilation.ps1"
     operator_ssh_command = (
         f"gcloud compute ssh {vm_name} --project {project_id} --zone {zone} --tunnel-through-iap"
     )
@@ -68,12 +61,13 @@ def build_payload(
         or "cd /opt/codexalpaca/codexalpaca_repo && ./.venv/bin/python scripts/run_multi_ticker_portfolio_paper_trader.py --portfolio-config config/multi_ticker_paper_portfolio.yaml --submit-paper-orders"
     )
     post_session_assimilation_command = (
-        f'powershell -NoProfile -ExecutionPolicy Bypass -File "{launch_script_path}" '
-        f'-ControlPlaneRoot "{control_plane_root}" -RunnerRepoRoot "{runner_repo_root}"'
+        'powershell -NoProfile -ExecutionPolicy Bypass -File '
+        '"<control-plane-root>\\cleanroom\\code\\qqq_options_30d_cleanroom\\launch_post_session_assimilation.ps1" '
+        '-ControlPlaneRoot "<control-plane-root>" -RunnerRepoRoot "<runner-repo-root>"'
     )
 
     operator_steps = [
-        "Confirm the exclusive-window packet says `confirmed_active_window` and the trusted-validation readiness packet says `ready_for_manual_launch`.",
+        "Confirm the exclusive-window packet says `ready_for_launch` and the trusted-validation readiness packet says `ready_for_manual_launch`.",
         "SSH to `vm-execution-paper-01` through IAP.",
         "Run the trusted validation session command on the VM without changing strategy selection or risk policy.",
         "When the session ends, run governed post-session assimilation from the control-plane machine.",
@@ -91,7 +85,8 @@ def build_payload(
         "vm_name": vm_name,
         "runner_branch": trusted_status.get("runner_branch"),
         "runner_commit": trusted_status.get("runner_commit"),
-        "runner_repo_root": str(runner_repo_root),
+        "runner_repo_root_hint": "<runner-repo-root>",
+        "control_plane_root_hint": "<control-plane-root>",
         "trusted_validation_readiness": readiness,
         "exclusive_window_state": exclusive_window_state,
         "exclusive_window_status": exclusive_window_status,
@@ -104,10 +99,10 @@ def build_payload(
         "operator_steps": operator_steps,
         "required_evidence": list(trusted_status.get("required_evidence") or []),
         "review_targets": [
-            str(REPO_ROOT / "docs" / "morning_brief" / "morning_operator_brief.md"),
-            str(REPO_ROOT / "docs" / "execution_calibration" / "execution_calibration_handoff.md"),
-            str(REPO_ROOT / "docs" / "tournament_unlocks" / "tournament_unlock_handoff.md"),
-            str(REPO_ROOT / "docs" / "execution_evidence" / "execution_evidence_contract_handoff.md"),
+            "docs/morning_brief/morning_operator_brief.md",
+            "docs/execution_calibration/execution_calibration_handoff.md",
+            "docs/tournament_unlocks/tournament_unlock_handoff.md",
+            "docs/execution_evidence/execution_evidence_contract_handoff.md",
         ],
         "guardrails": [
             "Do not auto-start trading from this packet.",
@@ -199,7 +194,6 @@ def main() -> None:
     args = build_parser().parse_args()
     report_dir = Path(args.report_dir).resolve()
     report_dir.mkdir(parents=True, exist_ok=True)
-    runner_repo_root = Path(args.runner_repo_root).resolve()
 
     trusted_status = read_json(report_dir / "gcp_execution_trusted_validation_session_status.json")
     exclusive_window = read_json(report_dir / "gcp_execution_exclusive_window_status.json")
@@ -207,7 +201,6 @@ def main() -> None:
         project_id=args.project_id,
         vm_name=args.vm_name,
         zone=args.zone,
-        runner_repo_root=runner_repo_root,
         trusted_status=trusted_status,
         exclusive_window=exclusive_window,
     )

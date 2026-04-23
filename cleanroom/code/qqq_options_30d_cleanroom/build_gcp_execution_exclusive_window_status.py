@@ -150,7 +150,7 @@ def build_payload(
     project_id: str,
     vm_name: str,
     exception_state: str,
-    attestation_json_path: Path,
+    attestation_json_path: str,
     attestation: dict[str, Any],
     now: datetime,
     template_window_minutes: int,
@@ -283,7 +283,7 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         "",
         "## Operator Rule",
         "",
-        "- Do not start the first trusted validation paper session unless this packet says `confirmed_active_window`.",
+        "- Do not start the first trusted validation paper session unless this packet says `ready_for_launch`.",
         "- Keep the window bounded to a single sanctioned writer on `vm-execution-paper-01`.",
         "- Run governed post-session assimilation immediately after the session ends.",
     ]
@@ -297,12 +297,13 @@ def main() -> None:
 
     exception_status = read_json(report_dir / "gcp_parallel_runtime_exception_status.json")
     attestation_json_path = report_dir / "gcp_execution_exclusive_window_attestation.json"
+    attestation_relpath = "docs/gcp_foundation/gcp_execution_exclusive_window_attestation.json"
     attestation = read_json(attestation_json_path)
     payload = build_payload(
         project_id=args.project_id,
         vm_name=args.vm_name,
         exception_state=str(exception_status.get("exception_state") or "unknown"),
-        attestation_json_path=attestation_json_path,
+        attestation_json_path=attestation_relpath,
         attestation=attestation,
         now=datetime.now().astimezone().replace(microsecond=0),
         template_window_minutes=args.template_window_minutes,

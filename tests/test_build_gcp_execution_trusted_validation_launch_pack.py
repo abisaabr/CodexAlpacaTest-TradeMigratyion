@@ -26,7 +26,6 @@ def test_build_payload_awaiting_window_arm_when_not_yet_confirmed() -> None:
         project_id="codexalpaca",
         vm_name="vm-execution-paper-01",
         zone="us-east1-b",
-        runner_repo_root=Path(r"C:\runner"),
         trusted_status={
             "trusted_validation_readiness": "awaiting_exclusive_execution_window",
             "runner_branch": "codex/qqq-paper-portfolio",
@@ -41,7 +40,16 @@ def test_build_payload_awaiting_window_arm_when_not_yet_confirmed() -> None:
     )
 
     assert payload["launch_pack_state"] == "awaiting_window_arm"
+    assert payload["runner_repo_root_hint"] == "<runner-repo-root>"
+    assert payload["control_plane_root_hint"] == "<control-plane-root>"
     assert payload["operator_steps"][0].startswith("Do not start the session yet;")
+    assert "<control-plane-root>" in payload["post_session_assimilation_command"]
+    assert payload["review_targets"] == [
+        "docs/morning_brief/morning_operator_brief.md",
+        "docs/execution_calibration/execution_calibration_handoff.md",
+        "docs/tournament_unlocks/tournament_unlock_handoff.md",
+        "docs/execution_evidence/execution_evidence_contract_handoff.md",
+    ]
 
 
 def test_build_payload_ready_to_launch_when_window_and_session_are_green() -> None:
@@ -49,7 +57,6 @@ def test_build_payload_ready_to_launch_when_window_and_session_are_green() -> No
         project_id="codexalpaca",
         vm_name="vm-execution-paper-01",
         zone="us-east1-b",
-        runner_repo_root=Path(r"C:\runner"),
         trusted_status={
             "trusted_validation_readiness": "ready_for_manual_launch",
             "runner_branch": "codex/qqq-paper-portfolio",

@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T16:30:32.357099-04:00`
+- Generated at: `2026-04-23T17:23:01.132528-04:00`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
 - Launch pack state: `awaiting_window_arm`
@@ -29,13 +29,13 @@ cd /opt/codexalpaca/codexalpaca_repo && ./.venv/bin/python scripts/run_multi_tic
 ### Post-Session Assimilation
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Users\abisa\Downloads\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\cleanroom\code\qqq_options_30d_cleanroom\launch_post_session_assimilation.ps1" -ControlPlaneRoot "C:\Users\abisa\Downloads\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane" -RunnerRepoRoot "C:\Users\abisa\Downloads\codexalpaca_repo_gcp_lease_lane_refreshed"
+powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanroom\code\qqq_options_30d_cleanroom\launch_post_session_assimilation.ps1" -ControlPlaneRoot "<control-plane-root>" -RunnerRepoRoot "<runner-repo-root>"
 ```
 
 ## Operator Steps
 
 - Do not start the session yet; this pack is in preparation mode until the exclusive execution window is actively confirmed.
-- Confirm the exclusive-window packet says `confirmed_active_window` and the trusted-validation readiness packet says `ready_for_manual_launch`.
+- Confirm the exclusive-window packet says `ready_for_launch` and the trusted-validation readiness packet says `ready_for_manual_launch`.
 - SSH to `vm-execution-paper-01` through IAP.
 - Run the trusted validation session command on the VM without changing strategy selection or risk policy.
 - When the session ends, run governed post-session assimilation from the control-plane machine.
@@ -51,10 +51,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Users\abisa\Downloads\Co
 
 ## Review Targets
 
-- `C:\Users\abisa\Downloads\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\docs\morning_brief\morning_operator_brief.md`
-- `C:\Users\abisa\Downloads\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\docs\execution_calibration\execution_calibration_handoff.md`
-- `C:\Users\abisa\Downloads\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\docs\tournament_unlocks\tournament_unlock_handoff.md`
-- `C:\Users\abisa\Downloads\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\docs\execution_evidence\execution_evidence_contract_handoff.md`
+- `docs/morning_brief/morning_operator_brief.md`
+- `docs/execution_calibration/execution_calibration_handoff.md`
+- `docs/tournament_unlocks/tournament_unlock_handoff.md`
+- `docs/execution_evidence/execution_evidence_contract_handoff.md`
 
 ## Guardrails
 

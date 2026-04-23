@@ -107,3 +107,20 @@ def test_build_payload_marks_active_window_ready_to_launch() -> None:
     assert payload["exclusive_window_state"] == "confirmed_active_window"
     assert payload["exclusive_window_status"] == "ready_for_launch"
     assert payload["template_window_minutes"] == 45
+
+
+def test_build_payload_defaults_to_repo_relative_attestation_path() -> None:
+    now = datetime.fromisoformat("2026-04-23T16:30:00-04:00")
+    payload = MODULE.build_payload(
+        project_id="codexalpaca",
+        vm_name="vm-execution-paper-01",
+        exception_state="active_temporary_exception",
+        attestation_json_path="docs/gcp_foundation/gcp_execution_exclusive_window_attestation.json",
+        attestation={},
+        now=now,
+        template_window_minutes=45,
+    )
+
+    assert payload["exclusive_window_state"] == "awaiting_operator_attestation"
+    assert payload["exclusive_window_status"] == "awaiting_operator_confirmation"
+    assert payload["attestation_json_path"] == "docs/gcp_foundation/gcp_execution_exclusive_window_attestation.json"
