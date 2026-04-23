@@ -1007,3 +1007,48 @@ Then act as the sanctioned VM execution-window steward.
    - the exact post-session assimilation command
 4. Do not start the broker-facing session in this step unless the operator explicitly says to launch it.
 ```
+
+## 32. Take Over The Project Cleanly From Another Machine
+
+```text
+Open these sibling folders and use them together:
+
+1. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+2. C:\Users\<you>\Downloads\codexalpaca_repo
+
+Read first:
+- docs\PROJECT_TARGET_OPERATING_MODEL.md
+- docs\MULTI_MACHINE_CONTINUITY_PROTOCOL.md
+- docs\gcp_foundation\multi_machine_continuity_handoff.md
+- docs\gcp_foundation\research_strategy_governance_handoff.md
+- docs\gcp_foundation\gcp_execution_trusted_validation_operator_handoff.md
+- docs\gcp_foundation\gcp_execution_trusted_validation_session_status.md
+- docs\gcp_foundation\gcp_execution_exclusive_window_handoff.md
+- docs\gcp_foundation\gcp_execution_trusted_validation_launch_handoff.md
+- docs\gcp_foundation\gcp_execution_closeout_handoff.md
+
+Act as the continuity steward taking over the institutional-grade paper-account project from another machine.
+
+Your job is to:
+1. fetch `origin` and inspect canonical `main`
+2. identify any open control-plane PRs that are ahead of `main`
+3. determine whether the next safe action is:
+   - merge an open control-plane PR
+   - integrate equivalent changes onto `main`
+   - arm the first bounded exclusive execution window
+   - or hold because a required packet is still blocked
+4. summarize the exact next operator action without relying on local shell history or prior conversation context
+
+Report:
+- canonical current branch or commit to trust
+- whether takeover can proceed from GitHub alone
+- whether the trusted validation operator packet is already canonical or still pending merge
+- whether the next step is research work, execution preparation, or an actual bounded execution window
+- any blocker that still prevents a clean takeover
+
+Hard rules:
+- do not start trading
+- do not arm the execution window unless explicitly asked
+- do not widen the temporary parallel runtime exception
+- do not create new infrastructure in this step
+```
