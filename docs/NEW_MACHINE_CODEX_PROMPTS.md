@@ -218,7 +218,101 @@ Hard rules:
 - do not change strategy selection or risk policy in this step
 ```
 
-## 10. Refresh Post-Session Reconciliation And Execution Policy
+## 10. Plan The GCP Foundation
+
+```text
+Open these sibling folders and use them together:
+
+1. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+2. C:\Users\<you>\Downloads\codexalpaca_repo
+
+Read first:
+- docs/INSTITUTIONAL_OPERATING_BLUEPRINT.md
+- docs/GCP_OPERATING_BLUEPRINT.md
+- docs/GCP_MIGRATION_PLAN.md
+
+Act as the GCP foundation steward for project `codexalpaca`.
+
+Your goal is to prepare an institutional-grade Google Cloud foundation for this project without changing live strategy logic or starting trading.
+
+Plan and report the exact target resources for:
+- execution VM
+- static outbound execution IP
+- VPC and subnet
+- Artifact Registry
+- Secret Manager
+- Cloud Storage bucket separation for bootstrap transfer, data, artifacts, control packets, and backups
+- service accounts for execution, research, orchestration, and deployment
+- budget alerts and basic logging/monitoring
+
+Use the following operating principles:
+- execution plane on Compute Engine
+- research plane on Cloud Batch
+- control-plane sequencing on Scheduler + Workflows
+- GitHub remains the governance source of truth
+- GCS becomes the runtime artifact and dataset substrate
+- Secret Manager becomes the canonical secret source
+
+At the end, report:
+- exact target resource names
+- the recommended rollout order
+- the first no-risk implementation step
+- any permission or credential gaps that would block real deployment
+
+Hard rules:
+- do not modify the live manifest
+- do not start trading
+- do not change strategy selection or risk policy in this step
+```
+
+## 11. Prepare The GCP Execution Cut-In
+
+```text
+Open these sibling folders and use them together:
+
+1. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+2. C:\Users\<you>\Downloads\codexalpaca_repo
+
+Read first:
+- docs/GCP_OPERATING_BLUEPRINT.md
+- docs/GCP_MIGRATION_PLAN.md
+- docs/RUNNER_EXECUTION_UPGRADE_HANDOFF.md
+- docs/SESSION_RECONCILIATION_REGISTRY.md
+- docs/EXECUTION_EVIDENCE_CONTRACT.md
+
+Act as the GCP execution cut-in steward.
+
+Your goal is to prepare the paper runner to move onto a dedicated Google Cloud execution VM with a static outbound IP and Secret Manager-backed credentials.
+
+Verify and report what the execution VM must support before cutover:
+- current runner execution baseline
+- broker-order audit
+- broker account-activity audit
+- ending broker-position snapshot
+- runner unlock-baseline stamping
+- post-session assimilation compatibility
+- local artifact paths that must be preserved or synced to GCS
+
+Then produce a cut-in checklist covering:
+- VM bootstrap
+- secret injection
+- code sync
+- test/doctor validation
+- dry-run verification
+- trusted session evidence requirements before the VM becomes the canonical execution host
+
+At the end, report:
+- whether the runner is cloud-cutover ready in code
+- what still needs to be externalized from local-machine assumptions
+- the exact go/no-go checks before the first cloud-hosted paper session
+
+Hard rules:
+- do not modify the live manifest
+- do not start trading
+- do not change strategy selection or risk policy in this step
+```
+
+## 12. Refresh Post-Session Reconciliation And Execution Policy
 
 ```text
 Open these sibling folders and use them together:
@@ -266,7 +360,7 @@ Hard rules:
 - do not commit raw trade logs or raw session exhaust
 ```
 
-## 11. Resume A Failed Phase 2 Program From Completed Phase 1
+## 13. Resume A Failed Phase 2 Program From Completed Phase 1
 
 ```text
 Open these sibling folders and use them together:
@@ -310,7 +404,7 @@ Hard rules:
 - do not start trading
 ```
 
-## 11. Review Tonight's Overnight Mission
+## 14. Review Tonight's Overnight Mission
 
 ```text
 Open these sibling folders and use them together:
@@ -338,7 +432,7 @@ Then act as the overnight execution steward for the new machine.
 3. Do not modify the live manifest, do not change risk policy, and do not start trading in this step.
 ```
 
-## 12. Check GitHub Updates Before Open Or Nightly Work
+## 15. Check GitHub Updates Before Open Or Nightly Work
 
 ```text
 Open these sibling folders and use them together:
@@ -376,7 +470,7 @@ Hard rules:
 - do not change strategy selection or risk policy in this step
 ```
 
-## 13. Report Which Tournament Profiles Are Actually Unlocked
+## 16. Report Which Tournament Profiles Are Actually Unlocked
 
 ```text
 Open these sibling folders and use them together:
@@ -403,7 +497,7 @@ Then act as the Tournament Policy Steward for the new machine.
 3. Do not start trading, do not modify the live manifest, and do not change strategy or risk policy in this step.
 ```
 
-## 14. Report What Unlocks The Next Tournament Tier
+## 17. Report What Unlocks The Next Tournament Tier
 
 ```text
 Open these sibling folders and use them together:
@@ -433,7 +527,7 @@ Then act as the Tournament Unlock Steward for the new machine.
 3. Do not start trading, do not modify the live manifest, and do not change strategy or risk policy in this step.
 ```
 
-## 15. Run The Current Execution Evidence Mission
+## 18. Run The Current Execution Evidence Mission
 
 ```text
 Open these sibling folders and use them together:
@@ -464,7 +558,7 @@ Then act as the execution-plane mission operator for the new machine.
 4. Do not modify the live manifest, do not change strategy or risk policy, and do not start trading in this step.
 ```
 
-## 16. Run Governed Post-Session Assimilation
+## 19. Run Governed Post-Session Assimilation
 
 ```text
 Open these sibling folders and use them together:

@@ -13,6 +13,23 @@ The easiest way to run this repo on any machine is:
 
 That keeps GitHub as the source of truth for code while local state, secrets, and shared ownership stay outside the repo.
 
+## Google Cloud Target State
+
+For institutional-grade deployment, the preferred long-term target is not a workstation plus ad hoc sync. The preferred target is:
+
+- Compute Engine for the paper runner
+- Cloud Batch for heavy research and backtests
+- Cloud Storage for datasets and artifacts
+- Secret Manager for credentials
+- Scheduler + Workflows for governed orchestration
+
+See:
+
+- `docs/GCP_OPERATING_BLUEPRINT.md`
+- `docs/GCP_MIGRATION_PLAN.md`
+
+Treat the current portable deployment flow as the fastest machine-to-machine path, not the final cloud operating model.
+
 ## One-Command Setup
 
 ### Windows
