@@ -1,14 +1,54 @@
 {
-  "generated_at": "2026-04-23T14:36:02.041749-04:00",
+  "generated_at": "2026-04-23T14:46:05.634117-04:00",
   "project_id": "codexalpaca",
   "vm_name": "vm-execution-paper-01",
-  "run_id": "vm-execution-paper-01-20260423-143508",
-  "validation_result_gcs_prefix": "gs://codexalpaca-control-us/bootstrap/2026-04-23/foundation-phase5-headless-validation/vm-execution-paper-01-20260423-143508",
-  "review_state": "pending",
-  "observed_objects": [],
-  "launch_result": null,
-  "validation_status": null,
+  "run_id": "vm-execution-paper-01-20260423-144414",
+  "validation_result_gcs_prefix": "gs://codexalpaca-control-us/bootstrap/2026-04-23/foundation-phase5-headless-validation/vm-execution-paper-01-20260423-144414",
+  "review_state": "passed",
+  "observed_objects": [
+    "bootstrap/2026-04-23/foundation-phase5-headless-validation/vm-execution-paper-01-20260423-144414/doctor.json",
+    "bootstrap/2026-04-23/foundation-phase5-headless-validation/vm-execution-paper-01-20260423-144414/launch_result.json",
+    "bootstrap/2026-04-23/foundation-phase5-headless-validation/vm-execution-paper-01-20260423-144414/pytest.log",
+    "bootstrap/2026-04-23/foundation-phase5-headless-validation/vm-execution-paper-01-20260423-144414/validation-run.log",
+    "bootstrap/2026-04-23/foundation-phase5-headless-validation/vm-execution-paper-01-20260423-144414/validation_status.json"
+  ],
+  "launch_result": {
+    "generated_at": "2026-04-23T18:45:50.910718+00:00",
+    "run_id": "vm-execution-paper-01-20260423-144414",
+    "validation_exit_code": 0,
+    "validation_status_present": true,
+    "doctor_present": true,
+    "pytest_log_present": true,
+    "log_path": "/var/log/codexalpaca/validation-vm-execution-paper-01-20260423-144414.log",
+    "validation_status": {
+      "generated_at": "2026-04-23T18:45:50.870935+00:00",
+      "vm_name": "vm-execution-paper-01",
+      "expected_static_ip": "34.139.193.220",
+      "observed_external_ip": "34.139.193.220",
+      "runtime_bootstrap_complete": true,
+      "doctor_path": "/var/lib/codexalpaca/validation/doctor.json",
+      "doctor_paper_only_repo_lock": true,
+      "doctor_using_project_venv": true,
+      "doctor_python_ok": true,
+      "pytest_log_path": "/var/lib/codexalpaca/validation/pytest.log",
+      "pytest_exit_code": 0
+    }
+  },
+  "validation_status": {
+    "generated_at": "2026-04-23T18:45:50.870935+00:00",
+    "vm_name": "vm-execution-paper-01",
+    "expected_static_ip": "34.139.193.220",
+    "observed_external_ip": "34.139.193.220",
+    "runtime_bootstrap_complete": true,
+    "doctor_path": "/var/lib/codexalpaca/validation/doctor.json",
+    "doctor_paper_only_repo_lock": true,
+    "doctor_using_project_venv": true,
+    "doctor_python_ok": true,
+    "pytest_log_path": "/var/lib/codexalpaca/validation/pytest.log",
+    "pytest_exit_code": 0
+  },
   "next_actions": [
-    "Keep polling the headless validation result prefix until launch_result.json appears."
+    "The headless validation gate is clean enough to review for trusted validation-session readiness.",
+    "Read doctor.json and pytest.log before promoting the VM beyond validation-only posture."
   ]
 }

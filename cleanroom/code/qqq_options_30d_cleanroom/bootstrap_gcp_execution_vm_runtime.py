@@ -234,6 +234,29 @@ write_secret_env() {{
   fi
 }}
 
+python3_ready() {{
+  python3 - <<'PY'
+import sys
+raise SystemExit(0 if sys.version_info >= (3, 11) else 1)
+PY
+}}
+
+ensure_supported_python() {{
+  if python3_ready; then
+    return 0
+  fi
+
+  export DEBIAN_FRONTEND=noninteractive
+  apt-get update
+  if ! apt-get install -y python3.11 python3.11-venv; then
+    apt-get install -y software-properties-common
+    add-apt-repository ppa:deadsnakes/ppa -y
+    apt-get update
+    apt-get install -y python3.11 python3.11-venv
+  fi
+  ln -sf /usr/bin/python3.11 /usr/local/bin/python3
+}}
+
 gcs_download "$BUNDLE_BUCKET" "$BUNDLE_OBJECT" "$ARCHIVE_PATH"
 rm -rf "$STAGING_DIR" "$EXECUTION_REPO_DIR"
 mkdir -p "$STAGING_DIR"
@@ -248,6 +271,8 @@ with zipfile.ZipFile(archive_path, "r") as zf:
     zf.extractall(staging_dir)
 PY
 mv "$STAGING_DIR" "$EXECUTION_REPO_DIR"
+
+ensure_supported_python
 
 cat /dev/null > "$ENV_PATH"
 {env_lines}

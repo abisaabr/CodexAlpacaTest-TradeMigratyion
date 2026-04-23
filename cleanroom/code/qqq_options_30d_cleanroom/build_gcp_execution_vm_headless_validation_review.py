@@ -103,7 +103,8 @@ def main() -> None:
     ]
     if launch_result is not None:
         exit_code = int(launch_result.get("validation_exit_code", 999))
-        if exit_code == 0 and validation_status is not None:
+        pytest_exit_code = None if validation_status is None else int(validation_status.get("pytest_exit_code", 999))
+        if exit_code == 0 and validation_status is not None and pytest_exit_code == 0:
             review_state = "passed"
             next_actions = [
                 "The headless validation gate is clean enough to review for trusted validation-session readiness.",

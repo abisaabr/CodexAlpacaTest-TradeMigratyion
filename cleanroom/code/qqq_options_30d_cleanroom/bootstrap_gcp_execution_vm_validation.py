@@ -140,6 +140,8 @@ payload = {{
 status_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 print(json.dumps(payload, indent=2))
 PY
+
+exit "$PYTEST_EXIT"
 """
     return textwrap.dedent(script).strip() + "\n"
 
