@@ -61,6 +61,72 @@ def build_attestation_template(
     }
 
 
+def write_markdown(path: Path, payload: dict[str, Any]) -> None:
+    lines: list[str] = []
+    lines.append("# GCP Execution Exclusive Window Status")
+    lines.append("")
+    lines.append("## Snapshot")
+    lines.append("")
+    lines.append(f"- Generated at: `{payload['generated_at']}`")
+    lines.append(f"- Project ID: `{payload['project_id']}`")
+    lines.append(f"- VM name: `{payload['vm_name']}`")
+    lines.append(f"- Window state: `{payload['exclusive_window_state']}`")
+    lines.append(f"- Window status: `{payload['exclusive_window_status']}`")
+    lines.append(f"- Parallel runtime exception: `{payload['parallel_runtime_exception_state']}`")
+    lines.append(f"- Attestation path: `{payload['attestation_json_path']}`")
+    lines.append(f"- Template window minutes: `{payload['template_window_minutes']}`")
+    lines.append("")
+    if payload.get("attestation_summary"):
+        summary = payload["attestation_summary"]
+        lines.append("## Current Attestation")
+        lines.append("")
+        lines.append(f"- Confirmed by: `{summary.get('confirmed_by')}`")
+        lines.append(f"- Confirmed at: `{summary.get('confirmed_at')}`")
+        lines.append(f"- Window starts at: `{summary.get('window_starts_at')}`")
+        lines.append(f"- Window expires at: `{summary.get('window_expires_at')}`")
+        lines.append(f"- Scope: `{summary.get('scope')}`")
+        lines.append("")
+    lines.append("## Required Assertions")
+    lines.append("")
+    for row in list(payload.get("required_assertions") or []):
+        lines.append(f"- `{row}`")
+    lines.append("")
+    lines.append("## Guardrails")
+    lines.append("")
+    for row in list(payload.get("guardrails") or []):
+        lines.append(f"- {row}")
+    lines.append("")
+    lines.append("## Attestation Template")
+    lines.append("")
+    lines.append("```json")
+    lines.append(json.dumps(payload["attestation_template"], indent=2))
+    lines.append("```")
+    lines.append("")
+    lines.append("## Next Actions")
+    lines.append("")
+    for row in list(payload.get("next_actions") or []):
+        lines.append(f"- {row}")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_handoff(path: Path, payload: dict[str, Any]) -> None:
+    lines = [
+        "# GCP Execution Exclusive Window Handoff",
+        "",
+        f"- Window state: `{payload['exclusive_window_state']}`",
+        f"- Window status: `{payload['exclusive_window_status']}`",
+        f"- VM name: `{payload['vm_name']}`",
+        f"- Attestation path: `{payload['attestation_json_path']}`",
+        "",
+        "## Operator Rule",
+        "",
+        "- Do not start the first trusted validation paper session unless this packet says `ready_for_launch`.",
+        "- Keep the window bounded to a single sanctioned writer on `vm-execution-paper-01`.",
+        "- Run governed post-session assimilation immediately after the session ends.",
+    ]
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def normalize_attestation(
     attestation: dict[str, Any],
     vm_name: str,
@@ -234,72 +300,6 @@ def build_payload(
         ),
         "next_actions": next_actions,
     }
-
-
-def write_markdown(path: Path, payload: dict[str, Any]) -> None:
-    lines: list[str] = []
-    lines.append("# GCP Execution Exclusive Window Status")
-    lines.append("")
-    lines.append("## Snapshot")
-    lines.append("")
-    lines.append(f"- Generated at: `{payload['generated_at']}`")
-    lines.append(f"- Project ID: `{payload['project_id']}`")
-    lines.append(f"- VM name: `{payload['vm_name']}`")
-    lines.append(f"- Window state: `{payload['exclusive_window_state']}`")
-    lines.append(f"- Window status: `{payload['exclusive_window_status']}`")
-    lines.append(f"- Parallel runtime exception: `{payload['parallel_runtime_exception_state']}`")
-    lines.append(f"- Attestation path: `{payload['attestation_json_path']}`")
-    lines.append(f"- Template window minutes: `{payload['template_window_minutes']}`")
-    lines.append("")
-    if payload.get("attestation_summary"):
-        summary = payload["attestation_summary"]
-        lines.append("## Current Attestation")
-        lines.append("")
-        lines.append(f"- Confirmed by: `{summary.get('confirmed_by')}`")
-        lines.append(f"- Confirmed at: `{summary.get('confirmed_at')}`")
-        lines.append(f"- Window starts at: `{summary.get('window_starts_at')}`")
-        lines.append(f"- Window expires at: `{summary.get('window_expires_at')}`")
-        lines.append(f"- Scope: `{summary.get('scope')}`")
-        lines.append("")
-    lines.append("## Required Assertions")
-    lines.append("")
-    for row in list(payload.get("required_assertions") or []):
-        lines.append(f"- `{row}`")
-    lines.append("")
-    lines.append("## Guardrails")
-    lines.append("")
-    for row in list(payload.get("guardrails") or []):
-        lines.append(f"- {row}")
-    lines.append("")
-    lines.append("## Attestation Template")
-    lines.append("")
-    lines.append("```json")
-    lines.append(json.dumps(payload["attestation_template"], indent=2))
-    lines.append("```")
-    lines.append("")
-    lines.append("## Next Actions")
-    lines.append("")
-    for row in list(payload.get("next_actions") or []):
-        lines.append(f"- {row}")
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-
-
-def write_handoff(path: Path, payload: dict[str, Any]) -> None:
-    lines = [
-        "# GCP Execution Exclusive Window Handoff",
-        "",
-        f"- Window state: `{payload['exclusive_window_state']}`",
-        f"- Window status: `{payload['exclusive_window_status']}`",
-        f"- VM name: `{payload['vm_name']}`",
-        f"- Attestation path: `{payload['attestation_json_path']}`",
-        "",
-        "## Operator Rule",
-        "",
-        "- Do not start the first trusted validation paper session unless this packet says `ready_for_launch`.",
-        "- Keep the window bounded to a single sanctioned writer on `vm-execution-paper-01`.",
-        "- Run governed post-session assimilation immediately after the session ends.",
-    ]
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def main() -> None:
