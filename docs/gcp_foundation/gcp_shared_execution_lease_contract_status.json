@@ -1,0 +1,135 @@
+{
+  "generated_at": "2026-04-23T15:17:09.919351-04:00",
+  "project_id": "codexalpaca",
+  "contract_readiness": "ready_for_helper_implementation",
+  "recommended_lease": "gcs_generation_match_lease",
+  "lease_object": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+  "lease_schema": {
+    "version": 1,
+    "lease_kind": "paper_execution",
+    "owner_id": "string",
+    "owner_label": "string",
+    "machine_label": "string",
+    "runner_path": "string",
+    "git_commit": "string",
+    "acquired_at": "RFC3339 timestamp",
+    "heartbeat_at": "RFC3339 timestamp",
+    "expires_at": "RFC3339 timestamp",
+    "generation": "storage generation returned by GCS, tracked by the caller but not trusted inside the object body",
+    "roles": {
+      "<role_name>": {
+        "heartbeat_at": "RFC3339 timestamp",
+        "expires_at": "RFC3339 timestamp",
+        "pid": "string or null",
+        "metadata": "object with role-specific context"
+      }
+    },
+    "audit_context": {
+      "plane": "execution|research|operator",
+      "environment": "paper|validation|dry_run",
+      "source": "workstation|vm|workflow"
+    }
+  },
+  "compatibility_mapping": [
+    {
+      "current_file_lease_field": "owner_id",
+      "cloud_lease_field": "owner_id",
+      "decision": "preserve",
+      "rationale": "Existing runner logic already uses owner_id as the core holder identity."
+    },
+    {
+      "current_file_lease_field": "owner_label",
+      "cloud_lease_field": "owner_label",
+      "decision": "preserve",
+      "rationale": "Useful for operator visibility and debugging across machines."
+    },
+    {
+      "current_file_lease_field": "heartbeat_at",
+      "cloud_lease_field": "heartbeat_at",
+      "decision": "preserve",
+      "rationale": "Needed for liveness inspection and stale-lease analysis."
+    },
+    {
+      "current_file_lease_field": "expires_at",
+      "cloud_lease_field": "expires_at",
+      "decision": "preserve",
+      "rationale": "TTL-based fail-closed behavior already exists conceptually and should remain first-class."
+    },
+    {
+      "current_file_lease_field": "roles",
+      "cloud_lease_field": "roles",
+      "decision": "preserve",
+      "rationale": "Allows one holder to describe role-scoped subclaims without inventing a second coordination model."
+    },
+    {
+      "current_file_lease_field": "(new)",
+      "cloud_lease_field": "machine_label",
+      "decision": "add",
+      "rationale": "Explicit machine_label improves cross-machine debugging and aligns with current runtime env conventions."
+    },
+    {
+      "current_file_lease_field": "(new)",
+      "cloud_lease_field": "runner_path",
+      "decision": "add",
+      "rationale": "Needed to distinguish workstation, VM, and future workflow execution paths."
+    },
+    {
+      "current_file_lease_field": "(new)",
+      "cloud_lease_field": "git_commit",
+      "decision": "add",
+      "rationale": "Supports forensic traceability between lease holder and code revision."
+    },
+    {
+      "current_file_lease_field": "(new)",
+      "cloud_lease_field": "audit_context",
+      "decision": "add",
+      "rationale": "Supports future cloud-native audit packets and differentiated control handling."
+    }
+  ],
+  "operation_contract": {
+    "acquire": {
+      "mechanism": "GCS object create with ifGenerationMatch=0",
+      "success_condition": "object did not previously exist and caller becomes the sole current holder",
+      "failure_condition": "precondition failure if object already exists"
+    },
+    "renew": {
+      "mechanism": "GCS object rewrite with ifGenerationMatch=<last_seen_generation>",
+      "success_condition": "caller still owns the current generation and extends heartbeat/expires_at",
+      "failure_condition": "precondition failure if another holder replaced or stole the lease"
+    },
+    "release": {
+      "mechanism": "GCS object delete with ifGenerationMatch=<last_seen_generation>",
+      "success_condition": "lease removed only by the current holder",
+      "failure_condition": "precondition failure if generation has changed"
+    },
+    "steal_after_expiry": {
+      "mechanism": "read current object, verify expiry, then rewrite with ifGenerationMatch=<expired_generation>",
+      "success_condition": "expired lease is replaced atomically by the new holder",
+      "failure_condition": "precondition failure if another actor renewed or stole first"
+    }
+  },
+  "validation_matrix": [
+    "Acquire succeeds when no lease object exists.",
+    "Concurrent acquire attempts result in exactly one success and one precondition failure.",
+    "Renew succeeds for the current holder and bumps heartbeat/expires_at.",
+    "Renew fails when the caller uses a stale generation.",
+    "Release succeeds only for the current holder generation.",
+    "Release fails for a stale generation.",
+    "Steal after expiry succeeds only when the observed generation still matches the expired lease.",
+    "Steal after expiry fails if the original holder renewed before the replace.",
+    "Audit artifact is written for acquire, renew, release, and steal events.",
+    "Dry-run mode exercises the state machine without enabling broker-facing execution."
+  ],
+  "rollout_steps": [
+    "Publish the lease contract and validation matrix.",
+    "Implement helper functions in the sanctioned runner code paths without enforcing them yet.",
+    "Add dry-run tests for contention, stale renewal, release mismatch, and expired steal.",
+    "Enable audit artifact emission for every lease transition.",
+    "Turn on enforcement only after dry-run validation is green on both workstation and VM paths."
+  ],
+  "code_alignment": {
+    "current_ownership_module": "alpaca_lab/execution/ownership.py",
+    "current_failover_module": "alpaca_lab/execution/failover.py",
+    "current_example_config": "config/multi_ticker_paper_portfolio.yaml"
+  }
+}
