@@ -264,6 +264,50 @@ Hard rules:
 - do not commit raw trade logs or raw session exhaust
 ```
 
+## 11. Resume A Failed Phase 2 Program From Completed Phase 1
+
+```text
+Open these sibling folders and use them together:
+
+1. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+2. C:\Users\<you>\Downloads\codexalpaca_repo
+
+Read first:
+- docs/PHASE2_RESUME_FROM_PHASE1.md
+- docs/NIGHTLY_OPERATOR_PLAYBOOK.md
+
+Act as the research-plane recovery steward for the machine that owns the affected governed research workspace.
+
+Goal:
+- resume a failed governed program from completed Phase 1 artifacts without rerunning discovery
+
+In C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion:
+
+1. Verify:
+   - `program_manifest.json` exists
+   - `phase1_status.json` says `phase1_discovery_complete`
+   - `shortlist/phase2_plan.json` exists
+   - `shortlist/family_wave_shortlist.json` exists
+2. Run a dry rebuild first:
+   - `powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion\cleanroom\code\qqq_options_30d_cleanroom\resume_program_phase2_from_phase1.ps1" -ProgramRoot "C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion\output\<cycle>\program"`
+3. Inspect:
+   - `program/phase2_resume_status.json`
+   - `program/phase2/launch_pack/pack_validation.json`
+4. If the rebuilt pack is valid, execute the resume:
+   - `powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion\cleanroom\code\qqq_options_30d_cleanroom\resume_program_phase2_from_phase1.ps1" -ProgramRoot "C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion\output\<cycle>\program" -Execute`
+5. Confirm:
+   - `program/program_status.json` reflects resumed Phase 2
+   - `nightly_operator_cycle_status.json` reflects resumed Phase 2
+   - `program/phase2/launch_pack/launch_status.json` shows active or completed exhaustive lanes
+   - `program/phase2_resume_followon_status.json` exists so validation and morning-handoff work are queued
+
+Hard rules:
+- do not rerun Phase 1 if its artifacts are complete
+- do not bypass pack validation
+- do not modify the live manifest
+- do not start trading
+```
+
 ## 11. Review Tonight's Overnight Mission
 
 ```text

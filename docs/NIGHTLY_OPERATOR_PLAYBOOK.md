@@ -8,6 +8,7 @@ Preferred entrypoint:
 - `cleanroom/code/qqq_options_30d_cleanroom/launch_nightly_operator_cycle.ps1`
 
 Before assigning agent work, refresh and inspect:
+- `docs/PHASE2_RESUME_FROM_PHASE1.md`
 - `docs/REPO_UPDATE_CONTROL.md`
 - `docs/repo_updates/repo_update_registry.md`
 - `docs/repo_updates/repo_update_handoff.md`
@@ -207,6 +208,34 @@ Tasks:
 
 Go / no-go:
 - no Phase 2 lane should be launched without shortlist provenance
+
+### Recovery: Resume From Completed Phase 1
+
+Owner:
+- current research-plane operator
+
+Preferred entrypoint:
+- `cleanroom/code/qqq_options_30d_cleanroom/resume_program_phase2_from_phase1.ps1`
+
+Use it when:
+- `phase1_status.json` is complete
+- shortlist artifacts exist
+- the original program failed before or during Phase 2 launch
+
+Required outputs:
+- rebuilt `program/phase2/launch_pack/phase2_agent_wave_pack.json`
+- `program/phase2_resume_status.json`
+- refreshed `program/program_status.json`
+- refreshed `cycle/nightly_operator_cycle_status.json`
+
+Tasks:
+- rebuild the Phase 2 launch pack from saved Phase 1 artifacts
+- relaunch Phase 2 without rerunning discovery
+- arm the resumed follow-on watcher so validation, hardening review, replacement planning, and morning handoff still happen
+
+Go / no-go:
+- do not use this path if Phase 1 artifacts are incomplete or untrusted
+- do not bypass validation to force a broken Phase 2 pack into execution
 
 ### Phase 3: Shared-Account Validation
 
