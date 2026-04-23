@@ -421,6 +421,7 @@ if ([string]::IsNullOrWhiteSpace($ReadyBaseDir)) {
 else {
     $ReadyBaseDir = [System.IO.Path]::GetFullPath($ReadyBaseDir)
 }
+$readyBaseParentDir = Split-Path -Parent $ReadyBaseDir
 
 if ([string]::IsNullOrWhiteSpace($RunnerRepoRoot)) {
     $RunnerRepoRoot = Resolve-PreferredPath -Candidates @($siblingRunnerRepoRoot) -Fallback $siblingRunnerRepoRoot
@@ -437,8 +438,7 @@ else {
     $LiveManifestPath = [System.IO.Path]::GetFullPath($LiveManifestPath)
 }
 
-$researchOutputRoot = Resolve-PreferredPath -Candidates @($siblingOutputRoot, $oneDriveOutputRoot) -Fallback $siblingOutputRoot
-$readyBaseParentDir = Split-Path -Parent $ReadyBaseDir
+$researchOutputRoot = Resolve-PreferredPath -Candidates @($readyBaseParentDir, $siblingOutputRoot, $oneDriveOutputRoot) -Fallback $readyBaseParentDir
 $secondaryOutputDir = Resolve-PreferredRegistryDirectory -Candidates @(
     $researchOutputRoot,
     $readyBaseParentDir,

@@ -521,14 +521,25 @@ def write_markdown(
         lines.append(f"### {lane['lane_id']}")
         lines.append("")
         lines.append(f"- families: {', '.join(f'`{family}`' for family in lane['families'])}")
-        lines.append(
-            f"- ready discovery: {', '.join(f'`{row['ticker']}`' for row in lane['ready_discovery']) if lane['ready_discovery'] else 'none'}"
+        ready_discovery = ", ".join(f"`{row['ticker']}`" for row in lane["ready_discovery"]) if lane["ready_discovery"] else "none"
+        staged_materialization = (
+            ", ".join(f"`{row['ticker']}`" for row in lane["staged_materialization"])
+            if lane["staged_materialization"]
+            else "none"
+        )
+        registry_download = (
+            ", ".join(f"`{row['ticker']}`" for row in lane["registry_download"])
+            if lane["registry_download"]
+            else "none"
         )
         lines.append(
-            f"- staged materialization: {', '.join(f'`{row['ticker']}`' for row in lane['staged_materialization']) if lane['staged_materialization'] else 'none'}"
+            f"- ready discovery: {ready_discovery}"
         )
         lines.append(
-            f"- registry download: {', '.join(f'`{row['ticker']}`' for row in lane['registry_download']) if lane['registry_download'] else 'none'}"
+            f"- staged materialization: {staged_materialization}"
+        )
+        lines.append(
+            f"- registry download: {registry_download}"
         )
         prep_tickers = sorted(
             {

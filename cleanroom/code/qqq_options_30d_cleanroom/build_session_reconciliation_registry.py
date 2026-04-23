@@ -653,9 +653,13 @@ def main() -> None:
     report_dir = Path(args.report_dir).resolve()
     report_dir.mkdir(parents=True, exist_ok=True)
 
-    run_dirs = sorted(
-        [path for path in reports_root.iterdir() if path.is_dir() and (path / "multi_ticker_portfolio_session_summary.json").exists()],
-        key=lambda path: path.name,
+    run_dirs = (
+        sorted(
+            [path for path in reports_root.iterdir() if path.is_dir() and (path / "multi_ticker_portfolio_session_summary.json").exists()],
+            key=lambda path: path.name,
+        )
+        if reports_root.exists()
+        else []
     )
     sessions = [build_session_row(run_dir) for run_dir in run_dirs]
     sessions_sorted = sorted(
