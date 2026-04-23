@@ -138,7 +138,13 @@ def stage_ready_file(source: Path, target: Path) -> bool:
     try:
         os.link(source, target)
     except OSError:
-        shutil.copy2(source, target)
+        try:
+            shutil.copy2(source, target)
+        except OSError:
+            if target.exists():
+                target.unlink()
+            with source.open("rb") as source_handle, target.open("wb") as target_handle:
+                shutil.copyfileobj(source_handle, target_handle, length=8 * 1024 * 1024)
     return True
 
 
