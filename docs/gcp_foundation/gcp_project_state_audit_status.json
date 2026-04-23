@@ -1,0 +1,789 @@
+{
+  "generated_at": "2026-04-23T14:55:38.866941-04:00",
+  "project_id": "codexalpaca",
+  "audit_posture": "foundation_present_with_material_drift",
+  "summary": {
+    "enabled_service_count": 49,
+    "bucket_count": 7,
+    "service_account_count": 8,
+    "instance_count": 2,
+    "address_count": 2,
+    "secret_count": 6,
+    "artifact_repository_count": 2,
+    "workflow_count": 0,
+    "batch_job_count": 0,
+    "scheduler_job_count": 0
+  },
+  "enabled_services": [
+    "analyticshub.googleapis.com",
+    "apphub.googleapis.com",
+    "appoptimize.googleapis.com",
+    "apptopology.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "batch.googleapis.com",
+    "bigquery.googleapis.com",
+    "bigqueryconnection.googleapis.com",
+    "bigquerydatapolicy.googleapis.com",
+    "bigquerydatatransfer.googleapis.com",
+    "bigquerymigration.googleapis.com",
+    "bigqueryreservation.googleapis.com",
+    "bigquerystorage.googleapis.com",
+    "capacityplanner.googleapis.com",
+    "cloudaicompanion.googleapis.com",
+    "cloudapis.googleapis.com",
+    "cloudbuild.googleapis.com",
+    "cloudquotas.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "cloudscheduler.googleapis.com",
+    "cloudtrace.googleapis.com",
+    "compute.googleapis.com",
+    "containerregistry.googleapis.com",
+    "dataform.googleapis.com",
+    "dataplex.googleapis.com",
+    "datastore.googleapis.com",
+    "designcenter.googleapis.com",
+    "geminicloudassist.googleapis.com",
+    "iam.googleapis.com",
+    "iamcredentials.googleapis.com",
+    "iap.googleapis.com",
+    "logging.googleapis.com",
+    "maintenance.googleapis.com",
+    "monitoring.googleapis.com",
+    "oslogin.googleapis.com",
+    "pubsub.googleapis.com",
+    "recommender.googleapis.com",
+    "secretmanager.googleapis.com",
+    "servicehealth.googleapis.com",
+    "servicemanagement.googleapis.com",
+    "serviceusage.googleapis.com",
+    "sql-component.googleapis.com",
+    "storage-api.googleapis.com",
+    "storage-component.googleapis.com",
+    "storage.googleapis.com",
+    "storageinsights.googleapis.com",
+    "telemetry.googleapis.com",
+    "workflowexecutions.googleapis.com",
+    "workflows.googleapis.com"
+  ],
+  "buckets": [
+    "codexalpaca-artifacts-us",
+    "codexalpaca-backups-us",
+    "codexalpaca-control-us",
+    "codexalpaca-data-us",
+    "codexalpaca-runtime-us-central1",
+    "codexalpaca-transfer-922745393036",
+    "codexalpaca_cloudbuild"
+  ],
+  "bucket_samples": {
+    "codexalpaca-artifacts-us": [],
+    "codexalpaca-backups-us": [
+      {
+        "name": "bootstrap/2026-04-23/execution-vm/codexalpaca_repo_source_vm-execution-paper-01_20260423.zip",
+        "size": 238827
+      }
+    ],
+    "codexalpaca-control-us": [
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/docs/GCP_FOUNDATION_BOOTSTRAP.md",
+        "size": 4198
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/docs/GCP_FOUNDATION_READINESS.md",
+        "size": 1954
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/docs/GCP_MIGRATION_PLAN.md",
+        "size": 5850
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/docs/GCP_OPERATING_BLUEPRINT.md",
+        "size": 8102
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/docs/GCP_RUNTIME_SECURITY.md",
+        "size": 2894
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/docs/NEW_MACHINE_CODEX_PROMPTS.md",
+        "size": 38269
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/docs/gcp_foundation/gcp_foundation_bootstrap_status.json",
+        "size": 2178
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/docs/gcp_foundation/gcp_foundation_bootstrap_status.md",
+        "size": 1432
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/docs/gcp_foundation/gcp_foundation_readiness.json",
+        "size": 4998
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/docs/gcp_foundation/gcp_foundation_readiness.md",
+        "size": 1690
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/docs/gcp_foundation/gcp_foundation_readiness_handoff.json",
+        "size": 929
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/docs/gcp_foundation/gcp_foundation_readiness_handoff.md",
+        "size": 918
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/docs/gcp_foundation/gcp_runtime_security_status.json",
+        "size": 6681
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/docs/gcp_foundation/gcp_runtime_security_status.md",
+        "size": 4544
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/manifest.json",
+        "size": 2301
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase0/runtime-security-manifest.json",
+        "size": 1218
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase1-execution/docs/GCP_EXECUTION_CUTIN.md",
+        "size": 3218
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase1-execution/docs/NEW_MACHINE_CODEX_PROMPTS.md",
+        "size": 39340
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase1-execution/docs/gcp_foundation/gcp_execution_validation_vm_status.json",
+        "size": 2174
+      },
+      {
+        "name": "bootstrap/2026-04-23/foundation-phase1-execution/docs/gcp_foundation/gcp_execution_validation_vm_status.md",
+        "size": 1604
+      }
+    ],
+    "codexalpaca-data-us": [],
+    "codexalpaca-runtime-us-central1": [],
+    "codexalpaca-transfer-922745393036": [
+      {
+        "name": "control-plane-sync/2026-04-23/gcp-foundation/docs/GCP_FOUNDATION_BOOTSTRAP.md",
+        "size": 4198
+      },
+      {
+        "name": "control-plane-sync/2026-04-23/gcp-foundation/docs/GCP_FOUNDATION_READINESS.md",
+        "size": 1954
+      },
+      {
+        "name": "control-plane-sync/2026-04-23/gcp-foundation/docs/GCP_MIGRATION_PLAN.md",
+        "size": 5850
+      },
+      {
+        "name": "control-plane-sync/2026-04-23/gcp-foundation/docs/GCP_OPERATING_BLUEPRINT.md",
+        "size": 8102
+      },
+      {
+        "name": "control-plane-sync/2026-04-23/gcp-foundation/docs/gcp_foundation/gcp_foundation_readiness.json",
+        "size": 8057
+      },
+      {
+        "name": "control-plane-sync/2026-04-23/gcp-foundation/docs/gcp_foundation/gcp_foundation_readiness.md",
+        "size": 4701
+      },
+      {
+        "name": "control-plane-sync/2026-04-23/gcp-foundation/docs/gcp_foundation/gcp_foundation_readiness_handoff.json",
+        "size": 1676
+      },
+      {
+        "name": "control-plane-sync/2026-04-23/gcp-foundation/docs/gcp_foundation/gcp_foundation_readiness_handoff.md",
+        "size": 1624
+      },
+      {
+        "name": "control-plane-sync/2026-04-23/gcp-foundation/manifest.json",
+        "size": 1974
+      },
+      {
+        "name": "project-stack-20260423_1616/CodexAlpacaTest-TradeMigratyion/.git/COMMIT_EDITMSG",
+        "size": 44
+      },
+      {
+        "name": "project-stack-20260423_1616/CodexAlpacaTest-TradeMigratyion/.git/FETCH_HEAD",
+        "size": 119
+      },
+      {
+        "name": "project-stack-20260423_1616/CodexAlpacaTest-TradeMigratyion/.git/HEAD",
+        "size": 21
+      },
+      {
+        "name": "project-stack-20260423_1616/CodexAlpacaTest-TradeMigratyion/.git/config",
+        "size": 358
+      },
+      {
+        "name": "project-stack-20260423_1616/CodexAlpacaTest-TradeMigratyion/.git/description",
+        "size": 73
+      },
+      {
+        "name": "project-stack-20260423_1616/CodexAlpacaTest-TradeMigratyion/.git/hooks/applypatch-msg.sample",
+        "size": 478
+      },
+      {
+        "name": "project-stack-20260423_1616/CodexAlpacaTest-TradeMigratyion/.git/hooks/commit-msg.sample",
+        "size": 896
+      },
+      {
+        "name": "project-stack-20260423_1616/CodexAlpacaTest-TradeMigratyion/.git/hooks/fsmonitor-watchman.sample",
+        "size": 4726
+      },
+      {
+        "name": "project-stack-20260423_1616/CodexAlpacaTest-TradeMigratyion/.git/hooks/post-update.sample",
+        "size": 189
+      },
+      {
+        "name": "project-stack-20260423_1616/CodexAlpacaTest-TradeMigratyion/.git/hooks/pre-applypatch.sample",
+        "size": 424
+      },
+      {
+        "name": "project-stack-20260423_1616/CodexAlpacaTest-TradeMigratyion/.git/hooks/pre-commit.sample",
+        "size": 1649
+      }
+    ],
+    "codexalpaca_cloudbuild": [
+      {
+        "name": "source/1776968050.877695-7ef3b69f30844f70bf91b097de0f1ccd.tgz",
+        "size": 428640
+      },
+      {
+        "name": "source/1776969394.226399-e5008cc4eb6041b1a12f1b6212657df6.tgz",
+        "size": 431024
+      }
+    ]
+  },
+  "service_accounts": [
+    "922745393036-compute@developer.gserviceaccount.com",
+    "multi-ticker-vm@codexalpaca.iam.gserviceaccount.com",
+    "ramzi-service-account@codexalpaca.iam.gserviceaccount.com",
+    "sa-bootstrap-admin@codexalpaca.iam.gserviceaccount.com",
+    "sa-ci-deployer@codexalpaca.iam.gserviceaccount.com",
+    "sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+    "sa-orchestrator@codexalpaca.iam.gserviceaccount.com",
+    "sa-research-batch@codexalpaca.iam.gserviceaccount.com"
+  ],
+  "instances": [
+    {
+      "name": "multi-ticker-trader-v1",
+      "zone": "us-central1-a",
+      "status": "RUNNING",
+      "machineType": "e2-standard-2",
+      "serviceAccount": "multi-ticker-vm@codexalpaca.iam.gserviceaccount.com",
+      "externalIp": "35.232.95.101",
+      "labels": {}
+    },
+    {
+      "name": "vm-execution-paper-01",
+      "zone": "us-east1-b",
+      "status": "RUNNING",
+      "machineType": "e2-standard-4",
+      "serviceAccount": "sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "externalIp": "34.139.193.220",
+      "labels": {
+        "plane": "execution",
+        "mode": "paper",
+        "stage": "validation",
+        "stack": "codexalpaca"
+      }
+    }
+  ],
+  "addresses": [
+    {
+      "name": "multi-ticker-trader-ip",
+      "address": "35.232.95.101",
+      "region": "us-central1",
+      "status": "IN_USE",
+      "users": [
+        "https://www.googleapis.com/compute/v1/projects/codexalpaca/zones/us-central1-a/instances/multi-ticker-trader-v1"
+      ]
+    },
+    {
+      "name": "ip-execution-paper-us-east1",
+      "address": "34.139.193.220",
+      "region": "us-east1",
+      "status": "IN_USE",
+      "users": [
+        "https://www.googleapis.com/compute/v1/projects/codexalpaca/zones/us-east1-b/instances/vm-execution-paper-01"
+      ]
+    }
+  ],
+  "firewall_rules": [
+    {
+      "name": "default-allow-icmp",
+      "network": "default",
+      "direction": "INGRESS",
+      "targetTags": [],
+      "sourceRanges": [
+        "0.0.0.0/0"
+      ]
+    },
+    {
+      "name": "default-allow-internal",
+      "network": "default",
+      "direction": "INGRESS",
+      "targetTags": [],
+      "sourceRanges": [
+        "10.128.0.0/9"
+      ]
+    },
+    {
+      "name": "default-allow-rdp",
+      "network": "default",
+      "direction": "INGRESS",
+      "targetTags": [],
+      "sourceRanges": [
+        "0.0.0.0/0"
+      ]
+    },
+    {
+      "name": "default-allow-ssh",
+      "network": "default",
+      "direction": "INGRESS",
+      "targetTags": [],
+      "sourceRanges": [
+        "0.0.0.0/0"
+      ]
+    },
+    {
+      "name": "fw-allow-iap-ssh-execution",
+      "network": "vpc-codex-core",
+      "direction": "INGRESS",
+      "targetTags": [
+        "iap-ssh"
+      ],
+      "sourceRanges": [
+        "35.235.240.0/20"
+      ]
+    }
+  ],
+  "networks": [
+    {
+      "name": "default",
+      "autoCreateSubnetworks": true,
+      "subnetCount": 42
+    },
+    {
+      "name": "vpc-codex-core",
+      "autoCreateSubnetworks": false,
+      "subnetCount": 1
+    }
+  ],
+  "subnetworks": [
+    {
+      "name": "default",
+      "region": "us-central1",
+      "network": "default",
+      "ipCidrRange": "10.128.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "europe-west1",
+      "network": "default",
+      "ipCidrRange": "10.132.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "us-west1",
+      "network": "default",
+      "ipCidrRange": "10.138.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "asia-east1",
+      "network": "default",
+      "ipCidrRange": "10.140.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "us-east1",
+      "network": "default",
+      "ipCidrRange": "10.142.0.0/20"
+    },
+    {
+      "name": "subnet-us-east1-core",
+      "region": "us-east1",
+      "network": "vpc-codex-core",
+      "ipCidrRange": "10.10.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "asia-northeast1",
+      "network": "default",
+      "ipCidrRange": "10.146.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "asia-southeast1",
+      "network": "default",
+      "ipCidrRange": "10.148.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "us-east4",
+      "network": "default",
+      "ipCidrRange": "10.150.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "australia-southeast1",
+      "network": "default",
+      "ipCidrRange": "10.152.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "europe-west2",
+      "network": "default",
+      "ipCidrRange": "10.154.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "europe-west3",
+      "network": "default",
+      "ipCidrRange": "10.156.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "southamerica-east1",
+      "network": "default",
+      "ipCidrRange": "10.158.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "asia-south1",
+      "network": "default",
+      "ipCidrRange": "10.160.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "northamerica-northeast1",
+      "network": "default",
+      "ipCidrRange": "10.162.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "europe-west4",
+      "network": "default",
+      "ipCidrRange": "10.164.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "europe-north1",
+      "network": "default",
+      "ipCidrRange": "10.166.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "us-west2",
+      "network": "default",
+      "ipCidrRange": "10.168.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "asia-east2",
+      "network": "default",
+      "ipCidrRange": "10.170.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "europe-west6",
+      "network": "default",
+      "ipCidrRange": "10.172.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "asia-northeast2",
+      "network": "default",
+      "ipCidrRange": "10.174.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "asia-northeast3",
+      "network": "default",
+      "ipCidrRange": "10.178.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "us-west3",
+      "network": "default",
+      "ipCidrRange": "10.180.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "us-west4",
+      "network": "default",
+      "ipCidrRange": "10.182.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "asia-southeast2",
+      "network": "default",
+      "ipCidrRange": "10.184.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "europe-central2",
+      "network": "default",
+      "ipCidrRange": "10.186.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "northamerica-northeast2",
+      "network": "default",
+      "ipCidrRange": "10.188.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "asia-south2",
+      "network": "default",
+      "ipCidrRange": "10.190.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "australia-southeast2",
+      "network": "default",
+      "ipCidrRange": "10.192.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "southamerica-west1",
+      "network": "default",
+      "ipCidrRange": "10.194.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "europe-west8",
+      "network": "default",
+      "ipCidrRange": "10.198.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "europe-west9",
+      "network": "default",
+      "ipCidrRange": "10.200.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "us-east5",
+      "network": "default",
+      "ipCidrRange": "10.202.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "europe-southwest1",
+      "network": "default",
+      "ipCidrRange": "10.204.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "us-south1",
+      "network": "default",
+      "ipCidrRange": "10.206.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "me-west1",
+      "network": "default",
+      "ipCidrRange": "10.208.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "europe-west12",
+      "network": "default",
+      "ipCidrRange": "10.210.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "me-central1",
+      "network": "default",
+      "ipCidrRange": "10.212.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "europe-west10",
+      "network": "default",
+      "ipCidrRange": "10.214.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "africa-south1",
+      "network": "default",
+      "ipCidrRange": "10.218.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "northamerica-south1",
+      "network": "default",
+      "ipCidrRange": "10.224.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "europe-north2",
+      "network": "default",
+      "ipCidrRange": "10.226.0.0/20"
+    },
+    {
+      "name": "default",
+      "region": "asia-southeast3",
+      "network": "default",
+      "ipCidrRange": "10.232.0.0/20"
+    }
+  ],
+  "artifact_repositories": [
+    {
+      "name": "trading",
+      "location": "us-east1",
+      "format": "DOCKER"
+    },
+    {
+      "name": "codexalpaca-containers",
+      "location": "us-central1",
+      "format": "DOCKER"
+    }
+  ],
+  "secrets": [
+    "execution-alpaca-paper-api-key",
+    "execution-alpaca-paper-secret-key",
+    "multi-ticker-vm-env",
+    "notification-discord-webhook-url",
+    "notification-email-password",
+    "notification-ntfy-access-token"
+  ],
+  "workflows": [],
+  "batch_jobs": [],
+  "scheduler_jobs": [],
+  "project_iam_bindings": [
+    {
+      "role": "roles/artifactregistry.reader",
+      "members": [
+        "serviceAccount:multi-ticker-vm@codexalpaca.iam.gserviceaccount.com",
+        "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+        "serviceAccount:sa-research-batch@codexalpaca.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/compute.osAdminLogin",
+      "members": [
+        "serviceAccount:ramzi-service-account@codexalpaca.iam.gserviceaccount.com",
+        "user:abisaabr19@gmail.com"
+      ]
+    },
+    {
+      "role": "roles/compute.viewer",
+      "members": [
+        "serviceAccount:ramzi-service-account@codexalpaca.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/iap.tunnelResourceAccessor",
+      "members": [
+        "serviceAccount:ramzi-service-account@codexalpaca.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/logging.logWriter",
+      "members": [
+        "serviceAccount:multi-ticker-vm@codexalpaca.iam.gserviceaccount.com",
+        "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+        "serviceAccount:sa-orchestrator@codexalpaca.iam.gserviceaccount.com",
+        "serviceAccount:sa-research-batch@codexalpaca.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/monitoring.metricWriter",
+      "members": [
+        "serviceAccount:multi-ticker-vm@codexalpaca.iam.gserviceaccount.com",
+        "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+        "serviceAccount:sa-orchestrator@codexalpaca.iam.gserviceaccount.com",
+        "serviceAccount:sa-research-batch@codexalpaca.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/owner",
+      "members": [
+        "serviceAccount:ramzi-service-account@codexalpaca.iam.gserviceaccount.com",
+        "serviceAccount:sa-bootstrap-admin@codexalpaca.iam.gserviceaccount.com",
+        "user:abisaabr19@gmail.com"
+      ]
+    },
+    {
+      "role": "roles/secretmanager.secretAccessor",
+      "members": [
+        "serviceAccount:multi-ticker-vm@codexalpaca.iam.gserviceaccount.com",
+        "serviceAccount:sa-execution-runner@codexalpaca.iam.gserviceaccount.com"
+      ]
+    },
+    {
+      "role": "roles/storage.objectAdmin",
+      "members": [
+        "serviceAccount:multi-ticker-vm@codexalpaca.iam.gserviceaccount.com"
+      ]
+    }
+  ],
+  "managed_execution_footprint": [
+    {
+      "name": "vm-execution-paper-01",
+      "zone": "us-east1-b",
+      "status": "RUNNING",
+      "serviceAccount": "sa-execution-runner@codexalpaca.iam.gserviceaccount.com",
+      "labels": {
+        "plane": "execution",
+        "mode": "paper",
+        "stage": "validation",
+        "stack": "codexalpaca"
+      }
+    }
+  ],
+  "unmanaged_or_unmodeled_resources": [
+    {
+      "resource_type": "compute_instance",
+      "name": "multi-ticker-trader-v1",
+      "reason": "running outside the codified execution-validation footprint"
+    },
+    {
+      "resource_type": "bucket",
+      "name": "codexalpaca-runtime-us-central1",
+      "reason": "not part of the codified role-separated storage foundation"
+    },
+    {
+      "resource_type": "bucket",
+      "name": "codexalpaca-transfer-922745393036",
+      "reason": "not part of the codified role-separated storage foundation"
+    },
+    {
+      "resource_type": "bucket",
+      "name": "codexalpaca_cloudbuild",
+      "reason": "not part of the codified role-separated storage foundation"
+    },
+    {
+      "resource_type": "service_account",
+      "name": "multi-ticker-vm@codexalpaca.iam.gserviceaccount.com",
+      "reason": "not part of the codified runtime identity set"
+    },
+    {
+      "resource_type": "network",
+      "name": "default",
+      "reason": "default network remains enabled and broad"
+    }
+  ],
+  "highest_risk_findings": [
+    "Project-level Owner remains granted to service accounts, including the bootstrap identity and ramzi-service-account; this is too broad for steady-state runtime operations.",
+    "A second running VM (`multi-ticker-trader-v1`) and its supporting runtime resources exist outside the codified control-plane rollout, creating architecture drift and possible execution ambiguity.",
+    "The default VPC network still exists alongside the intended `vpc-codex-core`, which weakens network posture and can hide ungoverned resources.",
+    "Cloud Batch, Workflows, and Cloud Scheduler APIs are enabled, but there are no codified jobs/workflows/schedules yet; orchestration capability exists without an institutional deployment layer.",
+    "We have a validation-grade execution VM, but not yet a cloud-backed shared execution lease, so the first broker-facing cloud session still depends on an explicit exclusive operator window."
+  ],
+  "immediate_recommendations": [
+    "Freeze architecture drift by classifying `multi-ticker-trader-v1`, `multi-ticker-vm`, `multi-ticker-vm-env`, `codexalpaca-runtime-us-central1`, and `codexalpaca-containers` as either formalized or decommissioned.",
+    "Step down IAM by removing project-level Owner from service accounts after replacing it with narrowly scoped runtime and bootstrap roles.",
+    "Adopt `vpc-codex-core` as the only sanctioned runtime network and plan retirement or explicit quarantine of default-network usage.",
+    "Use the green headless validation packet to run one trusted validation paper session only during an explicitly exclusive paper-account window.",
+    "Build the missing orchestration layer next: Cloud Build/Artifact Registry image pipeline, Workflows/Scheduler control plane, and Batch-backed research execution."
+  ]
+}
