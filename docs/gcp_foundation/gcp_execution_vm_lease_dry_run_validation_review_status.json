@@ -1,0 +1,327 @@
+{
+  "generated_at": "2026-04-23T16:02:58.708892-04:00",
+  "project_id": "codexalpaca",
+  "vm_name": "vm-execution-paper-01",
+  "run_id": "vm-execution-paper-01-20260423-160102",
+  "validation_result_gcs_prefix": "gs://codexalpaca-control-us/bootstrap/2026-04-23/foundation-phase17-lease-dry-run-validation/vm-execution-paper-01-20260423-160102",
+  "review_state": "passed",
+  "observed_objects": [
+    "bootstrap/2026-04-23/foundation-phase17-lease-dry-run-validation/vm-execution-paper-01-20260423-160102/doctor.json",
+    "bootstrap/2026-04-23/foundation-phase17-lease-dry-run-validation/vm-execution-paper-01-20260423-160102/launch_result.json",
+    "bootstrap/2026-04-23/foundation-phase17-lease-dry-run-validation/vm-execution-paper-01-20260423-160102/lease_validation.log",
+    "bootstrap/2026-04-23/foundation-phase17-lease-dry-run-validation/vm-execution-paper-01-20260423-160102/lease_validation_status.json",
+    "bootstrap/2026-04-23/foundation-phase17-lease-dry-run-validation/vm-execution-paper-01-20260423-160102/pytest_targeted.log",
+    "bootstrap/2026-04-23/foundation-phase17-lease-dry-run-validation/vm-execution-paper-01-20260423-160102/validation-run.log"
+  ],
+  "launch_result": {
+    "generated_at": "2026-04-23T20:02:50.096363+00:00",
+    "run_id": "vm-execution-paper-01-20260423-160102",
+    "validation_exit_code": 0,
+    "lease_validation_status_present": true,
+    "doctor_present": true,
+    "pytest_log_present": true,
+    "log_path": "/var/log/codexalpaca/lease-validation-vm-execution-paper-01-20260423-160102.log",
+    "lease_validation_status": {
+      "generated_at": "2026-04-23T20:02:47.351537+00:00",
+      "vm_name": "vm-execution-paper-01",
+      "lease_uri": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+      "expected_static_ip": "34.139.193.220",
+      "observed_external_ip": "34.139.193.220",
+      "targeted_pytest_exit_code": 0,
+      "lease_backend": "gcs_generation_match",
+      "machine_label": "vm-execution-paper-01",
+      "trader_submit_paper_orders": false,
+      "ownership_lease_class": "GenerationMatchOwnershipLease",
+      "initial_record_present": false,
+      "acquired": {
+        "enabled": true,
+        "acquired": true,
+        "held_by_self": true,
+        "owner_id": "ed0592ce86865bb8173c0dff",
+        "owner_label": "vm-execution-paper-01",
+        "blocked_by_owner_id": null,
+        "blocked_by_owner_label": null,
+        "lease_path": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+        "heartbeat_at": "2026-04-23T20:00:00+00:00",
+        "expires_at": "2026-04-23T20:03:00+00:00",
+        "generation": "1776974567929922",
+        "roles": {
+          "portfolio_trader": {
+            "heartbeat_at": "2026-04-23T20:00:00+00:00",
+            "expires_at": "2026-04-23T20:03:00+00:00",
+            "pid": "1317",
+            "role": "portfolio_trader",
+            "hostname": "vm-execution-paper-01",
+            "username": "root",
+            "repo_root": "/opt/codexalpaca/codexalpaca_repo"
+          }
+        }
+      },
+      "blocked": {
+        "enabled": true,
+        "acquired": false,
+        "held_by_self": false,
+        "owner_id": "ed0592ce86865bb8173c0dff",
+        "owner_label": "vm-execution-paper-01",
+        "blocked_by_owner_id": "ed0592ce86865bb8173c0dff",
+        "blocked_by_owner_label": "vm-execution-paper-01",
+        "lease_path": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+        "heartbeat_at": "2026-04-23T20:00:00+00:00",
+        "expires_at": "2026-04-23T20:03:00+00:00",
+        "generation": "1776974567929922",
+        "roles": {
+          "portfolio_trader": {
+            "heartbeat_at": "2026-04-23T20:00:00+00:00",
+            "expires_at": "2026-04-23T20:03:00+00:00",
+            "pid": "1317",
+            "role": "portfolio_trader",
+            "hostname": "vm-execution-paper-01",
+            "username": "root",
+            "repo_root": "/opt/codexalpaca/codexalpaca_repo"
+          }
+        }
+      },
+      "renewed": {
+        "enabled": true,
+        "acquired": true,
+        "held_by_self": true,
+        "owner_id": "ed0592ce86865bb8173c0dff",
+        "owner_label": "vm-execution-paper-01",
+        "blocked_by_owner_id": null,
+        "blocked_by_owner_label": null,
+        "lease_path": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+        "heartbeat_at": "2026-04-23T20:00:00+00:00",
+        "expires_at": "2026-04-23T20:03:00+00:00",
+        "generation": "1776974568356423",
+        "roles": {
+          "portfolio_trader": {
+            "heartbeat_at": "2026-04-23T20:00:00+00:00",
+            "expires_at": "2026-04-23T20:03:00+00:00",
+            "pid": "1317",
+            "role": "portfolio_trader",
+            "hostname": "vm-execution-paper-01",
+            "username": "root",
+            "repo_root": "/opt/codexalpaca/codexalpaca_repo"
+          }
+        }
+      },
+      "takeover": {
+        "enabled": true,
+        "acquired": true,
+        "held_by_self": true,
+        "owner_id": "takeover-owner",
+        "owner_label": "takeover-owner@desktop",
+        "blocked_by_owner_id": null,
+        "blocked_by_owner_label": null,
+        "lease_path": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+        "heartbeat_at": "2026-04-23T20:10:00+00:00",
+        "expires_at": "2026-04-23T20:13:00+00:00",
+        "generation": "1776974568807928",
+        "roles": {
+          "portfolio_trader": {
+            "heartbeat_at": "2026-04-23T20:10:00+00:00",
+            "expires_at": "2026-04-23T20:13:00+00:00",
+            "pid": "1317",
+            "phase": "takeover"
+          }
+        }
+      },
+      "takeover_renewed": {
+        "enabled": true,
+        "acquired": true,
+        "held_by_self": true,
+        "owner_id": "takeover-owner",
+        "owner_label": "takeover-owner@desktop",
+        "blocked_by_owner_id": null,
+        "blocked_by_owner_label": null,
+        "lease_path": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+        "heartbeat_at": "2026-04-23T20:10:00+00:00",
+        "expires_at": "2026-04-23T20:13:00+00:00",
+        "generation": "1776974569184008",
+        "roles": {
+          "portfolio_trader": {
+            "heartbeat_at": "2026-04-23T20:10:00+00:00",
+            "expires_at": "2026-04-23T20:13:00+00:00",
+            "pid": "1317",
+            "phase": "takeover_renew"
+          }
+        }
+      },
+      "released": {
+        "enabled": true,
+        "acquired": false,
+        "held_by_self": false,
+        "owner_id": null,
+        "owner_label": null,
+        "blocked_by_owner_id": null,
+        "blocked_by_owner_label": null,
+        "lease_path": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+        "heartbeat_at": null,
+        "expires_at": null,
+        "generation": null,
+        "roles": {}
+      },
+      "final_record_present": false,
+      "final_record": null,
+      "lease_dry_run_passed": true,
+      "cleanup_steps": [
+        "trader_release={\"acquired\": false, \"blocked_by_owner_id\": null, \"blocked_by_owner_label\": null, \"enabled\": true, \"expires_at\": null, \"generation\": null, \"heartbeat_at\": null, \"held_by_self\": false, \"lease_path\": \"gs://codexalpaca-control-us/leases/paper-execution/lease.json\", \"owner_id\": null, \"owner_label\": null, \"roles\": {}}",
+        "post_cleanup_record_present=False"
+      ],
+      "lease_exit_code": 0
+    }
+  },
+  "lease_validation_status": {
+    "generated_at": "2026-04-23T20:02:47.351537+00:00",
+    "vm_name": "vm-execution-paper-01",
+    "lease_uri": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+    "expected_static_ip": "34.139.193.220",
+    "observed_external_ip": "34.139.193.220",
+    "targeted_pytest_exit_code": 0,
+    "lease_backend": "gcs_generation_match",
+    "machine_label": "vm-execution-paper-01",
+    "trader_submit_paper_orders": false,
+    "ownership_lease_class": "GenerationMatchOwnershipLease",
+    "initial_record_present": false,
+    "acquired": {
+      "enabled": true,
+      "acquired": true,
+      "held_by_self": true,
+      "owner_id": "ed0592ce86865bb8173c0dff",
+      "owner_label": "vm-execution-paper-01",
+      "blocked_by_owner_id": null,
+      "blocked_by_owner_label": null,
+      "lease_path": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+      "heartbeat_at": "2026-04-23T20:00:00+00:00",
+      "expires_at": "2026-04-23T20:03:00+00:00",
+      "generation": "1776974567929922",
+      "roles": {
+        "portfolio_trader": {
+          "heartbeat_at": "2026-04-23T20:00:00+00:00",
+          "expires_at": "2026-04-23T20:03:00+00:00",
+          "pid": "1317",
+          "role": "portfolio_trader",
+          "hostname": "vm-execution-paper-01",
+          "username": "root",
+          "repo_root": "/opt/codexalpaca/codexalpaca_repo"
+        }
+      }
+    },
+    "blocked": {
+      "enabled": true,
+      "acquired": false,
+      "held_by_self": false,
+      "owner_id": "ed0592ce86865bb8173c0dff",
+      "owner_label": "vm-execution-paper-01",
+      "blocked_by_owner_id": "ed0592ce86865bb8173c0dff",
+      "blocked_by_owner_label": "vm-execution-paper-01",
+      "lease_path": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+      "heartbeat_at": "2026-04-23T20:00:00+00:00",
+      "expires_at": "2026-04-23T20:03:00+00:00",
+      "generation": "1776974567929922",
+      "roles": {
+        "portfolio_trader": {
+          "heartbeat_at": "2026-04-23T20:00:00+00:00",
+          "expires_at": "2026-04-23T20:03:00+00:00",
+          "pid": "1317",
+          "role": "portfolio_trader",
+          "hostname": "vm-execution-paper-01",
+          "username": "root",
+          "repo_root": "/opt/codexalpaca/codexalpaca_repo"
+        }
+      }
+    },
+    "renewed": {
+      "enabled": true,
+      "acquired": true,
+      "held_by_self": true,
+      "owner_id": "ed0592ce86865bb8173c0dff",
+      "owner_label": "vm-execution-paper-01",
+      "blocked_by_owner_id": null,
+      "blocked_by_owner_label": null,
+      "lease_path": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+      "heartbeat_at": "2026-04-23T20:00:00+00:00",
+      "expires_at": "2026-04-23T20:03:00+00:00",
+      "generation": "1776974568356423",
+      "roles": {
+        "portfolio_trader": {
+          "heartbeat_at": "2026-04-23T20:00:00+00:00",
+          "expires_at": "2026-04-23T20:03:00+00:00",
+          "pid": "1317",
+          "role": "portfolio_trader",
+          "hostname": "vm-execution-paper-01",
+          "username": "root",
+          "repo_root": "/opt/codexalpaca/codexalpaca_repo"
+        }
+      }
+    },
+    "takeover": {
+      "enabled": true,
+      "acquired": true,
+      "held_by_self": true,
+      "owner_id": "takeover-owner",
+      "owner_label": "takeover-owner@desktop",
+      "blocked_by_owner_id": null,
+      "blocked_by_owner_label": null,
+      "lease_path": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+      "heartbeat_at": "2026-04-23T20:10:00+00:00",
+      "expires_at": "2026-04-23T20:13:00+00:00",
+      "generation": "1776974568807928",
+      "roles": {
+        "portfolio_trader": {
+          "heartbeat_at": "2026-04-23T20:10:00+00:00",
+          "expires_at": "2026-04-23T20:13:00+00:00",
+          "pid": "1317",
+          "phase": "takeover"
+        }
+      }
+    },
+    "takeover_renewed": {
+      "enabled": true,
+      "acquired": true,
+      "held_by_self": true,
+      "owner_id": "takeover-owner",
+      "owner_label": "takeover-owner@desktop",
+      "blocked_by_owner_id": null,
+      "blocked_by_owner_label": null,
+      "lease_path": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+      "heartbeat_at": "2026-04-23T20:10:00+00:00",
+      "expires_at": "2026-04-23T20:13:00+00:00",
+      "generation": "1776974569184008",
+      "roles": {
+        "portfolio_trader": {
+          "heartbeat_at": "2026-04-23T20:10:00+00:00",
+          "expires_at": "2026-04-23T20:13:00+00:00",
+          "pid": "1317",
+          "phase": "takeover_renew"
+        }
+      }
+    },
+    "released": {
+      "enabled": true,
+      "acquired": false,
+      "held_by_self": false,
+      "owner_id": null,
+      "owner_label": null,
+      "blocked_by_owner_id": null,
+      "blocked_by_owner_label": null,
+      "lease_path": "gs://codexalpaca-control-us/leases/paper-execution/lease.json",
+      "heartbeat_at": null,
+      "expires_at": null,
+      "generation": null,
+      "roles": {}
+    },
+    "final_record_present": false,
+    "final_record": null,
+    "lease_dry_run_passed": true,
+    "cleanup_steps": [
+      "trader_release={\"acquired\": false, \"blocked_by_owner_id\": null, \"blocked_by_owner_label\": null, \"enabled\": true, \"expires_at\": null, \"generation\": null, \"heartbeat_at\": null, \"held_by_self\": false, \"lease_path\": \"gs://codexalpaca-control-us/leases/paper-execution/lease.json\", \"owner_id\": null, \"owner_label\": null, \"roles\": {}}",
+      "post_cleanup_record_present=False"
+    ],
+    "lease_exit_code": 0
+  },
+  "next_actions": [
+    "The sanctioned VM proved the shared execution lease in dry-run mode without entering the trading loop.",
+    "Keep lease enforcement off by default and use this packet as the prerequisite for the next trusted validation-session discussion."
+  ]
+}

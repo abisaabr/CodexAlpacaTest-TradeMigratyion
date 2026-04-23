@@ -43,6 +43,7 @@ Before deciding what the new machine should do next, also read `docs/TOURNAMENT_
 Before trying to produce the next trusted paper session, also read `docs/EXECUTION_EVIDENCE_CONTRACT.md` and inspect `docs/execution_evidence/execution_evidence_contract_handoff.md` so the machine knows exactly what the next session must leave behind to count as unlock-worthy evidence.
 Before treating the cloud shared execution lease as ready, also read `docs/GCP_SHARED_EXECUTION_LEASE_IMPLEMENTATION.md` and inspect `docs/gcp_foundation/gcp_shared_execution_lease_implementation_handoff.md` so the machine understands whether the runner only has dry-run helpers or a fully wired lease path.
 Before trying to validate the live GCS-backed execution lease on the sanctioned VM, also read `docs/GCP_SHARED_EXECUTION_LEASE_RUNTIME_WIRING.md` and inspect `docs/gcp_foundation/gcp_shared_execution_lease_runtime_wiring_handoff.md` so the machine knows whether the runner has an optional wired backend or only a design/helper seam.
+Before moving the sanctioned VM toward a trusted validation paper session, also read `docs/GCP_EXECUTION_VM_LEASE_DRY_RUN_VALIDATION.md`, `docs/GCP_EXECUTION_VM_LEASE_DRY_RUN_VALIDATION_REVIEW.md`, and inspect `docs/gcp_foundation/gcp_execution_vm_lease_dry_run_validation_handoff.md` so the machine treats the cloud lease as proven only after the headless dry-run packet is clean.
 Before starting an overnight mission, also read `docs/OVERNIGHT_PHASED_PLAN.md` and inspect `docs/overnight_plan/overnight_phased_plan_handoff.md` so the new machine can align itself with tonight's current unlocked profile, execution evidence mission, and by-morning success definition instead of improvising its own night plan.
 Do not treat a planned or executable profile as automatically safe to activate just because it is listed in the registry; also respect the profile's execution evidence floor, broker-audit requirements, and exit-telemetry requirements from the current tournament profile handoff.
 Treat a paper session as unlock-grade evidence only if its session summary is stamped with the current runner unlock baseline from a clean runner checkout; older or dirty-runner sessions are still useful for calibration, but not for clearing blocked tournament tiers.
@@ -929,6 +930,7 @@ Read first:
 - docs\GCP_EXECUTION_TRUSTED_VALIDATION_SESSION.md
 - docs\gcp_foundation\gcp_execution_trusted_validation_session_status.md
 - docs\gcp_foundation\gcp_execution_vm_headless_validation_review_status.md
+- docs\gcp_foundation\gcp_execution_vm_lease_dry_run_validation_handoff.md
 
 Then act as the cloud execution readiness steward.
 
