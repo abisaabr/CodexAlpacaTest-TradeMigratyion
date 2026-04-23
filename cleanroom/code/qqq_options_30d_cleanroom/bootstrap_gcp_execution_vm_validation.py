@@ -158,6 +158,12 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
+def write_unix_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="\n") as fh:
+        fh.write(text)
+
+
 def write_markdown(path: Path, payload: dict[str, Any]) -> None:
     lines: list[str] = []
     lines.append("# GCP Execution VM Validation Status")
@@ -217,7 +223,7 @@ def main() -> None:
         expected_static_ip=args.expected_static_ip,
         runtime_bootstrap_script_gs_uri=runtime_bootstrap_script_gs_uri,
     )
-    local_validation_script_path.write_text(script_text, encoding="utf-8")
+    write_unix_text(local_validation_script_path, script_text)
 
     creds = service_account.Credentials.from_service_account_file(str(credentials_json))
     client = storage.Client(project=args.project_id, credentials=creds)

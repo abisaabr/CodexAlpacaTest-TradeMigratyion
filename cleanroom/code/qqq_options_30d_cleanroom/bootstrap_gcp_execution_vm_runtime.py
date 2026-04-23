@@ -50,6 +50,10 @@ EXCLUDED_NAMES = {
     ".env",
     "__pycache__",
 }
+UNIX_NORMALIZED_SUFFIXES = {
+    ".sh",
+    ".bash",
+}
 NON_SECRET_ENV_EXCLUDE = {name for name, _, _ in SECRET_SPECS} | {
     "APCA_API_KEY_ID",
     "APCA_API_SECRET_KEY",
@@ -115,11 +119,14 @@ def build_source_bundle(repo_root: Path, output_zip: Path) -> tuple[int, str]:
             if not should_include(path, repo_root):
                 continue
             relative = path.relative_to(repo_root)
-            zf.write(path, arcname=relative.as_posix())
             data = path.read_bytes()
+            archive_data = data
+            if path.suffix.lower() in UNIX_NORMALIZED_SUFFIXES:
+                archive_data = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+            zf.writestr(relative.as_posix(), archive_data)
             hasher.update(relative.as_posix().encode("utf-8"))
             hasher.update(b"\0")
-            hasher.update(data)
+            hasher.update(archive_data)
             file_count += 1
     return file_count, hasher.hexdigest()
 
@@ -180,6 +187,9 @@ STAGING_DIR="$WORK_DIR/staging"
 ARCHIVE_PATH="$WORK_DIR/runtime_bundle.zip"
 STATUS_PATH="$WORK_DIR/runtime_bootstrap_status.json"
 ENV_PATH="$EXECUTION_REPO_DIR/.env"
+export EXECUTION_REPO_DIR
+export STAGING_DIR
+export ARCHIVE_PATH
 
 mkdir -p "$WORK_DIR" "$STAGING_DIR" "$(dirname "$EXECUTION_REPO_DIR")"
 
@@ -227,7 +237,16 @@ write_secret_env() {{
 gcs_download "$BUNDLE_BUCKET" "$BUNDLE_OBJECT" "$ARCHIVE_PATH"
 rm -rf "$STAGING_DIR" "$EXECUTION_REPO_DIR"
 mkdir -p "$STAGING_DIR"
-unzip -q "$ARCHIVE_PATH" -d "$STAGING_DIR"
+python3 - <<'PY'
+import os
+import zipfile
+from pathlib import Path
+
+archive_path = Path(os.environ["ARCHIVE_PATH"])
+staging_dir = Path(os.environ["STAGING_DIR"])
+with zipfile.ZipFile(archive_path, "r") as zf:
+    zf.extractall(staging_dir)
+PY
 mv "$STAGING_DIR" "$EXECUTION_REPO_DIR"
 
 cat /dev/null > "$ENV_PATH"
@@ -269,6 +288,12 @@ def upload_file(client: storage.Client, bucket_name: str, object_name: str, loca
 def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def write_unix_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="\n") as fh:
+        fh.write(text)
 
 
 def write_markdown(path: Path, payload: dict[str, Any]) -> None:
@@ -359,7 +384,7 @@ def main() -> None:
         non_secret_env=non_secret_env,
         secret_specs=SECRET_SPECS,
     )
-    bootstrap_script_local_path.write_text(script_text, encoding="utf-8")
+    write_unix_text(bootstrap_script_local_path, script_text)
 
     creds = service_account.Credentials.from_service_account_file(str(credentials_json))
     client = storage.Client(project=args.project_id, credentials=creds)

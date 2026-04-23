@@ -866,3 +866,52 @@ Then act as the post-session assimilation steward for the new machine.
    - whether the refreshed evidence is strong enough to reassess the next blocked profile
 4. Do not modify the live manifest, do not change risk policy, and do not commit raw session exhaust or raw trade logs in this step.
 ```
+
+## 27. Launch Headless GCP Execution VM Validation
+
+```text
+Open:
+
+1. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs\GCP_EXECUTION_ACCESS_READINESS.md
+- docs\GCP_EXECUTION_VM_VALIDATION.md
+- docs\GCP_EXECUTION_VM_HEADLESS_VALIDATION.md
+- docs\gcp_foundation\gcp_execution_access_readiness_status.md
+- docs\gcp_foundation\gcp_execution_vm_validation_status.md
+
+Then act as the cloud execution validation steward.
+
+1. Confirm the access gate is `ready_for_operator_validation`.
+2. Launch the governed headless validation run for `vm-execution-paper-01`.
+3. Report:
+   - the launched validation run id
+   - the GCS result prefix
+   - whether the VM reset was triggered successfully
+   - which artifacts should appear before the run is considered reviewable
+4. Do not start trading, do not change the live manifest, and do not promote the VM to canonical execution in this step.
+```
+
+## 28. Review Headless GCP Execution VM Validation
+
+```text
+Open:
+
+1. C:\Users\<you>\Downloads\CodexAlpacaTest-TradeMigratyion
+
+Read first:
+- docs\GCP_EXECUTION_VM_HEADLESS_VALIDATION.md
+- docs\GCP_EXECUTION_VM_HEADLESS_VALIDATION_REVIEW.md
+- docs\gcp_foundation\gcp_execution_vm_headless_validation_status.md
+
+Then act as the cloud execution validation reviewer.
+
+1. Refresh the headless validation review packet.
+2. Report:
+   - the current review state
+   - which result objects are present in the GCS prefix
+   - whether the VM validation gate is still pending, passed, or failed
+   - what must happen next before the VM can move toward a trusted validation session
+3. Do not start trading and do not promote the VM to canonical execution in this step.
+```
