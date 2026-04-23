@@ -1,0 +1,81 @@
+# GCP Execution Trusted Validation Operator Packet
+
+## Snapshot
+
+- Generated at: `2026-04-23T17:31:08.785447-04:00`
+- Operator packet state: `ready_to_arm_window`
+- Project ID: `codexalpaca`
+- VM name: `vm-execution-paper-01`
+- Runner branch: `codex/qqq-paper-portfolio`
+- Runner commit: `a6cf50aa424a51440f5744ec0c634150e82fc7c0`
+
+## Current Gates
+
+- Exclusive window status: `awaiting_operator_confirmation`
+- Trusted validation readiness: `awaiting_exclusive_execution_window`
+- Launch pack state: `awaiting_window_arm`
+- Closeout status: `window_already_closed`
+
+## Commands
+
+### Arm Window
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanroom\code\qqq_options_30d_cleanroom\arm_gcp_execution_exclusive_window.ps1" -ControlPlaneRoot "<control-plane-root>" -VmName "vm-execution-paper-01" -ConfirmedBy "<confirmed-by>" -WindowStartsAt "<window-starts-at>" -WindowExpiresAt "<window-expires-at>" -ParallelPathState "paused" -MirrorToGcs
+```
+
+### Operator SSH
+
+```bash
+gcloud compute ssh vm-execution-paper-01 --project codexalpaca --zone us-east1-b --tunnel-through-iap
+```
+
+### VM Session
+
+```bash
+cd /opt/codexalpaca/codexalpaca_repo && ./.venv/bin/python scripts/run_multi_ticker_portfolio_paper_trader.py --portfolio-config config/multi_ticker_paper_portfolio.yaml --submit-paper-orders
+```
+
+### Post-Session Assimilation
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanroom\code\qqq_options_30d_cleanroom\launch_post_session_assimilation.ps1" -ControlPlaneRoot "<control-plane-root>" -RunnerRepoRoot "<runner-repo-root>"
+```
+
+### Close Window
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanroom\code\qqq_options_30d_cleanroom\close_gcp_execution_exclusive_window.ps1" -ControlPlaneRoot "<control-plane-root>" -VmName "vm-execution-paper-01" -MirrorToGcs
+```
+
+## Lifecycle Steps
+
+- Pick a bounded exclusive window and confirm the temporary parallel runtime path is paused for that window.
+- Arm the exclusive window from the control-plane root and confirm the refreshed packets move to `ready_for_launch` / `ready_to_launch`.
+- SSH into the sanctioned VM through IAP.
+- Run the trusted validation session command on the VM without changing strategy selection or risk policy.
+- Run governed post-session assimilation immediately after the session ends.
+- Close the exclusive window and mirror the refreshed packet set to GCS.
+- Review the morning brief, execution calibration, tournament unlock, and execution evidence packets before any promotion decision.
+
+## Required Evidence
+
+- `broker-order audit`
+- `broker account-activity audit`
+- `ending broker-position snapshot`
+- `shutdown reconciliation`
+- `completed trade table with broker/local cashflow comparison`
+
+## Review Targets
+
+- `docs/morning_brief/morning_operator_brief.md`
+- `docs/execution_calibration/execution_calibration_handoff.md`
+- `docs/tournament_unlocks/tournament_unlock_handoff.md`
+- `docs/execution_evidence/execution_evidence_contract_handoff.md`
+
+## Guardrails
+
+- Do not arm the exclusive window until you are ready to actually reserve the paper-account slot.
+- Do not start a broker-facing session unless the refreshed exclusive-window packet says `ready_for_launch` and the launch pack says `ready_to_launch`.
+- Do not enable shared-lease enforcement by default during the first trusted validation session.
+- Do not skip post-session assimilation or closeout after the session ends.
