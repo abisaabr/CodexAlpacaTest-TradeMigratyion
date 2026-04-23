@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-04-23T14:50:38.694104-04:00",
+  "generated_at": "2026-04-23T16:05:39.766174-04:00",
   "project_id": "codexalpaca",
   "vm_name": "vm-execution-paper-01",
   "runner_branch": "codex/qqq-paper-portfolio",
-  "runner_commit": "d440c5d631aeb979d2ba5cebd5bbef7e83253d31",
+  "runner_commit": "a6cf50aa424a51440f5744ec0c634150e82fc7c0",
   "trusted_validation_readiness": "awaiting_exclusive_execution_window",
   "gate_checks": [
     {
@@ -23,12 +23,18 @@
       "status": "passed"
     },
     {
+      "name": "shared_execution_lease_dry_run_green",
+      "status": "passed"
+    },
+    {
       "name": "exclusive_execution_window_confirmed",
       "status": "operator_required"
     }
   ],
   "latest_validation_run_id": "vm-execution-paper-01-20260423-144414",
   "latest_validation_review_state": "passed",
+  "latest_lease_dry_run_run_id": "vm-execution-paper-01-20260423-160102",
+  "latest_lease_dry_run_review_state": "passed",
   "trusted_validation_session_command": "cd /opt/codexalpaca/codexalpaca_repo && ./.venv/bin/python scripts/run_multi_ticker_portfolio_paper_trader.py --portfolio-config config/multi_ticker_paper_portfolio.yaml --submit-paper-orders",
   "required_evidence": [
     "broker-order audit",
@@ -39,10 +45,11 @@
   ],
   "remaining_gates": [
     "An operator still needs to confirm that no other machine is actively running the shared paper account before the VM session starts.",
-    "We do not yet have a cloud-backed shared execution lease, so this first trusted validation session should happen in an explicitly exclusive operator window.",
+    "The shared execution lease is now proven in dry-run mode on the sanctioned VM, but enforcement is still intentionally off until a separate promotion decision says otherwise.",
     "The session must be followed immediately by governed post-session assimilation before any promotion decision."
   ],
   "next_actions": [
+    "Keep the shared execution lease in dry-run posture; do not switch default enforcement on as part of the first trusted validation session.",
     "Use the VM only in an explicitly exclusive paper-account window for the first trusted validation session.",
     "Run governed post-session assimilation immediately after the session finishes.",
     "Do not promote the VM to canonical execution until the trusted session evidence is reviewed cleanly."

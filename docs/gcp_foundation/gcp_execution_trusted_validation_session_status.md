@@ -2,12 +2,12 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T14:50:38.694104-04:00`
+- Generated at: `2026-04-23T16:05:39.766174-04:00`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
 - Readiness: `awaiting_exclusive_execution_window`
 - Runner branch: `codex/qqq-paper-portfolio`
-- Runner commit: `d440c5d631aeb979d2ba5cebd5bbef7e83253d31`
+- Runner commit: `a6cf50aa424a51440f5744ec0c634150e82fc7c0`
 
 ## Gates
 
@@ -15,6 +15,7 @@
 - `headless_validation_green`: `passed`
 - `runtime_secret_containers_seeded`: `passed`
 - `runner_branch_published`: `passed`
+- `shared_execution_lease_dry_run_green`: `passed`
 - `exclusive_execution_window_confirmed`: `operator_required`
 
 ## Proposed VM Command
@@ -34,11 +35,12 @@ cd /opt/codexalpaca/codexalpaca_repo && ./.venv/bin/python scripts/run_multi_tic
 ## Remaining Gates
 
 - An operator still needs to confirm that no other machine is actively running the shared paper account before the VM session starts.
-- We do not yet have a cloud-backed shared execution lease, so this first trusted validation session should happen in an explicitly exclusive operator window.
+- The shared execution lease is now proven in dry-run mode on the sanctioned VM, but enforcement is still intentionally off until a separate promotion decision says otherwise.
 - The session must be followed immediately by governed post-session assimilation before any promotion decision.
 
 ## Next Actions
 
+- Keep the shared execution lease in dry-run posture; do not switch default enforcement on as part of the first trusted validation session.
 - Use the VM only in an explicitly exclusive paper-account window for the first trusted validation session.
 - Run governed post-session assimilation immediately after the session finishes.
 - Do not promote the VM to canonical execution until the trusted session evidence is reviewed cleanly.
