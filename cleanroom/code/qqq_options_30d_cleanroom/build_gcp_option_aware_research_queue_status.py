@@ -47,6 +47,28 @@ def _load_json(path: Path) -> dict[str, Any]:
     return payload if isinstance(payload, dict) else {}
 
 
+def _next_step_contract(status: str) -> list[str]:
+    if status == "ready_for_option_aware_backtest":
+        return [
+            "Keep queued candidates research-only; promotion remains disabled.",
+            "Run option-aware entry/exit economics using the mirrored historical option bars and trades.",
+            "Produce per-trade option fill-cost/economics tables and train/test or walk-forward summaries.",
+            "Send candidates to strategy governance review only after option-aware evidence passes.",
+        ]
+    if status == "blocked_missing_option_market_data":
+        return [
+            "Keep all smoke candidates out of promotion until option-market-data blockers clear.",
+            "Download bounded historical option bars for representative selected contracts first.",
+            "Add option trades or quote/spread data before fill-cost calibration is trusted.",
+            "Run option-aware entry/exit economics and walk-forward summary before strategy governance review.",
+        ]
+    return [
+        "Repair missing or invalid option-aware queue inputs before continuing.",
+        "Keep all queued candidates out of promotion while the packet is blocked.",
+        "Regenerate the research summary and option-aware queue, then rebuild this status packet.",
+    ]
+
+
 def build_payload(
     *,
     queue_json: Path,
@@ -102,6 +124,8 @@ def build_payload(
             else "ready_for_option_aware_backtest"
         )
 
+    next_step_contract = _next_step_contract(status)
+
     return {
         "generated_at": datetime.now().astimezone().isoformat(),
         "status": status,
@@ -132,12 +156,7 @@ def build_payload(
             "option_aware_queue": f"{gcs_prefix}/option_aware_queue/option_aware_research_queue.json",
         },
         "issues": issues,
-        "next_step_contract": [
-            "Keep all smoke candidates out of promotion until option-market-data blockers clear.",
-            "Download bounded historical option bars for representative selected contracts first.",
-            "Add option trades or quote/spread data before fill-cost calibration is trusted.",
-            "Run option-aware entry/exit economics and walk-forward summary before strategy governance review.",
-        ],
+        "next_step_contract": next_step_contract,
     }
 
 
