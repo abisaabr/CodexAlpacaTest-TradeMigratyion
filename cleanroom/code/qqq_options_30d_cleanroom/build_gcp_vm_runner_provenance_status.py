@@ -125,6 +125,19 @@ def build_payload(
     else:
         status = "provenance_unstamped"
 
+    if status == "provenance_matched":
+        next_actions = [
+            "Keep the VM source stamp in place and refresh provenance after any future runner deployment.",
+            "Use this packet as source-attestation support only; the exclusive-window and broker-evidence gates still control launch and promotion.",
+            "Do not modify strategy selection or risk policy from this provenance packet.",
+        ]
+    else:
+        next_actions = [
+            "Add a lightweight deployment source stamp only after the VM source fingerprint matches the intended runner checkout.",
+            "Refresh this packet after source provenance is stamped.",
+            "Do not use unstamped VM source provenance to justify strategy promotion.",
+        ]
+
     return {
         "generated_at": datetime.now().astimezone().isoformat(),
         "status": status,
@@ -154,11 +167,7 @@ def build_payload(
             "If provenance is unstamped, treat the session as operationally bounded but not fully source-attested until post-session review confirms code identity.",
             "If the source fingerprint mismatches, reconcile the VM deployment before treating the session as trusted evidence.",
         ],
-        "next_actions": [
-            "Add a lightweight deployment source stamp only after the VM source fingerprint matches the intended runner checkout.",
-            "Refresh this packet after source provenance is stamped.",
-            "Do not use unstamped VM source provenance to justify strategy promotion.",
-        ],
+        "next_actions": next_actions,
     }
 
 
@@ -189,8 +198,11 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         "## Issues",
         "",
     ]
-    for issue in payload["issues"]:
-        lines.append(f"- `{issue['severity']}` `{issue['code']}`: {issue['message']}")
+    if payload["issues"]:
+        for issue in payload["issues"]:
+            lines.append(f"- `{issue['severity']}` `{issue['code']}`: {issue['message']}")
+    else:
+        lines.append("- none")
     lines.extend(["", "## Operator Read", ""])
     for item in payload["operator_read"]:
         lines.append(f"- {item}")

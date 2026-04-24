@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-24T10:20:18.063096-04:00",
+  "generated_at": "2026-04-24T10:23:20.661203-04:00",
   "status": "provenance_matched",
   "runner_repo_root": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed",
   "report_dir": "docs\\gcp_foundation",
@@ -38,8 +38,8 @@
     "If the source fingerprint mismatches, reconcile the VM deployment before treating the session as trusted evidence."
   ],
   "next_actions": [
-    "Add a lightweight deployment source stamp only after the VM source fingerprint matches the intended runner checkout.",
-    "Refresh this packet after source provenance is stamped.",
-    "Do not use unstamped VM source provenance to justify strategy promotion."
+    "Keep the VM source stamp in place and refresh provenance after any future runner deployment.",
+    "Use this packet as source-attestation support only; the exclusive-window and broker-evidence gates still control launch and promotion.",
+    "Do not modify strategy selection or risk policy from this provenance packet."
   ]
 }

@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T10:20:18.063096-04:00`
+- Generated at: `2026-04-24T10:23:20.661203-04:00`
 - Status: `provenance_matched`
 - VM name: `vm-execution-paper-01`
 - VM runner path: `/opt/codexalpaca/codexalpaca_repo`
@@ -17,6 +17,7 @@
 
 ## Issues
 
+- none
 
 ## Operator Read
 
@@ -27,6 +28,6 @@
 
 ## Next Actions
 
-- Add a lightweight deployment source stamp only after the VM source fingerprint matches the intended runner checkout.
-- Refresh this packet after source provenance is stamped.
-- Do not use unstamped VM source provenance to justify strategy promotion.
+- Keep the VM source stamp in place and refresh provenance after any future runner deployment.
+- Use this packet as source-attestation support only; the exclusive-window and broker-evidence gates still control launch and promotion.
+- Do not modify strategy selection or risk policy from this provenance packet.
