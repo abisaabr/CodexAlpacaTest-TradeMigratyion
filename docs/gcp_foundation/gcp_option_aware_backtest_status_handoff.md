@@ -1,18 +1,19 @@
 # GCP Option-Aware Backtest Status
 
-- Generated at: `2026-04-23T23:38:17.266891-04:00`
-- Status: `blocked_insufficient_option_fills`
-- Run id: `option_aware_research_20260424_gld_put_top25_lag60_diagnostic`
-- Candidate count: `25`
-- Option trade count: `20`
+- Generated at: `2026-04-24T00:58:28.692573-04:00`
+- Status: `hold_option_economics_review`
+- Run id: `option_aware_research_20260424_slv_put_top50`
+- Candidate count: `50`
+- Option trade count: `98`
 - Max fill coverage: `0.3333`
-- Mean fill coverage: `0.1368`
+- Mean fill coverage: `0.2113`
 - Promotion allowed: `False`
 - Broker facing: `False`
 
 ## Recommendation Counts
 
-- `hold_insufficient_option_fills`: `25`
+- `hold_insufficient_option_fills`: `32`
+- `hold_option_fill_coverage`: `18`
 
 ## Issues
 
@@ -20,6 +21,5 @@
 
 ## Next Step Contract
 
-- Do not promote or deploy any option-aware candidate from this packet.
-- Expand option quote/bar coverage for queued contracts before rerunning economics.
-- Treat sparse positive PnL as diagnostic only until minimum-fill and out-of-sample gates pass.
+- Keep candidates research-only while option-aware economics remains under review.
+- Inspect fill coverage, loser clusters, and train/test splits before any governance action.
