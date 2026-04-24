@@ -1,0 +1,91 @@
+{
+  "generated_at": "2026-04-23T22:12:12.959471-04:00",
+  "status": "building_sample_with_raw_winners",
+  "runtime_root": "C:\\Users\\abisa\\Downloads\\codexalpaca_runtime\\multi_ticker_portfolio_live",
+  "report_dir": "docs\\gcp_foundation",
+  "gcs_prefix": "gs://codexalpaca-control-us/gcp_foundation",
+  "min_net_pnl": 200.0,
+  "target_qualified_winners": 20,
+  "raw_winner_count": 1,
+  "qualified_winner_count": 0,
+  "qualified_winners_remaining": 20,
+  "review_required_raw_winner_count": 1,
+  "session_count": 3,
+  "sessions": [
+    {
+      "trade_date": "2026-04-21",
+      "net_pnl": 0.0,
+      "raw_winner": false,
+      "qualified_winner": false,
+      "completed_trade_count": 0,
+      "open_trade_count": 0,
+      "shutdown_reconciled": true,
+      "ending_broker_position_count": 0,
+      "evidence_status": "missing",
+      "teaching_gate_status": "missing",
+      "automatic_learning_allowed": false,
+      "economics_max_abs_cashflow_diff": 0.0,
+      "economics_tolerance": 0.05,
+      "block_reason": "",
+      "disqualifiers": [
+        "net_pnl_below_winner_threshold",
+        "evidence_status_missing",
+        "teaching_gate_not_ok"
+      ]
+    },
+    {
+      "trade_date": "2026-04-22",
+      "net_pnl": 1992.5,
+      "raw_winner": true,
+      "qualified_winner": false,
+      "completed_trade_count": 10,
+      "open_trade_count": 0,
+      "shutdown_reconciled": true,
+      "ending_broker_position_count": 0,
+      "evidence_status": "review_required",
+      "teaching_gate_status": "review_required",
+      "automatic_learning_allowed": false,
+      "economics_max_abs_cashflow_diff": 0.3253,
+      "economics_tolerance": 0.05,
+      "block_reason": "broker position missing for QQQ260422C00649000 (expected -3); broker position missing for QQQ260422C00650000 (expected -5); broker position missing for QQQ260422C00653000 (expected +8)",
+      "disqualifiers": [
+        "evidence_status_review_required",
+        "teaching_gate_not_ok",
+        "broker_local_economics_drift"
+      ]
+    },
+    {
+      "trade_date": "2026-04-23",
+      "net_pnl": -1717.0,
+      "raw_winner": false,
+      "qualified_winner": false,
+      "completed_trade_count": 14,
+      "open_trade_count": 0,
+      "shutdown_reconciled": true,
+      "ending_broker_position_count": 0,
+      "evidence_status": "review_required",
+      "teaching_gate_status": "review_required",
+      "automatic_learning_allowed": false,
+      "economics_max_abs_cashflow_diff": 1.3057,
+      "economics_tolerance": 0.05,
+      "block_reason": "severe_loss_flatten_all triggered at equity 25275.50",
+      "disqualifiers": [
+        "net_pnl_below_winner_threshold",
+        "evidence_status_review_required",
+        "teaching_gate_not_ok",
+        "broker_local_economics_drift",
+        "severe_loss_incident"
+      ]
+    }
+  ],
+  "operator_read": [
+    "A raw winner only proves the session ended above the PnL threshold.",
+    "A qualified winner must also be flat, reconciled, evidence-clean, teaching-gate clean, and free of severe-loss incidents.",
+    "Do not use raw winners alone for live-trading confidence."
+  ],
+  "next_actions": [
+    "Keep the research arm aggressive while the paper runner accumulates qualified winners.",
+    "Use loser-learning and quality scorecards to improve the chance that future sessions clear the qualified-winner gate.",
+    "Treat review-required winners as useful diagnostics, not as live-readiness evidence."
+  ]
+}
