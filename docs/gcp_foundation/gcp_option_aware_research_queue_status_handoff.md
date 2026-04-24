@@ -1,7 +1,7 @@
 # GCP Option-Aware Research Queue Status
 
-- Generated at: `2026-04-24T00:43:48.316399-04:00`
-- Status: `blocked_missing_option_market_data`
+- Generated at: `2026-04-24T00:53:11.746049-04:00`
+- Status: `ready_for_option_aware_backtest`
 - Smoke unique variants: `1242`
 - Smoke candidates: `218`
 - Queue items: `50`
@@ -10,7 +10,6 @@
 
 ## Blocker Counts
 
-- `missing_selected_option_contracts`: `50`
 
 ## Top Follow-Up IDs
 
@@ -27,11 +26,10 @@
 
 ## Issues
 
-- `warning` `missing_selected_option_contracts`: 50 queued follow-up items are blocked by missing_selected_option_contracts.
 
 ## Next Step Contract
 
-- Keep all smoke candidates out of promotion until option-market-data blockers clear.
-- Download bounded historical option bars for representative selected contracts first.
-- Add option trades or quote/spread data before fill-cost calibration is trusted.
-- Run option-aware entry/exit economics and walk-forward summary before strategy governance review.
+- Keep queued candidates research-only; promotion remains disabled.
+- Run option-aware entry/exit economics using the mirrored historical option bars and trades.
+- Produce per-trade option fill-cost/economics tables and train/test or walk-forward summaries.
+- Send candidates to strategy governance review only after option-aware evidence passes.
