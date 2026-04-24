@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-04-23T22:15:39.987919-04:00",
+  "generated_at": "2026-04-24T00:44:44.342653-04:00",
   "status": "ready_with_concentration_warning",
-  "runner_repo_root": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo",
-  "manifest_path": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo\\config\\strategy_manifests\\multi_ticker_portfolio_live.yaml",
+  "runner_repo_root": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed",
+  "manifest_path": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed\\config\\strategy_manifests\\multi_ticker_portfolio_live.yaml",
   "report_dir": "docs\\gcp_foundation",
   "gcs_prefix": "gs://codexalpaca-control-us/strategy_registry",
   "strategy_count": 94,

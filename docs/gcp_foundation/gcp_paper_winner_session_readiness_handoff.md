@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T22:12:12.959471-04:00`
+- Generated at: `2026-04-24T00:44:44.323668-04:00`
 - Status: `building_sample_with_raw_winners`
 - Minimum net PnL for raw winner: `$200.00`
 - Target qualified winners: `20`

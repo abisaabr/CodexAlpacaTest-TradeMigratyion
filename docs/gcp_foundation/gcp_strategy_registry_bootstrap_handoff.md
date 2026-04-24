@@ -2,11 +2,11 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T22:15:39.987919-04:00`
+- Generated at: `2026-04-24T00:44:44.342653-04:00`
 - Status: `ready_with_concentration_warning`
 - Strategy count: `94`
 - Single-leg strategy share: `95.7%`
-- Manifest path: `C:\Users\abisa\Downloads\codexalpaca_repo\config\strategy_manifests\multi_ticker_portfolio_live.yaml`
+- Manifest path: `C:\Users\abisa\Downloads\codexalpaca_repo_gcp_lease_lane_refreshed\config\strategy_manifests\multi_ticker_portfolio_live.yaml`
 - GCS prefix: `gs://codexalpaca-control-us/strategy_registry`
 
 ## Family Counts
