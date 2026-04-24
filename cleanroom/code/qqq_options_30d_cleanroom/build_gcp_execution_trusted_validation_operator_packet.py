@@ -70,6 +70,7 @@ def build_payload(
     runtime_shared_execution_lease_enforced = bool(
         runtime_readiness.get("shared_execution_lease_enforced")
     )
+    runtime_trader_process_absent = runtime_readiness.get("trader_process_absent")
 
     operator_packet_state = "blocked"
     if runner_provenance_blocks_launch or runtime_readiness_blocks_launch:
@@ -132,6 +133,7 @@ def build_payload(
         f"Closeout status: `{closeout_state}`",
         f"Runner provenance status: `{runner_provenance_status}`",
         f"Runtime readiness status: `{runtime_readiness_status}`",
+        f"Runtime trader process absent: `{runtime_trader_process_absent}`",
         f"Runtime ownership enabled: `{runtime_ownership_enabled}`",
         f"Runtime ownership backend: `{runtime_ownership_backend}`",
         f"Runtime ownership lease class: `{runtime_ownership_lease_class}`",
@@ -173,6 +175,7 @@ def build_payload(
         "runner_provenance_issue_codes": runner_provenance_issue_codes,
         "runtime_readiness_status": runtime_readiness_status,
         "runtime_readiness_blocks_launch": runtime_readiness_blocks_launch,
+        "runtime_trader_process_absent": runtime_trader_process_absent,
         "runtime_ownership_enabled": runtime_ownership_enabled,
         "runtime_ownership_backend": runtime_ownership_backend,
         "runtime_ownership_lease_class": runtime_ownership_lease_class,
@@ -288,6 +291,7 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         f"- Runner provenance blocks launch: `{payload.get('runner_provenance_blocks_launch')}`",
         f"- Runtime readiness status: `{payload.get('runtime_readiness_status')}`",
         f"- Runtime readiness blocks launch: `{payload.get('runtime_readiness_blocks_launch')}`",
+        f"- Runtime trader process absent: `{payload.get('runtime_trader_process_absent')}`",
         f"- Runtime ownership enabled: `{payload.get('runtime_ownership_enabled')}`",
         f"- Runtime ownership backend: `{payload.get('runtime_ownership_backend')}`",
         f"- Runtime ownership lease class: `{payload.get('runtime_ownership_lease_class')}`",

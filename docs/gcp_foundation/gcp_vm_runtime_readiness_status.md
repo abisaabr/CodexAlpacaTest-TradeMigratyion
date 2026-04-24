@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T10:41:13.808714-04:00`
+- Generated at: `2026-04-24T10:45:00.897687-04:00`
 - Status: `runtime_ready`
 - VM name: `vm-execution-paper-01`
 - VM runner path: `/opt/codexalpaca/codexalpaca_repo`
@@ -10,6 +10,7 @@
 - Doctor status: `passed`
 - VM pytest status: `passed`
 - VM pytest summary: `139 passed without ownership override`
+- Trader process absent: `True`
 
 ## Launch Ownership
 
@@ -36,6 +37,7 @@
 
 - This packet validates VM runtime output readiness only; it does not start trading or arm the exclusive window.
 - The trusted paper session needs writable state and run directories so broker-audited evidence can be left behind.
+- No stale trader process may already be running on the VM before the exclusive window is armed.
 - Launch ownership must be enabled through the local file lease for the first trusted VM session.
 - Source provenance, exclusive-window, and launch-pack gates still control whether a broker-facing session may start.
 

@@ -28,6 +28,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--doctor-status", default="not_run")
     parser.add_argument("--vm-pytest-status", default="not_run")
     parser.add_argument("--vm-pytest-summary", default="")
+    parser.add_argument("--trader-process-absent", action="store_true")
     parser.add_argument("--ownership-enabled", action="store_true")
     parser.add_argument("--ownership-backend", default="unknown")
     parser.add_argument("--ownership-lease-class", default="unknown")
@@ -56,6 +57,7 @@ def build_payload(
     doctor_status: str,
     vm_pytest_status: str,
     vm_pytest_summary: str,
+    trader_process_absent: bool,
     ownership_enabled: bool,
     ownership_backend: str,
     ownership_lease_class: str,
@@ -104,6 +106,14 @@ def build_payload(
                 "severity": "error",
                 "code": "source_provenance_not_ready",
                 "message": "VM source provenance must be matched before runtime readiness can support trusted launch.",
+            }
+        )
+    if not trader_process_absent:
+        issues.append(
+            {
+                "severity": "error",
+                "code": "stale_trader_process_check_not_clear",
+                "message": "No trader process may already be running on the VM before arming or launching the trusted session.",
             }
         )
     if not ownership_enabled:
@@ -168,6 +178,7 @@ def build_payload(
         "doctor_status": doctor_status,
         "vm_pytest_status": vm_pytest_status,
         "vm_pytest_summary": vm_pytest_summary,
+        "trader_process_absent": trader_process_absent,
         "ownership_enabled": ownership_enabled,
         "ownership_backend": ownership_backend,
         "ownership_lease_class": ownership_lease_class,
@@ -182,6 +193,7 @@ def build_payload(
         "operator_read": [
             "This packet validates VM runtime output readiness only; it does not start trading or arm the exclusive window.",
             "The trusted paper session needs writable state and run directories so broker-audited evidence can be left behind.",
+            "No stale trader process may already be running on the VM before the exclusive window is armed.",
             "Launch ownership must be enabled through the local file lease for the first trusted VM session.",
             "Source provenance, exclusive-window, and launch-pack gates still control whether a broker-facing session may start.",
         ],
@@ -213,6 +225,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         f"- Doctor status: `{payload['doctor_status']}`",
         f"- VM pytest status: `{payload['vm_pytest_status']}`",
         f"- VM pytest summary: `{payload['vm_pytest_summary']}`",
+        f"- Trader process absent: `{payload['trader_process_absent']}`",
         "",
         "## Launch Ownership",
         "",
@@ -259,6 +272,7 @@ def main() -> None:
         doctor_status=args.doctor_status,
         vm_pytest_status=args.vm_pytest_status,
         vm_pytest_summary=args.vm_pytest_summary,
+        trader_process_absent=args.trader_process_absent,
         ownership_enabled=args.ownership_enabled,
         ownership_backend=args.ownership_backend,
         ownership_lease_class=args.ownership_lease_class,

@@ -8,6 +8,7 @@
 - Runner provenance blocks launch: `False`
 - Runtime readiness status: `runtime_ready`
 - Runtime readiness blocks launch: `False`
+- Runtime trader process absent: `True`
 - Runtime ownership enabled: `True`
 - Runtime ownership backend: `file`
 - Runtime ownership lease class: `FileOwnershipLease`

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-24T10:41:13.808714-04:00",
+  "generated_at": "2026-04-24T10:45:00.897687-04:00",
   "status": "runtime_ready",
   "vm_name": "vm-execution-paper-01",
   "vm_runner_path": "/opt/codexalpaca/codexalpaca_repo",
@@ -13,6 +13,7 @@
   "doctor_status": "passed",
   "vm_pytest_status": "passed",
   "vm_pytest_summary": "139 passed without ownership override",
+  "trader_process_absent": true,
   "ownership_enabled": true,
   "ownership_backend": "file",
   "ownership_lease_class": "FileOwnershipLease",
@@ -48,6 +49,7 @@
   "operator_read": [
     "This packet validates VM runtime output readiness only; it does not start trading or arm the exclusive window.",
     "The trusted paper session needs writable state and run directories so broker-audited evidence can be left behind.",
+    "No stale trader process may already be running on the VM before the exclusive window is armed.",
     "Launch ownership must be enabled through the local file lease for the first trusted VM session.",
     "Source provenance, exclusive-window, and launch-pack gates still control whether a broker-facing session may start."
   ],

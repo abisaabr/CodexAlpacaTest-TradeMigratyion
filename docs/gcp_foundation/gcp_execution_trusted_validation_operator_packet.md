@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T10:41:14.069277-04:00`
+- Generated at: `2026-04-24T10:45:01.110804-04:00`
 - Operator packet state: `ready_to_arm_window`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
@@ -17,6 +17,7 @@
 - Closeout status: `window_already_closed`
 - Runner provenance status: `provenance_matched`
 - Runtime readiness status: `runtime_ready`
+- Runtime trader process absent: `True`
 - Runtime ownership enabled: `True`
 - Runtime ownership backend: `file`
 - Runtime ownership lease class: `FileOwnershipLease`

@@ -18,6 +18,7 @@ def test_runtime_ready_when_paths_doctor_pytest_and_provenance_are_clean(tmp_pat
         doctor_status="passed",
         vm_pytest_status="passed",
         vm_pytest_summary="137 passed",
+        trader_process_absent=True,
         ownership_enabled=True,
         ownership_backend="file",
         ownership_lease_class="FileOwnershipLease",
@@ -44,6 +45,7 @@ def test_runtime_readiness_blocks_when_output_paths_are_not_writable(tmp_path: P
         doctor_status="passed",
         vm_pytest_status="passed",
         vm_pytest_summary="137 passed",
+        trader_process_absent=True,
         ownership_enabled=True,
         ownership_backend="file",
         ownership_lease_class="FileOwnershipLease",
@@ -69,6 +71,7 @@ def test_runtime_readiness_blocks_when_source_provenance_is_blocked(tmp_path: Pa
         doctor_status="passed",
         vm_pytest_status="passed",
         vm_pytest_summary="137 passed",
+        trader_process_absent=True,
         ownership_enabled=True,
         ownership_backend="file",
         ownership_lease_class="FileOwnershipLease",
@@ -94,6 +97,7 @@ def test_runtime_readiness_blocks_when_launch_ownership_is_disabled(tmp_path: Pa
         doctor_status="passed",
         vm_pytest_status="passed",
         vm_pytest_summary="137 passed",
+        trader_process_absent=True,
         ownership_enabled=False,
         ownership_backend="noop",
         ownership_lease_class="NoopOwnershipLease",
@@ -120,6 +124,7 @@ def test_runtime_readiness_blocks_when_gcs_shared_lease_is_enabled_for_first_ses
         doctor_status="passed",
         vm_pytest_status="passed",
         vm_pytest_summary="137 passed",
+        trader_process_absent=True,
         ownership_enabled=True,
         ownership_backend="gcs_generation_match",
         ownership_lease_class="GcsGenerationMatchOwnershipLease",
@@ -132,3 +137,29 @@ def test_runtime_readiness_blocks_when_gcs_shared_lease_is_enabled_for_first_ses
     assert payload["shared_execution_lease_enforced"] is True
     assert any(issue["code"] == "unexpected_ownership_backend" for issue in payload["issues"])
     assert any(issue["code"] == "shared_execution_lease_enforced_unexpected" for issue in payload["issues"])
+
+
+def test_runtime_readiness_blocks_when_trader_process_check_is_not_clear(tmp_path: Path) -> None:
+    payload = build_payload(
+        vm_name="vm-execution-paper-01",
+        vm_runner_path="/opt/codexalpaca/codexalpaca_repo",
+        source_provenance={"status": "provenance_matched"},
+        data_writable=True,
+        reports_writable=True,
+        state_root_writable=True,
+        run_root_writable=True,
+        pytest_cache_writable=True,
+        doctor_status="passed",
+        vm_pytest_status="passed",
+        vm_pytest_summary="137 passed",
+        trader_process_absent=False,
+        ownership_enabled=True,
+        ownership_backend="file",
+        ownership_lease_class="FileOwnershipLease",
+        ownership_machine_label="vm-execution-paper-01",
+        gcs_lease_uri="",
+        report_dir=tmp_path,
+    )
+
+    assert payload["status"] == "blocked_vm_runtime_readiness"
+    assert any(issue["code"] == "stale_trader_process_check_not_clear" for issue in payload["issues"])
