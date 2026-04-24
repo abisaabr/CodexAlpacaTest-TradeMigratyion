@@ -1,0 +1,131 @@
+{
+  "packet": "gcp_institutional_hardening_plan",
+  "as_of": "2026-04-24T11:28:32-04:00",
+  "status": "ready_for_parallel_non_broker_work",
+  "strategic_priority_order": [
+    "execution_safety",
+    "trusted_evidence",
+    "promotion_discipline",
+    "loser_learning",
+    "research_breadth"
+  ],
+  "current_state": {
+    "broker_flat": true,
+    "sanctioned_execution_path": "vm-execution-paper-01",
+    "vm_runner_commit": "f0080066c68d883286f4cb1b9c9e0edc601adf8d",
+    "vm_runner_tests": "140 passed",
+    "qualified_winner_sessions": 0,
+    "qualified_winner_target": 20,
+    "research_wave_variants_ready": 2070,
+    "strategy_registry_count": 94,
+    "strategy_registry_warning": "single_leg_concentration_95_7_percent",
+    "research_data_status": "ready_for_real_bar_research_with_warnings"
+  },
+  "agent_lanes": [
+    {
+      "agent": "execution_safety_steward",
+      "mission": "Keep one sanctioned execution path, no stale desktop runner, and source-attested VM runner state.",
+      "near_term_work": [
+        "Recheck VM process/source stamp before arming any exclusive window.",
+        "Keep legacy local scheduled tasks disabled.",
+        "Verify broker flatness before and after every trusted session."
+      ],
+      "promotion_effect": "blocks_all_promotion_if_dirty"
+    },
+    {
+      "agent": "evidence_closeout_steward",
+      "mission": "Convert every paper session into broker-audited evidence that can be trusted for learning.",
+      "near_term_work": [
+        "Require broker order audit, account activity audit, ending position snapshot, shutdown reconciliation, and completed trade economics table.",
+        "Reject raw PnL as a qualified winner unless evidence and teaching gates are clean.",
+        "Track broker/local economics drift as a first-class defect."
+      ],
+      "promotion_effect": "raw_winners_do_not_count_without_clean_evidence"
+    },
+    {
+      "agent": "research_data_foundation_engineer",
+      "mission": "Build clean GCS-backed data tiers before expanding strategy breadth.",
+      "near_term_work": [
+        "Complete governed 11-name 1-minute stock-bar coverage.",
+        "Maintain raw, curated, and derived tiers with manifests and quality scores.",
+        "Delay full-chain tick history until selected-contract and spread/fill evidence is stable."
+      ],
+      "promotion_effect": "no_candidate_can_promote_from_sparse_or_defective_data"
+    },
+    {
+      "agent": "backtest_factory_engineer",
+      "mission": "Run large research-only sweeps that cannot affect the live manifest or risk policy.",
+      "near_term_work": [
+        "Execute the 2070-variant bootstrap wave in reproducible chunks.",
+        "Produce normalized backtest results, after-cost expectancy, slippage stress, and drawdown/tail-loss reports.",
+        "Prioritize defined-risk expansion, single-leg repair, loser-cluster suppressors, and regime/liquidity filters."
+      ],
+      "promotion_effect": "generates_candidates_only_for_research_review"
+    },
+    {
+      "agent": "loser_learning_analyst",
+      "mission": "Turn losing trades into suppressors, repairs, or kill decisions before adding risk.",
+      "near_term_work": [
+        "Classify losers by symbol, regime, strategy family, entry timing, liquidity, stop type, spread quality, and broker/local drift.",
+        "Treat repeated single-leg directional losses as suppressors until new evidence clears.",
+        "Feed loser clusters into calibration and hold/kill/quarantine recommendations."
+      ],
+      "promotion_effect": "repeated_structural_loser_defects_force_hold_or_quarantine"
+    },
+    {
+      "agent": "promotion_steward",
+      "mission": "Prevent research sprawl from becoming execution risk.",
+      "near_term_work": [
+        "Allow only research_only to governed_validation_candidate from research results.",
+        "Require train/test or walk-forward separation, positive after-cost test result, slippage survival, drawdown controls, clean metadata, and clean loser taxonomy.",
+        "Do not modify live manifest, strategy selection, or risk policy from research alone."
+      ],
+      "promotion_effect": "governed_candidate_only_no_broker_activation"
+    }
+  ],
+  "phases": [
+    {
+      "phase": "phase_0_execution_lockdown",
+      "objective": "Keep the runner safe before any research or paper-session expansion.",
+      "exit_gate": "VM source stamp matches intended commit, broker flat, no stale local runner, no active unsanctioned scheduler."
+    },
+    {
+      "phase": "phase_1_evidence_contract",
+      "objective": "Make the next paper session evidence-complete or explicitly disqualified.",
+      "exit_gate": "Session artifacts include broker/local economics and shutdown reconciliation."
+    },
+    {
+      "phase": "phase_2_data_quality_baseline",
+      "objective": "Complete governed universe data quality and cost/freshness guardrails.",
+      "exit_gate": "All 11 governed symbols have quality verdicts and GCS manifests."
+    },
+    {
+      "phase": "phase_3_research_wave_execution",
+      "objective": "Run research-only sweeps at scale without changing the trader.",
+      "exit_gate": "Each chunk leaves normalized results, cost/slippage stress, and hold/kill/quarantine recommendation."
+    },
+    {
+      "phase": "phase_4_first_research_promotion_packet",
+      "objective": "Promote at most one candidate to governed_validation_candidate if evidence clears.",
+      "exit_gate": "Candidate passes after-cost, robustness, concentration, loser-learning, and metadata gates."
+    },
+    {
+      "phase": "phase_5_trader_calibration_feedback",
+      "objective": "Use evidence and loser-learning to improve tomorrow's controlled paper posture.",
+      "exit_gate": "Only suppressors/calibration insights are applied unless control-plane unlock policy explicitly allows more."
+    }
+  ],
+  "hard_rules": [
+    "Do not start trading from this plan.",
+    "Do not arm an exclusive execution window from this plan.",
+    "Do not widen the temporary parallel runtime exception.",
+    "Do not modify the live manifest or risk policy from research results.",
+    "Do not count raw PnL winners as qualified winners without flat, reconciled, evidence-clean, teaching-clean closeout."
+  ],
+  "next_safe_actions": [
+    "Run pre-arm VM source/process/broker-flat checks immediately before any sanctioned paper session.",
+    "Run research-only data-quality expansion for missing governed symbols.",
+    "Start the 2070-variant research wave in chunks only after each chunk has deterministic result artifacts and a cost cap.",
+    "Use loser-learning suppressors before considering any strategy addition."
+  ]
+}

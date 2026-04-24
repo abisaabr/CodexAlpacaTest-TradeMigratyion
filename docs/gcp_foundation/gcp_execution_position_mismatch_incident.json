@@ -1,7 +1,7 @@
 {
   "packet": "gcp_execution_position_mismatch_incident",
-  "as_of": "2026-04-24T11:21:56-04:00",
-  "status": "mitigated_flat",
+  "as_of": "2026-04-24T11:28:32-04:00",
+  "status": "mitigated_flat_vm_patched",
   "incident_date": "2026-04-24",
   "summary": "Paper-runner mismatch alerts were traced to a stale local desktop runner from the April 22 staged release plus residual broker option positions.",
   "execution_safety_findings": [
@@ -9,7 +9,9 @@
     "A stale local Windows desktop runner process was active from the April 22 staged release and was stopped.",
     "Legacy local Windows scheduled tasks pointing at the April 22 staged release were disabled to prevent relaunch.",
     "Residual paper broker option positions were flattened under explicit incident remediation authority.",
-    "A read-only broker check after remediation reported zero positions and zero open orders."
+    "A read-only broker check after remediation reported zero positions and zero open orders.",
+    "The sanctioned VM runner source was patched to runner commit f008006 without starting a broker-facing session.",
+    "IAP SSH verified no active runner process before deployment."
   ],
   "root_cause": [
     "Unexpected-position cleanup processed broker positions in API order.",
@@ -23,10 +25,14 @@
     "change": "Residual option cleanup now prioritizes short-leg buy-to-close orders before protective long-leg sell-to-close orders for both known-trade cleanup and unexpected broker-position cleanup."
   },
   "validation": {
-    "targeted_tests": "60 passed: python -m pytest -q tests/test_multi_ticker_portfolio.py",
-    "full_runner_tests": "140 passed: python -m pytest -q",
+    "local_targeted_tests": "60 passed: python -m pytest -q tests/test_multi_ticker_portfolio.py",
+    "local_full_runner_tests": "140 passed: python -m pytest -q",
+    "vm_targeted_tests": "60 passed: .venv/bin/python -m pytest -q tests/test_multi_ticker_portfolio.py",
+    "vm_full_runner_tests": "140 passed: .venv/bin/python -m pytest -q",
     "broker_flat_check": "position_count=0, open_order_count=0",
-    "vm_process_check": "not_verified_from_local_machine_due_to_gcloud_ssh_timeout"
+    "vm_process_check": "iap_ssh_access_ok_no_active_runner_process_observed",
+    "vm_source_stamp": "runner_commit=f0080066c68d883286f4cb1b9c9e0edc601adf8d",
+    "vm_source_fingerprint": "source_fingerprint_matched"
   },
   "hard_rules_preserved": [
     "No live-trading path was enabled.",
@@ -35,8 +41,8 @@
     "No raw session exhaust or raw trade log was committed."
   ],
   "remaining_actions": [
-    "Pull runner commit f008006 onto the sanctioned VM before the next broker-facing session.",
-    "Re-run the VM process/source-stamp check once SSH connectivity is available.",
+    "Keep runner commit f008006 on the sanctioned VM before the next broker-facing session.",
+    "Re-run the VM process/source-stamp check immediately before arming any exclusive execution window.",
     "Keep legacy local scheduled tasks disabled; do not use the April 22 staged release as an execution path."
   ]
 }

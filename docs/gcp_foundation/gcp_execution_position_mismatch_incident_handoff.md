@@ -1,8 +1,8 @@
 # GCP Execution Position Mismatch Incident Handoff
 
-As of: 2026-04-24T11:21:56-04:00
+As of: 2026-04-24T11:28:32-04:00
 
-Status: mitigated_flat
+Status: mitigated_flat_vm_patched
 
 ## Summary
 
@@ -12,6 +12,8 @@ Paper-runner mismatch alerts were traced to two execution-safety problems:
 - Residual paper broker option positions existed and the cleanup path could submit spread-leg close orders in an unsafe order.
 
 The local stale runner was stopped. Legacy local Windows scheduled tasks pointing at the April 22 staged release were disabled. Residual paper broker option positions were flattened under explicit incident remediation authority. A read-only broker check after remediation reported zero positions and zero open orders.
+
+The sanctioned VM runner source has now been patched to runner commit `f008006` using a Git archive overlay with backup. IAP SSH verified no active runner process before the deployment, and no broker-facing session was started.
 
 ## Root Cause
 
@@ -27,10 +29,14 @@ Change: residual option cleanup now prioritizes short-leg buy-to-close orders be
 
 ## Validation
 
-- Targeted runner suite: `60 passed` with `python -m pytest -q tests/test_multi_ticker_portfolio.py`
-- Full runner suite: `140 passed` with `python -m pytest -q`
+- Local targeted runner suite: `60 passed` with `python -m pytest -q tests/test_multi_ticker_portfolio.py`
+- Local full runner suite: `140 passed` with `python -m pytest -q`
+- VM targeted runner suite: `60 passed` with `.venv/bin/python -m pytest -q tests/test_multi_ticker_portfolio.py`
+- VM full runner suite: `140 passed` with `.venv/bin/python -m pytest -q`
 - Broker flat check: `position_count=0`, `open_order_count=0`
-- VM process check: not verified from this local machine because `gcloud compute ssh vm-execution-paper-01` timed out
+- VM process check: IAP SSH access works; no active runner process was observed before deployment
+- VM source stamp: `runner_commit=f0080066c68d883286f4cb1b9c9e0edc601adf8d`
+- VM source fingerprint: `source_fingerprint_matched`
 
 ## Governance Notes
 
@@ -41,6 +47,6 @@ Change: residual option cleanup now prioritizes short-leg buy-to-close orders be
 
 ## Next Safe Actions
 
-1. Pull runner commit `f008006` onto `vm-execution-paper-01` before any next broker-facing paper session.
-2. Re-run the VM source/process-stamp check once SSH connectivity is available.
+1. Keep runner commit `f008006` on `vm-execution-paper-01` before any next broker-facing paper session.
+2. Re-run the VM source/process-stamp check immediately before arming any exclusive execution window.
 3. Keep the legacy local scheduled tasks disabled and do not use the April 22 staged release as an execution path.
