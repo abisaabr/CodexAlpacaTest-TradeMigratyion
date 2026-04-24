@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import subprocess
 from datetime import datetime
 from pathlib import Path
@@ -22,6 +21,7 @@ INCLUDE_ROOTS = {"alpaca_lab", "scripts", "config"}
 INCLUDE_FILES = {".env.example", "AGENTS.md", "Dockerfile", "README.md", "docker-compose.yml", "pyproject.toml"}
 EXCLUDE_DIRS = {".git", ".venv", "data", "reports", "__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache"}
 EXCLUDE_SUFFIXES = {".pyc", ".pyo"}
+SOURCE_NORMALIZATION = "lf_text"
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -44,36 +44,36 @@ def _git_output(repo_root: Path, *args: str) -> str:
     return result.stdout.strip()
 
 
-def should_include(path: Path, repo_root: Path) -> bool:
-    relative = path.relative_to(repo_root)
-    if not relative.parts:
+def should_include_relative(rel: str) -> bool:
+    parts = Path(rel).parts
+    if not parts:
         return False
-    if any(part in EXCLUDE_DIRS for part in relative.parts):
+    if any(part in EXCLUDE_DIRS for part in parts):
         return False
-    rel = relative.as_posix()
-    top = relative.parts[0]
+    top = parts[0]
     if top not in INCLUDE_ROOTS and rel not in INCLUDE_FILES:
         return False
-    return path.suffix not in EXCLUDE_SUFFIXES
+    return Path(rel).suffix not in EXCLUDE_SUFFIXES
+
+
+def normalize_source_bytes(data: bytes) -> bytes:
+    return data.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
 
 
 def build_local_manifest(runner_repo_root: Path) -> list[dict[str, Any]]:
+    files = _git_output(runner_repo_root, "ls-files").splitlines()
     entries: list[dict[str, Any]] = []
-    for dirpath, dirnames, filenames in os.walk(runner_repo_root):
-        dirnames[:] = [dirname for dirname in dirnames if dirname not in EXCLUDE_DIRS]
-        base = Path(dirpath)
-        for filename in filenames:
-            path = base / filename
-            if not should_include(path, runner_repo_root):
-                continue
-            data = path.read_bytes()
-            entries.append(
-                {
-                    "path": path.relative_to(runner_repo_root).as_posix(),
-                    "sha256": hashlib.sha256(data).hexdigest(),
-                    "bytes": len(data),
-                }
-            )
+    for rel in files:
+        if not should_include_relative(rel):
+            continue
+        data = normalize_source_bytes((runner_repo_root / rel).read_bytes())
+        entries.append(
+            {
+                "path": rel,
+                "sha256": hashlib.sha256(data).hexdigest(),
+                "bytes": len(data),
+            }
+        )
     return sorted(entries, key=lambda item: item["path"])
 
 
@@ -137,6 +137,18 @@ def build_payload(
                 "message": "The VM runner source fingerprint does not match the canonical local runner checkout.",
             }
         )
+    if status == "source_fingerprint_matched":
+        next_actions = [
+            "Keep the VM source stamp in place and refresh this packet after any future runner deployment.",
+            "Use this packet as source-attestation support only; the exclusive-window and broker-evidence gates still control launch and promotion.",
+            "Do not modify strategy selection or risk policy from this provenance packet.",
+        ]
+    else:
+        next_actions = [
+            "Do not write a source stamp while the fingerprint mismatch remains.",
+            "Reconcile the VM runner deployment to the canonical runner checkout or intentionally select a different published runner commit.",
+            "Recapture the VM manifest and rebuild this packet before arming a trusted execution window.",
+        ]
 
     return {
         "generated_at": datetime.now().astimezone().isoformat(),
@@ -152,6 +164,8 @@ def build_payload(
         "include_files": sorted(INCLUDE_FILES),
         "excluded_dirs": sorted(EXCLUDE_DIRS),
         "excluded_suffixes": sorted(EXCLUDE_SUFFIXES),
+        "source_normalization": SOURCE_NORMALIZATION,
+        "vm_manifest_normalization": vm_manifest.get("source_normalization") or "unknown",
         "safe_to_write_source_stamp": status == "source_fingerprint_matched",
         "broker_facing": False,
         "live_manifest_effect": "none",
@@ -163,11 +177,7 @@ def build_payload(
             "A source stamp is defensible only when the VM fingerprint matches the intended runner checkout.",
             "A mismatch means the VM may still run, but the session should not be treated as source-attested trusted evidence.",
         ],
-        "next_actions": [
-            "Do not write a source stamp while the fingerprint mismatch remains.",
-            "Reconcile the VM runner deployment to the canonical runner checkout or intentionally select a different published runner commit.",
-            "Recapture the VM manifest and rebuild this packet before arming a trusted execution window.",
-        ],
+        "next_actions": next_actions,
     }
 
 

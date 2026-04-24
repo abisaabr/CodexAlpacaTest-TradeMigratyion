@@ -2,8 +2,8 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T10:10:02.183900-04:00`
-- Operator packet state: `blocked`
+- Generated at: `2026-04-24T10:20:18.169046-04:00`
+- Operator packet state: `ready_to_arm_window`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
 - Runner branch: `codex/qqq-paper-portfolio`
@@ -15,7 +15,7 @@
 - Trusted validation readiness: `awaiting_exclusive_execution_window`
 - Launch pack state: `awaiting_window_arm`
 - Closeout status: `window_already_closed`
-- Runner provenance status: `blocked_vm_runner_source_mismatch`
+- Runner provenance status: `provenance_matched`
 
 ## Commands
 

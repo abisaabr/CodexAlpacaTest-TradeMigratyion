@@ -2,23 +2,21 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T10:08:56.188593-04:00`
-- Status: `blocked_vm_runner_source_mismatch`
+- Generated at: `2026-04-24T10:20:18.063096-04:00`
+- Status: `provenance_matched`
 - VM name: `vm-execution-paper-01`
 - VM runner path: `/opt/codexalpaca/codexalpaca_repo`
 - Local runner branch: `codex/qqq-paper-portfolio`
 - Local runner commit: `f2b9bae7b2af26eefc086189a244e4d5a6c81a83`
 - VM path present: `True`
 - VM Git present: `False`
-- VM runner commit: `None`
-- VM commit matches local: `False`
-- Source fingerprint status: `source_fingerprint_mismatch`
-- Source fingerprint safe to stamp: `False`
+- VM runner commit: `f2b9bae7b2af26eefc086189a244e4d5a6c81a83`
+- VM commit matches local: `True`
+- Source fingerprint status: `source_fingerprint_matched`
+- Source fingerprint safe to stamp: `True`
 
 ## Issues
 
-- `warning` `vm_runner_commit_unstamped`: The VM runner path exists but does not expose Git metadata or an observed source commit stamp.
-- `error` `vm_runner_source_fingerprint_mismatch`: The VM runner source fingerprint does not match the canonical runner checkout; do not treat the VM as source-attested.
 
 ## Operator Read
 
