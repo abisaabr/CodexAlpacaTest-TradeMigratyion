@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-04-23T16:37:38.118203-04:00",
+  "generated_at": "2026-04-24T10:01:47.921918-04:00",
   "closeout_status": "window_already_closed",
   "vm_name": "vm-execution-paper-01",
   "gcs_prefix": "gs://codexalpaca-control-us/gcp_foundation",
-  "attestation_json_path": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation\\gcp_execution_exclusive_window_attestation.json",
+  "attestation_json_path": "docs\\gcp_foundation\\gcp_execution_exclusive_window_attestation.json",
   "attestation_present": false,
   "exclusive_window_state": "awaiting_operator_attestation",
   "exclusive_window_status": "awaiting_operator_confirmation",

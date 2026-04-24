@@ -2,7 +2,7 @@
 
 - Launch pack state: `awaiting_window_arm`
 - VM name: `vm-execution-paper-01`
-- Runner commit: `a6cf50aa424a51440f5744ec0c634150e82fc7c0`
+- Runner commit: `f2b9bae7b2af26eefc086189a244e4d5a6c81a83`
 - Exclusive window state: `awaiting_operator_attestation`
 - Exclusive window status: `awaiting_operator_confirmation`
 

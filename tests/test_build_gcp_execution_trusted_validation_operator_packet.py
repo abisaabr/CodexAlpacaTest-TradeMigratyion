@@ -46,11 +46,18 @@ def test_build_payload_ready_to_arm_window_when_all_prelaunch_gates_align() -> N
         closeout_status={
             "closeout_status": "window_already_closed",
         },
+        runner_provenance={
+            "status": "provenance_unstamped",
+            "issues": [{"code": "vm_runner_commit_unstamped"}],
+        },
     )
 
     assert payload["operator_packet_state"] == "ready_to_arm_window"
     assert "<control-plane-root>" in payload["arm_window_command_template"]
     assert payload["closeout_command_template"].endswith('-MirrorToGcs')
+    assert payload["runner_provenance_status"] == "provenance_unstamped"
+    assert "vm_runner_commit_unstamped" in payload["runner_provenance_issue_codes"]
+    assert "docs/gcp_foundation/gcp_vm_runner_provenance_handoff.md" in payload["review_targets"]
 
 
 def test_build_payload_ready_to_launch_session_after_window_is_armed() -> None:

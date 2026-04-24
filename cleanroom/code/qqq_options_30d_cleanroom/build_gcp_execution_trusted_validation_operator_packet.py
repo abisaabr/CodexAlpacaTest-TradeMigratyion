@@ -36,7 +36,7 @@ def read_json(path: Path) -> dict[str, Any]:
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
 def build_payload(
@@ -49,13 +49,16 @@ def build_payload(
     trusted_validation: dict[str, Any],
     launch_pack: dict[str, Any],
     closeout_status: dict[str, Any],
+    runner_provenance: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    runner_provenance = runner_provenance or {}
     exclusive_window_status = str(exclusive_window.get("exclusive_window_status") or "missing")
     trusted_validation_readiness = str(
         trusted_validation.get("trusted_validation_readiness") or "missing"
     )
     launch_pack_state = str(launch_pack.get("launch_pack_state") or "missing")
     closeout_state = str(closeout_status.get("closeout_status") or "missing")
+    runner_provenance_status = str(runner_provenance.get("status") or "missing")
 
     operator_packet_state = "blocked"
     if (
@@ -114,6 +117,18 @@ def build_payload(
         f"Trusted validation readiness: `{trusted_validation_readiness}`",
         f"Launch pack state: `{launch_pack_state}`",
         f"Closeout status: `{closeout_state}`",
+        f"Runner provenance status: `{runner_provenance_status}`",
+    ]
+    review_targets = list(launch_pack.get("review_targets") or [])
+    if runner_provenance_status != "missing":
+        provenance_handoff = "docs/gcp_foundation/gcp_vm_runner_provenance_handoff.md"
+        if provenance_handoff not in review_targets:
+            review_targets.append(provenance_handoff)
+
+    runner_provenance_issue_codes = [
+        str(issue.get("code"))
+        for issue in list(runner_provenance.get("issues") or [])
+        if issue.get("code")
     ]
 
     return {
@@ -127,6 +142,8 @@ def build_payload(
         "trusted_validation_readiness": trusted_validation_readiness,
         "launch_pack_state": launch_pack_state,
         "closeout_status": closeout_state,
+        "runner_provenance_status": runner_provenance_status,
+        "runner_provenance_issue_codes": runner_provenance_issue_codes,
         "runner_branch": trusted_validation.get("runner_branch"),
         "runner_commit": trusted_validation.get("runner_commit"),
         "arm_window_command_template": arm_window_command_template,
@@ -135,13 +152,14 @@ def build_payload(
         "post_session_assimilation_command": post_session_assimilation_command,
         "closeout_command_template": closeout_command_template,
         "required_evidence": list(trusted_validation.get("required_evidence") or []),
-        "review_targets": list(launch_pack.get("review_targets") or []),
+        "review_targets": review_targets,
         "lifecycle_steps": lifecycle_steps,
         "gating_summary": gating_summary,
         "guardrails": [
             "Do not arm the exclusive window until you are ready to actually reserve the paper-account slot.",
             "Do not start a broker-facing session unless the refreshed exclusive-window packet says `ready_for_launch` and the launch pack says `ready_to_launch`.",
             "Do not enable shared-lease enforcement by default during the first trusted validation session.",
+            "Do not use unstamped VM runner provenance as strategy-promotion evidence.",
             "Do not skip post-session assimilation or closeout after the session ends.",
         ],
     }
@@ -256,6 +274,7 @@ def main() -> None:
         trusted_validation=read_json(report_dir / "gcp_execution_trusted_validation_session_status.json"),
         launch_pack=read_json(report_dir / "gcp_execution_trusted_validation_launch_pack.json"),
         closeout_status=read_json(report_dir / "gcp_execution_closeout_status.json"),
+        runner_provenance=read_json(report_dir / "gcp_vm_runner_provenance_status.json"),
     )
     write_json(report_dir / "gcp_execution_trusted_validation_operator_packet.json", payload)
     write_markdown(report_dir / "gcp_execution_trusted_validation_operator_packet.md", payload)
