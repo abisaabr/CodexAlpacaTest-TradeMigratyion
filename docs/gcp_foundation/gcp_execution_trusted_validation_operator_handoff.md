@@ -8,6 +8,10 @@
 - Runner provenance blocks launch: `False`
 - Runtime readiness status: `runtime_ready`
 - Runtime readiness blocks launch: `False`
+- Runtime ownership enabled: `True`
+- Runtime ownership backend: `file`
+- Runtime ownership lease class: `FileOwnershipLease`
+- Runtime shared execution lease enforced: `False`
 
 ## Operator Rule
 

@@ -28,6 +28,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--doctor-status", default="not_run")
     parser.add_argument("--vm-pytest-status", default="not_run")
     parser.add_argument("--vm-pytest-summary", default="")
+    parser.add_argument("--ownership-enabled", action="store_true")
+    parser.add_argument("--ownership-backend", default="unknown")
+    parser.add_argument("--ownership-lease-class", default="unknown")
+    parser.add_argument("--ownership-machine-label", default="")
+    parser.add_argument("--gcs-lease-uri", default="")
     parser.add_argument("--report-dir", default=str(DEFAULT_REPORT_DIR))
     return parser
 
@@ -51,6 +56,11 @@ def build_payload(
     doctor_status: str,
     vm_pytest_status: str,
     vm_pytest_summary: str,
+    ownership_enabled: bool,
+    ownership_backend: str,
+    ownership_lease_class: str,
+    ownership_machine_label: str,
+    gcs_lease_uri: str,
     report_dir: Path,
 ) -> dict[str, Any]:
     source_provenance = source_provenance or {}
@@ -96,6 +106,46 @@ def build_payload(
                 "message": "VM source provenance must be matched before runtime readiness can support trusted launch.",
             }
         )
+    if not ownership_enabled:
+        issues.append(
+            {
+                "severity": "error",
+                "code": "launch_ownership_disabled",
+                "message": "Launch ownership must be enabled for the trusted VM session.",
+            }
+        )
+    if ownership_backend != "file":
+        issues.append(
+            {
+                "severity": "error",
+                "code": "unexpected_ownership_backend",
+                "message": "The first trusted VM session must use the local file lease, not disabled ownership or GCS enforcement.",
+            }
+        )
+    if ownership_lease_class != "FileOwnershipLease":
+        issues.append(
+            {
+                "severity": "error",
+                "code": "unexpected_ownership_lease_class",
+                "message": "The first trusted VM session must resolve to FileOwnershipLease.",
+            }
+        )
+    if ownership_machine_label != DEFAULT_VM_NAME:
+        issues.append(
+            {
+                "severity": "error",
+                "code": "ownership_machine_label_mismatch",
+                "message": f"Ownership machine label must be `{DEFAULT_VM_NAME}` for the sanctioned execution path.",
+            }
+        )
+    if gcs_lease_uri:
+        issues.append(
+            {
+                "severity": "error",
+                "code": "shared_execution_lease_enforced_unexpected",
+                "message": "GCS shared-lease enforcement is not the default posture for the first trusted VM session.",
+            }
+        )
 
     status = "runtime_ready"
     if any(issue["severity"] == "error" for issue in issues):
@@ -118,6 +168,12 @@ def build_payload(
         "doctor_status": doctor_status,
         "vm_pytest_status": vm_pytest_status,
         "vm_pytest_summary": vm_pytest_summary,
+        "ownership_enabled": ownership_enabled,
+        "ownership_backend": ownership_backend,
+        "ownership_lease_class": ownership_lease_class,
+        "ownership_machine_label": ownership_machine_label,
+        "gcs_lease_uri": gcs_lease_uri or None,
+        "shared_execution_lease_enforced": ownership_backend == "gcs_generation_match" or bool(gcs_lease_uri),
         "broker_facing": False,
         "live_manifest_effect": "none",
         "risk_policy_effect": "none",
@@ -126,10 +182,12 @@ def build_payload(
         "operator_read": [
             "This packet validates VM runtime output readiness only; it does not start trading or arm the exclusive window.",
             "The trusted paper session needs writable state and run directories so broker-audited evidence can be left behind.",
+            "Launch ownership must be enabled through the local file lease for the first trusted VM session.",
             "Source provenance, exclusive-window, and launch-pack gates still control whether a broker-facing session may start.",
         ],
         "next_actions": [
             "If status is `runtime_ready`, keep source and runtime-output responsibilities separate: source stays stamped, runtime directories stay writable.",
+            "Keep the first trusted VM session on the file lease; only validate GCS shared-lease enforcement under an explicit non-default rollout packet.",
             "Refresh this packet after any VM source redeploy, permission repair, or runtime bootstrap change.",
             "Do not use runtime readiness as strategy-promotion evidence; it only supports operational launch readiness.",
         ],
@@ -155,6 +213,15 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         f"- Doctor status: `{payload['doctor_status']}`",
         f"- VM pytest status: `{payload['vm_pytest_status']}`",
         f"- VM pytest summary: `{payload['vm_pytest_summary']}`",
+        "",
+        "## Launch Ownership",
+        "",
+        f"- Ownership enabled: `{payload['ownership_enabled']}`",
+        f"- Ownership backend: `{payload['ownership_backend']}`",
+        f"- Ownership lease class: `{payload['ownership_lease_class']}`",
+        f"- Ownership machine label: `{payload['ownership_machine_label']}`",
+        f"- GCS lease URI: `{payload['gcs_lease_uri']}`",
+        f"- Shared execution lease enforced: `{payload['shared_execution_lease_enforced']}`",
         "",
         "## Path Checks",
         "",
@@ -192,6 +259,11 @@ def main() -> None:
         doctor_status=args.doctor_status,
         vm_pytest_status=args.vm_pytest_status,
         vm_pytest_summary=args.vm_pytest_summary,
+        ownership_enabled=args.ownership_enabled,
+        ownership_backend=args.ownership_backend,
+        ownership_lease_class=args.ownership_lease_class,
+        ownership_machine_label=args.ownership_machine_label,
+        gcs_lease_uri=args.gcs_lease_uri,
         report_dir=report_dir,
     )
     write_json(report_dir / "gcp_vm_runtime_readiness_status.json", payload)

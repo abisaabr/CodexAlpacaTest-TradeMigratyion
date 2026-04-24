@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-24T10:33:00.475381-04:00",
+  "generated_at": "2026-04-24T10:41:13.808714-04:00",
   "status": "runtime_ready",
   "vm_name": "vm-execution-paper-01",
   "vm_runner_path": "/opt/codexalpaca/codexalpaca_repo",
@@ -12,7 +12,13 @@
   "pytest_cache_writable": true,
   "doctor_status": "passed",
   "vm_pytest_status": "passed",
-  "vm_pytest_summary": "139 passed with explicit MULTI_TICKER_OWNERSHIP_ENABLED=true test override",
+  "vm_pytest_summary": "139 passed without ownership override",
+  "ownership_enabled": true,
+  "ownership_backend": "file",
+  "ownership_lease_class": "FileOwnershipLease",
+  "ownership_machine_label": "vm-execution-paper-01",
+  "gcs_lease_uri": null,
+  "shared_execution_lease_enforced": false,
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -42,10 +48,12 @@
   "operator_read": [
     "This packet validates VM runtime output readiness only; it does not start trading or arm the exclusive window.",
     "The trusted paper session needs writable state and run directories so broker-audited evidence can be left behind.",
+    "Launch ownership must be enabled through the local file lease for the first trusted VM session.",
     "Source provenance, exclusive-window, and launch-pack gates still control whether a broker-facing session may start."
   ],
   "next_actions": [
     "If status is `runtime_ready`, keep source and runtime-output responsibilities separate: source stays stamped, runtime directories stay writable.",
+    "Keep the first trusted VM session on the file lease; only validate GCS shared-lease enforcement under an explicit non-default rollout packet.",
     "Refresh this packet after any VM source redeploy, permission repair, or runtime bootstrap change.",
     "Do not use runtime readiness as strategy-promotion evidence; it only supports operational launch readiness."
   ]
