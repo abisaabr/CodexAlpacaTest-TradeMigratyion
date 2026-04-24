@@ -1,19 +1,27 @@
 {
   "packet": "gcp_execution_launch_surface_audit",
-  "as_of": "2026-04-24T11:52:30-04:00",
+  "as_of": "2026-04-24T12:08:51.879112-04:00",
+  "generated_at": "2026-04-24T12:08:51.879112-04:00",
   "status": "local_broker_capable_surfaces_fenced_broker_flat",
-  "scope": "Local and sanctioned-VM launch-surface audit after the 2026-04-24 paper broker position mismatch and unattributed order recurrence.",
+  "scope": "Repeatable local and sanctioned-VM launch-surface audit before the bounded sanctioned paper session.",
+  "report_dir": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation",
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "incident_date": "2026-04-24",
   "broker_state": {
     "read_only_check_after_fencing": "position_count=0, open_order_count=0",
+    "broker_flat": true,
     "post_fencing_no_new_order_watch": {
-      "duration_seconds": 180,
-      "start_utc": "2026-04-24T15:49:19.790329+00:00",
-      "end_utc": "2026-04-24T15:52:20.772317+00:00",
+      "duration_seconds": 181,
+      "start_utc": "04/24/2026 12:05:37",
+      "end_utc": "04/24/2026 12:08:39",
       "samples": 7,
       "sample_interval_seconds": 30,
       "position_count_all_samples": 0,
       "open_order_count_all_samples": 0,
-      "newest_order_created_at_all_samples": "2026-04-24T15:32:04.805373581Z"
+      "newest_order_created_at_all_samples": "2026-04-24T15:32:04.805373581Z",
+      "watch_clean": true
     }
   },
   "local_windows_task_scheduler": {
@@ -47,35 +55,37 @@
         "classification": "Windows OS feature task, not project launch surface"
       }
     ],
-    "material_change": "The two remaining Stage27 reporting/summary tasks were disabled because they belonged to stale local automation outside the sanctioned VM execution path. Stage27_PaperLive was already disabled."
+    "blocking_ready_tasks": [],
+    "ignored_non_project_matches": [],
+    "material_change": "Project and legacy local scheduled tasks must remain disabled; the sanctioned execution path is the VM only."
   },
   "local_process_audit": {
     "status": "no_active_project_broker_capable_process_observed",
-    "note": "The only matching local processes during the audit were the inspection commands themselves and gcloud helper processes."
+    "observed_process_count": 0,
+    "note": "inspection commands only"
   },
   "sanctioned_vm_audit": {
     "vm_name": "vm-execution-paper-01",
     "gcp_project": "codexalpaca",
     "zone": "us-east1-b",
-    "process_check": "no active runner process observed beyond the pgrep inspection command",
+    "process_check": "no active runner process observed",
+    "process_note": "no active runner process observed",
     "source_stamp": {
       "runner_commit": "f0080066c68d883286f4cb1b9c9e0edc601adf8d",
-      "runner_branch": "codex/qqq-paper-portfolio",
-      "broker_facing": false,
-      "deploy_method": "git_archive_overlay_with_backup",
-      "archive_sha256": "60c0ba9a6e95b5655caee69c9c729d4e383867cdb428cc6b3baeffea3c8dc7db"
-    }
+      "runner_branch": "codex/qqq-paper-portfolio"
+    },
+    "expected_runner_commit": "f0080066c68d883286f4cb1b9c9e0edc601adf8d",
+    "runner_commit_matches_expected": true
   },
   "unattributed_order_source": {
     "status": "not_fully_attributed",
     "evidence": [
-      "A broker check after the VM patch detected new QQQ option exposure and a new MSFT buy-to-open order from an unknown source.",
-      "Client order identifiers matched multi-ticker style naming, but no active local or VM runner process was found after remediation.",
-      "Local stale scheduled tasks and legacy runner tasks have now been disabled.",
-      "No recurrence was observed during the post-fencing no-new-order watch."
+      "The unattributed-order incident is cleared for arming only when the broker is flat, local launch surfaces are fenced, the VM is idle, and the no-new-order watch is clean.",
+      "If a new broker order appears without explicit operator launch, do not arm the window."
     ],
-    "governance_treatment": "Keep this as a pre-arm review gate. It can be cleared only by a fresh broker-flat check, a fresh no-active-runner process check, and a fresh no-new-order watch immediately before arming the exclusive window."
+    "governance_treatment": "Keep this as a pre-arm review gate until repeated clean checks show no autonomous order source remains."
   },
+  "issues": [],
   "hard_rules_preserved": [
     "No trading session was started.",
     "No exclusive execution window was armed.",
