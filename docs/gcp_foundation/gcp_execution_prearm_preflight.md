@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T12:23:24.314249-04:00`
+- Generated at: `2026-04-24T12:31:27.702516-04:00`
 - Status: `ready_to_arm_window`
 - Next operator action: `arm_bounded_exclusive_window`
 - VM name: `vm-execution-paper-01`
@@ -15,7 +15,7 @@
 - Launch-surface audit status: `local_broker_capable_surfaces_fenced_broker_flat`
 - Launch-surface broker flat: `True`
 - Launch-surface no-new-order watch clean: `True`
-- Launch-surface watch duration seconds: `183`
+- Launch-surface watch duration seconds: `182`
 - Trader process absent: `True`
 - Ownership enabled: `True`
 - Ownership backend: `file`

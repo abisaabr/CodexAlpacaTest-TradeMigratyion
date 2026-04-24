@@ -651,6 +651,7 @@ try {
 
     Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath (Join-Path $PSScriptRoot "build_gcp_execution_trusted_validation_operator_packet.py") -Arguments @("--report-dir", $reportDir, "--project-id", $ProjectId, "--vm-name", $VmName, "--zone", $Zone, "--gcs-prefix", $GcsPrefix)
     Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath (Join-Path $PSScriptRoot "build_gcp_execution_prearm_preflight.py") -Arguments @("--report-dir", $reportDir)
+    Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath (Join-Path $PSScriptRoot "build_gcp_execution_launch_authorization.py") -Arguments @("--report-dir", $reportDir)
 
     if ($MirrorToGcs) {
         $mirrorFiles = @(
@@ -676,7 +677,10 @@ try {
             "gcp_execution_trusted_validation_operator_handoff.md",
             "gcp_execution_prearm_preflight.json",
             "gcp_execution_prearm_preflight.md",
-            "gcp_execution_prearm_preflight_handoff.md"
+            "gcp_execution_prearm_preflight_handoff.md",
+            "gcp_execution_launch_authorization.json",
+            "gcp_execution_launch_authorization.md",
+            "gcp_execution_launch_authorization_handoff.md"
         ) | ForEach-Object { Join-Path $reportDir $_ }
         & gcloud storage cp @mirrorFiles $GcsPrefix
         if ($LASTEXITCODE -ne 0) {

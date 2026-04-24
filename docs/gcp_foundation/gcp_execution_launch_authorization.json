@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-24T11:11:47.285438-04:00",
+  "generated_at": "2026-04-24T12:31:27.820516-04:00",
   "status": "blocked",
   "next_operator_action": "resolve_launch_blockers",
   "report_dir": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation",
@@ -17,7 +17,7 @@
   "runner_provenance_status": "provenance_matched",
   "source_fingerprint_status": "source_fingerprint_matched",
   "prearm_preflight_status": "ready_to_arm_window",
-  "prearm_preflight_age_minutes": 13.547555483333333,
+  "prearm_preflight_age_minutes": 0.0019666666666666665,
   "max_prearm_age_minutes": 20,
   "trader_process_absent": true,
   "ownership_enabled": true,
