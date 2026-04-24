@@ -50,8 +50,10 @@ def build_payload(
     launch_pack: dict[str, Any],
     closeout_status: dict[str, Any],
     runner_provenance: dict[str, Any] | None = None,
+    runtime_readiness: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     runner_provenance = runner_provenance or {}
+    runtime_readiness = runtime_readiness or {}
     exclusive_window_status = str(exclusive_window.get("exclusive_window_status") or "missing")
     trusted_validation_readiness = str(
         trusted_validation.get("trusted_validation_readiness") or "missing"
@@ -60,9 +62,11 @@ def build_payload(
     closeout_state = str(closeout_status.get("closeout_status") or "missing")
     runner_provenance_status = str(runner_provenance.get("status") or "missing")
     runner_provenance_blocks_launch = runner_provenance_status.startswith("blocked_")
+    runtime_readiness_status = str(runtime_readiness.get("status") or "missing")
+    runtime_readiness_blocks_launch = runtime_readiness_status.startswith("blocked_")
 
     operator_packet_state = "blocked"
-    if runner_provenance_blocks_launch:
+    if runner_provenance_blocks_launch or runtime_readiness_blocks_launch:
         operator_packet_state = "blocked"
     elif (
         trusted_validation_readiness == "awaiting_exclusive_execution_window"
@@ -121,6 +125,7 @@ def build_payload(
         f"Launch pack state: `{launch_pack_state}`",
         f"Closeout status: `{closeout_state}`",
         f"Runner provenance status: `{runner_provenance_status}`",
+        f"Runtime readiness status: `{runtime_readiness_status}`",
     ]
     review_targets = list(launch_pack.get("review_targets") or [])
     if runner_provenance_status != "missing":
@@ -131,6 +136,10 @@ def build_payload(
         source_fingerprint_handoff = "docs/gcp_foundation/gcp_vm_runner_source_fingerprint_handoff.md"
         if source_fingerprint_handoff not in review_targets:
             review_targets.append(source_fingerprint_handoff)
+    if runtime_readiness_status != "missing":
+        runtime_readiness_handoff = "docs/gcp_foundation/gcp_vm_runtime_readiness_handoff.md"
+        if runtime_readiness_handoff not in review_targets:
+            review_targets.append(runtime_readiness_handoff)
 
     runner_provenance_issue_codes = [
         str(issue.get("code"))
@@ -152,6 +161,8 @@ def build_payload(
         "runner_provenance_status": runner_provenance_status,
         "runner_provenance_blocks_launch": runner_provenance_blocks_launch,
         "runner_provenance_issue_codes": runner_provenance_issue_codes,
+        "runtime_readiness_status": runtime_readiness_status,
+        "runtime_readiness_blocks_launch": runtime_readiness_blocks_launch,
         "runner_branch": trusted_validation.get("runner_branch"),
         "runner_commit": trusted_validation.get("runner_commit"),
         "arm_window_command_template": arm_window_command_template,
@@ -167,6 +178,7 @@ def build_payload(
             "Do not arm the exclusive window until you are ready to actually reserve the paper-account slot.",
             "Do not start a broker-facing session unless the refreshed exclusive-window packet says `ready_for_launch` and the launch pack says `ready_to_launch`.",
             "Do not arm or launch a trusted session while runner provenance status starts with `blocked_`.",
+            "Do not arm or launch a trusted session while VM runtime readiness starts with `blocked_`.",
             "Do not enable shared-lease enforcement by default during the first trusted validation session.",
             "Do not use unstamped VM runner provenance as strategy-promotion evidence.",
             "Do not skip post-session assimilation or closeout after the session ends.",
@@ -260,6 +272,8 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         f"- Closeout status: `{payload['closeout_status']}`",
         f"- Runner provenance status: `{payload.get('runner_provenance_status')}`",
         f"- Runner provenance blocks launch: `{payload.get('runner_provenance_blocks_launch')}`",
+        f"- Runtime readiness status: `{payload.get('runtime_readiness_status')}`",
+        f"- Runtime readiness blocks launch: `{payload.get('runtime_readiness_blocks_launch')}`",
         "",
         "## Operator Rule",
         "",
@@ -287,6 +301,7 @@ def main() -> None:
         launch_pack=read_json(report_dir / "gcp_execution_trusted_validation_launch_pack.json"),
         closeout_status=read_json(report_dir / "gcp_execution_closeout_status.json"),
         runner_provenance=read_json(report_dir / "gcp_vm_runner_provenance_status.json"),
+        runtime_readiness=read_json(report_dir / "gcp_vm_runtime_readiness_status.json"),
     )
     write_json(report_dir / "gcp_execution_trusted_validation_operator_packet.json", payload)
     write_markdown(report_dir / "gcp_execution_trusted_validation_operator_packet.md", payload)

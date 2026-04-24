@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-04-24T10:27:38.464213-04:00",
+  "status": "runtime_ready",
+  "vm_name": "vm-execution-paper-01",
+  "vm_runner_path": "/opt/codexalpaca/codexalpaca_repo",
+  "report_dir": "docs\\gcp_foundation",
+  "source_provenance_status": "provenance_matched",
+  "data_writable": true,
+  "reports_writable": true,
+  "state_root_writable": true,
+  "run_root_writable": true,
+  "pytest_cache_writable": true,
+  "doctor_status": "passed",
+  "vm_pytest_status": "passed",
+  "vm_pytest_summary": "137 passed with explicit MULTI_TICKER_OWNERSHIP_ENABLED=true test override",
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "path_checks": [
+    {
+      "name": "data",
+      "writable": true
+    },
+    {
+      "name": "reports",
+      "writable": true
+    },
+    {
+      "name": "reports/multi_ticker_portfolio/state",
+      "writable": true
+    },
+    {
+      "name": "reports/multi_ticker_portfolio/runs",
+      "writable": true
+    },
+    {
+      "name": ".pytest_cache",
+      "writable": true
+    }
+  ],
+  "issues": [],
+  "operator_read": [
+    "This packet validates VM runtime output readiness only; it does not start trading or arm the exclusive window.",
+    "The trusted paper session needs writable state and run directories so broker-audited evidence can be left behind.",
+    "Source provenance, exclusive-window, and launch-pack gates still control whether a broker-facing session may start."
+  ],
+  "next_actions": [
+    "If status is `runtime_ready`, keep source and runtime-output responsibilities separate: source stays stamped, runtime directories stay writable.",
+    "Refresh this packet after any VM source redeploy, permission repair, or runtime bootstrap change.",
+    "Do not use runtime readiness as strategy-promotion evidence; it only supports operational launch readiness."
+  ]
+}

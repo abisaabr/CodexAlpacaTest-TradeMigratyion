@@ -51,6 +51,9 @@ def test_build_payload_ready_to_arm_window_when_all_prelaunch_gates_align() -> N
             "source_fingerprint_status": "source_fingerprint_mismatch",
             "issues": [{"code": "vm_runner_commit_unstamped"}],
         },
+        runtime_readiness={
+            "status": "runtime_ready",
+        },
     )
 
     assert payload["operator_packet_state"] == "ready_to_arm_window"
@@ -60,6 +63,7 @@ def test_build_payload_ready_to_arm_window_when_all_prelaunch_gates_align() -> N
     assert "vm_runner_commit_unstamped" in payload["runner_provenance_issue_codes"]
     assert "docs/gcp_foundation/gcp_vm_runner_provenance_handoff.md" in payload["review_targets"]
     assert "docs/gcp_foundation/gcp_vm_runner_source_fingerprint_handoff.md" in payload["review_targets"]
+    assert "docs/gcp_foundation/gcp_vm_runtime_readiness_handoff.md" in payload["review_targets"]
 
 
 def test_build_payload_ready_to_launch_session_after_window_is_armed() -> None:
@@ -85,6 +89,38 @@ def test_build_payload_ready_to_launch_session_after_window_is_armed() -> None:
     )
 
     assert payload["operator_packet_state"] == "ready_to_launch_session"
+
+
+def test_build_payload_blocks_launch_when_runtime_readiness_blocks() -> None:
+    payload = MODULE.build_payload(
+        project_id="codexalpaca",
+        vm_name="vm-execution-paper-01",
+        zone="us-east1-b",
+        gcs_prefix="gs://codexalpaca-control-us/gcp_foundation",
+        exclusive_window={
+            "exclusive_window_status": "ready_for_launch",
+        },
+        trusted_validation={
+            "trusted_validation_readiness": "ready_for_manual_launch",
+            "runner_branch": "codex/qqq-paper-portfolio",
+            "runner_commit": "abc123",
+        },
+        launch_pack={
+            "launch_pack_state": "ready_to_launch",
+        },
+        closeout_status={
+            "closeout_status": "ready_to_close_window",
+        },
+        runner_provenance={
+            "status": "provenance_matched",
+        },
+        runtime_readiness={
+            "status": "blocked_vm_runtime_readiness",
+        },
+    )
+
+    assert payload["operator_packet_state"] == "blocked"
+    assert payload["runtime_readiness_blocks_launch"] is True
 
 
 def test_build_payload_blocks_launch_when_runner_provenance_blocks() -> None:

@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T10:23:20.766573-04:00`
+- Generated at: `2026-04-24T10:27:38.614459-04:00`
 - Operator packet state: `ready_to_arm_window`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
@@ -16,6 +16,7 @@
 - Launch pack state: `awaiting_window_arm`
 - Closeout status: `window_already_closed`
 - Runner provenance status: `provenance_matched`
+- Runtime readiness status: `runtime_ready`
 
 ## Commands
 
@@ -75,12 +76,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 - `docs/execution_evidence/execution_evidence_contract_handoff.md`
 - `docs/gcp_foundation/gcp_vm_runner_provenance_handoff.md`
 - `docs/gcp_foundation/gcp_vm_runner_source_fingerprint_handoff.md`
+- `docs/gcp_foundation/gcp_vm_runtime_readiness_handoff.md`
 
 ## Guardrails
 
 - Do not arm the exclusive window until you are ready to actually reserve the paper-account slot.
 - Do not start a broker-facing session unless the refreshed exclusive-window packet says `ready_for_launch` and the launch pack says `ready_to_launch`.
 - Do not arm or launch a trusted session while runner provenance status starts with `blocked_`.
+- Do not arm or launch a trusted session while VM runtime readiness starts with `blocked_`.
 - Do not enable shared-lease enforcement by default during the first trusted validation session.
 - Do not use unstamped VM runner provenance as strategy-promotion evidence.
 - Do not skip post-session assimilation or closeout after the session ends.

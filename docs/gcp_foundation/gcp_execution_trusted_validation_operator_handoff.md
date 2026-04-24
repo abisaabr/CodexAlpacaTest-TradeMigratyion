@@ -6,6 +6,8 @@
 - Closeout status: `window_already_closed`
 - Runner provenance status: `provenance_matched`
 - Runner provenance blocks launch: `False`
+- Runtime readiness status: `runtime_ready`
+- Runtime readiness blocks launch: `False`
 
 ## Operator Rule
 
