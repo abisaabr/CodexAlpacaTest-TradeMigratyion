@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T11:03:03.485548-04:00`
+- Generated at: `2026-04-24T11:11:47.285438-04:00`
 - Status: `blocked`
 - Next operator action: `resolve_launch_blockers`
 - VM name: `vm-execution-paper-01`
@@ -14,7 +14,7 @@
 - Runner provenance status: `provenance_matched`
 - Source fingerprint status: `source_fingerprint_matched`
 - Pre-arm preflight status: `ready_to_arm_window`
-- Pre-arm preflight age minutes: `4.817557316666667`
+- Pre-arm preflight age minutes: `13.547555483333333`
 - Trader process absent: `True`
 - Ownership backend: `file`
 - Shared execution lease enforced: `False`

@@ -51,9 +51,11 @@ def build_payload(
     closeout_status: dict[str, Any],
     runner_provenance: dict[str, Any] | None = None,
     runtime_readiness: dict[str, Any] | None = None,
+    session_completion_gate: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     runner_provenance = runner_provenance or {}
     runtime_readiness = runtime_readiness or {}
+    session_completion_gate = session_completion_gate or {}
     exclusive_window_status = str(exclusive_window.get("exclusive_window_status") or "missing")
     trusted_validation_readiness = str(
         trusted_validation.get("trusted_validation_readiness") or "missing"
@@ -71,6 +73,9 @@ def build_payload(
         runtime_readiness.get("shared_execution_lease_enforced")
     )
     runtime_trader_process_absent = runtime_readiness.get("trader_process_absent")
+    session_completion_status = str(
+        session_completion_gate.get("completion_status") or "missing"
+    )
 
     operator_packet_state = "blocked"
     if runner_provenance_blocks_launch or runtime_readiness_blocks_launch:
@@ -125,6 +130,7 @@ def build_payload(
         "Run the trusted validation session command on the VM without changing strategy selection or risk policy.",
         "Run governed post-session assimilation immediately after the session ends.",
         "Close the exclusive window and mirror the refreshed packet set to GCS.",
+        "Refresh the session-completion evidence gate before treating the session as complete for review.",
         "Review the morning brief, execution calibration, tournament unlock, and execution evidence packets before any promotion decision.",
     ]
 
@@ -140,6 +146,7 @@ def build_payload(
         f"Runtime ownership backend: `{runtime_ownership_backend}`",
         f"Runtime ownership lease class: `{runtime_ownership_lease_class}`",
         f"Runtime shared execution lease enforced: `{runtime_shared_execution_lease_enforced}`",
+        f"Session completion gate: `{session_completion_status}`",
     ]
     review_targets = list(launch_pack.get("review_targets") or [])
     if runner_provenance_status != "missing":
@@ -160,6 +167,9 @@ def build_payload(
     launch_authorization_handoff = "docs/gcp_foundation/gcp_execution_launch_authorization_handoff.md"
     if launch_authorization_handoff not in review_targets:
         review_targets.append(launch_authorization_handoff)
+    session_completion_handoff = "docs/gcp_foundation/gcp_execution_session_completion_gate_handoff.md"
+    if session_completion_handoff not in review_targets:
+        review_targets.append(session_completion_handoff)
 
     runner_provenance_issue_codes = [
         str(issue.get("code"))
@@ -188,6 +198,7 @@ def build_payload(
         "runtime_ownership_backend": runtime_ownership_backend,
         "runtime_ownership_lease_class": runtime_ownership_lease_class,
         "runtime_shared_execution_lease_enforced": runtime_shared_execution_lease_enforced,
+        "session_completion_status": session_completion_status,
         "runner_branch": trusted_validation.get("runner_branch"),
         "runner_commit": trusted_validation.get("runner_commit"),
         "arm_window_command_template": arm_window_command_template,
@@ -209,6 +220,7 @@ def build_payload(
             "Do not enable shared-lease enforcement by default during the first trusted validation session.",
             "Do not use unstamped VM runner provenance as strategy-promotion evidence.",
             "Do not skip post-session assimilation or closeout after the session ends.",
+            "Do not count a raw PnL winner as a qualified winner unless the session-completion evidence gate is complete.",
         ],
     }
 
@@ -306,6 +318,7 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         f"- Runtime ownership backend: `{payload.get('runtime_ownership_backend')}`",
         f"- Runtime ownership lease class: `{payload.get('runtime_ownership_lease_class')}`",
         f"- Runtime shared execution lease enforced: `{payload.get('runtime_shared_execution_lease_enforced')}`",
+        f"- Session completion gate: `{payload.get('session_completion_status')}`",
         "",
         "## Operator Rule",
         "",
@@ -334,6 +347,7 @@ def main() -> None:
         closeout_status=read_json(report_dir / "gcp_execution_closeout_status.json"),
         runner_provenance=read_json(report_dir / "gcp_vm_runner_provenance_status.json"),
         runtime_readiness=read_json(report_dir / "gcp_vm_runtime_readiness_status.json"),
+        session_completion_gate=read_json(report_dir / "gcp_execution_session_completion_gate.json"),
     )
     write_json(report_dir / "gcp_execution_trusted_validation_operator_packet.json", payload)
     write_markdown(report_dir / "gcp_execution_trusted_validation_operator_packet.md", payload)

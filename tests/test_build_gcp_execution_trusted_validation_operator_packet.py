@@ -65,6 +65,7 @@ def test_build_payload_ready_to_arm_window_when_all_prelaunch_gates_align() -> N
     assert "docs/gcp_foundation/gcp_vm_runner_source_fingerprint_handoff.md" in payload["review_targets"]
     assert "docs/gcp_foundation/gcp_vm_runtime_readiness_handoff.md" in payload["review_targets"]
     assert "docs/gcp_foundation/gcp_execution_launch_authorization_handoff.md" in payload["review_targets"]
+    assert "docs/gcp_foundation/gcp_execution_session_completion_gate_handoff.md" in payload["review_targets"]
 
 
 def test_build_payload_ready_to_launch_session_after_window_is_armed() -> None:

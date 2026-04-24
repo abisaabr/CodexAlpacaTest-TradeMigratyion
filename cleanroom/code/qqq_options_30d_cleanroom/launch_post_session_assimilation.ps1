@@ -34,6 +34,9 @@ function Invoke-PythonScript {
     )
     $command = @($PythonCommand + @($ScriptPath) + $Arguments)
     & $command[0] $command[1..($command.Length - 1)]
+    if ($LASTEXITCODE -ne 0) {
+        throw "Python builder failed with exit code $LASTEXITCODE`: $ScriptPath"
+    }
 }
 
 if (-not $ControlPlaneRoot) {
@@ -108,6 +111,8 @@ $builders = @{
     OvernightPlanHandoff = Join-Path $PSScriptRoot "build_overnight_phased_plan_handoff.py"
     MorningBrief = Join-Path $PSScriptRoot "build_morning_operator_brief.py"
     MorningBriefHandoff = Join-Path $PSScriptRoot "build_morning_operator_brief_handoff.py"
+    CloseoutStatus = Join-Path $PSScriptRoot "build_gcp_execution_closeout_status.py"
+    SessionCompletionGate = Join-Path $PSScriptRoot "build_gcp_execution_session_completion_gate.py"
 }
 
 foreach ($builder in $builders.GetEnumerator()) {
@@ -234,6 +239,19 @@ Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath $builders.MorningB
     "--report-dir", $MorningBriefDir
 )
 
+Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath $builders.CloseoutStatus -Arguments @(
+    "--report-dir", $reportDir,
+    "--gcs-prefix", $GcsPrefix
+)
+
+Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath $builders.SessionCompletionGate -Arguments @(
+    "--report-dir", $reportDir,
+    "--session-handoff-json", (Join-Path $SessionReconciliationDir "session_reconciliation_handoff.json"),
+    "--execution-handoff-json", (Join-Path $ExecutionCalibrationDir "execution_calibration_handoff.json"),
+    "--evidence-handoff-json", (Join-Path $ExecutionEvidenceDir "execution_evidence_contract_handoff.json"),
+    "--morning-brief-handoff-json", (Join-Path $MorningBriefDir "morning_operator_brief_handoff.json")
+)
+
 $status = @{
     generated_at = [datetime]::Now.ToString("o")
     control_plane_root = $ControlPlaneRoot
@@ -271,9 +289,27 @@ if ($MirrorToGcs) {
         (Join-Path $reportDir "gcp_execution_trusted_validation_session_status.md"),
         (Join-Path $reportDir "gcp_execution_trusted_validation_launch_pack.json"),
         (Join-Path $reportDir "gcp_execution_trusted_validation_launch_pack.md"),
-        (Join-Path $reportDir "gcp_execution_trusted_validation_launch_handoff.md")
+        (Join-Path $reportDir "gcp_execution_trusted_validation_launch_handoff.md"),
+        (Join-Path $reportDir "gcp_execution_prearm_preflight.json"),
+        (Join-Path $reportDir "gcp_execution_prearm_preflight.md"),
+        (Join-Path $reportDir "gcp_execution_prearm_preflight_handoff.md"),
+        (Join-Path $reportDir "gcp_execution_launch_authorization.json"),
+        (Join-Path $reportDir "gcp_execution_launch_authorization.md"),
+        (Join-Path $reportDir "gcp_execution_launch_authorization_handoff.md"),
+        (Join-Path $reportDir "gcp_execution_closeout_status.json"),
+        (Join-Path $reportDir "gcp_execution_closeout_status.md"),
+        (Join-Path $reportDir "gcp_execution_closeout_handoff.md"),
+        (Join-Path $reportDir "gcp_execution_session_completion_gate.json"),
+        (Join-Path $reportDir "gcp_execution_session_completion_gate.md"),
+        (Join-Path $reportDir "gcp_execution_session_completion_gate_handoff.md"),
+        (Join-Path $reportDir "gcp_execution_trusted_validation_operator_packet.json"),
+        (Join-Path $reportDir "gcp_execution_trusted_validation_operator_packet.md"),
+        (Join-Path $reportDir "gcp_execution_trusted_validation_operator_handoff.md")
     )
-    & gcloud storage cp @mirrorFiles $GcsPrefix
+    $existingMirrorFiles = @($mirrorFiles | Where-Object { Test-Path $_ })
+    if ($existingMirrorFiles.Count -gt 0) {
+        & gcloud storage cp @existingMirrorFiles $GcsPrefix
+    }
 }
 
 Get-Content $statusPath

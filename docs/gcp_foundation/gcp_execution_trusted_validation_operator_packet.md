@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T11:03:03.343154-04:00`
+- Generated at: `2026-04-24T11:11:47.540979-04:00`
 - Operator packet state: `ready_to_arm_window`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
@@ -22,6 +22,7 @@
 - Runtime ownership backend: `file`
 - Runtime ownership lease class: `FileOwnershipLease`
 - Runtime shared execution lease enforced: `False`
+- Session completion gate: `awaiting_launch_authorization`
 
 ## Commands
 
@@ -65,6 +66,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 - Run the trusted validation session command on the VM without changing strategy selection or risk policy.
 - Run governed post-session assimilation immediately after the session ends.
 - Close the exclusive window and mirror the refreshed packet set to GCS.
+- Refresh the session-completion evidence gate before treating the session as complete for review.
 - Review the morning brief, execution calibration, tournament unlock, and execution evidence packets before any promotion decision.
 
 ## Required Evidence
@@ -86,6 +88,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 - `docs/gcp_foundation/gcp_vm_runner_source_fingerprint_handoff.md`
 - `docs/gcp_foundation/gcp_vm_runtime_readiness_handoff.md`
 - `docs/gcp_foundation/gcp_execution_prearm_preflight_handoff.md`
+- `docs/gcp_foundation/gcp_execution_session_completion_gate_handoff.md`
 
 ## Guardrails
 
@@ -98,3 +101,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 - Do not enable shared-lease enforcement by default during the first trusted validation session.
 - Do not use unstamped VM runner provenance as strategy-promotion evidence.
 - Do not skip post-session assimilation or closeout after the session ends.
+- Do not count a raw PnL winner as a qualified winner unless the session-completion evidence gate is complete.

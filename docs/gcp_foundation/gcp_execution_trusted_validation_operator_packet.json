@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-24T11:03:03.343154-04:00",
+  "generated_at": "2026-04-24T11:11:47.540979-04:00",
   "project_id": "codexalpaca",
   "vm_name": "vm-execution-paper-01",
   "zone": "us-east1-b",
@@ -19,6 +19,7 @@
   "runtime_ownership_backend": "file",
   "runtime_ownership_lease_class": "FileOwnershipLease",
   "runtime_shared_execution_lease_enforced": false,
+  "session_completion_status": "awaiting_launch_authorization",
   "runner_branch": "codex/qqq-paper-portfolio",
   "runner_commit": "8acef9ec83d6a89e043201e2aa67e2a3f92870ca",
   "arm_window_command_template": "powershell -NoProfile -ExecutionPolicy Bypass -File \"<control-plane-root>\\cleanroom\\code\\qqq_options_30d_cleanroom\\arm_gcp_execution_exclusive_window.ps1\" -ControlPlaneRoot \"<control-plane-root>\" -VmName \"vm-execution-paper-01\" -ConfirmedBy \"<confirmed-by>\" -WindowStartsAt \"<window-starts-at>\" -WindowExpiresAt \"<window-expires-at>\" -ParallelPathState \"paused\" -MirrorToGcs",
@@ -42,7 +43,8 @@
     "docs/gcp_foundation/gcp_vm_runner_provenance_handoff.md",
     "docs/gcp_foundation/gcp_vm_runner_source_fingerprint_handoff.md",
     "docs/gcp_foundation/gcp_vm_runtime_readiness_handoff.md",
-    "docs/gcp_foundation/gcp_execution_prearm_preflight_handoff.md"
+    "docs/gcp_foundation/gcp_execution_prearm_preflight_handoff.md",
+    "docs/gcp_foundation/gcp_execution_session_completion_gate_handoff.md"
   ],
   "lifecycle_steps": [
     "Run the non-broker pre-arm preflight and require `ready_to_arm_window` before arming the exclusive window.",
@@ -53,6 +55,7 @@
     "Run the trusted validation session command on the VM without changing strategy selection or risk policy.",
     "Run governed post-session assimilation immediately after the session ends.",
     "Close the exclusive window and mirror the refreshed packet set to GCS.",
+    "Refresh the session-completion evidence gate before treating the session as complete for review.",
     "Review the morning brief, execution calibration, tournament unlock, and execution evidence packets before any promotion decision."
   ],
   "gating_summary": [
@@ -66,7 +69,8 @@
     "Runtime ownership enabled: `True`",
     "Runtime ownership backend: `file`",
     "Runtime ownership lease class: `FileOwnershipLease`",
-    "Runtime shared execution lease enforced: `False`"
+    "Runtime shared execution lease enforced: `False`",
+    "Session completion gate: `awaiting_launch_authorization`"
   ],
   "guardrails": [
     "Do not arm the exclusive window until you are ready to actually reserve the paper-account slot.",
@@ -77,6 +81,7 @@
     "Do not run the VM session command if launch authorization is missing or blocked.",
     "Do not enable shared-lease enforcement by default during the first trusted validation session.",
     "Do not use unstamped VM runner provenance as strategy-promotion evidence.",
-    "Do not skip post-session assimilation or closeout after the session ends."
+    "Do not skip post-session assimilation or closeout after the session ends.",
+    "Do not count a raw PnL winner as a qualified winner unless the session-completion evidence gate is complete."
   ]
 }

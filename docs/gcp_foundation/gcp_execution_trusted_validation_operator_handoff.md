@@ -13,6 +13,7 @@
 - Runtime ownership backend: `file`
 - Runtime ownership lease class: `FileOwnershipLease`
 - Runtime shared execution lease enforced: `False`
+- Session completion gate: `awaiting_launch_authorization`
 
 ## Operator Rule
 
