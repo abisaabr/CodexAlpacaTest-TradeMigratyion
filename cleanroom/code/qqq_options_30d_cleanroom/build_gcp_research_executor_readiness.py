@@ -137,6 +137,16 @@ def build_payload(
                 "message": "The current sample backtest has negative after-cost expectancy.",
             }
         )
+    smoke_summary = smoke.get("result_summary") if isinstance(smoke.get("result_summary"), dict) else {}
+    smoke_mean_expectancy = float(smoke_summary.get("mean_net_expectancy_after_cost_proxy") or 0.0)
+    if smoke and smoke.get("evidence_mode") == "real_stock_bar_smoke" and smoke_mean_expectancy < 0:
+        issues.append(
+            {
+                "severity": "warning",
+                "code": "real_bar_smoke_negative_mean_expectancy",
+                "message": "The latest real stock-bar smoke has negative mean expectancy; use candidates only for deeper option-aware research.",
+            }
+        )
     if not wave:
         issues.append(
             {
@@ -167,9 +177,22 @@ def build_payload(
     if any(issue["severity"] == "error" and issue["code"] != "missing_full_wave_executor" for issue in issues):
         status = "blocked_missing_foundation"
     elif present_executor_candidates:
-        status = "ready_for_research_only_execution_smoke_validated" if smoke_valid else "ready_for_research_only_execution"
+        if smoke_valid and smoke.get("evidence_mode") == "real_stock_bar_smoke":
+            status = "ready_for_research_only_real_bar_smoke_validated"
+        elif smoke_valid:
+            status = "ready_for_research_only_execution_smoke_validated"
+        else:
+            status = "ready_for_research_only_execution"
 
-    if present_executor_candidates and data_inventory["has_local_research_bars"]:
+    if smoke_valid and smoke.get("evidence_mode") == "real_stock_bar_smoke":
+        next_build_contract = [
+            "Shard the remaining RQ-002 single-leg repair variants into bounded real stock-bar smoke tranches.",
+            "Promote no strategy from smoke output; send only positive candidates into deeper option-aware backtests.",
+            "Convert quarantine clusters into explicit loser filters before any runner eligibility discussion.",
+            "Add option payoff and fill-cost simulation before treating defined-risk variants as promotable.",
+            "Keep raw result exhaust in GCS and compact hold/kill/quarantine summaries in GitHub.",
+        ]
+    elif present_executor_candidates and data_inventory["has_local_research_bars"]:
         next_build_contract = [
             "Run bounded real-bar research chunks from the mounted curated dataset.",
             "Extend the executor from metadata proxy smoke to real single-leg repair backtests first.",

@@ -2,8 +2,8 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T22:40:51.159781-04:00`
-- Status: `ready_for_research_only_execution_smoke_validated`
+- Generated at: `2026-04-23T23:02:59.761322-04:00`
+- Status: `ready_for_research_only_real_bar_smoke_validated`
 - Wave id: `research_wave_20260424_bootstrap`
 - Wave variants: `2070`
 - Wave chunks: `21`
@@ -13,9 +13,9 @@
 
 - Present: `True`
 - Valid: `True`
-- Run id: `research_wave_20260424_chunk_0001_smoke`
-- Evidence mode: `metadata_proxy_smoke`
-- Input variants: `25`
+- Run id: `research_wave_20260424_rq002_real_stock_bar_smoke_tranche001`
+- Evidence mode: `real_stock_bar_smoke`
+- Input variants: `75`
 - Broker facing: `False`
 
 ## Runner Asset Status
@@ -48,11 +48,12 @@
 ## Issues
 
 - `warning` `sample_backtest_negative_expectancy`: The current sample backtest has negative after-cost expectancy.
+- `warning` `real_bar_smoke_negative_mean_expectancy`: The latest real stock-bar smoke has negative mean expectancy; use candidates only for deeper option-aware research.
 
 ## Next Build Contract
 
-- Run bounded real-bar research chunks from the mounted curated dataset.
-- Extend the executor from metadata proxy smoke to real single-leg repair backtests first.
-- Treat the negative stock sample baseline as loser-learning evidence, not as a deployment candidate.
-- Add multi-leg payoff simulation before treating defined-risk variants as promotable.
-- Keep compact promotion/rejection summaries in GitHub and require governance review before runner eligibility.
+- Shard the remaining RQ-002 single-leg repair variants into bounded real stock-bar smoke tranches.
+- Promote no strategy from smoke output; send only positive candidates into deeper option-aware backtests.
+- Convert quarantine clusters into explicit loser filters before any runner eligibility discussion.
+- Add option payoff and fill-cost simulation before treating defined-risk variants as promotable.
+- Keep raw result exhaust in GCS and compact hold/kill/quarantine summaries in GitHub.
