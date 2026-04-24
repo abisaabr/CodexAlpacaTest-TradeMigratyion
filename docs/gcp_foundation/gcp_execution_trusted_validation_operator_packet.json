@@ -1,17 +1,19 @@
 {
-  "generated_at": "2026-04-24T10:01:48.067809-04:00",
+  "generated_at": "2026-04-24T10:10:02.183900-04:00",
   "project_id": "codexalpaca",
   "vm_name": "vm-execution-paper-01",
   "zone": "us-east1-b",
   "gcs_prefix": "gs://codexalpaca-control-us/gcp_foundation",
-  "operator_packet_state": "ready_to_arm_window",
+  "operator_packet_state": "blocked",
   "exclusive_window_status": "awaiting_operator_confirmation",
   "trusted_validation_readiness": "awaiting_exclusive_execution_window",
   "launch_pack_state": "awaiting_window_arm",
   "closeout_status": "window_already_closed",
-  "runner_provenance_status": "provenance_unstamped",
+  "runner_provenance_status": "blocked_vm_runner_source_mismatch",
+  "runner_provenance_blocks_launch": true,
   "runner_provenance_issue_codes": [
-    "vm_runner_commit_unstamped"
+    "vm_runner_commit_unstamped",
+    "vm_runner_source_fingerprint_mismatch"
   ],
   "runner_branch": "codex/qqq-paper-portfolio",
   "runner_commit": "f2b9bae7b2af26eefc086189a244e4d5a6c81a83",
@@ -32,7 +34,8 @@
     "docs/execution_calibration/execution_calibration_handoff.md",
     "docs/tournament_unlocks/tournament_unlock_handoff.md",
     "docs/execution_evidence/execution_evidence_contract_handoff.md",
-    "docs/gcp_foundation/gcp_vm_runner_provenance_handoff.md"
+    "docs/gcp_foundation/gcp_vm_runner_provenance_handoff.md",
+    "docs/gcp_foundation/gcp_vm_runner_source_fingerprint_handoff.md"
   ],
   "lifecycle_steps": [
     "Pick a bounded exclusive window and confirm the temporary parallel runtime path is paused for that window.",
@@ -48,11 +51,12 @@
     "Trusted validation readiness: `awaiting_exclusive_execution_window`",
     "Launch pack state: `awaiting_window_arm`",
     "Closeout status: `window_already_closed`",
-    "Runner provenance status: `provenance_unstamped`"
+    "Runner provenance status: `blocked_vm_runner_source_mismatch`"
   ],
   "guardrails": [
     "Do not arm the exclusive window until you are ready to actually reserve the paper-account slot.",
     "Do not start a broker-facing session unless the refreshed exclusive-window packet says `ready_for_launch` and the launch pack says `ready_to_launch`.",
+    "Do not arm or launch a trusted session while runner provenance status starts with `blocked_`.",
     "Do not enable shared-lease enforcement by default during the first trusted validation session.",
     "Do not use unstamped VM runner provenance as strategy-promotion evidence.",
     "Do not skip post-session assimilation or closeout after the session ends."

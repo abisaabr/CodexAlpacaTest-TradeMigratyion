@@ -12,6 +12,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parents[2]
 DEFAULT_REPORT_DIR = REPO_ROOT / "docs" / "gcp_foundation"
 DEFAULT_RUNNER_REPO_ROOT = REPO_ROOT.parent / "codexalpaca_repo_gcp_lease_lane_refreshed"
+DEFAULT_SOURCE_FINGERPRINT_JSON = DEFAULT_REPORT_DIR / "gcp_vm_runner_source_fingerprint_status.json"
 DEFAULT_VM_NAME = "vm-execution-paper-01"
 DEFAULT_VM_RUNNER_PATH = "/opt/codexalpaca/codexalpaca_repo"
 DEFAULT_GCS_PREFIX = "gs://codexalpaca-control-us/gcp_foundation"
@@ -26,6 +27,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--vm-git-present", action="store_true")
     parser.add_argument("--vm-runner-branch", default="")
     parser.add_argument("--vm-runner-commit", default="")
+    parser.add_argument("--source-fingerprint-json", default=str(DEFAULT_SOURCE_FINGERPRINT_JSON))
     parser.add_argument("--report-dir", default=str(DEFAULT_REPORT_DIR))
     parser.add_argument("--gcs-prefix", default=DEFAULT_GCS_PREFIX)
     return parser
@@ -41,6 +43,12 @@ def _git_output(repo_root: Path, *args: str) -> str:
     return result.stdout.strip()
 
 
+def read_json(path: Path) -> dict[str, Any]:
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8-sig"))
+
+
 def build_payload(
     *,
     runner_repo_root: Path,
@@ -50,9 +58,12 @@ def build_payload(
     vm_git_present: bool,
     vm_runner_branch: str,
     vm_runner_commit: str,
+    source_fingerprint: dict[str, Any] | None = None,
     report_dir: Path,
     gcs_prefix: str,
 ) -> dict[str, Any]:
+    source_fingerprint = source_fingerprint or {}
+    source_fingerprint_status = str(source_fingerprint.get("status") or "not_checked")
     local_branch = _git_output(runner_repo_root, "rev-parse", "--abbrev-ref", "HEAD")
     local_commit = _git_output(runner_repo_root, "rev-parse", "HEAD")
     local_dirty = bool(_git_output(runner_repo_root, "status", "--short"))
@@ -83,6 +94,14 @@ def build_payload(
                 "message": "The VM runner path exists but does not expose Git metadata or an observed source commit stamp.",
             }
         )
+    if source_fingerprint_status == "source_fingerprint_mismatch":
+        issues.append(
+            {
+                "severity": "error",
+                "code": "vm_runner_source_fingerprint_mismatch",
+                "message": "The VM runner source fingerprint does not match the canonical runner checkout; do not treat the VM as source-attested.",
+            }
+        )
     elif vm_runner_commit and not vm_commit_matches_local:
         issues.append(
             {
@@ -93,9 +112,14 @@ def build_payload(
         )
 
     if any(issue["severity"] == "error" for issue in issues):
-        status = "blocked_vm_runner_missing"
+        if source_fingerprint_status == "source_fingerprint_mismatch":
+            status = "blocked_vm_runner_source_mismatch"
+        else:
+            status = "blocked_vm_runner_missing"
     elif vm_commit_matches_local:
         status = "provenance_matched"
+    elif source_fingerprint_status == "source_fingerprint_matched":
+        status = "provenance_source_matched_unstamped"
     elif vm_runner_commit:
         status = "provenance_observed_commit_mismatch"
     else:
@@ -117,6 +141,9 @@ def build_payload(
         "vm_runner_branch": vm_runner_branch or None,
         "vm_runner_commit": vm_runner_commit or None,
         "vm_commit_matches_local": vm_commit_matches_local,
+        "source_fingerprint_status": source_fingerprint_status,
+        "source_fingerprint_safe_to_stamp": bool(source_fingerprint.get("safe_to_write_source_stamp")),
+        "source_fingerprint_comparison": source_fingerprint.get("comparison") or {},
         "broker_facing": False,
         "live_manifest_effect": "none",
         "risk_policy_effect": "none",
@@ -125,9 +152,10 @@ def build_payload(
             "This packet is a source-provenance check only; it does not start trading or change the VM.",
             "A trusted session is strongest when the VM runner exposes the exact Git commit or a deployment stamp.",
             "If provenance is unstamped, treat the session as operationally bounded but not fully source-attested until post-session review confirms code identity.",
+            "If the source fingerprint mismatches, reconcile the VM deployment before treating the session as trusted evidence.",
         ],
         "next_actions": [
-            "Add a lightweight deployment source stamp to the VM runner path before the next trusted session, or deploy the runner as a Git checkout.",
+            "Add a lightweight deployment source stamp only after the VM source fingerprint matches the intended runner checkout.",
             "Refresh this packet after source provenance is stamped.",
             "Do not use unstamped VM source provenance to justify strategy promotion.",
         ],
@@ -155,6 +183,8 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         f"- VM Git present: `{payload['vm_git_present']}`",
         f"- VM runner commit: `{payload['vm_runner_commit']}`",
         f"- VM commit matches local: `{payload['vm_commit_matches_local']}`",
+        f"- Source fingerprint status: `{payload['source_fingerprint_status']}`",
+        f"- Source fingerprint safe to stamp: `{payload['source_fingerprint_safe_to_stamp']}`",
         "",
         "## Issues",
         "",
@@ -182,6 +212,7 @@ def main() -> None:
         vm_git_present=args.vm_git_present,
         vm_runner_branch=args.vm_runner_branch,
         vm_runner_commit=args.vm_runner_commit,
+        source_fingerprint=read_json(Path(args.source_fingerprint_json)),
         report_dir=report_dir,
         gcs_prefix=args.gcs_prefix,
     )

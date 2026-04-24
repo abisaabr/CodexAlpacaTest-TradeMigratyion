@@ -59,9 +59,12 @@ def build_payload(
     launch_pack_state = str(launch_pack.get("launch_pack_state") or "missing")
     closeout_state = str(closeout_status.get("closeout_status") or "missing")
     runner_provenance_status = str(runner_provenance.get("status") or "missing")
+    runner_provenance_blocks_launch = runner_provenance_status.startswith("blocked_")
 
     operator_packet_state = "blocked"
-    if (
+    if runner_provenance_blocks_launch:
+        operator_packet_state = "blocked"
+    elif (
         trusted_validation_readiness == "awaiting_exclusive_execution_window"
         and launch_pack_state == "awaiting_window_arm"
         and exclusive_window_status == "awaiting_operator_confirmation"
@@ -124,6 +127,10 @@ def build_payload(
         provenance_handoff = "docs/gcp_foundation/gcp_vm_runner_provenance_handoff.md"
         if provenance_handoff not in review_targets:
             review_targets.append(provenance_handoff)
+    if str(runner_provenance.get("source_fingerprint_status") or "not_checked") != "not_checked":
+        source_fingerprint_handoff = "docs/gcp_foundation/gcp_vm_runner_source_fingerprint_handoff.md"
+        if source_fingerprint_handoff not in review_targets:
+            review_targets.append(source_fingerprint_handoff)
 
     runner_provenance_issue_codes = [
         str(issue.get("code"))
@@ -143,6 +150,7 @@ def build_payload(
         "launch_pack_state": launch_pack_state,
         "closeout_status": closeout_state,
         "runner_provenance_status": runner_provenance_status,
+        "runner_provenance_blocks_launch": runner_provenance_blocks_launch,
         "runner_provenance_issue_codes": runner_provenance_issue_codes,
         "runner_branch": trusted_validation.get("runner_branch"),
         "runner_commit": trusted_validation.get("runner_commit"),
@@ -158,6 +166,7 @@ def build_payload(
         "guardrails": [
             "Do not arm the exclusive window until you are ready to actually reserve the paper-account slot.",
             "Do not start a broker-facing session unless the refreshed exclusive-window packet says `ready_for_launch` and the launch pack says `ready_to_launch`.",
+            "Do not arm or launch a trusted session while runner provenance status starts with `blocked_`.",
             "Do not enable shared-lease enforcement by default during the first trusted validation session.",
             "Do not use unstamped VM runner provenance as strategy-promotion evidence.",
             "Do not skip post-session assimilation or closeout after the session ends.",
@@ -249,10 +258,13 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         f"- Exclusive window status: `{payload['exclusive_window_status']}`",
         f"- Launch pack state: `{payload['launch_pack_state']}`",
         f"- Closeout status: `{payload['closeout_status']}`",
+        f"- Runner provenance status: `{payload.get('runner_provenance_status')}`",
+        f"- Runner provenance blocks launch: `{payload.get('runner_provenance_blocks_launch')}`",
         "",
         "## Operator Rule",
         "",
         "- Use this packet as the single top-level checklist for the first sanctioned VM trusted validation session.",
+        "- If the packet state is `blocked`, resolve the blocking gate and refresh packets before arming the window.",
         "- If the packet says `ready_to_arm_window`, arm the window first and re-read the refreshed packets before launching anything.",
         "- Do not start the VM session unless the refreshed launch packet says `ready_to_launch`.",
         "- Always follow with post-session assimilation and exclusive-window closeout.",

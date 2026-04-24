@@ -1,22 +1,45 @@
 {
-  "generated_at": "2026-04-24T10:08:56.188593-04:00",
-  "status": "blocked_vm_runner_source_mismatch",
-  "runner_repo_root": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed",
-  "report_dir": "docs\\gcp_foundation",
-  "gcs_prefix": "gs://codexalpaca-control-us/gcp_foundation",
+  "generated_at": "2026-04-24T10:08:55.795549-04:00",
+  "status": "source_fingerprint_mismatch",
   "vm_name": "vm-execution-paper-01",
   "vm_runner_path": "/opt/codexalpaca/codexalpaca_repo",
+  "vm_manifest_root": "/opt/codexalpaca/codexalpaca_repo",
+  "runner_repo_root": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed",
   "local_runner_branch": "codex/qqq-paper-portfolio",
   "local_runner_commit": "f2b9bae7b2af26eefc086189a244e4d5a6c81a83",
-  "local_runner_dirty": false,
-  "vm_path_present": true,
-  "vm_git_present": false,
-  "vm_runner_branch": null,
-  "vm_runner_commit": null,
-  "vm_commit_matches_local": false,
-  "source_fingerprint_status": "source_fingerprint_mismatch",
-  "source_fingerprint_safe_to_stamp": false,
-  "source_fingerprint_comparison": {
+  "report_dir": "docs\\gcp_foundation",
+  "include_roots": [
+    "alpaca_lab",
+    "config",
+    "scripts"
+  ],
+  "include_files": [
+    ".env.example",
+    "AGENTS.md",
+    "Dockerfile",
+    "README.md",
+    "docker-compose.yml",
+    "pyproject.toml"
+  ],
+  "excluded_dirs": [
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+    "data",
+    "reports"
+  ],
+  "excluded_suffixes": [
+    ".pyc",
+    ".pyo"
+  ],
+  "safe_to_write_source_stamp": false,
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "comparison": {
     "local_file_count": 97,
     "vm_file_count": 93,
     "matching_file_count": 40,
@@ -86,30 +109,21 @@
     ],
     "only_vm_paths": []
   },
-  "broker_facing": false,
-  "live_manifest_effect": "none",
-  "risk_policy_effect": "none",
   "issues": [
-    {
-      "severity": "warning",
-      "code": "vm_runner_commit_unstamped",
-      "message": "The VM runner path exists but does not expose Git metadata or an observed source commit stamp."
-    },
     {
       "severity": "error",
       "code": "vm_runner_source_fingerprint_mismatch",
-      "message": "The VM runner source fingerprint does not match the canonical runner checkout; do not treat the VM as source-attested."
+      "message": "The VM runner source fingerprint does not match the canonical local runner checkout."
     }
   ],
   "operator_read": [
-    "This packet is a source-provenance check only; it does not start trading or change the VM.",
-    "A trusted session is strongest when the VM runner exposes the exact Git commit or a deployment stamp.",
-    "If provenance is unstamped, treat the session as operationally bounded but not fully source-attested until post-session review confirms code identity.",
-    "If the source fingerprint mismatches, reconcile the VM deployment before treating the session as trusted evidence."
+    "This is a source-fingerprint comparison only; it does not start trading or change the VM.",
+    "A source stamp is defensible only when the VM fingerprint matches the intended runner checkout.",
+    "A mismatch means the VM may still run, but the session should not be treated as source-attested trusted evidence."
   ],
   "next_actions": [
-    "Add a lightweight deployment source stamp only after the VM source fingerprint matches the intended runner checkout.",
-    "Refresh this packet after source provenance is stamped.",
-    "Do not use unstamped VM source provenance to justify strategy promotion."
+    "Do not write a source stamp while the fingerprint mismatch remains.",
+    "Reconcile the VM runner deployment to the canonical runner checkout or intentionally select a different published runner commit.",
+    "Recapture the VM manifest and rebuild this packet before arming a trusted execution window."
   ]
 }
