@@ -30,6 +30,13 @@ def _issue(severity: str, code: str, message: str) -> dict[str, str]:
     return {"severity": severity, "code": code, "message": message}
 
 
+def _int_or_none(value: Any) -> int | None:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
 def build_payload(
     *,
     operator_packet: dict[str, Any],
@@ -38,8 +45,10 @@ def build_payload(
     source_fingerprint: dict[str, Any],
     exclusive_window: dict[str, Any],
     launch_pack: dict[str, Any],
+    launch_surface_audit: dict[str, Any] | None = None,
     report_dir: Path,
 ) -> dict[str, Any]:
+    launch_surface_audit = launch_surface_audit or {}
     operator_state = str(operator_packet.get("operator_packet_state") or "missing")
     vm_name = str(operator_packet.get("vm_name") or "missing")
     runtime_status = str(runtime_readiness.get("status") or "missing")
@@ -47,12 +56,38 @@ def build_payload(
     source_fingerprint_status = str(source_fingerprint.get("status") or "missing")
     exclusive_window_status = str(exclusive_window.get("exclusive_window_status") or "missing")
     launch_pack_state = str(launch_pack.get("launch_pack_state") or "missing")
+    launch_surface_audit_status = str(launch_surface_audit.get("status") or "missing")
 
     trader_process_absent = runtime_readiness.get("trader_process_absent")
     ownership_enabled = runtime_readiness.get("ownership_enabled")
     ownership_backend = str(runtime_readiness.get("ownership_backend") or "missing")
     ownership_lease_class = str(runtime_readiness.get("ownership_lease_class") or "missing")
     shared_execution_lease_enforced = bool(runtime_readiness.get("shared_execution_lease_enforced"))
+    launch_surface_broker_state = launch_surface_audit.get("broker_state") or {}
+    if not isinstance(launch_surface_broker_state, dict):
+        launch_surface_broker_state = {}
+    launch_surface_flat_check = str(
+        launch_surface_broker_state.get("read_only_check_after_fencing") or "missing"
+    )
+    launch_surface_watch = launch_surface_broker_state.get("post_fencing_no_new_order_watch") or {}
+    if not isinstance(launch_surface_watch, dict):
+        launch_surface_watch = {}
+    launch_surface_watch_duration_seconds = _int_or_none(
+        launch_surface_watch.get("duration_seconds")
+    )
+    launch_surface_watch_positions = _int_or_none(
+        launch_surface_watch.get("position_count_all_samples")
+    )
+    launch_surface_watch_open_orders = _int_or_none(
+        launch_surface_watch.get("open_order_count_all_samples")
+    )
+    launch_surface_broker_flat = launch_surface_flat_check == "position_count=0, open_order_count=0"
+    launch_surface_watch_clean = (
+        launch_surface_watch_duration_seconds is not None
+        and launch_surface_watch_duration_seconds >= 180
+        and launch_surface_watch_positions == 0
+        and launch_surface_watch_open_orders == 0
+    )
 
     issues: list[dict[str, str]] = []
     if operator_state != "ready_to_arm_window":
@@ -143,6 +178,30 @@ def build_payload(
                 "GCS shared-lease enforcement is not approved for the first trusted VM session.",
             )
         )
+    if launch_surface_audit_status != "local_broker_capable_surfaces_fenced_broker_flat":
+        issues.append(
+            _issue(
+                "error",
+                "launch_surface_audit_not_clean",
+                "The local launch-surface audit must show broker-capable local surfaces fenced before arming.",
+            )
+        )
+    if not launch_surface_broker_flat:
+        issues.append(
+            _issue(
+                "error",
+                "launch_surface_broker_not_flat",
+                "The local launch-surface audit must show the broker account flat with zero open orders.",
+            )
+        )
+    if not launch_surface_watch_clean:
+        issues.append(
+            _issue(
+                "error",
+                "launch_surface_no_new_order_watch_not_clean",
+                "A post-fencing no-new-order watch of at least 180 seconds must be clean before arming.",
+            )
+        )
 
     status = "ready_to_arm_window" if not any(issue["severity"] == "error" for issue in issues) else "blocked"
     next_operator_action = "arm_bounded_exclusive_window" if status == "ready_to_arm_window" else "resolve_prearm_blockers"
@@ -162,6 +221,10 @@ def build_payload(
         "source_fingerprint_status": source_fingerprint_status,
         "exclusive_window_status": exclusive_window_status,
         "launch_pack_state": launch_pack_state,
+        "launch_surface_audit_status": launch_surface_audit_status,
+        "launch_surface_broker_flat": launch_surface_broker_flat,
+        "launch_surface_no_new_order_watch_clean": launch_surface_watch_clean,
+        "launch_surface_watch_duration_seconds": launch_surface_watch_duration_seconds,
         "trader_process_absent": trader_process_absent,
         "ownership_enabled": ownership_enabled,
         "ownership_backend": ownership_backend,
@@ -176,6 +239,7 @@ def build_payload(
             "docs/gcp_foundation/gcp_vm_runner_source_fingerprint_handoff.md",
             "docs/gcp_foundation/gcp_execution_exclusive_window_handoff.md",
             "docs/gcp_foundation/gcp_execution_trusted_validation_launch_handoff.md",
+            "docs/gcp_foundation/gcp_execution_launch_surface_audit_handoff.md",
         ],
         "issues": issues,
         "operator_read": [
@@ -183,6 +247,7 @@ def build_payload(
             "Use it immediately before arming the bounded exclusive window.",
             "If status is `blocked`, do not arm; refresh or resolve the named gate first.",
             "If status is `ready_to_arm_window`, the next action is still a human/operator arm command, not an automatic launch.",
+            "If any new broker order appears without an explicit operator launch, stop instead of arming.",
         ],
     }
 
@@ -208,6 +273,10 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         f"- Source fingerprint status: `{payload['source_fingerprint_status']}`",
         f"- Exclusive window status: `{payload['exclusive_window_status']}`",
         f"- Launch pack state: `{payload['launch_pack_state']}`",
+        f"- Launch-surface audit status: `{payload['launch_surface_audit_status']}`",
+        f"- Launch-surface broker flat: `{payload['launch_surface_broker_flat']}`",
+        f"- Launch-surface no-new-order watch clean: `{payload['launch_surface_no_new_order_watch_clean']}`",
+        f"- Launch-surface watch duration seconds: `{payload['launch_surface_watch_duration_seconds']}`",
         f"- Trader process absent: `{payload['trader_process_absent']}`",
         f"- Ownership enabled: `{payload['ownership_enabled']}`",
         f"- Ownership backend: `{payload['ownership_backend']}`",
@@ -248,6 +317,9 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         f"- Runtime readiness status: `{payload['runtime_readiness_status']}`",
         f"- Runner provenance status: `{payload['runner_provenance_status']}`",
         f"- Source fingerprint status: `{payload['source_fingerprint_status']}`",
+        f"- Launch-surface audit status: `{payload['launch_surface_audit_status']}`",
+        f"- Launch-surface broker flat: `{payload['launch_surface_broker_flat']}`",
+        f"- Launch-surface no-new-order watch clean: `{payload['launch_surface_no_new_order_watch_clean']}`",
         f"- Trader process absent: `{payload['trader_process_absent']}`",
         f"- Ownership backend: `{payload['ownership_backend']}`",
         f"- Shared execution lease enforced: `{payload['shared_execution_lease_enforced']}`",
@@ -275,6 +347,7 @@ def main() -> None:
         source_fingerprint=read_json(report_dir / "gcp_vm_runner_source_fingerprint_status.json"),
         exclusive_window=read_json(report_dir / "gcp_execution_exclusive_window_status.json"),
         launch_pack=read_json(report_dir / "gcp_execution_trusted_validation_launch_pack.json"),
+        launch_surface_audit=read_json(report_dir / "gcp_execution_launch_surface_audit.json"),
         report_dir=report_dir,
     )
     write_json(report_dir / "gcp_execution_prearm_preflight.json", payload)

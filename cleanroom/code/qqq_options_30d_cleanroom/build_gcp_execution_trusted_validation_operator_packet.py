@@ -34,6 +34,13 @@ def read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _int_or_none(value: Any) -> int | None:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
 def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
@@ -52,10 +59,12 @@ def build_payload(
     runner_provenance: dict[str, Any] | None = None,
     runtime_readiness: dict[str, Any] | None = None,
     session_completion_gate: dict[str, Any] | None = None,
+    launch_surface_audit: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     runner_provenance = runner_provenance or {}
     runtime_readiness = runtime_readiness or {}
     session_completion_gate = session_completion_gate or {}
+    launch_surface_audit = launch_surface_audit or {}
     exclusive_window_status = str(exclusive_window.get("exclusive_window_status") or "missing")
     trusted_validation_readiness = str(
         trusted_validation.get("trusted_validation_readiness") or "missing"
@@ -76,9 +85,45 @@ def build_payload(
     session_completion_status = str(
         session_completion_gate.get("completion_status") or "missing"
     )
+    launch_surface_audit_status = str(launch_surface_audit.get("status") or "missing")
+    launch_surface_broker_state = launch_surface_audit.get("broker_state") or {}
+    if not isinstance(launch_surface_broker_state, dict):
+        launch_surface_broker_state = {}
+    launch_surface_flat_check = str(
+        launch_surface_broker_state.get("read_only_check_after_fencing") or "missing"
+    )
+    launch_surface_watch = launch_surface_broker_state.get("post_fencing_no_new_order_watch") or {}
+    if not isinstance(launch_surface_watch, dict):
+        launch_surface_watch = {}
+    launch_surface_watch_duration_seconds = _int_or_none(
+        launch_surface_watch.get("duration_seconds")
+    )
+    launch_surface_watch_positions = _int_or_none(
+        launch_surface_watch.get("position_count_all_samples")
+    )
+    launch_surface_watch_open_orders = _int_or_none(
+        launch_surface_watch.get("open_order_count_all_samples")
+    )
+    launch_surface_broker_flat = launch_surface_flat_check == "position_count=0, open_order_count=0"
+    launch_surface_watch_clean = (
+        launch_surface_watch_duration_seconds is not None
+        and launch_surface_watch_duration_seconds >= 180
+        and launch_surface_watch_positions == 0
+        and launch_surface_watch_open_orders == 0
+    )
+    launch_surface_audit_clean = (
+        launch_surface_audit_status == "local_broker_capable_surfaces_fenced_broker_flat"
+        and launch_surface_broker_flat
+        and launch_surface_watch_clean
+    )
+    launch_surface_audit_blocks_launch = not launch_surface_audit_clean
 
     operator_packet_state = "blocked"
-    if runner_provenance_blocks_launch or runtime_readiness_blocks_launch:
+    if (
+        runner_provenance_blocks_launch
+        or runtime_readiness_blocks_launch
+        or launch_surface_audit_blocks_launch
+    ):
         operator_packet_state = "blocked"
     elif (
         trusted_validation_readiness == "awaiting_exclusive_execution_window"
@@ -122,6 +167,7 @@ def build_payload(
     )
 
     lifecycle_steps = [
+        "Read the local launch-surface audit and require broker-flat, task-fenced, no-new-order evidence before arming.",
         "Run the non-broker pre-arm preflight and require `ready_to_arm_window` before arming the exclusive window.",
         "Pick a bounded exclusive window and confirm the temporary parallel runtime path is paused for that window.",
         "Arm the exclusive window from the control-plane root and confirm the refreshed packets move to `ready_for_launch` / `ready_to_launch`.",
@@ -147,6 +193,9 @@ def build_payload(
         f"Runtime ownership lease class: `{runtime_ownership_lease_class}`",
         f"Runtime shared execution lease enforced: `{runtime_shared_execution_lease_enforced}`",
         f"Session completion gate: `{session_completion_status}`",
+        f"Launch-surface audit status: `{launch_surface_audit_status}`",
+        f"Launch-surface broker flat: `{launch_surface_broker_flat}`",
+        f"Launch-surface no-new-order watch clean: `{launch_surface_watch_clean}`",
     ]
     review_targets = list(launch_pack.get("review_targets") or [])
     if runner_provenance_status != "missing":
@@ -161,6 +210,9 @@ def build_payload(
         runtime_readiness_handoff = "docs/gcp_foundation/gcp_vm_runtime_readiness_handoff.md"
         if runtime_readiness_handoff not in review_targets:
             review_targets.append(runtime_readiness_handoff)
+    launch_surface_handoff = "docs/gcp_foundation/gcp_execution_launch_surface_audit_handoff.md"
+    if launch_surface_handoff not in review_targets:
+        review_targets.append(launch_surface_handoff)
     prearm_handoff = "docs/gcp_foundation/gcp_execution_prearm_preflight_handoff.md"
     if prearm_handoff not in review_targets:
         review_targets.append(prearm_handoff)
@@ -199,6 +251,11 @@ def build_payload(
         "runtime_ownership_lease_class": runtime_ownership_lease_class,
         "runtime_shared_execution_lease_enforced": runtime_shared_execution_lease_enforced,
         "session_completion_status": session_completion_status,
+        "launch_surface_audit_status": launch_surface_audit_status,
+        "launch_surface_audit_blocks_launch": launch_surface_audit_blocks_launch,
+        "launch_surface_broker_flat": launch_surface_broker_flat,
+        "launch_surface_no_new_order_watch_clean": launch_surface_watch_clean,
+        "launch_surface_watch_duration_seconds": launch_surface_watch_duration_seconds,
         "runner_branch": trusted_validation.get("runner_branch"),
         "runner_commit": trusted_validation.get("runner_commit"),
         "arm_window_command_template": arm_window_command_template,
@@ -216,6 +273,7 @@ def build_payload(
             "Do not arm or launch a trusted session while runner provenance status starts with `blocked_`.",
             "Do not arm or launch a trusted session while VM runtime readiness starts with `blocked_`.",
             "Do not arm the exclusive window if the non-broker pre-arm preflight is missing or blocked.",
+            "Do not arm the exclusive window if the launch-surface audit is missing, stale, not broker-flat, or not task-fenced.",
             "Do not run the VM session command if launch authorization is missing or blocked.",
             "Do not enable shared-lease enforcement by default during the first trusted validation session.",
             "Do not use unstamped VM runner provenance as strategy-promotion evidence.",
@@ -319,11 +377,16 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         f"- Runtime ownership lease class: `{payload.get('runtime_ownership_lease_class')}`",
         f"- Runtime shared execution lease enforced: `{payload.get('runtime_shared_execution_lease_enforced')}`",
         f"- Session completion gate: `{payload.get('session_completion_status')}`",
+        f"- Launch-surface audit status: `{payload.get('launch_surface_audit_status')}`",
+        f"- Launch-surface audit blocks launch: `{payload.get('launch_surface_audit_blocks_launch')}`",
+        f"- Launch-surface broker flat: `{payload.get('launch_surface_broker_flat')}`",
+        f"- Launch-surface no-new-order watch clean: `{payload.get('launch_surface_no_new_order_watch_clean')}`",
         "",
         "## Operator Rule",
         "",
         "- Use this packet as the single top-level checklist for the first sanctioned VM trusted validation session.",
         "- If the packet state is `blocked`, resolve the blocking gate and refresh packets before arming the window.",
+        "- If the launch-surface audit blocks launch, do not arm the window even if older packets looked ready.",
         "- If the packet says `ready_to_arm_window`, arm the window first and re-read the refreshed packets before launching anything.",
         "- Do not start the VM session unless the refreshed launch packet says `ready_to_launch`.",
         "- Always follow with post-session assimilation and exclusive-window closeout.",
@@ -348,6 +411,7 @@ def main() -> None:
         runner_provenance=read_json(report_dir / "gcp_vm_runner_provenance_status.json"),
         runtime_readiness=read_json(report_dir / "gcp_vm_runtime_readiness_status.json"),
         session_completion_gate=read_json(report_dir / "gcp_execution_session_completion_gate.json"),
+        launch_surface_audit=read_json(report_dir / "gcp_execution_launch_surface_audit.json"),
     )
     write_json(report_dir / "gcp_execution_trusted_validation_operator_packet.json", payload)
     write_markdown(report_dir / "gcp_execution_trusted_validation_operator_packet.md", payload)

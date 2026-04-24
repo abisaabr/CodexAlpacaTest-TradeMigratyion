@@ -14,11 +14,16 @@
 - Runtime ownership lease class: `FileOwnershipLease`
 - Runtime shared execution lease enforced: `False`
 - Session completion gate: `awaiting_launch_authorization`
+- Launch-surface audit status: `local_broker_capable_surfaces_fenced_broker_flat`
+- Launch-surface audit blocks launch: `False`
+- Launch-surface broker flat: `True`
+- Launch-surface no-new-order watch clean: `True`
 
 ## Operator Rule
 
 - Use this packet as the single top-level checklist for the first sanctioned VM trusted validation session.
 - If the packet state is `blocked`, resolve the blocking gate and refresh packets before arming the window.
+- If the launch-surface audit blocks launch, do not arm the window even if older packets looked ready.
 - If the packet says `ready_to_arm_window`, arm the window first and re-read the refreshed packets before launching anything.
 - Do not start the VM session unless the refreshed launch packet says `ready_to_launch`.
 - Always follow with post-session assimilation and exclusive-window closeout.

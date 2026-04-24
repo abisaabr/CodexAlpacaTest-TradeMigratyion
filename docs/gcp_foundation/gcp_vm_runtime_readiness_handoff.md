@@ -2,14 +2,14 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T10:53:25.693109-04:00`
+- Generated at: `2026-04-24T11:58:57.029003-04:00`
 - Status: `runtime_ready`
 - VM name: `vm-execution-paper-01`
 - VM runner path: `/opt/codexalpaca/codexalpaca_repo`
 - Source provenance status: `provenance_matched`
 - Doctor status: `passed`
 - VM pytest status: `passed`
-- VM pytest summary: `139 passed in 12.96s`
+- VM pytest summary: `140 passed`
 - Trader process absent: `True`
 
 ## Launch Ownership

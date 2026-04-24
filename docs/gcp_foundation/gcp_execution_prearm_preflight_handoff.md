@@ -7,6 +7,9 @@
 - Runtime readiness status: `runtime_ready`
 - Runner provenance status: `provenance_matched`
 - Source fingerprint status: `source_fingerprint_matched`
+- Launch-surface audit status: `local_broker_capable_surfaces_fenced_broker_flat`
+- Launch-surface broker flat: `True`
+- Launch-surface no-new-order watch clean: `True`
 - Trader process absent: `True`
 - Ownership backend: `file`
 - Shared execution lease enforced: `False`

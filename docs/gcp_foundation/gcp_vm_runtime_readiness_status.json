@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-24T10:53:25.693109-04:00",
+  "generated_at": "2026-04-24T11:58:57.029003-04:00",
   "status": "runtime_ready",
   "vm_name": "vm-execution-paper-01",
   "vm_runner_path": "/opt/codexalpaca/codexalpaca_repo",
@@ -12,7 +12,7 @@
   "pytest_cache_writable": true,
   "doctor_status": "passed",
   "vm_pytest_status": "passed",
-  "vm_pytest_summary": "139 passed in 12.96s",
+  "vm_pytest_summary": "140 passed",
   "trader_process_absent": true,
   "ownership_enabled": true,
   "ownership_backend": "file",
