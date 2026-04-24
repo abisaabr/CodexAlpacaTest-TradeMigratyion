@@ -79,6 +79,21 @@ function Assert-PrearmPreflightReady {
     if ($prearm.launch_pack_state -ne "awaiting_window_arm") {
         throw "Launch pack must be awaiting_window_arm before arming; observed: $($prearm.launch_pack_state)"
     }
+    if ($prearm.launch_surface_audit_status -ne "local_broker_capable_surfaces_fenced_broker_flat") {
+        throw "Launch-surface audit must be clean before arming; observed: $($prearm.launch_surface_audit_status)"
+    }
+    if ($prearm.launch_surface_broker_flat -ne $true) {
+        throw "Launch-surface audit did not prove the broker account is flat."
+    }
+    if ($prearm.launch_surface_no_new_order_watch_clean -ne $true) {
+        throw "Launch-surface audit did not prove a clean no-new-order watch."
+    }
+    if ($prearm.launch_surface_newest_order_constant -ne $true) {
+        throw "Launch-surface audit did not prove the newest broker order timestamp stayed constant."
+    }
+    if ([int]$prearm.launch_surface_watch_duration_seconds -lt 180) {
+        throw "Launch-surface no-new-order watch is too short; observed seconds: $($prearm.launch_surface_watch_duration_seconds)"
+    }
     if ($prearm.trader_process_absent -ne $true) {
         throw "Pre-arm preflight did not prove the VM trader process is absent."
     }
@@ -211,7 +226,13 @@ if ($MirrorToGcs) {
         "gcp_execution_launch_authorization_handoff.md",
         "gcp_execution_prearm_preflight.json",
         "gcp_execution_prearm_preflight.md",
-        "gcp_execution_prearm_preflight_handoff.md"
+        "gcp_execution_prearm_preflight_handoff.md",
+        "gcp_execution_launch_surface_audit.json",
+        "gcp_execution_launch_surface_audit.md",
+        "gcp_execution_launch_surface_audit_handoff.md",
+        "gcp_execution_launch_surface_broker_watch_observed.json",
+        "gcp_execution_launch_surface_local_processes_observed.json",
+        "gcp_execution_launch_surface_scheduled_tasks_observed.json"
     )
     $fileArgs = @()
     foreach ($file in $mirrorFiles) {
