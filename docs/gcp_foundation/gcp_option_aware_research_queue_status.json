@@ -1,0 +1,54 @@
+{
+  "generated_at": "2026-04-23T23:19:42.913512-04:00",
+  "status": "blocked_missing_option_market_data",
+  "queue_json": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed\\reports\\research_wave\\option_aware_queue\\option_aware_research_queue.json",
+  "summary_json": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed\\reports\\research_wave\\summaries\\gcp_research_run_summary.json",
+  "report_dir": "docs\\gcp_foundation",
+  "gcs_prefix": "gs://codexalpaca-control-us/research_runs",
+  "smoke_unique_variant_count": 160,
+  "smoke_candidate_count": 48,
+  "queue_item_count": 25,
+  "source_candidate_count": 25,
+  "promotion_allowed": false,
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "blocker_counts": {
+    "missing_historical_option_bars": 25,
+    "missing_historical_option_trades": 25
+  },
+  "top_follow_up_ids": [
+    "rq002__gld_base_trend_long_put_next_expiry__profit_target_multiple_0_35__stop_loss_multiple_0_24__hard_exit_minute_360__liquidity_gate_baseline",
+    "rq002__gld_base_trend_long_put_next_expiry__profit_target_multiple_0_35__stop_loss_multiple_0_24__hard_exit_minute_360__liquidity_gate_tight",
+    "rq002__gld_base_trend_long_put_next_expiry__profit_target_multiple_0_45__stop_loss_multiple_0_18__hard_exit_minute_360__liquidity_gate_baseline",
+    "rq002__gld_base_trend_long_put_next_expiry__profit_target_multiple_0_55__stop_loss_multiple_0_18__hard_exit_minute_360__liquidity_gate_baseline",
+    "rq002__gld_base_trend_long_put_next_expiry__profit_target_multiple_0_35__stop_loss_multiple_0_3__hard_exit_minute_300__liquidity_gate_baseline",
+    "rq002__gld_base_trend_long_put_next_expiry__profit_target_multiple_0_35__stop_loss_multiple_0_3__hard_exit_minute_300__liquidity_gate_tight",
+    "rq002__gld_base_trend_long_put_next_expiry__profit_target_multiple_0_45__stop_loss_multiple_0_3__hard_exit_minute_300__liquidity_gate_baseline",
+    "rq002__gld_base_trend_long_put_next_expiry__profit_target_multiple_0_45__stop_loss_multiple_0_3__hard_exit_minute_300__liquidity_gate_tight",
+    "rq002__gld_base_trend_long_put_next_expiry__profit_target_multiple_0_55__stop_loss_multiple_0_3__hard_exit_minute_300__liquidity_gate_baseline",
+    "rq002__gld_base_trend_long_put_next_expiry__profit_target_multiple_0_55__stop_loss_multiple_0_3__hard_exit_minute_300__liquidity_gate_tight"
+  ],
+  "gcs_artifacts": {
+    "research_summary": "gs://codexalpaca-control-us/research_runs/summaries/gcp_research_run_summary.json",
+    "option_aware_queue": "gs://codexalpaca-control-us/research_runs/option_aware_queue/option_aware_research_queue.json"
+  },
+  "issues": [
+    {
+      "severity": "warning",
+      "code": "missing_historical_option_bars",
+      "message": "25 queued follow-up items are blocked by missing_historical_option_bars."
+    },
+    {
+      "severity": "warning",
+      "code": "missing_historical_option_trades",
+      "message": "25 queued follow-up items are blocked by missing_historical_option_trades."
+    }
+  ],
+  "next_step_contract": [
+    "Keep all smoke candidates out of promotion until option-market-data blockers clear.",
+    "Download bounded historical option bars for representative selected contracts first.",
+    "Add option trades or quote/spread data before fill-cost calibration is trusted.",
+    "Run option-aware entry/exit economics and walk-forward summary before strategy governance review."
+  ]
+}
