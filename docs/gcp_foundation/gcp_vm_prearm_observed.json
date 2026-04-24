@@ -2,18 +2,19 @@
   "vm_path_present": true,
   "vm_git_present": false,
   "vm_runner_branch": "codex/qqq-paper-portfolio",
-  "vm_runner_commit": "8acef9ec83d6a89e043201e2aa67e2a3f92870ca",
+  "vm_runner_commit": "f0080066c68d883286f4cb1b9c9e0edc601adf8d",
   "source_stamp": {
-    "deployed_at": "2026-04-24T10:31:30.4154762-04:00",
+    "deployed_at": "2026-04-24T11:28:30-04:00",
     "vm_name": "vm-execution-paper-01",
     "runner_branch": "codex/qqq-paper-portfolio",
-    "archive_name": "codexalpaca_repo_8acef9e.tar.gz",
+    "archive_name": "codexalpaca_repo_f008006.tar.gz",
     "live_manifest_effect": "none_intended",
-    "runner_commit": "8acef9ec83d6a89e043201e2aa67e2a3f92870ca",
+    "runner_commit": "f0080066c68d883286f4cb1b9c9e0edc601adf8d",
     "broker_facing": false,
     "risk_policy_effect": "none_intended",
     "deploy_method": "git_archive_overlay_with_backup",
-    "archive_sha256": "e5cdd96b3f844fcaf3e5c9d2e2a271456167c915a8b25fa582bb92c55076ef90"
+    "archive_sha256": "60c0ba9a6e95b5655caee69c9c729d4e383867cdb428cc6b3baeffea3c8dc7db",
+    "reason": "paper_runner_position_mismatch_cleanup_order_fix"
   },
   "vm_source_manifest": {
     "root": "/opt/codexalpaca/codexalpaca_repo",
@@ -136,8 +137,8 @@
       },
       {
         "path": "alpaca_lab/multi_ticker_portfolio/trader.py",
-        "sha256": "d0a5a57d902a8a71ab4665603913fac979a59a9681c12736f6b382621f55ef67",
-        "bytes": 209470
+        "sha256": "dee899560ece244afbcbf93790e604fe4c0311be1ceb32e4ffeb9fabf6d7c0b5",
+        "bytes": 210239
       },
       {
         "path": "alpaca_lab/notifications/__init__.py",
@@ -523,9 +524,9 @@
   "pytest": {
     "status": "passed",
     "returncode": 0,
-    "stdout": "........................................................................ [ 51%]\n...................................................................      [100%]\n139 passed in 12.96s\n",
+    "stdout": "........................................................................ [ 51%]\n....................................................................     [100%]\n140 passed in 13.45s\n",
     "stderr": "",
-    "summary": "139 passed in 12.96s"
+    "summary": "140 passed in 13.45s"
   },
   "trader_process_absent": true,
   "trader_processes": [],

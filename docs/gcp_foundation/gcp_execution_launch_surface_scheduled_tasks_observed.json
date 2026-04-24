@@ -1,0 +1,92 @@
+﻿[
+    {
+        "TaskName":  "Alpaca0DTEForwardReplay_20260310_1606",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "Alpaca0DTEQuoteLogger_20260310_0929",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "AlpacaPaperQQQPair_20260406_Start",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "AlpacaPaperQQQPair_20260406_Stop",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "GovernedDownChoppyTakeoverUser",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "GovernedFeatureUsageProcessing",
+        "TaskPath":  "\\Microsoft\\Windows\\Flighting\\FeatureConfig\\",
+        "State":  3
+    },
+    {
+        "TaskName":  "Multi-Ticker Portfolio EOD Close Guard",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "Multi-Ticker Portfolio GitHub Sync",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "Multi-Ticker Portfolio Health Check",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "Multi-Ticker Portfolio Paper Trader",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "Multi-Ticker Portfolio Standby Failover Check",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "QQQCondorEODFinalize",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "QQQCondorPaperLive",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "QQQCondorSummarize",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "QQQLiveNativeGreeksWeekdays_0929",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "Stage27_DailyReport",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "Stage27_EOD_Summary",
+        "TaskPath":  "\\",
+        "State":  1
+    },
+    {
+        "TaskName":  "Stage27_PaperLive",
+        "TaskPath":  "\\",
+        "State":  1
+    }
+]

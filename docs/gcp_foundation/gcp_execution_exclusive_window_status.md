@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T10:53:25-04:00`
+- Generated at: `2026-04-24T12:20:17-04:00`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
 - Window state: `awaiting_operator_attestation`
@@ -31,9 +31,9 @@
 {
   "window_id": "trusted-validation-session-vm-execution-paper-01",
   "confirmed_by": "user@example.com",
-  "confirmed_at": "2026-04-24T10:53:25-04:00",
-  "window_starts_at": "2026-04-24T10:53:25-04:00",
-  "window_expires_at": "2026-04-24T11:38:25-04:00",
+  "confirmed_at": "2026-04-24T12:20:17-04:00",
+  "window_starts_at": "2026-04-24T12:20:17-04:00",
+  "window_expires_at": "2026-04-24T13:05:17-04:00",
   "target_vm_name": "vm-execution-paper-01",
   "scope": "paper_account_single_writer",
   "assertions": {

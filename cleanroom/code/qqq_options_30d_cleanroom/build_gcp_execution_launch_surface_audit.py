@@ -51,6 +51,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--watch-position-count-all-samples", type=int, required=True)
     parser.add_argument("--watch-open-order-count-all-samples", type=int, required=True)
     parser.add_argument("--watch-newest-order-created-at", default="")
+    parser.add_argument("--watch-newest-order-constant", action="store_true")
     parser.add_argument("--scheduled-task-json", default="")
     parser.add_argument("--local-process-count", type=int, default=0)
     parser.add_argument("--local-process-note", default="")
@@ -179,6 +180,7 @@ def build_payload(
     watch_position_count_all_samples: int,
     watch_open_order_count_all_samples: int,
     watch_newest_order_created_at: str,
+    watch_newest_order_constant: bool,
     scheduled_task_rows: list[dict[str, Any]],
     local_process_count: int,
     local_process_note: str,
@@ -202,6 +204,7 @@ def build_payload(
         watch_duration_seconds >= 180
         and watch_position_count_all_samples == 0
         and watch_open_order_count_all_samples == 0
+        and watch_newest_order_constant
     )
     local_process_clear = local_process_count == 0
     vm_runner_commit_matches = (
@@ -223,7 +226,7 @@ def build_payload(
             _issue(
                 "error",
                 "no_new_order_watch_not_clean",
-                "Post-fencing no-new-order watch must run at least 180 seconds with zero positions and zero open orders in every sample.",
+                "Post-fencing no-new-order watch must run at least 180 seconds with zero positions, zero open orders, and no newer broker order timestamp in every sample.",
             )
         )
     if task_classification["blocking_ready_tasks"]:
@@ -292,6 +295,7 @@ def build_payload(
                 "position_count_all_samples": watch_position_count_all_samples,
                 "open_order_count_all_samples": watch_open_order_count_all_samples,
                 "newest_order_created_at_all_samples": watch_newest_order_created_at,
+                "newest_order_constant": watch_newest_order_constant,
                 "watch_clean": watch_clean,
             },
         },
@@ -385,6 +389,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         f"- Watch position count all samples: `{watch['position_count_all_samples']}`",
         f"- Watch open order count all samples: `{watch['open_order_count_all_samples']}`",
         f"- Newest order timestamp all samples: `{watch['newest_order_created_at_all_samples']}`",
+        f"- Newest order timestamp constant: `{watch['newest_order_constant']}`",
         "",
         "## Local Task Scheduler",
         "",
@@ -483,6 +488,7 @@ def main() -> None:
         watch_position_count_all_samples=args.watch_position_count_all_samples,
         watch_open_order_count_all_samples=args.watch_open_order_count_all_samples,
         watch_newest_order_created_at=args.watch_newest_order_created_at,
+        watch_newest_order_constant=args.watch_newest_order_constant,
         scheduled_task_rows=_load_task_rows(args.scheduled_task_json),
         local_process_count=args.local_process_count,
         local_process_note=args.local_process_note,

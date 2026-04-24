@@ -48,6 +48,7 @@ def _ready_payload(tmp_path: Path) -> dict:
         watch_position_count_all_samples=0,
         watch_open_order_count_all_samples=0,
         watch_newest_order_created_at="2026-04-24T15:32:04Z",
+        watch_newest_order_constant=True,
         scheduled_task_rows=_disabled_task_rows(),
         local_process_count=0,
         local_process_note="inspection commands only",
@@ -91,6 +92,7 @@ def test_launch_surface_audit_blocks_when_broker_not_flat(tmp_path: Path) -> Non
         watch_position_count_all_samples=0,
         watch_open_order_count_all_samples=0,
         watch_newest_order_created_at="",
+        watch_newest_order_constant=True,
         scheduled_task_rows=_disabled_task_rows(),
         local_process_count=0,
         local_process_note="",
@@ -122,6 +124,7 @@ def test_launch_surface_audit_blocks_ready_project_task(tmp_path: Path) -> None:
         watch_position_count_all_samples=0,
         watch_open_order_count_all_samples=0,
         watch_newest_order_created_at="",
+        watch_newest_order_constant=True,
         scheduled_task_rows=[
             {"TaskName": "Stage27_PaperLive", "TaskPath": "\\", "State": 3},
         ],
@@ -158,6 +161,7 @@ def test_launch_surface_audit_blocks_stale_vm_commit(tmp_path: Path) -> None:
         watch_position_count_all_samples=0,
         watch_open_order_count_all_samples=0,
         watch_newest_order_created_at="",
+        watch_newest_order_constant=True,
         scheduled_task_rows=_disabled_task_rows(),
         local_process_count=0,
         local_process_note="",
@@ -169,3 +173,34 @@ def test_launch_surface_audit_blocks_stale_vm_commit(tmp_path: Path) -> None:
 
     assert payload["status"] == "blocked_launch_surface_audit"
     assert any(issue["code"] == "vm_runner_commit_mismatch" for issue in payload["issues"])
+
+
+def test_launch_surface_audit_blocks_when_newest_order_timestamp_changes(tmp_path: Path) -> None:
+    payload = MODULE.build_payload(
+        report_dir=tmp_path,
+        project_id="codexalpaca",
+        vm_name="vm-execution-paper-01",
+        zone="us-east1-b",
+        expected_runner_commit="f008006",
+        broker_position_count=0,
+        broker_open_order_count=0,
+        watch_duration_seconds=180,
+        watch_start_utc="",
+        watch_end_utc="",
+        watch_samples=7,
+        watch_sample_interval_seconds=30,
+        watch_position_count_all_samples=0,
+        watch_open_order_count_all_samples=0,
+        watch_newest_order_created_at="2026-04-24T15:33:00Z",
+        watch_newest_order_constant=False,
+        scheduled_task_rows=_disabled_task_rows(),
+        local_process_count=0,
+        local_process_note="",
+        vm_process_clear=True,
+        vm_process_note="",
+        vm_runner_commit="f008006",
+        vm_runner_branch="codex/qqq-paper-portfolio",
+    )
+
+    assert payload["status"] == "blocked_launch_surface_audit"
+    assert any(issue["code"] == "no_new_order_watch_not_clean" for issue in payload["issues"])

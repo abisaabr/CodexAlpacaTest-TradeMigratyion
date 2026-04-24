@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-24T10:53:25-04:00",
+  "generated_at": "2026-04-24T12:20:17-04:00",
   "project_id": "codexalpaca",
   "vm_name": "vm-execution-paper-01",
   "exclusive_window_state": "awaiting_operator_attestation",
@@ -25,9 +25,9 @@
   "attestation_template": {
     "window_id": "trusted-validation-session-vm-execution-paper-01",
     "confirmed_by": "user@example.com",
-    "confirmed_at": "2026-04-24T10:53:25-04:00",
-    "window_starts_at": "2026-04-24T10:53:25-04:00",
-    "window_expires_at": "2026-04-24T11:38:25-04:00",
+    "confirmed_at": "2026-04-24T12:20:17-04:00",
+    "window_starts_at": "2026-04-24T12:20:17-04:00",
+    "window_expires_at": "2026-04-24T13:05:17-04:00",
     "target_vm_name": "vm-execution-paper-01",
     "scope": "paper_account_single_writer",
     "assertions": {

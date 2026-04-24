@@ -6,6 +6,9 @@ param(
     [string]$VmName = "vm-execution-paper-01",
     [string]$Zone = "us-east1-b",
     [string]$VmRunnerPath = "/opt/codexalpaca/codexalpaca_repo",
+    [string]$ExpectedRunnerCommit = "",
+    [int]$BrokerWatchDurationSeconds = 180,
+    [int]$BrokerWatchSampleIntervalSeconds = 30,
     [switch]$SkipVmPytest,
     [switch]$MirrorToGcs,
     [string]$GcsPrefix = "gs://codexalpaca-control-us/gcp_foundation"
@@ -29,6 +32,46 @@ function Resolve-PythonCommand {
         return @("python")
     }
     throw "No Python interpreter found. Provide -RunnerRepoRoot with a venv or expose py/python on PATH."
+}
+
+function Test-PythonImports {
+    param(
+        [string[]]$PythonCommand,
+        [string[]]$Modules
+    )
+    $importLine = "import " + ($Modules -join ", ")
+    $command = @($PythonCommand + @("-c", $importLine))
+    & $command[0] $command[1..($command.Length - 1)] *> $null
+    return ($LASTEXITCODE -eq 0)
+}
+
+function Resolve-BrokerPythonCommand {
+    param(
+        [string]$ControlPlaneRoot,
+        [string]$RunnerRepoRoot
+    )
+    $workspaceRoot = Split-Path $ControlPlaneRoot -Parent
+    $candidateCommands = @()
+    if ($RunnerRepoRoot) {
+        $candidateCommands += ,@(Join-Path $RunnerRepoRoot ".venv\Scripts\python.exe")
+    }
+    $candidateCommands += ,@(Join-Path $workspaceRoot "codexalpaca_repo\.venv\Scripts\python.exe")
+    $candidateCommands += ,@(Join-Path $workspaceRoot "codexalpaca_repo_gcp_lease_lane_refreshed\.venv\Scripts\python.exe")
+    if (Get-Command py -ErrorAction SilentlyContinue) {
+        $candidateCommands += ,@("py", "-3")
+    }
+    if (Get-Command python -ErrorAction SilentlyContinue) {
+        $candidateCommands += ,@("python")
+    }
+    foreach ($candidate in $candidateCommands) {
+        if ($candidate.Count -eq 1 -and $candidate[0] -match "\\python\.exe$" -and -not (Test-Path $candidate[0])) {
+            continue
+        }
+        if (Test-PythonImports -PythonCommand $candidate -Modules @("dotenv", "requests")) {
+            return $candidate
+        }
+    }
+    throw "No broker-capable Python interpreter found. Need modules: dotenv, requests."
 }
 
 function Invoke-PythonScript {
@@ -56,11 +99,197 @@ function Add-FlagIfTrue {
     return $Arguments
 }
 
+function Invoke-PythonCommand {
+    param(
+        [string[]]$PythonCommand,
+        [string[]]$Arguments
+    )
+    $command = @($PythonCommand + $Arguments)
+    & $command[0] $command[1..($command.Length - 1)]
+    if ($LASTEXITCODE -ne 0) {
+        throw "Python command failed with exit code $LASTEXITCODE`: $($Arguments -join ' ')"
+    }
+}
+
+function Get-GitOutput {
+    param(
+        [string]$RepoRoot,
+        [string[]]$Arguments
+    )
+    $result = & git -C $RepoRoot @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "git command failed in $RepoRoot`: git $($Arguments -join ' ')"
+    }
+    return ([string]($result | Out-String)).Trim()
+}
+
+function Write-ScheduledTaskObservation {
+    param([string]$OutPath)
+    $rows = @(
+        Get-ScheduledTask |
+            Where-Object {
+                $_.TaskName -match 'Alpaca|Codex|Ticker|Portfolio|Stage27|Governed|QQQ|Trader|Trade' -or
+                $_.TaskPath -match 'Alpaca|Codex|Ticker|Portfolio|Stage27|Governed|QQQ|Trader|Trade'
+            } |
+            Select-Object TaskName, TaskPath, State |
+            Sort-Object TaskName
+    )
+    ConvertTo-Json -InputObject @($rows) -Depth 5 | Set-Content -Path $OutPath -Encoding utf8
+}
+
+function Write-LocalProcessObservation {
+    param([string]$OutPath)
+    $patterns = @(
+        "run_multi_ticker_portfolio_paper_trader\.py",
+        "stage27_supervisor\.ps1.*paper_live",
+        "run_stage27_paper_live\.ps1",
+        "src\\stage27_runner\.py.*paper_live",
+        "run_governed_downchoppy_exec5\.ps1"
+    )
+    $selfPid = [int]$PID
+    $selfParentPid = -1
+    try {
+        $selfProc = Get-CimInstance Win32_Process -Filter ("ProcessId={0}" -f $selfPid) -ErrorAction SilentlyContinue
+        if ($null -ne $selfProc) {
+            $selfParentPid = [int]$selfProc.ParentProcessId
+        }
+    } catch {
+    }
+    $rows = @()
+    foreach ($proc in @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue)) {
+        $cmdline = [string]$proc.CommandLine
+        if ([string]::IsNullOrWhiteSpace($cmdline)) { continue }
+        $hit = $false
+        foreach ($pattern in $patterns) {
+            if ($cmdline -match $pattern) {
+                $hit = $true
+                break
+            }
+        }
+        if (-not $hit) { continue }
+        $pidValue = [int]$proc.ProcessId
+        $parentPidValue = [int]$proc.ParentProcessId
+        if ($pidValue -eq $selfPid -or $pidValue -eq $selfParentPid -or $parentPidValue -eq $selfPid) { continue }
+        $rows += [pscustomobject]@{
+            process_id = $pidValue
+            parent_process_id = $parentPidValue
+            name = [string]$proc.Name
+            command_line = $cmdline
+        }
+    }
+    ConvertTo-Json -InputObject @($rows) -Depth 5 | Set-Content -Path $OutPath -Encoding utf8
+    return @($rows).Count
+}
+
+function Invoke-BrokerReadOnlyWatch {
+    param(
+        [string[]]$PythonCommand,
+        [string]$RunnerRepoRoot,
+        [int]$DurationSeconds,
+        [int]$SampleIntervalSeconds,
+        [string]$OutPath
+    )
+    $localBrokerScript = Join-Path ([System.IO.Path]::GetTempPath()) ("codexalpaca_broker_readonly_watch_" + $PID + ".py")
+    $brokerScriptContent = @'
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--runner-repo-root", required=True)
+    parser.add_argument("--duration-seconds", type=int, required=True)
+    parser.add_argument("--sample-interval-seconds", type=int, required=True)
+    parser.add_argument("--out-json", required=True)
+    args = parser.parse_args()
+
+    runner_root = Path(args.runner_repo_root)
+    sys.path.insert(0, str(runner_root))
+
+    from alpaca_lab.config import load_settings
+    from alpaca_lab.brokers.alpaca import AlpacaBrokerAdapter
+
+    broker = AlpacaBrokerAdapter(load_settings())
+    interval = max(int(args.sample_interval_seconds), 1)
+    duration = max(int(args.duration_seconds), 0)
+    sample_count = max(int(duration / interval), 1) + 1
+    start = datetime.now(timezone.utc)
+    samples = []
+    newest_values = []
+    for index in range(sample_count):
+        positions = broker.get_positions()
+        open_orders = broker.get_orders(status="open")
+        recent_orders = broker.get_orders(status="all", limit=10)
+        newest = None
+        for order in recent_orders:
+            created_at = order.get("created_at")
+            if created_at and (newest is None or created_at > newest):
+                newest = created_at
+        newest_values.append(newest)
+        samples.append(
+            {
+                "sample": index,
+                "position_count": len(positions),
+                "open_order_count": len(open_orders),
+                "newest_order_created_at": newest,
+            }
+        )
+        print(
+            f"sample={index} position_count={len(positions)} "
+            f"open_order_count={len(open_orders)} newest_order_created_at={newest}",
+            flush=True,
+        )
+        if index < sample_count - 1:
+            time.sleep(interval)
+    end = datetime.now(timezone.utc)
+    newest_order_constant = len(set(newest_values)) <= 1
+    payload = {
+        "watch_start_utc": start.isoformat(),
+        "watch_end_utc": end.isoformat(),
+        "duration_seconds": int((end - start).total_seconds()),
+        "samples": len(samples),
+        "sample_interval_seconds": interval,
+        "position_count_all_samples": max(row["position_count"] for row in samples),
+        "open_order_count_all_samples": max(row["open_order_count"] for row in samples),
+        "newest_order_created_at_all_samples": newest_values[-1] if newest_values else None,
+        "newest_order_constant": newest_order_constant,
+        "sample_rows": samples,
+    }
+    Path(args.out_json).write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
+if __name__ == "__main__":
+    main()
+'@
+    try {
+        Set-Content -Path $localBrokerScript -Value $brokerScriptContent -Encoding utf8
+        Invoke-PythonCommand -PythonCommand $PythonCommand -Arguments @(
+            $localBrokerScript,
+            "--runner-repo-root", $RunnerRepoRoot,
+            "--duration-seconds", ([string]$DurationSeconds),
+            "--sample-interval-seconds", ([string]$SampleIntervalSeconds),
+            "--out-json", $OutPath
+        )
+    }
+    finally {
+        Remove-Item -LiteralPath $localBrokerScript -Force -ErrorAction SilentlyContinue
+    }
+}
+
 if (-not $ControlPlaneRoot) {
     $ControlPlaneRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
 }
 if (-not $RunnerRepoRoot) {
     $RunnerRepoRoot = (Resolve-Path (Join-Path $ControlPlaneRoot "..\codexalpaca_repo_gcp_lease_lane_refreshed")).Path
+}
+if (-not $ExpectedRunnerCommit) {
+    $ExpectedRunnerCommit = Get-GitOutput -RepoRoot $RunnerRepoRoot -Arguments @("rev-parse", "HEAD")
 }
 if (-not (Get-Command gcloud -ErrorAction SilentlyContinue)) {
     throw "gcloud CLI not found on PATH. Cannot refresh VM pre-arm evidence."
@@ -69,7 +298,11 @@ if (-not (Get-Command gcloud -ErrorAction SilentlyContinue)) {
 $reportDir = Join-Path $ControlPlaneRoot "docs\gcp_foundation"
 $observedPath = Join-Path $reportDir "gcp_vm_prearm_observed.json"
 $manifestPath = Join-Path $reportDir "gcp_vm_runner_source_manifest_observed.json"
+$scheduledTaskObservationPath = Join-Path $reportDir "gcp_execution_launch_surface_scheduled_tasks_observed.json"
+$localProcessObservationPath = Join-Path $reportDir "gcp_execution_launch_surface_local_processes_observed.json"
+$brokerWatchObservationPath = Join-Path $reportDir "gcp_execution_launch_surface_broker_watch_observed.json"
 $pythonCommand = Resolve-PythonCommand -RunnerRepoRoot $RunnerRepoRoot
+$brokerPythonCommand = Resolve-BrokerPythonCommand -ControlPlaneRoot $ControlPlaneRoot -RunnerRepoRoot $RunnerRepoRoot
 $remoteScript = "/tmp/codexalpaca_vm_prearm_preflight.py"
 $localScript = Join-Path ([System.IO.Path]::GetTempPath()) ("codexalpaca_vm_prearm_preflight_" + $PID + ".py")
 
@@ -380,6 +613,42 @@ try {
     Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath (Join-Path $PSScriptRoot "build_gcp_execution_trusted_validation_session_status.py") -Arguments @("--report-dir", $reportDir, "--project-id", $ProjectId, "--vm-name", $VmName, "--runner-repo-root", $RunnerRepoRoot)
     Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath (Join-Path $PSScriptRoot "build_gcp_execution_trusted_validation_launch_pack.py") -Arguments @("--report-dir", $reportDir, "--project-id", $ProjectId, "--vm-name", $VmName, "--zone", $Zone)
     Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath (Join-Path $PSScriptRoot "build_gcp_execution_closeout_status.py") -Arguments @("--report-dir", $reportDir, "--vm-name", $VmName, "--gcs-prefix", $GcsPrefix)
+
+    Write-ScheduledTaskObservation -OutPath $scheduledTaskObservationPath
+    $localProcessCount = Write-LocalProcessObservation -OutPath $localProcessObservationPath
+    Invoke-BrokerReadOnlyWatch -PythonCommand $brokerPythonCommand -RunnerRepoRoot $RunnerRepoRoot -DurationSeconds $BrokerWatchDurationSeconds -SampleIntervalSeconds $BrokerWatchSampleIntervalSeconds -OutPath $brokerWatchObservationPath
+    $brokerWatch = Get-Content -Path $brokerWatchObservationPath -Raw | ConvertFrom-Json
+    $launchSurfaceArgs = @(
+        "--report-dir", $reportDir,
+        "--project-id", $ProjectId,
+        "--vm-name", $VmName,
+        "--zone", $Zone,
+        "--expected-runner-commit", $ExpectedRunnerCommit,
+        "--broker-position-count", ([string][int]$brokerWatch.position_count_all_samples),
+        "--broker-open-order-count", ([string][int]$brokerWatch.open_order_count_all_samples),
+        "--watch-duration-seconds", ([string][int]$brokerWatch.duration_seconds),
+        "--watch-start-utc", ([string]$brokerWatch.watch_start_utc),
+        "--watch-end-utc", ([string]$brokerWatch.watch_end_utc),
+        "--watch-samples", ([string][int]$brokerWatch.samples),
+        "--watch-sample-interval-seconds", ([string][int]$brokerWatch.sample_interval_seconds),
+        "--watch-position-count-all-samples", ([string][int]$brokerWatch.position_count_all_samples),
+        "--watch-open-order-count-all-samples", ([string][int]$brokerWatch.open_order_count_all_samples),
+        "--watch-newest-order-created-at", ([string]$brokerWatch.newest_order_created_at_all_samples),
+        "--scheduled-task-json", $scheduledTaskObservationPath,
+        "--local-process-count", ([string][int]$localProcessCount),
+        "--local-process-note", "broker-capable launch patterns only; inspection commands excluded",
+        "--vm-process-note", "VM pre-arm observed trader_process_absent=$($observed.trader_process_absent)",
+        "--vm-runner-commit", ([string]$observed.vm_runner_commit),
+        "--vm-runner-branch", ([string]$observed.vm_runner_branch)
+    )
+    if ([bool]$observed.trader_process_absent) {
+        $launchSurfaceArgs += "--vm-process-clear"
+    }
+    if ([bool]$brokerWatch.newest_order_constant) {
+        $launchSurfaceArgs += "--watch-newest-order-constant"
+    }
+    Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath (Join-Path $PSScriptRoot "build_gcp_execution_launch_surface_audit.py") -Arguments $launchSurfaceArgs
+
     Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath (Join-Path $PSScriptRoot "build_gcp_execution_trusted_validation_operator_packet.py") -Arguments @("--report-dir", $reportDir, "--project-id", $ProjectId, "--vm-name", $VmName, "--zone", $Zone, "--gcs-prefix", $GcsPrefix)
     Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath (Join-Path $PSScriptRoot "build_gcp_execution_prearm_preflight.py") -Arguments @("--report-dir", $reportDir)
 
@@ -387,6 +656,12 @@ try {
         $mirrorFiles = @(
             "gcp_vm_prearm_observed.json",
             "gcp_vm_runner_source_manifest_observed.json",
+            "gcp_execution_launch_surface_scheduled_tasks_observed.json",
+            "gcp_execution_launch_surface_local_processes_observed.json",
+            "gcp_execution_launch_surface_broker_watch_observed.json",
+            "gcp_execution_launch_surface_audit.json",
+            "gcp_execution_launch_surface_audit.md",
+            "gcp_execution_launch_surface_audit_handoff.md",
             "gcp_vm_runner_source_fingerprint_status.json",
             "gcp_vm_runner_source_fingerprint_status.md",
             "gcp_vm_runner_source_fingerprint_handoff.md",
@@ -418,6 +693,10 @@ try {
         vm_runner_path = $VmRunnerPath
         prearm_status = $prearm.status
         next_operator_action = $prearm.next_operator_action
+        expected_runner_commit = $ExpectedRunnerCommit
+        broker_watch_observed_json = $brokerWatchObservationPath
+        scheduled_task_observed_json = $scheduledTaskObservationPath
+        local_process_observed_json = $localProcessObservationPath
         observed_json = $observedPath
         source_manifest_json = $manifestPath
         prearm_handoff = Join-Path $reportDir "gcp_execution_prearm_preflight_handoff.md"

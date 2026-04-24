@@ -1,7 +1,7 @@
 {
   "packet": "gcp_execution_launch_surface_audit",
-  "as_of": "2026-04-24T12:08:51.879112-04:00",
-  "generated_at": "2026-04-24T12:08:51.879112-04:00",
+  "as_of": "2026-04-24T12:23:24.055091-04:00",
+  "generated_at": "2026-04-24T12:23:24.055091-04:00",
   "status": "local_broker_capable_surfaces_fenced_broker_flat",
   "scope": "Repeatable local and sanctioned-VM launch-surface audit before the bounded sanctioned paper session.",
   "report_dir": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation",
@@ -13,14 +13,15 @@
     "read_only_check_after_fencing": "position_count=0, open_order_count=0",
     "broker_flat": true,
     "post_fencing_no_new_order_watch": {
-      "duration_seconds": 181,
-      "start_utc": "04/24/2026 12:05:37",
-      "end_utc": "04/24/2026 12:08:39",
+      "duration_seconds": 183,
+      "start_utc": "2026-04-24T16:20:20.504003+00:00",
+      "end_utc": "2026-04-24T16:23:23.821424+00:00",
       "samples": 7,
       "sample_interval_seconds": 30,
       "position_count_all_samples": 0,
       "open_order_count_all_samples": 0,
       "newest_order_created_at_all_samples": "2026-04-24T15:32:04.805373581Z",
+      "newest_order_constant": true,
       "watch_clean": true
     }
   },
@@ -62,14 +63,14 @@
   "local_process_audit": {
     "status": "no_active_project_broker_capable_process_observed",
     "observed_process_count": 0,
-    "note": "inspection commands only"
+    "note": "broker-capable launch patterns only; inspection commands excluded"
   },
   "sanctioned_vm_audit": {
     "vm_name": "vm-execution-paper-01",
     "gcp_project": "codexalpaca",
     "zone": "us-east1-b",
     "process_check": "no active runner process observed",
-    "process_note": "no active runner process observed",
+    "process_note": "VM pre-arm observed trader_process_absent=True",
     "source_stamp": {
       "runner_commit": "f0080066c68d883286f4cb1b9c9e0edc601adf8d",
       "runner_branch": "codex/qqq-paper-portfolio"
