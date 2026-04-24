@@ -35,6 +35,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--runner-repo-root", default=str(DEFAULT_RUNNER_REPO_ROOT))
     parser.add_argument("--wave-manifest-json", default=str(DEFAULT_WAVE_MANIFEST_JSON))
     parser.add_argument("--sample-backtest-json", default=str(DEFAULT_SAMPLE_BACKTEST_JSON))
+    parser.add_argument("--smoke-run-manifest-json", default=None)
     parser.add_argument("--report-dir", default=str(DEFAULT_REPORT_DIR))
     parser.add_argument("--gcs-prefix", default=DEFAULT_GCS_PREFIX)
     return parser
@@ -77,11 +78,13 @@ def build_payload(
     runner_repo_root: Path,
     wave_manifest_json: Path,
     sample_backtest_json: Path,
+    smoke_run_manifest_json: Path | None = None,
     report_dir: Path,
     gcs_prefix: str,
 ) -> dict[str, Any]:
     wave = _load_json(wave_manifest_json)
     sample = _load_json(sample_backtest_json)
+    smoke = _load_json(smoke_run_manifest_json) if smoke_run_manifest_json else {}
     assets = _asset_status(runner_repo_root, REQUIRED_RUNNER_ASSETS)
     executor_candidates = _asset_status(
         runner_repo_root, {Path(path).stem: path for path in FULL_WAVE_EXECUTOR_CANDIDATES}
@@ -135,11 +138,45 @@ def build_payload(
             }
         )
 
+    required_smoke_outputs = [
+        "research_run_manifest",
+        "normalized_backtest_results",
+        "train_test_or_walk_forward_summary",
+        "after_cost_expectancy_table",
+        "drawdown_and_tail_loss_report",
+        "loser_cluster_comparison",
+        "candidate_hold_kill_quarantine_recommendation",
+    ]
+    smoke_valid = bool(
+        smoke
+        and smoke.get("broker_facing") is False
+        and smoke.get("live_manifest_effect") == "none"
+        and smoke.get("risk_policy_effect") == "none"
+        and all(item in smoke.get("required_outputs", []) for item in required_smoke_outputs)
+    )
+
     status = "blocked_full_wave_executor_missing"
     if any(issue["severity"] == "error" and issue["code"] != "missing_full_wave_executor" for issue in issues):
         status = "blocked_missing_foundation"
     elif present_executor_candidates:
-        status = "ready_for_research_only_execution"
+        status = "ready_for_research_only_execution_smoke_validated" if smoke_valid else "ready_for_research_only_execution"
+
+    if present_executor_candidates:
+        next_build_contract = [
+            "Populate or mount curated research bars for the governed universe before treating results as real backtests.",
+            "Run the research-only executor on bounded chunks and mirror raw result exhaust to GCS.",
+            "Extend the executor from metadata proxy smoke to real single-leg repair backtests first.",
+            "Add multi-leg payoff simulation before treating defined-risk variants as promotable.",
+            "Keep compact promotion/rejection summaries in GitHub and require governance review before runner eligibility.",
+        ]
+    else:
+        next_build_contract = [
+            "Add a research-only runner script that reads gcp_research_wave_variants.jsonl.",
+            "Executor must write research_run_manifest, normalized_backtest_results, train/test or walk-forward summary, after-cost expectancy, drawdown/tail-loss, loser-cluster comparison, and hold/kill/quarantine recommendation.",
+            "Executor must not import broker trading paths, place orders, change live manifests, or change risk policy.",
+            "Start with smoke chunks and single-leg repair diagnostics before treating multi-leg defined-risk variants as promotable.",
+            "Keep raw result exhaust in GCS and compact promotion/rejection summaries in GitHub.",
+        ]
 
     return {
         "generated_at": datetime.now().astimezone().isoformat(),
@@ -147,6 +184,7 @@ def build_payload(
         "runner_repo_root": str(runner_repo_root),
         "wave_manifest_json": str(wave_manifest_json),
         "sample_backtest_json": str(sample_backtest_json),
+        "smoke_run_manifest_json": str(smoke_run_manifest_json) if smoke_run_manifest_json else None,
         "report_dir": str(report_dir),
         "gcs_prefix": gcs_prefix,
         "wave_status": wave.get("status"),
@@ -157,14 +195,19 @@ def build_payload(
         "full_wave_executor_candidates": executor_candidates,
         "data_inventory": data_inventory,
         "sample_backtest_summary": sample,
+        "smoke_run_proof": {
+            "present": bool(smoke),
+            "valid": smoke_valid,
+            "run_id": smoke.get("run_id"),
+            "evidence_mode": smoke.get("evidence_mode"),
+            "input_variant_count": smoke.get("input_variant_count"),
+            "broker_facing": smoke.get("broker_facing"),
+            "live_manifest_effect": smoke.get("live_manifest_effect"),
+            "risk_policy_effect": smoke.get("risk_policy_effect"),
+            "result_summary": smoke.get("result_summary"),
+        },
         "issues": issues,
-        "next_build_contract": [
-            "Add a research-only runner script that reads gcp_research_wave_variants.jsonl.",
-            "Executor must write research_run_manifest, normalized_backtest_results, train/test or walk-forward summary, after-cost expectancy, drawdown/tail-loss, loser-cluster comparison, and hold/kill/quarantine recommendation.",
-            "Executor must not import broker trading paths, place orders, change live manifests, or change risk policy.",
-            "Start with smoke chunks and single-leg repair diagnostics before treating multi-leg defined-risk variants as promotable.",
-            "Keep raw result exhaust in GCS and compact promotion/rejection summaries in GitHub.",
-        ],
+        "next_build_contract": next_build_contract,
     }
 
 
@@ -184,10 +227,19 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         f"- Wave id: `{payload['wave_id']}`",
         f"- Wave variants: `{payload['wave_variant_count']}`",
         f"- Wave chunks: `{payload['wave_chunk_count']}`",
-        f"- GCS prefix: `{payload['gcs_prefix']}`",
-        "",
-        "## Runner Asset Status",
-        "",
+            f"- GCS prefix: `{payload['gcs_prefix']}`",
+            "",
+            "## Smoke Run Proof",
+            "",
+            f"- Present: `{payload['smoke_run_proof']['present']}`",
+            f"- Valid: `{payload['smoke_run_proof']['valid']}`",
+            f"- Run id: `{payload['smoke_run_proof']['run_id']}`",
+            f"- Evidence mode: `{payload['smoke_run_proof']['evidence_mode']}`",
+            f"- Input variants: `{payload['smoke_run_proof']['input_variant_count']}`",
+            f"- Broker facing: `{payload['smoke_run_proof']['broker_facing']}`",
+            "",
+            "## Runner Asset Status",
+            "",
     ]
     for name, item in payload["runner_assets"].items():
         lines.append(f"- `{name}`: `{item['exists']}` `{item['relative_path']}`")
@@ -229,6 +281,7 @@ def main() -> None:
         runner_repo_root=Path(args.runner_repo_root),
         wave_manifest_json=Path(args.wave_manifest_json),
         sample_backtest_json=Path(args.sample_backtest_json),
+        smoke_run_manifest_json=Path(args.smoke_run_manifest_json) if args.smoke_run_manifest_json else None,
         report_dir=Path(args.report_dir),
         gcs_prefix=args.gcs_prefix,
     )
