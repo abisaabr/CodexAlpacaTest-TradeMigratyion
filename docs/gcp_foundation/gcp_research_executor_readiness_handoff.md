@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T22:33:57.234487-04:00`
+- Generated at: `2026-04-23T22:40:51.159781-04:00`
 - Status: `ready_for_research_only_execution_smoke_validated`
 - Wave id: `research_wave_20260424_bootstrap`
 - Wave variants: `2070`
@@ -34,26 +34,25 @@
 
 ## Data Inventory
 
-- Data root exists: `False`
-- Parquet files: `0`
+- Data root exists: `True`
+- Parquet files: `51`
 - CSV files: `0`
-- Has local research bars: `False`
+- Has local research bars: `True`
 
 ## Sample Backtest
 
-- Trade count: `0`
-- Net PnL: `0.0`
-- Bars source: `synthetic`
+- Trade count: `136`
+- Net PnL: `-1712.9154744795487`
+- Bars source: `data\silver\stocks\research_preferred_1min_20260421_20260423_stock_contracts.parquet`
 
 ## Issues
 
-- `warning` `missing_local_research_bars`: No local parquet/csv research bars were found under the runner data root.
-- `warning` `sample_backtest_no_trades`: The current synthetic sample backtest completed but produced zero trades.
+- `warning` `sample_backtest_negative_expectancy`: The current sample backtest has negative after-cost expectancy.
 
 ## Next Build Contract
 
-- Populate or mount curated research bars for the governed universe before treating results as real backtests.
-- Run the research-only executor on bounded chunks and mirror raw result exhaust to GCS.
+- Run bounded real-bar research chunks from the mounted curated dataset.
 - Extend the executor from metadata proxy smoke to real single-leg repair backtests first.
+- Treat the negative stock sample baseline as loser-learning evidence, not as a deployment candidate.
 - Add multi-leg payoff simulation before treating defined-risk variants as promotable.
 - Keep compact promotion/rejection summaries in GitHub and require governance review before runner eligibility.

@@ -129,6 +129,14 @@ def build_payload(
                 "message": "The current synthetic sample backtest completed but produced zero trades.",
             }
         )
+    if sample and float(sample.get("expectancy") or 0.0) < 0:
+        issues.append(
+            {
+                "severity": "warning",
+                "code": "sample_backtest_negative_expectancy",
+                "message": "The current sample backtest has negative after-cost expectancy.",
+            }
+        )
     if not wave:
         issues.append(
             {
@@ -161,7 +169,15 @@ def build_payload(
     elif present_executor_candidates:
         status = "ready_for_research_only_execution_smoke_validated" if smoke_valid else "ready_for_research_only_execution"
 
-    if present_executor_candidates:
+    if present_executor_candidates and data_inventory["has_local_research_bars"]:
+        next_build_contract = [
+            "Run bounded real-bar research chunks from the mounted curated dataset.",
+            "Extend the executor from metadata proxy smoke to real single-leg repair backtests first.",
+            "Treat the negative stock sample baseline as loser-learning evidence, not as a deployment candidate.",
+            "Add multi-leg payoff simulation before treating defined-risk variants as promotable.",
+            "Keep compact promotion/rejection summaries in GitHub and require governance review before runner eligibility.",
+        ]
+    elif present_executor_candidates:
         next_build_contract = [
             "Populate or mount curated research bars for the governed universe before treating results as real backtests.",
             "Run the research-only executor on bounded chunks and mirror raw result exhaust to GCS.",

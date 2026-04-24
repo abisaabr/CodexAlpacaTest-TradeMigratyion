@@ -1,0 +1,114 @@
+{
+  "generated_at": "2026-04-23T22:40:51.911042-04:00",
+  "status": "ready_for_real_bar_research_with_warnings",
+  "runner_repo_root": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed",
+  "build_name": "research_preferred_1min_20260421_20260423_stock_contracts",
+  "report_dir": "docs\\gcp_foundation",
+  "gcs_prefix": "gs://codexalpaca-data-us",
+  "stock_symbol_count": 5,
+  "stock_row_count": 10912,
+  "stock_rows": [
+    {
+      "symbol": "GLD",
+      "row_count": 1947,
+      "start_timestamp": "2026-04-21 13:30:00+00:00",
+      "end_timestamp": "2026-04-23 20:00:00+00:00",
+      "path": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed\\data\\silver\\historical\\research_preferred_1min_20260421_20260423_stock_contracts\\stock_bars\\symbol=GLD\\chunk=GLD__2026-04-21__2026-04-23\\part.parquet"
+    },
+    {
+      "symbol": "MSFT",
+      "row_count": 2218,
+      "start_timestamp": "2026-04-21 13:30:00+00:00",
+      "end_timestamp": "2026-04-23 20:00:00+00:00",
+      "path": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed\\data\\silver\\historical\\research_preferred_1min_20260421_20260423_stock_contracts\\stock_bars\\symbol=MSFT\\chunk=MSFT__2026-04-21__2026-04-23\\part.parquet"
+    },
+    {
+      "symbol": "QQQ",
+      "row_count": 2276,
+      "start_timestamp": "2026-04-21 13:30:00+00:00",
+      "end_timestamp": "2026-04-23 20:00:00+00:00",
+      "path": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed\\data\\silver\\historical\\research_preferred_1min_20260421_20260423_stock_contracts\\stock_bars\\symbol=QQQ\\chunk=QQQ__2026-04-21__2026-04-23\\part.parquet"
+    },
+    {
+      "symbol": "SLV",
+      "row_count": 2171,
+      "start_timestamp": "2026-04-21 13:30:00+00:00",
+      "end_timestamp": "2026-04-23 20:00:00+00:00",
+      "path": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed\\data\\silver\\historical\\research_preferred_1min_20260421_20260423_stock_contracts\\stock_bars\\symbol=SLV\\chunk=SLV__2026-04-21__2026-04-23\\part.parquet"
+    },
+    {
+      "symbol": "TSLA",
+      "row_count": 2300,
+      "start_timestamp": "2026-04-21 13:30:00+00:00",
+      "end_timestamp": "2026-04-23 20:00:00+00:00",
+      "path": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed\\data\\silver\\historical\\research_preferred_1min_20260421_20260423_stock_contracts\\stock_bars\\symbol=TSLA\\chunk=TSLA__2026-04-21__2026-04-23\\part.parquet"
+    }
+  ],
+  "option_contract_inventory_rows_by_underlying": {
+    "GLD": 1470,
+    "MSFT": 624,
+    "QQQ": 2622,
+    "SLV": 936,
+    "TSLA": 1258
+  },
+  "selected_contract_rows_by_underlying": {
+    "GLD": 238,
+    "MSFT": 196,
+    "QQQ": 420,
+    "SLV": 238,
+    "TSLA": 238
+  },
+  "combined_stock_panel": {
+    "build_name": "research_preferred_1min_20260421_20260423_stock_contracts",
+    "generated_at": "2026-04-24T02:37:55.433059+00:00",
+    "source_files": [
+      "data\\silver\\historical\\research_preferred_1min_20260421_20260423_stock_contracts\\stock_bars\\symbol=GLD\\chunk=GLD__2026-04-21__2026-04-23\\part.parquet",
+      "data\\silver\\historical\\research_preferred_1min_20260421_20260423_stock_contracts\\stock_bars\\symbol=MSFT\\chunk=MSFT__2026-04-21__2026-04-23\\part.parquet",
+      "data\\silver\\historical\\research_preferred_1min_20260421_20260423_stock_contracts\\stock_bars\\symbol=QQQ\\chunk=QQQ__2026-04-21__2026-04-23\\part.parquet",
+      "data\\silver\\historical\\research_preferred_1min_20260421_20260423_stock_contracts\\stock_bars\\symbol=SLV\\chunk=SLV__2026-04-21__2026-04-23\\part.parquet",
+      "data\\silver\\historical\\research_preferred_1min_20260421_20260423_stock_contracts\\stock_bars\\symbol=TSLA\\chunk=TSLA__2026-04-21__2026-04-23\\part.parquet"
+    ],
+    "output_path": "data\\silver\\stocks\\research_preferred_1min_20260421_20260423_stock_contracts.parquet",
+    "row_count": 10912,
+    "symbols": [
+      "GLD",
+      "MSFT",
+      "QQQ",
+      "SLV",
+      "TSLA"
+    ],
+    "start_timestamp": "2026-04-21 13:30:00+00:00",
+    "end_timestamp": "2026-04-23 20:00:00+00:00"
+  },
+  "sample_backtest_summary": {
+    "bars_source": "data\\silver\\stocks\\research_preferred_1min_20260421_20260423_stock_contracts.parquet",
+    "net_pnl": -1712.9154744795487,
+    "trade_count": 136,
+    "win_rate": 0.18382352941176472,
+    "profit_factor": 0.15211380938648722,
+    "max_drawdown": -0.017134236610497424,
+    "expectancy": -12.594966724114329,
+    "sharpe_like_daily": -59.17324794434064
+  },
+  "gcs_artifacts": {
+    "raw_manifest": "gs://codexalpaca-data-us/raw/manifests/research_preferred_1min_20260421_20260423_stock_contracts.json",
+    "raw_historical_prefix": "gs://codexalpaca-data-us/raw/historical/research_preferred_1min_20260421_20260423_stock_contracts/",
+    "curated_historical_prefix": "gs://codexalpaca-data-us/curated/historical/research_preferred_1min_20260421_20260423_stock_contracts/",
+    "combined_stock_panel": "gs://codexalpaca-data-us/curated/stocks/research_preferred_1min_20260421_20260423_stock_contracts.parquet",
+    "combined_stock_panel_manifest": "gs://codexalpaca-data-us/curated/stocks/research_preferred_1min_20260421_20260423_stock_contracts.manifest.json",
+    "reports_prefix": "gs://codexalpaca-data-us/reports/historical/research_preferred_1min_20260421_20260423_stock_contracts/",
+    "sample_backtest_prefix": "gs://codexalpaca-data-us/reports/sample_backtest/research_preferred_1min_20260421_20260423_stock_contracts/"
+  },
+  "issues": [
+    {
+      "severity": "warning",
+      "code": "negative_sample_backtest_expectancy",
+      "message": "The real-bar sample stock baseline has negative expectancy and should be treated as a loser-learning baseline."
+    }
+  ],
+  "next_research_step": [
+    "Use this dataset for real-bar single-leg repair smoke backtests first.",
+    "Treat the negative stock baseline as loser-learning evidence, not as a deployment candidate.",
+    "Add historical option bars/trades only after the stock-bar and selected-contract workflow remains stable."
+  ]
+}
