@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-04-23T23:38:17.266891-04:00",
+  "status": "blocked_insufficient_option_fills",
+  "manifest_json": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed\\reports\\research_wave\\option_aware_backtests\\option_aware_research_20260424_gld_put_top25_lag60_diagnostic\\option_aware_research_run_manifest.json",
+  "report_dir": "docs\\gcp_foundation",
+  "gcs_prefix": "gs://codexalpaca-control-us/research_runs/option_aware_backtests",
+  "run_id": "option_aware_research_20260424_gld_put_top25_lag60_diagnostic",
+  "candidate_count": 25,
+  "option_trade_count": 20,
+  "recommendation_counts": {
+    "hold_insufficient_option_fills": 25
+  },
+  "max_fill_coverage": 0.3333,
+  "mean_fill_coverage": 0.1368,
+  "candidate_count_with_three_or_more_option_fills": 0,
+  "promotion_allowed": false,
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "gcs_artifacts": {
+    "manifest": "gs://codexalpaca-control-us/research_runs/option_aware_backtests/option_aware_research_20260424_gld_put_top25_lag60_diagnostic/option_aware_research_run_manifest.json",
+    "candidate_summary": "gs://codexalpaca-control-us/research_runs/option_aware_backtests/option_aware_research_20260424_gld_put_top25_lag60_diagnostic/option_aware_candidate_summary.json",
+    "trade_economics": "gs://codexalpaca-control-us/research_runs/option_aware_backtests/option_aware_research_20260424_gld_put_top25_lag60_diagnostic/option_aware_trade_economics.csv",
+    "recommendation_packet": "gs://codexalpaca-control-us/research_runs/option_aware_backtests/option_aware_research_20260424_gld_put_top25_lag60_diagnostic/option_aware_recommendation_packet.json"
+  },
+  "issues": [
+    {
+      "severity": "warning",
+      "code": "insufficient_option_fills",
+      "message": "At least one candidate lacks enough option-priced trades for promotion-grade economics."
+    }
+  ],
+  "next_step_contract": [
+    "Do not promote or deploy any option-aware candidate from this packet.",
+    "Expand option quote/bar coverage for queued contracts before rerunning economics.",
+    "Treat sparse positive PnL as diagnostic only until minimum-fill and out-of-sample gates pass."
+  ]
+}
