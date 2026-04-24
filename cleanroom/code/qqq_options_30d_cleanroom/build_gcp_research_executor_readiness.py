@@ -44,7 +44,7 @@ def build_parser() -> argparse.ArgumentParser:
 def _load_json(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
-    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload = json.loads(path.read_text(encoding="utf-8-sig"))
     return payload if isinstance(payload, dict) else {}
 
 

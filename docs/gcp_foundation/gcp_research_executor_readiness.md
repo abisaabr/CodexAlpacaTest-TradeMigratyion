@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T23:02:59.761322-04:00`
+- Generated at: `2026-04-24T00:49:12.781721-04:00`
 - Status: `ready_for_research_only_real_bar_smoke_validated`
 - Wave id: `research_wave_20260424_bootstrap`
 - Wave variants: `2070`
@@ -13,9 +13,9 @@
 
 - Present: `True`
 - Valid: `True`
-- Run id: `research_wave_20260424_rq002_real_stock_bar_smoke_tranche001`
+- Run id: `research_wave_20260424_rq002_real_stock_bar_smoke_chunk_0015`
 - Evidence mode: `real_stock_bar_smoke`
-- Input variants: `75`
+- Input variants: `82`
 - Broker facing: `False`
 
 ## Runner Asset Status
@@ -35,7 +35,7 @@
 ## Data Inventory
 
 - Data root exists: `True`
-- Parquet files: `51`
+- Parquet files: `64`
 - CSV files: `0`
 - Has local research bars: `True`
 

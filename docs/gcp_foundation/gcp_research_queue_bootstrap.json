@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-04-23T22:21:50.976677-04:00",
+  "generated_at": "2026-04-24T00:48:12.111794-04:00",
   "status": "ready_with_research_warnings",
   "strategy_registry_json": "docs\\gcp_foundation\\gcp_strategy_registry_bootstrap.json",
-  "quality_scorecard_json": "C:\\Users\\abisa\\Downloads\\codexalpaca_runtime\\multi_ticker_portfolio_live\\quality_scorecard\\friday_quality_scorecard_2026-04-24.json",
+  "quality_scorecard_json": "C:\\Users\\abisa\\Downloads\\codexalpaca_runtime\\multi_ticker_portfolio_live\\quality_scorecard\\latest_friday_quality_scorecard.json",
   "report_dir": "docs\\gcp_foundation",
   "gcs_prefix": "gs://codexalpaca-control-us/research_queue/bootstrap",
   "strategy_count": 94,

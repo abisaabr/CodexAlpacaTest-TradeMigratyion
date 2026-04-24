@@ -2,20 +2,20 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T22:02:07.205332-04:00`
+- Generated at: `2026-04-24T00:48:10.372733-04:00`
 - Status: `ready_for_research_bootstrap`
-- Runner repo root: `C:\Users\abisa\Downloads\codexalpaca_repo`
+- Runner repo root: `C:\Users\abisa\Downloads\codexalpaca_repo_gcp_lease_lane_refreshed`
 - Runtime root: `C:\Users\abisa\Downloads\codexalpaca_runtime\multi_ticker_portfolio_live`
 - GCS prefix: `gs://codexalpaca-control-us/research_manifests`
 
 ## Counts
 
-- runner_file_count_sampled: `492`
+- runner_file_count_sampled: `539`
 - downloader_script_count: `1`
-- backtest_script_count: `1`
-- research_script_count: `4`
-- strategy_config_count: `7`
-- backtest_report_count: `4`
+- backtest_script_count: `2`
+- research_script_count: `5`
+- strategy_config_count: `5`
+- backtest_report_count: `52`
 - runtime_session_date_count: `3`
 
 ## April 23 Evidence
@@ -36,6 +36,7 @@
 
 ### Backtest Scripts
 
+- `run_option_aware_research_backtest.py`
 - `run_sample_backtest.py`
 
 ### Strategy Configs
@@ -45,8 +46,6 @@
 - `qqq_paper_portfolio.yaml`
 - `risk_controls/multi_ticker_portfolio.yaml`
 - `strategy_manifests/multi_ticker_portfolio_live.yaml`
-- `strategy_manifests/multi_ticker_portfolio_live.yaml.pre_sync_20260421T162305.bak`
-- `strategy_manifests/multi_ticker_portfolio_live.yaml.pre_sync_20260421T163830.bak`
 
 ### Runtime Session Dates
 
