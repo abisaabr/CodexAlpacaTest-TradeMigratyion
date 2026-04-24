@@ -117,6 +117,7 @@ def build_payload(
     )
 
     lifecycle_steps = [
+        "Run the non-broker pre-arm preflight and require `ready_to_arm_window` before arming the exclusive window.",
         "Pick a bounded exclusive window and confirm the temporary parallel runtime path is paused for that window.",
         "Arm the exclusive window from the control-plane root and confirm the refreshed packets move to `ready_for_launch` / `ready_to_launch`.",
         "SSH into the sanctioned VM through IAP.",
@@ -152,6 +153,9 @@ def build_payload(
         runtime_readiness_handoff = "docs/gcp_foundation/gcp_vm_runtime_readiness_handoff.md"
         if runtime_readiness_handoff not in review_targets:
             review_targets.append(runtime_readiness_handoff)
+    prearm_handoff = "docs/gcp_foundation/gcp_execution_prearm_preflight_handoff.md"
+    if prearm_handoff not in review_targets:
+        review_targets.append(prearm_handoff)
 
     runner_provenance_issue_codes = [
         str(issue.get("code"))
@@ -196,6 +200,7 @@ def build_payload(
             "Do not start a broker-facing session unless the refreshed exclusive-window packet says `ready_for_launch` and the launch pack says `ready_to_launch`.",
             "Do not arm or launch a trusted session while runner provenance status starts with `blocked_`.",
             "Do not arm or launch a trusted session while VM runtime readiness starts with `blocked_`.",
+            "Do not arm the exclusive window if the non-broker pre-arm preflight is missing or blocked.",
             "Do not enable shared-lease enforcement by default during the first trusted validation session.",
             "Do not use unstamped VM runner provenance as strategy-promotion evidence.",
             "Do not skip post-session assimilation or closeout after the session ends.",

@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T10:45:01.110804-04:00`
+- Generated at: `2026-04-24T10:53:50.626904-04:00`
 - Operator packet state: `ready_to_arm_window`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
@@ -57,6 +57,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 
 ## Lifecycle Steps
 
+- Run the non-broker pre-arm preflight and require `ready_to_arm_window` before arming the exclusive window.
 - Pick a bounded exclusive window and confirm the temporary parallel runtime path is paused for that window.
 - Arm the exclusive window from the control-plane root and confirm the refreshed packets move to `ready_for_launch` / `ready_to_launch`.
 - SSH into the sanctioned VM through IAP.
@@ -82,6 +83,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 - `docs/gcp_foundation/gcp_vm_runner_provenance_handoff.md`
 - `docs/gcp_foundation/gcp_vm_runner_source_fingerprint_handoff.md`
 - `docs/gcp_foundation/gcp_vm_runtime_readiness_handoff.md`
+- `docs/gcp_foundation/gcp_execution_prearm_preflight_handoff.md`
 
 ## Guardrails
 
@@ -89,6 +91,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 - Do not start a broker-facing session unless the refreshed exclusive-window packet says `ready_for_launch` and the launch pack says `ready_to_launch`.
 - Do not arm or launch a trusted session while runner provenance status starts with `blocked_`.
 - Do not arm or launch a trusted session while VM runtime readiness starts with `blocked_`.
+- Do not arm the exclusive window if the non-broker pre-arm preflight is missing or blocked.
 - Do not enable shared-lease enforcement by default during the first trusted validation session.
 - Do not use unstamped VM runner provenance as strategy-promotion evidence.
 - Do not skip post-session assimilation or closeout after the session ends.

@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-04-24T10:33:00.372736-04:00",
+  "generated_at": "2026-04-24T10:53:25.586481-04:00",
   "status": "provenance_matched",
   "runner_repo_root": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed",
-  "report_dir": "docs\\gcp_foundation",
+  "report_dir": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation",
   "gcs_prefix": "gs://codexalpaca-control-us/gcp_foundation",
   "vm_name": "vm-execution-paper-01",
   "vm_runner_path": "/opt/codexalpaca/codexalpaca_repo",

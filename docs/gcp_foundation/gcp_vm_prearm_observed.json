@@ -1,0 +1,541 @@
+﻿{
+  "vm_path_present": true,
+  "vm_git_present": false,
+  "vm_runner_branch": "codex/qqq-paper-portfolio",
+  "vm_runner_commit": "8acef9ec83d6a89e043201e2aa67e2a3f92870ca",
+  "source_stamp": {
+    "deployed_at": "2026-04-24T10:31:30.4154762-04:00",
+    "vm_name": "vm-execution-paper-01",
+    "runner_branch": "codex/qqq-paper-portfolio",
+    "archive_name": "codexalpaca_repo_8acef9e.tar.gz",
+    "live_manifest_effect": "none_intended",
+    "runner_commit": "8acef9ec83d6a89e043201e2aa67e2a3f92870ca",
+    "broker_facing": false,
+    "risk_policy_effect": "none_intended",
+    "deploy_method": "git_archive_overlay_with_backup",
+    "archive_sha256": "e5cdd96b3f844fcaf3e5c9d2e2a271456167c915a8b25fa582bb92c55076ef90"
+  },
+  "vm_source_manifest": {
+    "root": "/opt/codexalpaca/codexalpaca_repo",
+    "source_normalization": "lf_text",
+    "entries": [
+      {
+        "path": ".env.example",
+        "sha256": "69c0ae595d9cb0c9df38ea59b6081546a9fbd1da2ae69f12fb6d345303b64657",
+        "bytes": 1503
+      },
+      {
+        "path": "AGENTS.md",
+        "sha256": "fff744b90c770d6e7bceb5c6523b6a3efd4ebebc167642e7a73acf1a3b024369",
+        "bytes": 1038
+      },
+      {
+        "path": "Dockerfile",
+        "sha256": "a15c969e29c0814587d0ce3eda5d184cf99c0b1ac4c21feb7f0de92c821bda25",
+        "bytes": 503
+      },
+      {
+        "path": "README.md",
+        "sha256": "18372683ebb02b373d45c1e8332f0aa9819f0e23cc5c4deabc01d3cb442fa50a",
+        "bytes": 7024
+      },
+      {
+        "path": "alpaca_lab/__init__.py",
+        "sha256": "676b427ce59cdf3f4d55d862a65b9af30dcb84688a9fa02ed7a291e2dc778017",
+        "bytes": 149
+      },
+      {
+        "path": "alpaca_lab/backtest/__init__.py",
+        "sha256": "3e917bbe264c4809f00b2d173ae147817e1a0d0f400c52d4215b78e243f459e2",
+        "bytes": 409
+      },
+      {
+        "path": "alpaca_lab/backtest/engine.py",
+        "sha256": "6afeeec132765821677748b4f20b6b102ceeac461744be21debafb75f9709072",
+        "bytes": 12381
+      },
+      {
+        "path": "alpaca_lab/backtest/metrics.py",
+        "sha256": "237783e2d9e8341018728a33611935a780c278bf706f2852753e433b5c673e71",
+        "bytes": 2007
+      },
+      {
+        "path": "alpaca_lab/backtest/portfolio.py",
+        "sha256": "efb5482cea94211b556cd1acdbdebfe8cc28d16a0fd822079a6fac97f767c319",
+        "bytes": 650
+      },
+      {
+        "path": "alpaca_lab/brokers/__init__.py",
+        "sha256": "fd97d735e396864c70a64eec162e6a8df3b382708a2f7c087a180fd15b1852b5",
+        "bytes": 147
+      },
+      {
+        "path": "alpaca_lab/brokers/alpaca.py",
+        "sha256": "2c837e25b7ecbeaa509467f30f4b547dd656c3999461578f8885860c43966e79",
+        "bytes": 30909
+      },
+      {
+        "path": "alpaca_lab/config.py",
+        "sha256": "3dddc804a681e1068c00d0e55f71099f9616159e7f91b39547bd10169dfeeaf5",
+        "bytes": 15717
+      },
+      {
+        "path": "alpaca_lab/execution/__init__.py",
+        "sha256": "fc1af1bf8d026322b5410502131f5f37b3b3c05ac8c6b6b1093727b6c54e15b9",
+        "bytes": 530
+      },
+      {
+        "path": "alpaca_lab/execution/failover.py",
+        "sha256": "ce81298ee96f2995b86f39c3438dafcd7aa43fb36f177f313d975e58d0619880",
+        "bytes": 8602
+      },
+      {
+        "path": "alpaca_lab/execution/migration.py",
+        "sha256": "d335a827a2383f90a2f8f4859dc60b5a37f81feded1180edc9648123b30fdf83",
+        "bytes": 11028
+      },
+      {
+        "path": "alpaca_lab/execution/orders.py",
+        "sha256": "31d81c9f8f10e8e16075ed5ce09e8b08a151646659df24a4a91583f8f9900d90",
+        "bytes": 2023
+      },
+      {
+        "path": "alpaca_lab/execution/ownership.py",
+        "sha256": "31ef0baa897f6507da990a0f1a73caea9031727e75afb8244f1d0c2b8bad2172",
+        "bytes": 24263
+      },
+      {
+        "path": "alpaca_lab/execution/paper.py",
+        "sha256": "08f8fe0e6d9293f2c40f98895b5b3aa5e3bad23b5bb44f2cd9b783ffc3127365",
+        "bytes": 5245
+      },
+      {
+        "path": "alpaca_lab/execution/risk.py",
+        "sha256": "fc6b3691d323f593638ffcd1e5c664d000744dcdd42d636de58bf60e68fc59ed",
+        "bytes": 2245
+      },
+      {
+        "path": "alpaca_lab/logging_utils.py",
+        "sha256": "45df88dff96af69300e54f2c33de274ced4b08d8cd9345afd6dfa07aa71435b6",
+        "bytes": 993
+      },
+      {
+        "path": "alpaca_lab/multi_ticker_portfolio/__init__.py",
+        "sha256": "81f17727fb918379b7f3e4d16b78b35e95a34fd693343c95e51faa605232d74a",
+        "bytes": 380
+      },
+      {
+        "path": "alpaca_lab/multi_ticker_portfolio/config.py",
+        "sha256": "7c65bb4293bd0de80edb102cc1ac58f5f06ec50c9277498f36ee43313feb7e06",
+        "bytes": 29977
+      },
+      {
+        "path": "alpaca_lab/multi_ticker_portfolio/signals.py",
+        "sha256": "79de1ceee297898633116ae4362b51c17c1c4a13812523b527b899a4a4cf5b11",
+        "bytes": 7462
+      },
+      {
+        "path": "alpaca_lab/multi_ticker_portfolio/trader.py",
+        "sha256": "d0a5a57d902a8a71ab4665603913fac979a59a9681c12736f6b382621f55ef67",
+        "bytes": 209470
+      },
+      {
+        "path": "alpaca_lab/notifications/__init__.py",
+        "sha256": "2b7e4dc0f66205a676726adbd931f24059809b3d43b335c13afab86151df7b5d",
+        "bytes": 251
+      },
+      {
+        "path": "alpaca_lab/notifications/discord.py",
+        "sha256": "07f65762b80d6417779669fb5857418eb6e2de5e4b91d625e0eae95fb76fdf87",
+        "bytes": 4957
+      },
+      {
+        "path": "alpaca_lab/notifications/email.py",
+        "sha256": "3a1107ff80e37ad19428fe624558d5438d21f2bd8467eb7522e381bc2075d172",
+        "bytes": 2549
+      },
+      {
+        "path": "alpaca_lab/notifications/ntfy.py",
+        "sha256": "a653d330c0018d935763ff9e834ae6ade75082f770ed0ff17ae3e6eaff697e82",
+        "bytes": 2079
+      },
+      {
+        "path": "alpaca_lab/options/__init__.py",
+        "sha256": "6897669408df052e1c93c9b2e2a6441c2715a40776f687912dee2a09fb06374b",
+        "bytes": 493
+      },
+      {
+        "path": "alpaca_lab/options/costs.py",
+        "sha256": "1e76ad9ce2310bf36715dfc39cef624d765dfbde3a59ffa7cff119c7d017e2dd",
+        "bytes": 603
+      },
+      {
+        "path": "alpaca_lab/options/promotion_board.py",
+        "sha256": "6e2d0924dd982071084a692a6d7a4daafbc7a920f983680d60efaf4a1ccbe3a6",
+        "bytes": 2285
+      },
+      {
+        "path": "alpaca_lab/options/selectors.py",
+        "sha256": "ce6742a83b767b61db684af70f0dc47e8e3327a52013bac8cfcf05edfab5bd27",
+        "bytes": 2375
+      },
+      {
+        "path": "alpaca_lab/options/strategies.py",
+        "sha256": "b6445ca09b2538ac3f65354e94b3790bb3ce13a7edc38337a55a83b300e983cb",
+        "bytes": 1598
+      },
+      {
+        "path": "alpaca_lab/qqq_portfolio/__init__.py",
+        "sha256": "56568d57b2c58a0444a0e5b209151fb1bd8d1101de9a9f3cadf65d08b98f0094",
+        "bytes": 330
+      },
+      {
+        "path": "alpaca_lab/qqq_portfolio/config.py",
+        "sha256": "70a58f230b1373818d3186411fbafeab1fe1904d48e7e54781f09178e73f27b7",
+        "bytes": 8559
+      },
+      {
+        "path": "alpaca_lab/qqq_portfolio/greeks.py",
+        "sha256": "b54942fb8dc083ed83770961844cf8191d42ff5bff772fb511a4f06c1d02d82b",
+        "bytes": 3472
+      },
+      {
+        "path": "alpaca_lab/qqq_portfolio/signals.py",
+        "sha256": "e8fccd498a02c97a3a5f60bf6a0f7cbe5c10e07073f447ded1e941731822ba47",
+        "bytes": 5971
+      },
+      {
+        "path": "alpaca_lab/qqq_portfolio/trader.py",
+        "sha256": "6c18545805d3cfd13d040ac083b9275691693196931bab59307f4bf25a4f7a98",
+        "bytes": 52018
+      },
+      {
+        "path": "alpaca_lab/reporting/__init__.py",
+        "sha256": "f283cdcf5a0734cc2072e17b6eb9346473a320b174a16fff99a2853430783237",
+        "bytes": 265
+      },
+      {
+        "path": "alpaca_lab/reporting/alerts.py",
+        "sha256": "3cce7a587e332d6bc2ad07460da03d9116587446a4580dcdbee5232521d61d03",
+        "bytes": 342
+      },
+      {
+        "path": "alpaca_lab/reporting/journal.py",
+        "sha256": "731a4dd1b9228ada485b368134cdfc7b28a11efb70554b6a8d1b1531416e0657",
+        "bytes": 559
+      },
+      {
+        "path": "alpaca_lab/reporting/summaries.py",
+        "sha256": "b5291044233f30fa0fabcd10755038dd8c0b88fb29f9dbcbfd9c3c26edd7d70b",
+        "bytes": 993
+      },
+      {
+        "path": "alpaca_lab/research_bundle.py",
+        "sha256": "34c411ae285bb652bccbb38b9fce80659db8ff2e6278a142be8d591bc96585de",
+        "bytes": 7143
+      },
+      {
+        "path": "alpaca_lab/strategies/__init__.py",
+        "sha256": "1059e8d7372b281a7a2525b88ed4e008c39d7e24b966606a80c86de0030b9709",
+        "bytes": 269
+      },
+      {
+        "path": "alpaca_lab/strategies/base.py",
+        "sha256": "6448601afb9707ec63dd54d5e4e4588b7ea8cf8c710ea23aa244d3d9a8c4d515",
+        "bytes": 1504
+      },
+      {
+        "path": "alpaca_lab/strategies/options_skeleton.py",
+        "sha256": "f10f9a60e92c6c6afb2c00acf7a114a247e7120462ffcabbf5a44930c9c14615",
+        "bytes": 1852
+      },
+      {
+        "path": "alpaca_lab/strategies/stock_momentum.py",
+        "sha256": "d8af5089668d153a1b7b25c40ff4f659f62c4bf733c478ae9f1336d3af8db22f",
+        "bytes": 2999
+      },
+      {
+        "path": "config/backtest.example.yaml",
+        "sha256": "a1a8213674c189aa4340ce775c674998a1cb7d7b1b3b94a99302acefbff5dba3",
+        "bytes": 187
+      },
+      {
+        "path": "config/default.yaml",
+        "sha256": "8a698e7bcd0573313d44da062a314f9b91322744d8558a8ef9962bb83d1622b4",
+        "bytes": 468
+      },
+      {
+        "path": "config/multi_ticker_paper_portfolio.yaml",
+        "sha256": "8be460c578655ba81dfcd9349fa77cfd6fb38004130cb866ecb218087cf68cf4",
+        "bytes": 1039
+      },
+      {
+        "path": "config/options_ingestion.example.yaml",
+        "sha256": "54bd80a7943c1c322d23c32c8884b514c6e0b748de0012da2337386b3fc65b91",
+        "bytes": 220
+      },
+      {
+        "path": "config/paper_trading.example.yaml",
+        "sha256": "ba70a9b9393fef0a21cc01dfac03af055081933c362275b4063ce05f42402572",
+        "bytes": 551
+      },
+      {
+        "path": "config/qqq_paper_portfolio.yaml",
+        "sha256": "4abe821f90a55b76a75568de676bbc198aba973b235f8107cf24753d30fe2f90",
+        "bytes": 947
+      },
+      {
+        "path": "config/risk_controls/multi_ticker_portfolio.yaml",
+        "sha256": "6f8cdf2ca9b3b2726ad37f61e1456809243b489ea977a7f130dd55585f885836",
+        "bytes": 2036
+      },
+      {
+        "path": "config/sample_equities_board.json",
+        "sha256": "605cd648bb41ebc13507e79151113e075be2b5c0dd1c70db95d30d9fd08737f1",
+        "bytes": 439
+      },
+      {
+        "path": "config/sample_options_board.json",
+        "sha256": "a4a569cc54a20a675d83b06bac614d4c7fcaecd1f89c2bbad4e541c597775513",
+        "bytes": 523
+      },
+      {
+        "path": "config/stock_ingestion.example.yaml",
+        "sha256": "b22eb2a7fdd7f661755ed03f9f9e9595a611d6b4f0528ec0026539dd899f8556",
+        "bytes": 198
+      },
+      {
+        "path": "config/strategy_manifests/multi_ticker_portfolio_live.yaml",
+        "sha256": "1174582f013c692841a0502374f4adf0b07625cc87e79866e99db87528b5f20d",
+        "bytes": 52111
+      },
+      {
+        "path": "docker-compose.yml",
+        "sha256": "be64b7b2af86ec0c108e654daf762606c32519fed3537c703f29971c5e9227d8",
+        "bytes": 2397
+      },
+      {
+        "path": "pyproject.toml",
+        "sha256": "ccc325868e8a395cb5e72a078e77d31348561df96ab22f512848f7851b37dc2c",
+        "bytes": 1290
+      },
+      {
+        "path": "scripts/_bootstrap.py",
+        "sha256": "90b244bba74383c5556f700f68d7053107a8b359f2ea250f49dda45f190af828",
+        "bytes": 264
+      },
+      {
+        "path": "scripts/bootstrap_linux.sh",
+        "sha256": "d7f2db5a574eea058c99bd6ff255974981661b600c16255b0970d7868e27bea9",
+        "bytes": 868
+      },
+      {
+        "path": "scripts/bootstrap_mac.sh",
+        "sha256": "d7f2db5a574eea058c99bd6ff255974981661b600c16255b0970d7868e27bea9",
+        "bytes": 868
+      },
+      {
+        "path": "scripts/bootstrap_windows.ps1",
+        "sha256": "a65ebef24a28a6d1d17cc31416a2847086d6e9575fdcffdc61052c938889984b",
+        "bytes": 1776
+      },
+      {
+        "path": "scripts/build_historical_dataset.py",
+        "sha256": "132b8ee6aab025105c20fff5b2a5c6159c773e79f4e2e562459445a2e9c65e4c",
+        "bytes": 5773
+      },
+      {
+        "path": "scripts/build_option_aware_research_queue.py",
+        "sha256": "603b74d33465d4e3019b756f84cf192201366cb1a9b43fd022028758604d19a6",
+        "bytes": 9151
+      },
+      {
+        "path": "scripts/create_cleanroom_research_bundle.py",
+        "sha256": "e99c526dd4f41f932277f42a4d6960f6588c36e0d8a9779fffb4b62a8137298d",
+        "bytes": 2111
+      },
+      {
+        "path": "scripts/create_multi_ticker_migration_bundle.py",
+        "sha256": "b02a1e945cf5ae76502c080116bea66a19b2dae8a231ee9528c1c012747e2d82",
+        "bytes": 2251
+      },
+      {
+        "path": "scripts/doctor.py",
+        "sha256": "48676dc4c59f2b51dffe068635362ef03026e8398f07c57d5447ac01009a9745",
+        "bytes": 7881
+      },
+      {
+        "path": "scripts/install_multi_ticker_eod_close_guard_task.ps1",
+        "sha256": "f8b9bb6c385ae2728fe4882ebc463861f69b2b0e288723443d1610e95c9ac9c1",
+        "bytes": 1333
+      },
+      {
+        "path": "scripts/install_multi_ticker_github_sync_task.ps1",
+        "sha256": "190a83ffd0d4e46de4a45939962509a8d53688834f8d907259a9b00392b8f771",
+        "bytes": 679
+      },
+      {
+        "path": "scripts/install_multi_ticker_health_check_task.ps1",
+        "sha256": "c66fc9b6b9b7d8e38659b1e2d6a28b7965ef80c4301b209d882831a2c70ba098",
+        "bytes": 682
+      },
+      {
+        "path": "scripts/install_multi_ticker_paper_task.ps1",
+        "sha256": "2681dd301f4080338b97de59af3bbdf9b16a90fbbc3f28a5e7345ad1ec86f4ba",
+        "bytes": 1723
+      },
+      {
+        "path": "scripts/install_qqq_paper_task.ps1",
+        "sha256": "46014f4defcb2efbe09de115886c03e5379334735179401ebcc7db29db58c57b",
+        "bytes": 1214
+      },
+      {
+        "path": "scripts/restore_multi_ticker_migration_bundle.py",
+        "sha256": "f7a36f00a3dce5f02d00d78ad7d25830dfb9ad62798b30788cee12357929cf95",
+        "bytes": 2387
+      },
+      {
+        "path": "scripts/run_gcp_research_wave.py",
+        "sha256": "3f055df049a3d7c3ee091d0de9d288b2da222e8ae4324e3300fe68ca89388c2a",
+        "bytes": 26652
+      },
+      {
+        "path": "scripts/run_multi_ticker_eod_close_guard.ps1",
+        "sha256": "ca024163e8f2d3226d1b16fda3b5c3c29d6c54cb778599a0dea7d1bfce1bd77c",
+        "bytes": 626
+      },
+      {
+        "path": "scripts/run_multi_ticker_eod_close_guard.py",
+        "sha256": "1bc915081e7cb182f7dbfc0f3aa86c13f2d6fe08ebdba845f98ab03d2454f01b",
+        "bytes": 6135
+      },
+      {
+        "path": "scripts/run_multi_ticker_github_sync.ps1",
+        "sha256": "0c1eddd923e2d473ac6f7a6bf220dbe04f9fda29f82f8fb09488a8ba05ee585d",
+        "bytes": 570
+      },
+      {
+        "path": "scripts/run_multi_ticker_github_sync.py",
+        "sha256": "78e83515b17cbbc21423dffa2ae36fc8c8a2ef59253f643e67c48730ab0410ea",
+        "bytes": 12054
+      },
+      {
+        "path": "scripts/run_multi_ticker_health_check.ps1",
+        "sha256": "021ed69aa9442cbc64f838201ec53c0153deeff3d21b87b5cb9971b484046ba0",
+        "bytes": 592
+      },
+      {
+        "path": "scripts/run_multi_ticker_health_check.py",
+        "sha256": "615ef8bf1f2ce48fa313172beddf9086d621c095922770abd2811e36f43e64e5",
+        "bytes": 18256
+      },
+      {
+        "path": "scripts/run_multi_ticker_portable_daemon.py",
+        "sha256": "353e20be0fe4a28063e7ad19a69e0850e2cc0a61d54304978cd71ede3727f858",
+        "bytes": 6079
+      },
+      {
+        "path": "scripts/run_multi_ticker_portfolio_paper_trader.py",
+        "sha256": "2f6c8285467f1ffddca6a558f720590aaffc1862cabb35d3692c3f18d87a56cd",
+        "bytes": 1800
+      },
+      {
+        "path": "scripts/run_multi_ticker_portfolio_session.ps1",
+        "sha256": "dcaa9dca1da0fd278779ec1fee2735175df54877ccd80fa8412e30861b0f94c0",
+        "bytes": 5328
+      },
+      {
+        "path": "scripts/run_multi_ticker_standby_failover_check.py",
+        "sha256": "28f6ec5058a8976ebd47800145e359e8e86ff49d918de8e0c16342c9bf82eb53",
+        "bytes": 2672
+      },
+      {
+        "path": "scripts/run_multi_ticker_watchdog.py",
+        "sha256": "27de69d9e608ad94ebffc91909b546f4c89a2966a1ad3084296f5412ef209eca",
+        "bytes": 13842
+      },
+      {
+        "path": "scripts/run_option_aware_research_backtest.py",
+        "sha256": "d71426b7bae390e2e6146b33af3fbc8acd169a344318b006f5c0bebb1be67437",
+        "bytes": 23432
+      },
+      {
+        "path": "scripts/run_paper_equities.py",
+        "sha256": "72f81fccdf00a254f7725bd5de28b2614b114b3876c9594e56eb72e437a7c75c",
+        "bytes": 2357
+      },
+      {
+        "path": "scripts/run_paper_options.py",
+        "sha256": "1dd765cdf86166881f80fec70877c6da37b864e07c05aea8cf60a0f639c1df77",
+        "bytes": 2356
+      },
+      {
+        "path": "scripts/run_qqq_portfolio_paper_trader.py",
+        "sha256": "10d0aef3502cd8ada55902a41cbea7bb5f437cb077a3908fcfb0f3160149c8d9",
+        "bytes": 1640
+      },
+      {
+        "path": "scripts/run_qqq_portfolio_session.ps1",
+        "sha256": "99ea6eb8529ca6ee4a8b6576d2587ef97361a230b5e2a095f1951854318ea240",
+        "bytes": 678
+      },
+      {
+        "path": "scripts/run_sample_backtest.py",
+        "sha256": "2f23a193071fa64556dc3c183c336f78ae80e9236aee6d4c9a07fced263762d3",
+        "bytes": 4503
+      },
+      {
+        "path": "scripts/setup_new_machine.ps1",
+        "sha256": "88bc08b70a0dd707379182efa4000859f6f4fa24379515804ccf6c2425d91a96",
+        "bytes": 2518
+      },
+      {
+        "path": "scripts/setup_new_machine.sh",
+        "sha256": "c80b3a6b1aaa6da02271523c823ac930934e6540ead1e0ad4fba48fca6a81c69",
+        "bytes": 1886
+      },
+      {
+        "path": "scripts/summarize_gcp_research_runs.py",
+        "sha256": "95c2cfb9386d76e24374f617df9a71c7dc0c4743823106bbf41b51f329f70a54",
+        "bytes": 7684
+      },
+      {
+        "path": "scripts/sync_live_strategy_manifest.py",
+        "sha256": "1db3c3f25cfa2bb5c397a99a23a61929a2f692f774aadf64b2af3f61e987d210",
+        "bytes": 8635
+      }
+    ]
+  },
+  "path_checks": {
+    "data": true,
+    "reports": true,
+    "state_root": true,
+    "run_root": true,
+    "pytest_cache": true
+  },
+  "doctor": {
+    "status": "passed",
+    "returncode": 0,
+    "stdout": "Repo mode: paper-only lock enabled.\nThis repository is locked to Alpaca paper trading only until you explicitly change the safeguards in code.\nPython: 3.11.0rc1 (ok)\nPython executable: /opt/codexalpaca/codexalpaca_repo/.venv/bin/python\nExpected project venv python: /opt/codexalpaca/codexalpaca_repo/.venv/bin/python\nUsing project venv: yes\nPlatform: Linux-6.8.0-1053-gcp-x86_64-with-glibc2.35\nImports:\n  - alpaca_lab: ok\n  - alpaca: ok\n  - numpy: ok\n  - pandas: ok\n  - pyarrow: ok\n  - pydantic: ok\n  - rich: ok\n  - tenacity: ok\n  - yaml: ok\nWritable paths:\n  - data: ok\n  - reports: ok\nConnectivity: skipped or credentials missing.\nNext steps:\n  - python3 -m venv .venv\n  - source .venv/bin/activate\n  - python -m pip install --upgrade pip\n  - python -m pip install -e .[dev]\n  - cp .env.example .env\n  - python -m pytest\n  - python scripts/run_sample_backtest.py --synthetic\n",
+    "stderr": "",
+    "summary": "- python scripts/run_sample_backtest.py --synthetic"
+  },
+  "pytest": {
+    "status": "passed",
+    "returncode": 0,
+    "stdout": "........................................................................ [ 51%]\n...................................................................      [100%]\n139 passed in 12.96s\n",
+    "stderr": "",
+    "summary": "139 passed in 12.96s"
+  },
+  "trader_process_absent": true,
+  "trader_processes": [],
+  "ownership": {
+    "enabled": true,
+    "lease_backend": "file",
+    "lease_path": "reports/multi_ticker_portfolio/state/ownership_lease.json",
+    "gcs_lease_uri": null,
+    "machine_label": "vm-execution-paper-01",
+    "lease_class": "FileOwnershipLease",
+    "source": "portfolio_config"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-04-24T10:53:50.754537-04:00",
+  "status": "ready_to_arm_window",
+  "next_operator_action": "arm_bounded_exclusive_window",
+  "report_dir": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation",
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "operator_packet_state": "ready_to_arm_window",
+  "runtime_readiness_status": "runtime_ready",
+  "runner_provenance_status": "provenance_matched",
+  "source_fingerprint_status": "source_fingerprint_matched",
+  "exclusive_window_status": "awaiting_operator_confirmation",
+  "launch_pack_state": "awaiting_window_arm",
+  "trader_process_absent": true,
+  "ownership_enabled": true,
+  "ownership_backend": "file",
+  "ownership_lease_class": "FileOwnershipLease",
+  "shared_execution_lease_enforced": false,
+  "arm_window_command_template": "powershell -NoProfile -ExecutionPolicy Bypass -File \"<control-plane-root>\\cleanroom\\code\\qqq_options_30d_cleanroom\\arm_gcp_execution_exclusive_window.ps1\" -ControlPlaneRoot \"<control-plane-root>\" -VmName \"vm-execution-paper-01\" -ConfirmedBy \"<confirmed-by>\" -WindowStartsAt \"<window-starts-at>\" -WindowExpiresAt \"<window-expires-at>\" -ParallelPathState \"paused\" -MirrorToGcs",
+  "review_targets": [
+    "docs/gcp_foundation/gcp_execution_prearm_preflight_handoff.md",
+    "docs/gcp_foundation/gcp_execution_trusted_validation_operator_handoff.md",
+    "docs/gcp_foundation/gcp_vm_runtime_readiness_handoff.md",
+    "docs/gcp_foundation/gcp_vm_runner_provenance_handoff.md",
+    "docs/gcp_foundation/gcp_vm_runner_source_fingerprint_handoff.md",
+    "docs/gcp_foundation/gcp_execution_exclusive_window_handoff.md",
+    "docs/gcp_foundation/gcp_execution_trusted_validation_launch_handoff.md"
+  ],
+  "issues": [],
+  "operator_read": [
+    "This packet is non-broker-facing; it does not arm the window or start a session.",
+    "Use it immediately before arming the bounded exclusive window.",
+    "If status is `blocked`, do not arm; refresh or resolve the named gate first.",
+    "If status is `ready_to_arm_window`, the next action is still a human/operator arm command, not an automatic launch."
+  ]
+}
