@@ -1,7 +1,7 @@
 {
   "packet": "gcp_institutional_hardening_plan",
-  "as_of": "2026-04-24T11:28:32-04:00",
-  "status": "ready_for_parallel_non_broker_work",
+  "as_of": "2026-04-24T11:36:45-04:00",
+  "status": "ready_for_parallel_non_broker_work_execution_prearm_blocked",
   "strategic_priority_order": [
     "execution_safety",
     "trusted_evidence",
@@ -14,6 +14,8 @@
     "sanctioned_execution_path": "vm-execution-paper-01",
     "vm_runner_commit": "f0080066c68d883286f4cb1b9c9e0edc601adf8d",
     "vm_runner_tests": "140 passed",
+    "unattributed_order_source_blocker": true,
+    "stale_local_launch_surface_disabled": "GovernedDownChoppyTakeoverUser",
     "qualified_winner_sessions": 0,
     "qualified_winner_target": 20,
     "research_wave_variants_ready": 2070,
@@ -87,7 +89,7 @@
     {
       "phase": "phase_0_execution_lockdown",
       "objective": "Keep the runner safe before any research or paper-session expansion.",
-      "exit_gate": "VM source stamp matches intended commit, broker flat, no stale local runner, no active unsanctioned scheduler."
+      "exit_gate": "VM source stamp matches intended commit, broker flat, no stale local runner, no active unsanctioned scheduler, and no unattributed broker orders during a pre-arm watch window."
     },
     {
       "phase": "phase_1_evidence_contract",
@@ -124,6 +126,8 @@
   ],
   "next_safe_actions": [
     "Run pre-arm VM source/process/broker-flat checks immediately before any sanctioned paper session.",
+    "Resolve the unattributed order-source blocker before any exclusive window is armed.",
+    "Keep older local takeover/scheduled-task launch surfaces disabled while research-only work continues.",
     "Run research-only data-quality expansion for missing governed symbols.",
     "Start the 2070-variant research wave in chunks only after each chunk has deterministic result artifacts and a cost cap.",
     "Use loser-learning suppressors before considering any strategy addition."

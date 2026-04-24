@@ -1,7 +1,7 @@
 {
   "packet": "gcp_execution_position_mismatch_incident",
-  "as_of": "2026-04-24T11:28:32-04:00",
-  "status": "mitigated_flat_vm_patched",
+  "as_of": "2026-04-24T11:36:45-04:00",
+  "status": "mitigated_flat_vm_patched_unattributed_order_source_blocker",
   "incident_date": "2026-04-24",
   "summary": "Paper-runner mismatch alerts were traced to a stale local desktop runner from the April 22 staged release plus residual broker option positions.",
   "execution_safety_findings": [
@@ -11,7 +11,12 @@
     "Residual paper broker option positions were flattened under explicit incident remediation authority.",
     "A read-only broker check after remediation reported zero positions and zero open orders.",
     "The sanctioned VM runner source was patched to runner commit f008006 without starting a broker-facing session.",
-    "IAP SSH verified no active runner process before deployment."
+    "IAP SSH verified no active runner process before deployment.",
+    "A later broker check detected new QQQ option exposure and a new MSFT buy-to-open order from an unattributed source.",
+    "The new MSFT open order was canceled and the QQQ option exposure was flattened in short-first risk-reducing order.",
+    "A 45-second post-flatten recurrence check reported zero broker positions and zero open orders.",
+    "A 90-second broker watch after disabling an additional stale launch surface reported zero broker positions, zero open orders, and no newer broker orders.",
+    "The Windows scheduled task GovernedDownChoppyTakeoverUser was disabled because it pointed at an older takeover checkout and was inconsistent with the one sanctioned VM execution path."
   ],
   "root_cause": [
     "Unexpected-position cleanup processed broker positions in API order.",
@@ -32,7 +37,10 @@
     "broker_flat_check": "position_count=0, open_order_count=0",
     "vm_process_check": "iap_ssh_access_ok_no_active_runner_process_observed",
     "vm_source_stamp": "runner_commit=f0080066c68d883286f4cb1b9c9e0edc601adf8d",
-    "vm_source_fingerprint": "source_fingerprint_matched"
+    "vm_source_fingerprint": "source_fingerprint_matched",
+    "post_unattributed_order_flat_check": "position_count=0, open_order_count=0",
+    "post_flatten_watch_window": "45 seconds, no recurrence observed",
+    "post_launch_surface_cleanup_watch_window": "90 seconds, no recurrence observed"
   },
   "hard_rules_preserved": [
     "No live-trading path was enabled.",
@@ -43,6 +51,9 @@
   "remaining_actions": [
     "Keep runner commit f008006 on the sanctioned VM before the next broker-facing session.",
     "Re-run the VM process/source-stamp check immediately before arming any exclusive execution window.",
-    "Keep legacy local scheduled tasks disabled; do not use the April 22 staged release as an execution path."
+    "Keep legacy local scheduled tasks disabled; do not use the April 22 staged release as an execution path.",
+    "Keep GovernedDownChoppyTakeoverUser disabled; do not use older takeover checkouts as broker-capable launch surfaces.",
+    "Treat the unattributed order source as a hard pre-arm blocker until no external runner/process/thread is found or all candidate launch surfaces are disabled.",
+    "Before any further session, run a longer broker no-new-order watch and confirm no orders appear without an explicit operator launch."
   ]
 }
