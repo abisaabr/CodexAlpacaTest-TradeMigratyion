@@ -1,9 +1,9 @@
 # GCP Option-Aware Research Queue Status
 
-- Generated at: `2026-04-23T23:25:49.683608-04:00`
+- Generated at: `2026-04-23T23:39:47.669829-04:00`
 - Status: `ready_for_option_aware_backtest`
-- Smoke unique variants: `260`
-- Smoke candidates: `54`
+- Smoke unique variants: `560`
+- Smoke candidates: `60`
 - Queue items: `25`
 - Promotion allowed: `False`
 - Broker facing: `False`
