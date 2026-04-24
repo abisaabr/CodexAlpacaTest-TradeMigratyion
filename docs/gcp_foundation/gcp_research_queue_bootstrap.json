@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-23T22:19:10.026983-04:00",
+  "generated_at": "2026-04-23T22:21:50.976677-04:00",
   "status": "ready_with_research_warnings",
   "strategy_registry_json": "docs\\gcp_foundation\\gcp_strategy_registry_bootstrap.json",
   "quality_scorecard_json": "C:\\Users\\abisa\\Downloads\\codexalpaca_runtime\\multi_ticker_portfolio_live\\quality_scorecard\\friday_quality_scorecard_2026-04-24.json",
@@ -24,7 +24,7 @@
     "NVDA"
   ],
   "single_leg_strategy_share": 0.9574,
-  "total_estimated_variant_count": 1950,
+  "total_estimated_variant_count": 2070,
   "queue": [
     {
       "queue_id": "RQ-001-defined-risk-family-expansion",
@@ -37,7 +37,7 @@
         "SLV",
         "TSLA"
       ],
-      "estimated_variant_count": 120,
+      "estimated_variant_count": 240,
       "sweep_design": {
         "family_templates": [
           "debit_call_vertical",

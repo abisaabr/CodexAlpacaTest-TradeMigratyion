@@ -2,13 +2,13 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T22:19:10.026983-04:00`
+- Generated at: `2026-04-23T22:21:50.976677-04:00`
 - Status: `ready_with_research_warnings`
 - Strategy count: `94`
 - Target trade date: `2026-04-24`
 - Scorecard status: `ready_with_review_required_evidence`
 - Single-leg strategy share: `95.7%`
-- Estimated research variants: `1950`
+- Estimated research variants: `2070`
 - GCS prefix: `gs://codexalpaca-control-us/research_queue/bootstrap`
 
 ## Preferred Research Symbols
@@ -33,7 +33,7 @@
 ### RQ-001-defined-risk-family-expansion
 
 - Priority: `1`
-- Estimated variants: `120`
+- Estimated variants: `240`
 - Mission: Expand under-covered defined-risk and choppy/premium structures before adding more directional single-leg variants.
 - Symbols: `QQQ, GLD, MSFT, SLV, TSLA`
 - Live manifest effect: `none`

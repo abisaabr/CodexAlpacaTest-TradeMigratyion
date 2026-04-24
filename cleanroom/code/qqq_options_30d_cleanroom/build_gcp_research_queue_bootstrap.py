@@ -24,6 +24,7 @@ DEFINED_RISK_TEMPLATES = [
     "premium_defense_spread",
 ]
 DEFINED_RISK_TIMING_PROFILES = ["fast", "base", "slow", "patient"]
+DEFINED_RISK_DTE_MODES = ["same_day", "next_expiry"]
 SINGLE_LEG_REPAIR_GRID = {
     "profit_target_multiple": [0.35, 0.45, 0.55],
     "stop_loss_multiple": [0.18, 0.24, 0.30],
@@ -152,7 +153,12 @@ def build_payload(
     all_symbols = scorecard["universe"] or _registry_symbols(registry)
     queue: list[dict[str, Any]] = []
 
-    defined_risk_variants = len(preferred_symbols) * len(DEFINED_RISK_TEMPLATES) * len(DEFINED_RISK_TIMING_PROFILES)
+    defined_risk_variants = (
+        len(preferred_symbols)
+        * len(DEFINED_RISK_TEMPLATES)
+        * len(DEFINED_RISK_TIMING_PROFILES)
+        * len(DEFINED_RISK_DTE_MODES)
+    )
     queue.append(
         _queue_item(
             queue_id="RQ-001-defined-risk-family-expansion",
@@ -163,7 +169,7 @@ def build_payload(
             sweep_design={
                 "family_templates": DEFINED_RISK_TEMPLATES,
                 "timing_profiles": DEFINED_RISK_TIMING_PROFILES,
-                "dte_modes": ["same_day", "next_expiry"],
+                "dte_modes": DEFINED_RISK_DTE_MODES,
                 "admission_note": "Research-only candidates. They require promotion review before runner eligibility.",
             },
             promotion_gate=[

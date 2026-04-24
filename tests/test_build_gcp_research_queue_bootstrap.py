@@ -57,7 +57,7 @@ def test_research_queue_prioritizes_defined_risk_expansion(tmp_path: Path) -> No
     assert payload["status"] == "ready_with_research_warnings"
     assert payload["queue"][0]["queue_id"] == "RQ-001-defined-risk-family-expansion"
     assert payload["queue"][0]["symbols"] == ["QQQ", "MSFT"]
-    assert payload["queue"][0]["estimated_variant_count"] == 48
+    assert payload["queue"][0]["estimated_variant_count"] == 96
     assert payload["queue"][1]["estimated_variant_count"] == 108
     assert payload["queue"][2]["symbols"] == ["PLTR"]
     assert payload["guardrails"] == [

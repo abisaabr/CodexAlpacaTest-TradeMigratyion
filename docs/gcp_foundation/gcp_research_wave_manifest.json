@@ -1,0 +1,407 @@
+{
+  "generated_at": "2026-04-23T22:24:07.472267-04:00",
+  "status": "ready_for_research_only_wave",
+  "wave_id": "research_wave_20260424_bootstrap",
+  "research_queue_json": "docs\\gcp_foundation\\gcp_research_queue_bootstrap.json",
+  "strategy_registry_json": "docs\\gcp_foundation\\gcp_strategy_registry_bootstrap.json",
+  "report_dir": "docs\\gcp_foundation",
+  "gcs_prefix": "gs://codexalpaca-control-us/research_waves/bootstrap",
+  "chunk_size": 100,
+  "variant_count": 2070,
+  "chunk_count": 21,
+  "priority_counts": {
+    "1": 240,
+    "2": 1242,
+    "3": 522,
+    "4": 66
+  },
+  "queue_counts": {
+    "RQ-001-defined-risk-family-expansion": 240,
+    "RQ-002-single-leg-repair-and-loss-filter": 1242,
+    "RQ-003-loser-cluster-shadow-diagnostics": 522,
+    "RQ-004-regime-and-liquidity-feature-grid": 66
+  },
+  "symbol_counts": {
+    "AMZN": 132,
+    "GLD": 216,
+    "IWM": 114,
+    "MSFT": 324,
+    "NVDA": 42,
+    "PLTR": 78,
+    "QQQ": 378,
+    "SLV": 324,
+    "SPY": 96,
+    "TSLA": 270,
+    "XLE": 96
+  },
+  "chunks": [
+    {
+      "chunk_id": "chunk_0001",
+      "start_index": 0,
+      "end_index": 99,
+      "variant_count": 100,
+      "priority_counts": {
+        "1": 100
+      },
+      "queue_counts": {
+        "RQ-001-defined-risk-family-expansion": 100
+      },
+      "symbols": [
+        "GLD",
+        "MSFT",
+        "QQQ"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0002",
+      "start_index": 100,
+      "end_index": 199,
+      "variant_count": 100,
+      "priority_counts": {
+        "1": 100
+      },
+      "queue_counts": {
+        "RQ-001-defined-risk-family-expansion": 100
+      },
+      "symbols": [
+        "QQQ",
+        "SLV",
+        "TSLA"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0003",
+      "start_index": 200,
+      "end_index": 299,
+      "variant_count": 100,
+      "priority_counts": {
+        "1": 40,
+        "2": 60
+      },
+      "queue_counts": {
+        "RQ-001-defined-risk-family-expansion": 40,
+        "RQ-002-single-leg-repair-and-loss-filter": 60
+      },
+      "symbols": [
+        "GLD",
+        "TSLA"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0004",
+      "start_index": 300,
+      "end_index": 399,
+      "variant_count": 100,
+      "priority_counts": {
+        "2": 100
+      },
+      "queue_counts": {
+        "RQ-002-single-leg-repair-and-loss-filter": 100
+      },
+      "symbols": [
+        "GLD"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0005",
+      "start_index": 400,
+      "end_index": 499,
+      "variant_count": 100,
+      "priority_counts": {
+        "2": 100
+      },
+      "queue_counts": {
+        "RQ-002-single-leg-repair-and-loss-filter": 100
+      },
+      "symbols": [
+        "GLD",
+        "MSFT"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0006",
+      "start_index": 500,
+      "end_index": 599,
+      "variant_count": 100,
+      "priority_counts": {
+        "2": 100
+      },
+      "queue_counts": {
+        "RQ-002-single-leg-repair-and-loss-filter": 100
+      },
+      "symbols": [
+        "MSFT"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0007",
+      "start_index": 600,
+      "end_index": 699,
+      "variant_count": 100,
+      "priority_counts": {
+        "2": 100
+      },
+      "queue_counts": {
+        "RQ-002-single-leg-repair-and-loss-filter": 100
+      },
+      "symbols": [
+        "MSFT",
+        "QQQ"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0008",
+      "start_index": 700,
+      "end_index": 799,
+      "variant_count": 100,
+      "priority_counts": {
+        "2": 100
+      },
+      "queue_counts": {
+        "RQ-002-single-leg-repair-and-loss-filter": 100
+      },
+      "symbols": [
+        "QQQ"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0009",
+      "start_index": 800,
+      "end_index": 899,
+      "variant_count": 100,
+      "priority_counts": {
+        "2": 100
+      },
+      "queue_counts": {
+        "RQ-002-single-leg-repair-and-loss-filter": 100
+      },
+      "symbols": [
+        "QQQ"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0010",
+      "start_index": 900,
+      "end_index": 999,
+      "variant_count": 100,
+      "priority_counts": {
+        "2": 100
+      },
+      "queue_counts": {
+        "RQ-002-single-leg-repair-and-loss-filter": 100
+      },
+      "symbols": [
+        "QQQ",
+        "SLV"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0011",
+      "start_index": 1000,
+      "end_index": 1099,
+      "variant_count": 100,
+      "priority_counts": {
+        "2": 100
+      },
+      "queue_counts": {
+        "RQ-002-single-leg-repair-and-loss-filter": 100
+      },
+      "symbols": [
+        "SLV"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0012",
+      "start_index": 1100,
+      "end_index": 1199,
+      "variant_count": 100,
+      "priority_counts": {
+        "2": 100
+      },
+      "queue_counts": {
+        "RQ-002-single-leg-repair-and-loss-filter": 100
+      },
+      "symbols": [
+        "SLV"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0013",
+      "start_index": 1200,
+      "end_index": 1299,
+      "variant_count": 100,
+      "priority_counts": {
+        "2": 100
+      },
+      "queue_counts": {
+        "RQ-002-single-leg-repair-and-loss-filter": 100
+      },
+      "symbols": [
+        "SLV",
+        "TSLA"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0014",
+      "start_index": 1300,
+      "end_index": 1399,
+      "variant_count": 100,
+      "priority_counts": {
+        "2": 100
+      },
+      "queue_counts": {
+        "RQ-002-single-leg-repair-and-loss-filter": 100
+      },
+      "symbols": [
+        "TSLA"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0015",
+      "start_index": 1400,
+      "end_index": 1499,
+      "variant_count": 100,
+      "priority_counts": {
+        "2": 82,
+        "3": 18
+      },
+      "queue_counts": {
+        "RQ-002-single-leg-repair-and-loss-filter": 82,
+        "RQ-003-loser-cluster-shadow-diagnostics": 18
+      },
+      "symbols": [
+        "AMZN",
+        "TSLA"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0016",
+      "start_index": 1500,
+      "end_index": 1599,
+      "variant_count": 100,
+      "priority_counts": {
+        "3": 100
+      },
+      "queue_counts": {
+        "RQ-003-loser-cluster-shadow-diagnostics": 100
+      },
+      "symbols": [
+        "AMZN"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0017",
+      "start_index": 1600,
+      "end_index": 1699,
+      "variant_count": 100,
+      "priority_counts": {
+        "3": 100
+      },
+      "queue_counts": {
+        "RQ-003-loser-cluster-shadow-diagnostics": 100
+      },
+      "symbols": [
+        "AMZN",
+        "IWM"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0018",
+      "start_index": 1700,
+      "end_index": 1799,
+      "variant_count": 100,
+      "priority_counts": {
+        "3": 100
+      },
+      "queue_counts": {
+        "RQ-003-loser-cluster-shadow-diagnostics": 100
+      },
+      "symbols": [
+        "IWM",
+        "NVDA",
+        "PLTR"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0019",
+      "start_index": 1800,
+      "end_index": 1899,
+      "variant_count": 100,
+      "priority_counts": {
+        "3": 100
+      },
+      "queue_counts": {
+        "RQ-003-loser-cluster-shadow-diagnostics": 100
+      },
+      "symbols": [
+        "PLTR",
+        "SPY"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0020",
+      "start_index": 1900,
+      "end_index": 1999,
+      "variant_count": 100,
+      "priority_counts": {
+        "3": 100
+      },
+      "queue_counts": {
+        "RQ-003-loser-cluster-shadow-diagnostics": 100
+      },
+      "symbols": [
+        "SPY",
+        "XLE"
+      ]
+    },
+    {
+      "chunk_id": "chunk_0021",
+      "start_index": 2000,
+      "end_index": 2069,
+      "variant_count": 70,
+      "priority_counts": {
+        "3": 4,
+        "4": 66
+      },
+      "queue_counts": {
+        "RQ-003-loser-cluster-shadow-diagnostics": 4,
+        "RQ-004-regime-and-liquidity-feature-grid": 66
+      },
+      "symbols": [
+        "AMZN",
+        "GLD",
+        "IWM",
+        "MSFT",
+        "NVDA",
+        "PLTR",
+        "QQQ",
+        "SLV",
+        "SPY",
+        "TSLA",
+        "XLE"
+      ]
+    }
+  ],
+  "issues": [],
+  "execution_contract": {
+    "plane": "research",
+    "broker_facing": false,
+    "live_manifest_effect": "none",
+    "risk_policy_effect": "none",
+    "required_result_artifacts": [
+      "research_run_manifest",
+      "normalized_backtest_results",
+      "train_test_or_walk_forward_summary",
+      "after_cost_expectancy_table",
+      "drawdown_and_tail_loss_report",
+      "loser_cluster_comparison",
+      "candidate_hold_kill_quarantine_recommendation"
+    ]
+  },
+  "variant_artifact": {
+    "local_path": "docs\\gcp_foundation\\gcp_research_wave_variants.jsonl",
+    "line_count": 2070,
+    "sha256": "30ebd2e7837e67474b56be4ffc6a512eb6b81a12e76cb1be9e4c98dd07f5acb0",
+    "gcs_path": "gs://codexalpaca-control-us/research_waves/bootstrap/gcp_research_wave_variants.jsonl"
+  }
+}
