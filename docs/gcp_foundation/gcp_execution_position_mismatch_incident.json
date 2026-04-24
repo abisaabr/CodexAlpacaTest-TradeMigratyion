@@ -1,7 +1,7 @@
 {
   "packet": "gcp_execution_position_mismatch_incident",
-  "as_of": "2026-04-24T11:36:45-04:00",
-  "status": "mitigated_flat_vm_patched_unattributed_order_source_blocker",
+  "as_of": "2026-04-24T11:52:30-04:00",
+  "status": "mitigated_flat_vm_patched_local_surfaces_fenced_unattributed_source_prearm_gate",
   "incident_date": "2026-04-24",
   "summary": "Paper-runner mismatch alerts were traced to a stale local desktop runner from the April 22 staged release plus residual broker option positions.",
   "execution_safety_findings": [
@@ -16,7 +16,9 @@
     "The new MSFT open order was canceled and the QQQ option exposure was flattened in short-first risk-reducing order.",
     "A 45-second post-flatten recurrence check reported zero broker positions and zero open orders.",
     "A 90-second broker watch after disabling an additional stale launch surface reported zero broker positions, zero open orders, and no newer broker orders.",
-    "The Windows scheduled task GovernedDownChoppyTakeoverUser was disabled because it pointed at an older takeover checkout and was inconsistent with the one sanctioned VM execution path."
+    "The Windows scheduled task GovernedDownChoppyTakeoverUser was disabled because it pointed at an older takeover checkout and was inconsistent with the one sanctioned VM execution path.",
+    "The remaining Stage27 scheduled tasks were disabled because they were stale local automation outside the sanctioned VM execution path.",
+    "A 180-second broker watch after final local task fencing reported zero broker positions, zero open orders, and no newer broker orders."
   ],
   "root_cause": [
     "Unexpected-position cleanup processed broker positions in API order.",
@@ -40,7 +42,8 @@
     "vm_source_fingerprint": "source_fingerprint_matched",
     "post_unattributed_order_flat_check": "position_count=0, open_order_count=0",
     "post_flatten_watch_window": "45 seconds, no recurrence observed",
-    "post_launch_surface_cleanup_watch_window": "90 seconds, no recurrence observed"
+    "post_launch_surface_cleanup_watch_window": "90 seconds, no recurrence observed",
+    "post_final_local_task_fencing_watch_window": "180 seconds, no recurrence observed"
   },
   "hard_rules_preserved": [
     "No live-trading path was enabled.",
@@ -53,7 +56,9 @@
     "Re-run the VM process/source-stamp check immediately before arming any exclusive execution window.",
     "Keep legacy local scheduled tasks disabled; do not use the April 22 staged release as an execution path.",
     "Keep GovernedDownChoppyTakeoverUser disabled; do not use older takeover checkouts as broker-capable launch surfaces.",
+    "Keep Stage27 scheduled tasks disabled; do not use stale local Stage27 automation as a broker-capable launch surface.",
     "Treat the unattributed order source as a hard pre-arm blocker until no external runner/process/thread is found or all candidate launch surfaces are disabled.",
-    "Before any further session, run a longer broker no-new-order watch and confirm no orders appear without an explicit operator launch."
+    "Before any further session, run a longer broker no-new-order watch and confirm no orders appear without an explicit operator launch.",
+    "Use docs/gcp_foundation/gcp_execution_launch_surface_audit_handoff.md as the current launch-surface takeover read before any exclusive-window arm."
   ]
 }

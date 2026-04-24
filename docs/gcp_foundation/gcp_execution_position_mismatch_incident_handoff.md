@@ -1,8 +1,8 @@
 # GCP Execution Position Mismatch Incident Handoff
 
-As of: 2026-04-24T11:36:45-04:00
+As of: 2026-04-24T11:52:30-04:00
 
-Status: mitigated_flat_vm_patched_unattributed_order_source_blocker
+Status: mitigated_flat_vm_patched_local_surfaces_fenced_unattributed_source_prearm_gate
 
 ## Summary
 
@@ -18,6 +18,8 @@ The sanctioned VM runner source has now been patched to runner commit `f008006` 
 A later broker check detected new QQQ option exposure and a new MSFT buy-to-open order from an unattributed source. The open MSFT order was canceled. The QQQ exposure was flattened in short-first risk-reducing order. A 45-second post-flatten watch reported zero positions and zero open orders.
 
 A launch-surface sweep found `GovernedDownChoppyTakeoverUser`, a Windows scheduled task pointing at an older takeover checkout. It is now disabled. A 90-second broker watch after that change reported zero positions, zero open orders, and no newer broker orders.
+
+A final local launch-surface pass disabled the remaining Stage27 scheduled tasks (`Stage27_DailyReport`, `Stage27_EOD_Summary`, and already-disabled `Stage27_PaperLive`) because they were stale local automation outside the sanctioned VM path. A post-fencing 180-second broker watch reported zero positions, zero open orders, and no newer broker orders.
 
 ## Root Cause
 
@@ -44,6 +46,7 @@ Change: residual option cleanup now prioritizes short-leg buy-to-close orders be
 - Post-unattributed-order flat check: `position_count=0`, `open_order_count=0`
 - Post-flatten watch: `45 seconds`, no recurrence observed
 - Post-launch-surface-cleanup watch: `90 seconds`, no recurrence observed
+- Post-final-local-task-fencing watch: `180 seconds`, no recurrence observed
 
 ## Governance Notes
 
@@ -60,3 +63,4 @@ Change: residual option cleanup now prioritizes short-leg buy-to-close orders be
 4. Keep `GovernedDownChoppyTakeoverUser` disabled; do not use older takeover checkouts as broker-capable launch surfaces.
 5. Treat the unattributed order source as a hard pre-arm blocker until no external runner/process/thread is found or all candidate launch surfaces are disabled.
 6. Before any further session, run a longer broker no-new-order watch and confirm no orders appear without an explicit operator launch.
+7. Use `docs/gcp_foundation/gcp_execution_launch_surface_audit_handoff.md` as the current launch-surface takeover read before any exclusive-window arm.
