@@ -1,0 +1,254 @@
+{
+  "generated_at": "2026-04-23T22:19:10.026983-04:00",
+  "status": "ready_with_research_warnings",
+  "strategy_registry_json": "docs\\gcp_foundation\\gcp_strategy_registry_bootstrap.json",
+  "quality_scorecard_json": "C:\\Users\\abisa\\Downloads\\codexalpaca_runtime\\multi_ticker_portfolio_live\\quality_scorecard\\friday_quality_scorecard_2026-04-24.json",
+  "report_dir": "docs\\gcp_foundation",
+  "gcs_prefix": "gs://codexalpaca-control-us/research_queue/bootstrap",
+  "strategy_count": 94,
+  "target_trade_date": "2026-04-24",
+  "scorecard_status": "ready_with_review_required_evidence",
+  "preferred_symbols": [
+    "QQQ",
+    "GLD",
+    "MSFT",
+    "SLV",
+    "TSLA"
+  ],
+  "avoid_or_shadow_symbols": [
+    "XLE",
+    "SPY",
+    "IWM",
+    "PLTR",
+    "AMZN",
+    "NVDA"
+  ],
+  "single_leg_strategy_share": 0.9574,
+  "total_estimated_variant_count": 1950,
+  "queue": [
+    {
+      "queue_id": "RQ-001-defined-risk-family-expansion",
+      "priority": 1,
+      "mission": "Expand under-covered defined-risk and choppy/premium structures before adding more directional single-leg variants.",
+      "symbols": [
+        "QQQ",
+        "GLD",
+        "MSFT",
+        "SLV",
+        "TSLA"
+      ],
+      "estimated_variant_count": 120,
+      "sweep_design": {
+        "family_templates": [
+          "debit_call_vertical",
+          "debit_put_vertical",
+          "broken_wing_call_butterfly",
+          "broken_wing_put_butterfly",
+          "iron_butterfly",
+          "premium_defense_spread"
+        ],
+        "timing_profiles": [
+          "fast",
+          "base",
+          "slow",
+          "patient"
+        ],
+        "dte_modes": [
+          "same_day",
+          "next_expiry"
+        ],
+        "admission_note": "Research-only candidates. They require promotion review before runner eligibility."
+      },
+      "required_outputs": [
+        "research_run_manifest",
+        "normalized_backtest_results",
+        "train_test_or_walk_forward_summary",
+        "after_cost_expectancy_table",
+        "drawdown_and_tail_loss_report",
+        "loser_cluster_comparison",
+        "candidate_hold_kill_quarantine_recommendation"
+      ],
+      "promotion_gate": [
+        "positive after-cost expectancy in out-of-sample or walk-forward segment",
+        "max drawdown and tail-loss behavior better than comparable single-leg baseline",
+        "no single symbol contributes more than 40% of total edge",
+        "slippage stress remains profitable at conservative fill assumptions"
+      ],
+      "live_manifest_effect": "none",
+      "risk_policy_effect": "none",
+      "execution_effect": "none_research_only"
+    },
+    {
+      "queue_id": "RQ-002-single-leg-repair-and-loss-filter",
+      "priority": 2,
+      "mission": "Repair existing single-leg families with stricter exits, liquidity gates, and loser-similarity filters.",
+      "symbols": [
+        "QQQ",
+        "GLD",
+        "MSFT",
+        "SLV",
+        "TSLA"
+      ],
+      "estimated_variant_count": 1242,
+      "sweep_design": {
+        "source_strategy_count": 23,
+        "parameter_grid": {
+          "profit_target_multiple": [
+            0.35,
+            0.45,
+            0.55
+          ],
+          "stop_loss_multiple": [
+            0.18,
+            0.24,
+            0.3
+          ],
+          "hard_exit_minute": [
+            210,
+            300,
+            360
+          ],
+          "liquidity_gate": [
+            "baseline",
+            "tight"
+          ]
+        },
+        "baseline_family_filter": [
+          "single-leg long call",
+          "single-leg long put"
+        ],
+        "admission_note": "A repair candidate must beat its original manifest strategy after costs and loser penalties."
+      },
+      "required_outputs": [
+        "research_run_manifest",
+        "normalized_backtest_results",
+        "train_test_or_walk_forward_summary",
+        "after_cost_expectancy_table",
+        "drawdown_and_tail_loss_report",
+        "loser_cluster_comparison",
+        "candidate_hold_kill_quarantine_recommendation"
+      ],
+      "promotion_gate": [
+        "beats current same-symbol same-family baseline after fees and slippage",
+        "reduces stop-loss cluster frequency",
+        "passes loser-similarity filter against April 23 loss clusters",
+        "does not rely on widening risk or increasing contracts"
+      ],
+      "live_manifest_effect": "none",
+      "risk_policy_effect": "none",
+      "execution_effect": "none_research_only"
+    },
+    {
+      "queue_id": "RQ-003-loser-cluster-shadow-diagnostics",
+      "priority": 3,
+      "mission": "Use avoid/shadow symbols to learn what failed without granting them execution eligibility.",
+      "symbols": [
+        "XLE",
+        "SPY",
+        "IWM",
+        "PLTR",
+        "AMZN",
+        "NVDA"
+      ],
+      "estimated_variant_count": 522,
+      "sweep_design": {
+        "source_strategy_count": 29,
+        "parameter_grid": {
+          "entry_delay_minutes": [
+            5,
+            15,
+            30
+          ],
+          "stop_tightening": [
+            "none",
+            "moderate",
+            "strict"
+          ],
+          "avoid_after_loser_similarity": [
+            true,
+            false
+          ]
+        },
+        "admission_note": "Diagnostics can produce quarantine or hold decisions, not immediate promotion."
+      },
+      "required_outputs": [
+        "research_run_manifest",
+        "normalized_backtest_results",
+        "train_test_or_walk_forward_summary",
+        "after_cost_expectancy_table",
+        "drawdown_and_tail_loss_report",
+        "loser_cluster_comparison",
+        "candidate_hold_kill_quarantine_recommendation"
+      ],
+      "promotion_gate": [
+        "identifies repeatable loser features",
+        "produces explicit quarantine or repair recommendations",
+        "does not promote an avoid/shadow symbol without separate control-plane review"
+      ],
+      "live_manifest_effect": "none",
+      "risk_policy_effect": "none",
+      "execution_effect": "none_research_only"
+    },
+    {
+      "queue_id": "RQ-004-regime-and-liquidity-feature-grid",
+      "priority": 4,
+      "mission": "Build symbol/regime/liquidity features that explain when each strategy family should be suppressed.",
+      "symbols": [
+        "QQQ",
+        "SPY",
+        "IWM",
+        "NVDA",
+        "MSFT",
+        "AMZN",
+        "TSLA",
+        "PLTR",
+        "XLE",
+        "GLD",
+        "SLV"
+      ],
+      "estimated_variant_count": 66,
+      "sweep_design": {
+        "feature_groups": [
+          "opening_gap_and_range",
+          "realized_volatility",
+          "trend_persistence",
+          "spread_and_quote_quality",
+          "relative_volume",
+          "paper_fill_slippage"
+        ],
+        "admission_note": "Feature outputs can improve scorecards and promotion review, not live rules without review."
+      },
+      "required_outputs": [
+        "research_run_manifest",
+        "normalized_backtest_results",
+        "train_test_or_walk_forward_summary",
+        "after_cost_expectancy_table",
+        "drawdown_and_tail_loss_report",
+        "loser_cluster_comparison",
+        "candidate_hold_kill_quarantine_recommendation"
+      ],
+      "promotion_gate": [
+        "feature has stable explanatory value across multiple dates",
+        "feature improves loser avoidance without removing most winners",
+        "feature can be computed before trade admission"
+      ],
+      "live_manifest_effect": "none",
+      "risk_policy_effect": "none",
+      "execution_effect": "none_research_only"
+    }
+  ],
+  "issues": [
+    {
+      "severity": "warning",
+      "code": "single_leg_concentration",
+      "message": "Current manifest is 95.7% single-leg directional strategies."
+    }
+  ],
+  "guardrails": [
+    "research_queue_is_advisory_only",
+    "do_not_mutate_live_manifest",
+    "do_not_change_risk_policy",
+    "do_not_start_broker_facing_session",
+    "require_promotion_packet_before_runner_eligibility"
+  ]
+}
