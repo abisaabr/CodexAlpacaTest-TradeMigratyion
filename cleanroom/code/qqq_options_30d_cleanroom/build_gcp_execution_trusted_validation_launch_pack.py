@@ -68,6 +68,7 @@ def build_payload(
 
     operator_steps = [
         "Confirm the exclusive-window packet says `ready_for_launch` and this launch pack says `ready_to_launch`.",
+        "Build the launch-authorization packet and require `ready_to_launch_session` before running the VM session command.",
         "SSH to `vm-execution-paper-01` through IAP.",
         "Run the trusted validation session command on the VM without changing strategy selection or risk policy.",
         "When the session ends, run governed post-session assimilation from the control-plane machine.",
@@ -103,9 +104,11 @@ def build_payload(
             "docs/execution_calibration/execution_calibration_handoff.md",
             "docs/tournament_unlocks/tournament_unlock_handoff.md",
             "docs/execution_evidence/execution_evidence_contract_handoff.md",
+            "docs/gcp_foundation/gcp_execution_launch_authorization_handoff.md",
         ],
         "guardrails": [
             "Do not auto-start trading from this packet.",
+            "Do not run the VM session command unless the launch-authorization packet says `ready_to_launch_session`.",
             "Keep the shared execution lease in dry-run posture for the first trusted validation session.",
             "Do not widen the temporary parallel-runtime exception.",
             "Do not promote the VM to canonical execution from this launch alone.",
@@ -185,6 +188,7 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         "",
         "- This pack prepares the first sanctioned trusted validation session but does not auto-start it.",
         "- Do not use this pack unless the exclusive-window packet says `ready_for_launch` and this packet says `ready_to_launch`.",
+        "- Build and read `docs/gcp_foundation/gcp_execution_launch_authorization_handoff.md` before running the VM session command.",
         "- Run post-session assimilation immediately after the broker-facing session ends.",
     ]
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")

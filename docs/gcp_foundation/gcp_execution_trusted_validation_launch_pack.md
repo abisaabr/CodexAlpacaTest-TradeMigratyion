@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T10:53:26.053743-04:00`
+- Generated at: `2026-04-24T11:03:03.240151-04:00`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
 - Launch pack state: `awaiting_window_arm`
@@ -36,6 +36,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 
 - Do not start the session yet; this pack is in preparation mode until the exclusive execution window is actively confirmed.
 - Confirm the exclusive-window packet says `ready_for_launch` and this launch pack says `ready_to_launch`.
+- Build the launch-authorization packet and require `ready_to_launch_session` before running the VM session command.
 - SSH to `vm-execution-paper-01` through IAP.
 - Run the trusted validation session command on the VM without changing strategy selection or risk policy.
 - When the session ends, run governed post-session assimilation from the control-plane machine.
@@ -55,10 +56,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 - `docs/execution_calibration/execution_calibration_handoff.md`
 - `docs/tournament_unlocks/tournament_unlock_handoff.md`
 - `docs/execution_evidence/execution_evidence_contract_handoff.md`
+- `docs/gcp_foundation/gcp_execution_launch_authorization_handoff.md`
 
 ## Guardrails
 
 - Do not auto-start trading from this packet.
+- Do not run the VM session command unless the launch-authorization packet says `ready_to_launch_session`.
 - Keep the shared execution lease in dry-run posture for the first trusted validation session.
 - Do not widen the temporary parallel-runtime exception.
 - Do not promote the VM to canonical execution from this launch alone.

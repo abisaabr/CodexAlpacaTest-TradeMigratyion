@@ -10,4 +10,5 @@
 
 - This pack prepares the first sanctioned trusted validation session but does not auto-start it.
 - Do not use this pack unless the exclusive-window packet says `ready_for_launch` and this packet says `ready_to_launch`.
+- Build and read `docs/gcp_foundation/gcp_execution_launch_authorization_handoff.md` before running the VM session command.
 - Run post-session assimilation immediately after the broker-facing session ends.

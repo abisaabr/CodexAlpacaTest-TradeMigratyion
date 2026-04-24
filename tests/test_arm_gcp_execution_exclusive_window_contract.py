@@ -35,6 +35,8 @@ def test_arm_script_refreshes_top_level_packets_after_arming() -> None:
 
     assert "build_gcp_execution_closeout_status.py" in script
     assert "build_gcp_execution_trusted_validation_operator_packet.py" in script
+    assert "build_gcp_execution_launch_authorization.py" in script
     assert "gcp_execution_trusted_validation_operator_handoff.md" in script
+    assert "gcp_execution_launch_authorization_handoff.md" in script
     assert "gcp_execution_closeout_handoff.md" in script
     assert "gcp_execution_prearm_preflight_handoff.md" in script

@@ -49,6 +49,7 @@ def test_build_payload_awaiting_window_arm_when_not_yet_confirmed() -> None:
         "docs/execution_calibration/execution_calibration_handoff.md",
         "docs/tournament_unlocks/tournament_unlock_handoff.md",
         "docs/execution_evidence/execution_evidence_contract_handoff.md",
+        "docs/gcp_foundation/gcp_execution_launch_authorization_handoff.md",
     ]
 
 
@@ -78,3 +79,4 @@ def test_build_payload_ready_to_launch_when_window_and_session_are_green() -> No
     assert payload["operator_steps"][0] == (
         "Confirm the exclusive-window packet says `ready_for_launch` and this launch pack says `ready_to_launch`."
     )
+    assert "ready_to_launch_session" in payload["operator_steps"][1]

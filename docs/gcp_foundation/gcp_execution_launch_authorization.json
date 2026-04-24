@@ -1,0 +1,70 @@
+{
+  "generated_at": "2026-04-24T11:03:03.485548-04:00",
+  "status": "blocked",
+  "next_operator_action": "resolve_launch_blockers",
+  "report_dir": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation",
+  "broker_facing": false,
+  "authorized_command_broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "vm_name": "vm-execution-paper-01",
+  "operator_packet_state": "ready_to_arm_window",
+  "launch_pack_state": "awaiting_window_arm",
+  "trusted_validation_readiness": "awaiting_exclusive_execution_window",
+  "exclusive_window_status": "awaiting_operator_confirmation",
+  "closeout_status": "window_already_closed",
+  "runtime_readiness_status": "runtime_ready",
+  "runner_provenance_status": "provenance_matched",
+  "source_fingerprint_status": "source_fingerprint_matched",
+  "prearm_preflight_status": "ready_to_arm_window",
+  "prearm_preflight_age_minutes": 4.817557316666667,
+  "max_prearm_age_minutes": 20,
+  "trader_process_absent": true,
+  "ownership_enabled": true,
+  "ownership_backend": "file",
+  "shared_execution_lease_enforced": false,
+  "operator_ssh_command": "gcloud compute ssh vm-execution-paper-01 --project codexalpaca --zone us-east1-b --tunnel-through-iap",
+  "vm_session_command": "cd /opt/codexalpaca/codexalpaca_repo && ./.venv/bin/python scripts/run_multi_ticker_portfolio_paper_trader.py --portfolio-config config/multi_ticker_paper_portfolio.yaml --submit-paper-orders",
+  "post_session_assimilation_command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"<control-plane-root>\\cleanroom\\code\\qqq_options_30d_cleanroom\\launch_post_session_assimilation.ps1\" -ControlPlaneRoot \"<control-plane-root>\" -RunnerRepoRoot \"<runner-repo-root>\"",
+  "closeout_command_template": "powershell -NoProfile -ExecutionPolicy Bypass -File \"<control-plane-root>\\cleanroom\\code\\qqq_options_30d_cleanroom\\close_gcp_execution_exclusive_window.ps1\" -ControlPlaneRoot \"<control-plane-root>\" -VmName \"vm-execution-paper-01\" -MirrorToGcs",
+  "required_evidence": [
+    "broker-order audit",
+    "broker account-activity audit",
+    "ending broker-position snapshot",
+    "shutdown reconciliation",
+    "completed trade table with broker/local cashflow comparison"
+  ],
+  "issues": [
+    {
+      "severity": "error",
+      "code": "operator_packet_not_ready_to_launch",
+      "message": "The top-level operator packet must be `ready_to_launch_session` before launch."
+    },
+    {
+      "severity": "error",
+      "code": "launch_pack_not_ready",
+      "message": "The launch pack must be `ready_to_launch` before the broker-facing session command is authorized."
+    },
+    {
+      "severity": "error",
+      "code": "trusted_validation_not_ready",
+      "message": "Trusted validation readiness must be `ready_for_manual_launch` before launch."
+    },
+    {
+      "severity": "error",
+      "code": "exclusive_window_not_ready",
+      "message": "The exclusive-window packet must say `ready_for_launch` before launch."
+    },
+    {
+      "severity": "error",
+      "code": "closeout_not_reserved",
+      "message": "Closeout must be reserved as `ready_to_close_window` before launch."
+    }
+  ],
+  "operator_read": [
+    "This packet is non-broker-facing; it does not start the VM session.",
+    "If status is `blocked`, do not run the VM session command.",
+    "If status is `ready_to_launch_session`, run the VM command manually inside the attested exclusive window, then run post-session assimilation and closeout.",
+    "Do not treat a successful launch authorization as strategy-promotion evidence; only the post-session evidence bundle can support review."
+  ]
+}

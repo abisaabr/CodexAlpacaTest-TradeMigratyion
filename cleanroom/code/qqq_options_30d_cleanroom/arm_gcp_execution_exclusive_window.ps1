@@ -142,6 +142,10 @@ $builderSpecs = @(
     @{
         Path = Join-Path $PSScriptRoot "build_gcp_execution_trusted_validation_operator_packet.py"
         Arguments = @("--report-dir", $reportDir, "--project-id", "codexalpaca", "--vm-name", $VmName, "--zone", $Zone, "--gcs-prefix", $GcsPrefix)
+    },
+    @{
+        Path = Join-Path $PSScriptRoot "build_gcp_execution_launch_authorization.py"
+        Arguments = @("--report-dir", $reportDir, "--max-prearm-age-minutes", $MaxPrearmAgeMinutes)
     }
 )
 
@@ -202,6 +206,9 @@ if ($MirrorToGcs) {
         "gcp_execution_trusted_validation_operator_packet.json",
         "gcp_execution_trusted_validation_operator_packet.md",
         "gcp_execution_trusted_validation_operator_handoff.md",
+        "gcp_execution_launch_authorization.json",
+        "gcp_execution_launch_authorization.md",
+        "gcp_execution_launch_authorization_handoff.md",
         "gcp_execution_prearm_preflight.json",
         "gcp_execution_prearm_preflight.md",
         "gcp_execution_prearm_preflight_handoff.md"
@@ -223,6 +230,7 @@ $summary = @{
     trusted_validation_status_json = Join-Path $reportDir "gcp_execution_trusted_validation_session_status.json"
     trusted_launch_pack_json = Join-Path $reportDir "gcp_execution_trusted_validation_launch_pack.json"
     trusted_operator_packet_json = Join-Path $reportDir "gcp_execution_trusted_validation_operator_packet.json"
+    launch_authorization_json = Join-Path $reportDir "gcp_execution_launch_authorization.json"
     closeout_status_json = Join-Path $reportDir "gcp_execution_closeout_status.json"
     mirrored_to_gcs = [bool]$MirrorToGcs
     gcs_prefix = $GcsPrefix

@@ -120,6 +120,7 @@ def build_payload(
         "Run the non-broker pre-arm preflight and require `ready_to_arm_window` before arming the exclusive window.",
         "Pick a bounded exclusive window and confirm the temporary parallel runtime path is paused for that window.",
         "Arm the exclusive window from the control-plane root and confirm the refreshed packets move to `ready_for_launch` / `ready_to_launch`.",
+        "Build the non-broker launch authorization packet and require `ready_to_launch_session` before running the VM session command.",
         "SSH into the sanctioned VM through IAP.",
         "Run the trusted validation session command on the VM without changing strategy selection or risk policy.",
         "Run governed post-session assimilation immediately after the session ends.",
@@ -156,6 +157,9 @@ def build_payload(
     prearm_handoff = "docs/gcp_foundation/gcp_execution_prearm_preflight_handoff.md"
     if prearm_handoff not in review_targets:
         review_targets.append(prearm_handoff)
+    launch_authorization_handoff = "docs/gcp_foundation/gcp_execution_launch_authorization_handoff.md"
+    if launch_authorization_handoff not in review_targets:
+        review_targets.append(launch_authorization_handoff)
 
     runner_provenance_issue_codes = [
         str(issue.get("code"))
@@ -201,6 +205,7 @@ def build_payload(
             "Do not arm or launch a trusted session while runner provenance status starts with `blocked_`.",
             "Do not arm or launch a trusted session while VM runtime readiness starts with `blocked_`.",
             "Do not arm the exclusive window if the non-broker pre-arm preflight is missing or blocked.",
+            "Do not run the VM session command if launch authorization is missing or blocked.",
             "Do not enable shared-lease enforcement by default during the first trusted validation session.",
             "Do not use unstamped VM runner provenance as strategy-promotion evidence.",
             "Do not skip post-session assimilation or closeout after the session ends.",
