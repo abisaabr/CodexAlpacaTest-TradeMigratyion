@@ -1,0 +1,504 @@
+{
+  "generated_at": "2026-04-24T05:56:14.766138-04:00",
+  "status": "blocked_no_governed_validation_candidate",
+  "runtime_root": "C:\\Users\\abisa\\Downloads\\codexalpaca_runtime\\multi_ticker_portfolio_live",
+  "report_dir": "docs\\gcp_foundation",
+  "gcs_prefix": "gs://codexalpaca-control-us/gcp_foundation",
+  "trade_dates": [
+    "2026-04-21",
+    "2026-04-22",
+    "2026-04-23"
+  ],
+  "min_net_pnl": 200.0,
+  "target_qualified_winners": 20,
+  "raw_winner_count": 1,
+  "qualified_winner_count": 0,
+  "qualified_winners_remaining": 20,
+  "session_ledger": [
+    {
+      "trade_date": "2026-04-21",
+      "session_present": true,
+      "net_pnl": 0.0,
+      "completed_trade_count": 0,
+      "open_trade_count": 0,
+      "ending_broker_position_count": 0,
+      "shutdown_reconciled": true,
+      "flat": true,
+      "blocked_new_entries": false,
+      "block_reason": null,
+      "raw_winner": false,
+      "qualified_winner": false,
+      "evidence_status": "missing",
+      "teaching_status": "missing",
+      "incident_level": "",
+      "incident_code": "",
+      "severe_loss_incident": false,
+      "economics_max_abs_cashflow_diff": 0.0,
+      "economics_within_tolerance_trade_count": 0,
+      "trade_review_status": "present",
+      "trade_review_loser_count": 4,
+      "trade_review_winner_count": 5,
+      "disqualifiers": [
+        "net_pnl_below_winner_threshold",
+        "evidence_status_missing",
+        "teaching_status_missing"
+      ],
+      "artifact_presence": {
+        "summary": true,
+        "completed_trades": true,
+        "ticker_performance": true,
+        "strategy_performance": true,
+        "evidence": false,
+        "teaching": false,
+        "trade_review": true,
+        "postmortem": true
+      }
+    },
+    {
+      "trade_date": "2026-04-22",
+      "session_present": true,
+      "net_pnl": 1992.5,
+      "completed_trade_count": 10,
+      "open_trade_count": 0,
+      "ending_broker_position_count": 0,
+      "shutdown_reconciled": true,
+      "flat": true,
+      "blocked_new_entries": true,
+      "block_reason": "broker position missing for QQQ260422C00649000 (expected -3); broker position missing for QQQ260422C00650000 (expected -5); broker position missing for QQQ260422C00653000 (expected +8)",
+      "raw_winner": true,
+      "qualified_winner": false,
+      "evidence_status": "review_required",
+      "teaching_status": "review_required",
+      "incident_level": "",
+      "incident_code": "",
+      "severe_loss_incident": false,
+      "economics_max_abs_cashflow_diff": 0.3253,
+      "economics_within_tolerance_trade_count": 0,
+      "trade_review_status": "missing",
+      "trade_review_loser_count": 0,
+      "trade_review_winner_count": 0,
+      "disqualifiers": [
+        "evidence_status_review_required",
+        "teaching_status_review_required"
+      ],
+      "artifact_presence": {
+        "summary": true,
+        "completed_trades": true,
+        "ticker_performance": true,
+        "strategy_performance": true,
+        "evidence": true,
+        "teaching": true,
+        "trade_review": false,
+        "postmortem": false
+      }
+    },
+    {
+      "trade_date": "2026-04-23",
+      "session_present": true,
+      "net_pnl": -1717.0,
+      "completed_trade_count": 14,
+      "open_trade_count": 0,
+      "ending_broker_position_count": 0,
+      "shutdown_reconciled": true,
+      "flat": true,
+      "blocked_new_entries": true,
+      "block_reason": "severe_loss_flatten_all triggered at equity 25275.50",
+      "raw_winner": false,
+      "qualified_winner": false,
+      "evidence_status": "review_required",
+      "teaching_status": "review_required",
+      "incident_level": "SEV1",
+      "incident_code": "severe_loss_halt_new_entries",
+      "severe_loss_incident": true,
+      "economics_max_abs_cashflow_diff": 1.3057,
+      "economics_within_tolerance_trade_count": 0,
+      "trade_review_status": "present",
+      "trade_review_loser_count": 11,
+      "trade_review_winner_count": 3,
+      "disqualifiers": [
+        "net_pnl_below_winner_threshold",
+        "evidence_status_review_required",
+        "teaching_status_review_required",
+        "severe_loss_incident"
+      ],
+      "artifact_presence": {
+        "summary": true,
+        "completed_trades": true,
+        "ticker_performance": true,
+        "strategy_performance": true,
+        "evidence": true,
+        "teaching": true,
+        "trade_review": true,
+        "postmortem": true
+      }
+    }
+  ],
+  "governed_universe_data_verdicts": [
+    {
+      "symbol": "QQQ",
+      "score": 77.0,
+      "stance": "preferred_if_preopen_liquidity_clean",
+      "verdict": "research_ready_with_quality_score",
+      "research_stock_rows": 2276,
+      "selected_contract_rows": 420,
+      "option_inventory_rows": 2622,
+      "reasons": [
+        "positive_april23_live_result",
+        "core_liquid_index_name"
+      ]
+    },
+    {
+      "symbol": "SPY",
+      "score": 43.4,
+      "stance": "shadow_or_reduced_only",
+      "verdict": "shadow_only",
+      "research_stock_rows": 0,
+      "selected_contract_rows": 0,
+      "option_inventory_rows": 0,
+      "reasons": [
+        "negative_april23_pnl",
+        "stop_loss_cluster",
+        "single_leg_trend_loser_similarity",
+        "core_liquid_index_name"
+      ]
+    },
+    {
+      "symbol": "IWM",
+      "score": 28.2,
+      "stance": "avoid_for_first_gcp_session",
+      "verdict": "avoid_for_first_session",
+      "research_stock_rows": 0,
+      "selected_contract_rows": 0,
+      "option_inventory_rows": 0,
+      "reasons": [
+        "negative_april23_pnl",
+        "stop_loss_cluster",
+        "single_leg_trend_loser_similarity",
+        "april23_loser_cluster_symbol"
+      ]
+    },
+    {
+      "symbol": "NVDA",
+      "score": 1.0,
+      "stance": "avoid_for_first_gcp_session",
+      "verdict": "avoid_for_first_session",
+      "research_stock_rows": 0,
+      "selected_contract_rows": 0,
+      "option_inventory_rows": 0,
+      "reasons": [
+        "negative_april23_pnl",
+        "stop_loss_cluster",
+        "single_leg_trend_loser_similarity",
+        "april23_loser_cluster_symbol"
+      ]
+    },
+    {
+      "symbol": "MSFT",
+      "score": 60.0,
+      "stance": "allowed_cautious",
+      "verdict": "research_ready_with_quality_score",
+      "research_stock_rows": 2218,
+      "selected_contract_rows": 196,
+      "option_inventory_rows": 624,
+      "reasons": [
+        "no_april23_live_trade_evidence"
+      ]
+    },
+    {
+      "symbol": "AMZN",
+      "score": 11.2,
+      "stance": "avoid_for_first_gcp_session",
+      "verdict": "avoid_for_first_session",
+      "research_stock_rows": 0,
+      "selected_contract_rows": 0,
+      "option_inventory_rows": 0,
+      "reasons": [
+        "negative_april23_pnl",
+        "stop_loss_cluster",
+        "single_leg_trend_loser_similarity",
+        "april23_loser_cluster_symbol"
+      ]
+    },
+    {
+      "symbol": "TSLA",
+      "score": 60.0,
+      "stance": "allowed_cautious",
+      "verdict": "research_ready_with_quality_score",
+      "research_stock_rows": 2300,
+      "selected_contract_rows": 238,
+      "option_inventory_rows": 1258,
+      "reasons": [
+        "no_april23_live_trade_evidence"
+      ]
+    },
+    {
+      "symbol": "PLTR",
+      "score": 20.0,
+      "stance": "avoid_for_first_gcp_session",
+      "verdict": "avoid_for_first_session",
+      "research_stock_rows": 0,
+      "selected_contract_rows": 0,
+      "option_inventory_rows": 0,
+      "reasons": [
+        "negative_april23_pnl",
+        "stop_loss_cluster",
+        "single_leg_trend_loser_similarity",
+        "april23_loser_cluster_symbol"
+      ]
+    },
+    {
+      "symbol": "XLE",
+      "score": 51.4,
+      "stance": "shadow_or_reduced_only",
+      "verdict": "shadow_only",
+      "research_stock_rows": 0,
+      "selected_contract_rows": 0,
+      "option_inventory_rows": 0,
+      "reasons": [
+        "negative_april23_pnl",
+        "single_leg_trend_loser_similarity"
+      ]
+    },
+    {
+      "symbol": "GLD",
+      "score": 60.0,
+      "stance": "allowed_cautious",
+      "verdict": "research_ready_with_quality_score",
+      "research_stock_rows": 1947,
+      "selected_contract_rows": 238,
+      "option_inventory_rows": 1470,
+      "reasons": [
+        "no_april23_live_trade_evidence"
+      ]
+    },
+    {
+      "symbol": "SLV",
+      "score": 60.0,
+      "stance": "allowed_cautious",
+      "verdict": "research_ready_with_quality_score",
+      "research_stock_rows": 2171,
+      "selected_contract_rows": 238,
+      "option_inventory_rows": 936,
+      "reasons": [
+        "no_april23_live_trade_evidence"
+      ]
+    }
+  ],
+  "loser_learning": {
+    "trade_count": 24,
+    "winner_count": 8,
+    "loser_count": 16,
+    "total_loser_net_pnl": -2379.89,
+    "top_losing_symbols": [
+      {
+        "name": "GDX",
+        "trade_count": 2,
+        "net_pnl": -632.01,
+        "loss_count": 2,
+        "stop_loss_count": 2,
+        "single_leg_directional_loss_count": 2,
+        "avg_pnl": -316.005
+      },
+      {
+        "name": "NVDA",
+        "trade_count": 2,
+        "net_pnl": -540.62,
+        "loss_count": 2,
+        "stop_loss_count": 2,
+        "single_leg_directional_loss_count": 2,
+        "avg_pnl": -270.31
+      },
+      {
+        "name": "PLTR",
+        "trade_count": 2,
+        "net_pnl": -411.71,
+        "loss_count": 2,
+        "stop_loss_count": 1,
+        "single_leg_directional_loss_count": 2,
+        "avg_pnl": -205.855
+      },
+      {
+        "name": "IWM",
+        "trade_count": 2,
+        "net_pnl": -255.8,
+        "loss_count": 2,
+        "stop_loss_count": 1,
+        "single_leg_directional_loss_count": 2,
+        "avg_pnl": -127.9
+      },
+      {
+        "name": "AMZN",
+        "trade_count": 3,
+        "net_pnl": -215.33,
+        "loss_count": 3,
+        "stop_loss_count": 3,
+        "single_leg_directional_loss_count": 3,
+        "avg_pnl": -71.7767
+      },
+      {
+        "name": "SPY",
+        "trade_count": 2,
+        "net_pnl": -181.41,
+        "loss_count": 2,
+        "stop_loss_count": 1,
+        "single_leg_directional_loss_count": 2,
+        "avg_pnl": -90.705
+      },
+      {
+        "name": "BAC",
+        "trade_count": 1,
+        "net_pnl": -90.6,
+        "loss_count": 1,
+        "stop_loss_count": 1,
+        "single_leg_directional_loss_count": 1,
+        "avg_pnl": -90.6
+      },
+      {
+        "name": "SCHW",
+        "trade_count": 1,
+        "net_pnl": -41.3,
+        "loss_count": 1,
+        "stop_loss_count": 1,
+        "single_leg_directional_loss_count": 1,
+        "avg_pnl": -41.3
+      },
+      {
+        "name": "XLE",
+        "trade_count": 1,
+        "net_pnl": -11.11,
+        "loss_count": 1,
+        "stop_loss_count": 0,
+        "single_leg_directional_loss_count": 1,
+        "avg_pnl": -11.11
+      }
+    ],
+    "top_losing_strategies": [
+      {
+        "name": "gdx__fast__trend_long_call_next_expiry",
+        "trade_count": 1,
+        "net_pnl": -475.8,
+        "loss_count": 1,
+        "stop_loss_count": 1,
+        "avg_pnl": -475.8
+      },
+      {
+        "name": "pltr__fast__trend_long_put_next_expiry",
+        "trade_count": 1,
+        "net_pnl": -400.41,
+        "loss_count": 1,
+        "stop_loss_count": 1,
+        "avg_pnl": -400.41
+      },
+      {
+        "name": "nvda__fast__trend_long_call_next_expiry_d70",
+        "trade_count": 1,
+        "net_pnl": -357.31,
+        "loss_count": 1,
+        "stop_loss_count": 1,
+        "avg_pnl": -357.31
+      },
+      {
+        "name": "iwm__base__orb_long_put_next_expiry",
+        "trade_count": 1,
+        "net_pnl": -235.5,
+        "loss_count": 1,
+        "stop_loss_count": 1,
+        "avg_pnl": -235.5
+      },
+      {
+        "name": "nvda__base__trend_long_put_next_expiry",
+        "trade_count": 1,
+        "net_pnl": -183.31,
+        "loss_count": 1,
+        "stop_loss_count": 1,
+        "avg_pnl": -183.31
+      },
+      {
+        "name": "gdx__fast__trend_long_put_next_expiry",
+        "trade_count": 1,
+        "net_pnl": -156.21,
+        "loss_count": 1,
+        "stop_loss_count": 1,
+        "avg_pnl": -156.21
+      },
+      {
+        "name": "spy__slow__trend_long_call_next_expiry_d70",
+        "trade_count": 1,
+        "net_pnl": -131.11,
+        "loss_count": 1,
+        "stop_loss_count": 1,
+        "avg_pnl": -131.11
+      },
+      {
+        "name": "bac__fast__trend_long_call_next_expiry",
+        "trade_count": 1,
+        "net_pnl": -90.6,
+        "loss_count": 1,
+        "stop_loss_count": 1,
+        "avg_pnl": -90.6
+      },
+      {
+        "name": "amzn__base__trend_long_call_next_expiry",
+        "trade_count": 1,
+        "net_pnl": -77.11,
+        "loss_count": 1,
+        "stop_loss_count": 1,
+        "avg_pnl": -77.11
+      },
+      {
+        "name": "amzn__fast__trend_long_call_next_expiry",
+        "trade_count": 1,
+        "net_pnl": -71.11,
+        "loss_count": 1,
+        "stop_loss_count": 1,
+        "avg_pnl": -71.11
+      }
+    ],
+    "exit_reason_loss_clusters": [
+      {
+        "name": "stop_loss",
+        "trade_count": 12,
+        "net_pnl": -2286.88,
+        "avg_pnl": -190.5733
+      },
+      {
+        "name": "time_exit",
+        "trade_count": 3,
+        "net_pnl": -81.9,
+        "avg_pnl": -27.3
+      },
+      {
+        "name": "severe_loss_flatten_all",
+        "trade_count": 1,
+        "net_pnl": -11.11,
+        "avg_pnl": -11.11
+      }
+    ],
+    "learning_actions": [
+      "Suppress or shadow symbols with repeated stop-loss and single-leg directional loser similarity until new evidence clears.",
+      "Require option-aware fill coverage before promoting sparse positive backtest candidates.",
+      "Prefer defined-risk or reduced-risk structures for symbols that repeatedly lose through single-leg directional exits."
+    ]
+  },
+  "promotion_readiness": {
+    "candidate_state": "blocked_no_governed_validation_candidate",
+    "promotion_allowed": false,
+    "blockers": [
+      "qualified_winner_count_0_below_target_20",
+      "session_evidence_or_teaching_review_required",
+      "severe_loss_incident_present",
+      "option_aware_status_hold_option_economics_review"
+    ],
+    "option_aware_status": "hold_option_economics_review",
+    "option_aware_recommendation_counts": {
+      "hold_insufficient_option_fills": 32,
+      "hold_option_fill_coverage": 18
+    },
+    "smallest_next_evidence_package": [
+      "Run the April 24 bounded VM paper session and require flat, reconciled, evidence-clean closeout.",
+      "Resolve evidence/teaching review on prior raw winner before counting it as qualified.",
+      "Improve option-aware fill coverage or add quote/spread evidence before considering SLV research candidates.",
+      "Keep Friday execution limited by the current quality scorecard; use loser clusters only as suppressors, not promotions."
+    ]
+  }
+}
