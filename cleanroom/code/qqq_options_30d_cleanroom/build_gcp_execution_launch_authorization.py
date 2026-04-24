@@ -44,6 +44,13 @@ def _age_minutes(timestamp: str, now: datetime) -> float | None:
     return (now - generated_at).total_seconds() / 60
 
 
+def _int_or_default(value: Any, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
 def build_payload(
     *,
     operator_packet: dict[str, Any],
@@ -55,11 +62,13 @@ def build_payload(
     runner_provenance: dict[str, Any],
     source_fingerprint: dict[str, Any],
     prearm_preflight: dict[str, Any],
+    launch_surface_audit: dict[str, Any] | None = None,
     report_dir: Path,
     max_prearm_age_minutes: int,
     now: datetime | None = None,
 ) -> dict[str, Any]:
     now = now or datetime.now().astimezone()
+    launch_surface_audit = launch_surface_audit or {}
     operator_packet_state = str(operator_packet.get("operator_packet_state") or "missing")
     launch_pack_state = str(launch_pack.get("launch_pack_state") or "missing")
     trusted_validation_readiness = str(trusted_validation.get("trusted_validation_readiness") or "missing")
@@ -70,6 +79,28 @@ def build_payload(
     source_fingerprint_status = str(source_fingerprint.get("status") or "missing")
     prearm_status = str(prearm_preflight.get("status") or "missing")
     prearm_age_minutes = _age_minutes(str(prearm_preflight.get("generated_at") or ""), now)
+    launch_surface_audit_status = str(launch_surface_audit.get("status") or "missing")
+    launch_surface_audit_age_minutes = _age_minutes(
+        str(launch_surface_audit.get("generated_at") or launch_surface_audit.get("as_of") or ""), now
+    )
+    launch_surface_broker_state = launch_surface_audit.get("broker_state") or {}
+    if not isinstance(launch_surface_broker_state, dict):
+        launch_surface_broker_state = {}
+    launch_surface_watch = launch_surface_broker_state.get("post_fencing_no_new_order_watch") or {}
+    if not isinstance(launch_surface_watch, dict):
+        launch_surface_watch = {}
+    launch_surface_broker_flat = (
+        launch_surface_broker_state.get("broker_flat") is True
+        or str(launch_surface_broker_state.get("read_only_check_after_fencing") or "")
+        == "position_count=0, open_order_count=0"
+    )
+    launch_surface_no_new_order_watch_clean = (
+        launch_surface_watch.get("watch_clean") is True
+        and _int_or_default(launch_surface_watch.get("duration_seconds"), 0) >= 180
+        and _int_or_default(launch_surface_watch.get("position_count_all_samples"), -1) == 0
+        and _int_or_default(launch_surface_watch.get("open_order_count_all_samples"), -1) == 0
+        and launch_surface_watch.get("newest_order_constant") is True
+    )
     vm_name = str(operator_packet.get("vm_name") or launch_pack.get("vm_name") or "missing")
     launch_vm_name = str(launch_pack.get("vm_name") or "missing")
     session_command = str(launch_pack.get("vm_session_command") or "")
@@ -171,6 +202,54 @@ def build_payload(
                 "The pre-arm preflight timestamp appears to be in the future.",
             )
         )
+    if launch_surface_audit_status != "local_broker_capable_surfaces_fenced_broker_flat":
+        issues.append(
+            _issue(
+                "error",
+                "launch_surface_audit_not_clean",
+                "The launch-surface audit must show broker-capable local surfaces fenced and broker flat before launch.",
+            )
+        )
+    if launch_surface_audit_age_minutes is None:
+        issues.append(
+            _issue(
+                "error",
+                "launch_surface_audit_timestamp_invalid",
+                "The launch-surface audit must have a valid `generated_at` or `as_of` timestamp.",
+            )
+        )
+    elif launch_surface_audit_age_minutes > max_prearm_age_minutes:
+        issues.append(
+            _issue(
+                "error",
+                "launch_surface_audit_stale",
+                f"The launch-surface audit is {launch_surface_audit_age_minutes:.2f} minutes old; maximum allowed is {max_prearm_age_minutes}.",
+            )
+        )
+    elif launch_surface_audit_age_minutes < -5:
+        issues.append(
+            _issue(
+                "error",
+                "launch_surface_audit_future_timestamp",
+                "The launch-surface audit timestamp appears to be in the future.",
+            )
+        )
+    if not launch_surface_broker_flat:
+        issues.append(
+            _issue(
+                "error",
+                "launch_surface_broker_not_flat",
+                "The launch-surface audit must show zero broker positions and zero open broker orders.",
+            )
+        )
+    if not launch_surface_no_new_order_watch_clean:
+        issues.append(
+            _issue(
+                "error",
+                "launch_surface_no_new_order_watch_not_clean",
+                "The launch-surface audit must include a clean no-new-order watch with zero positions, zero open orders, and a constant newest order timestamp.",
+            )
+        )
     if runtime_readiness.get("trader_process_absent") is not True:
         issues.append(
             _issue(
@@ -244,6 +323,10 @@ def build_payload(
         "source_fingerprint_status": source_fingerprint_status,
         "prearm_preflight_status": prearm_status,
         "prearm_preflight_age_minutes": prearm_age_minutes,
+        "launch_surface_audit_status": launch_surface_audit_status,
+        "launch_surface_audit_age_minutes": launch_surface_audit_age_minutes,
+        "launch_surface_broker_flat": launch_surface_broker_flat,
+        "launch_surface_no_new_order_watch_clean": launch_surface_no_new_order_watch_clean,
         "max_prearm_age_minutes": max_prearm_age_minutes,
         "trader_process_absent": runtime_readiness.get("trader_process_absent"),
         "ownership_enabled": runtime_readiness.get("ownership_enabled"),
@@ -288,6 +371,10 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         f"- Source fingerprint status: `{payload['source_fingerprint_status']}`",
         f"- Pre-arm preflight status: `{payload['prearm_preflight_status']}`",
         f"- Pre-arm preflight age minutes: `{payload['prearm_preflight_age_minutes']}`",
+        f"- Launch-surface audit status: `{payload['launch_surface_audit_status']}`",
+        f"- Launch-surface audit age minutes: `{payload['launch_surface_audit_age_minutes']}`",
+        f"- Launch-surface broker flat: `{payload['launch_surface_broker_flat']}`",
+        f"- Launch-surface no-new-order watch clean: `{payload['launch_surface_no_new_order_watch_clean']}`",
         f"- Trader process absent: `{payload['trader_process_absent']}`",
         f"- Ownership backend: `{payload['ownership_backend']}`",
         f"- Shared execution lease enforced: `{payload['shared_execution_lease_enforced']}`",
@@ -348,6 +435,9 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         f"- Runtime readiness status: `{payload['runtime_readiness_status']}`",
         f"- Runner provenance status: `{payload['runner_provenance_status']}`",
         f"- Source fingerprint status: `{payload['source_fingerprint_status']}`",
+        f"- Launch-surface audit status: `{payload['launch_surface_audit_status']}`",
+        f"- Launch-surface broker flat: `{payload['launch_surface_broker_flat']}`",
+        f"- Launch-surface no-new-order watch clean: `{payload['launch_surface_no_new_order_watch_clean']}`",
         f"- Trader process absent: `{payload['trader_process_absent']}`",
         f"- Ownership backend: `{payload['ownership_backend']}`",
         "",
@@ -378,6 +468,7 @@ def main() -> None:
         runner_provenance=read_json(report_dir / "gcp_vm_runner_provenance_status.json"),
         source_fingerprint=read_json(report_dir / "gcp_vm_runner_source_fingerprint_status.json"),
         prearm_preflight=read_json(report_dir / "gcp_execution_prearm_preflight.json"),
+        launch_surface_audit=read_json(report_dir / "gcp_execution_launch_surface_audit.json"),
         report_dir=report_dir,
         max_prearm_age_minutes=args.max_prearm_age_minutes,
     )

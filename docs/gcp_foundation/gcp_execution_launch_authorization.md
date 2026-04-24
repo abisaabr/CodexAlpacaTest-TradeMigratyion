@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T12:31:27.820516-04:00`
+- Generated at: `2026-04-24T12:39:04.845109-04:00`
 - Status: `blocked`
 - Next operator action: `resolve_launch_blockers`
 - VM name: `vm-execution-paper-01`
@@ -14,7 +14,11 @@
 - Runner provenance status: `provenance_matched`
 - Source fingerprint status: `source_fingerprint_matched`
 - Pre-arm preflight status: `ready_to_arm_window`
-- Pre-arm preflight age minutes: `0.0019666666666666665`
+- Pre-arm preflight age minutes: `0.00184635`
+- Launch-surface audit status: `local_broker_capable_surfaces_fenced_broker_flat`
+- Launch-surface audit age minutes: `0.0069514166666666665`
+- Launch-surface broker flat: `True`
+- Launch-surface no-new-order watch clean: `True`
 - Trader process absent: `True`
 - Ownership backend: `file`
 - Shared execution lease enforced: `False`

@@ -1,6 +1,6 @@
 # GCP Execution Launch Surface Audit
 
-As of: 2026-04-24T12:31:27.407567-04:00
+As of: 2026-04-24T12:39:04.428024-04:00
 
 Status: local_broker_capable_surfaces_fenced_broker_flat
 
@@ -18,7 +18,7 @@ VM runner commit matches expected: `True`
 ## Broker State
 
 - Read-only check: `position_count=0, open_order_count=0`
-- Watch duration seconds: `182`
+- Watch duration seconds: `181`
 - Watch samples: `7`
 - Watch position count all samples: `0`
 - Watch open order count all samples: `0`

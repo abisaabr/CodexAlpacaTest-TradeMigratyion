@@ -27,6 +27,7 @@ def _clean_launch_surface_audit() -> dict:
                 "duration_seconds": 180,
                 "position_count_all_samples": 0,
                 "open_order_count_all_samples": 0,
+                "newest_order_constant": True,
             },
         },
     }
@@ -160,6 +161,35 @@ def test_prearm_preflight_blocks_when_launch_surface_watch_is_not_clean(tmp_path
     )
 
     assert payload["status"] == "blocked"
+    assert any(
+        issue["code"] == "launch_surface_no_new_order_watch_not_clean"
+        for issue in payload["issues"]
+    )
+
+
+def test_prearm_preflight_blocks_when_newest_order_timestamp_changes(tmp_path: Path) -> None:
+    audit = _clean_launch_surface_audit()
+    audit["broker_state"]["post_fencing_no_new_order_watch"]["newest_order_constant"] = False
+    payload = MODULE.build_payload(
+        operator_packet={"operator_packet_state": "ready_to_arm_window"},
+        runtime_readiness={
+            "status": "runtime_ready",
+            "trader_process_absent": True,
+            "ownership_enabled": True,
+            "ownership_backend": "file",
+            "ownership_lease_class": "FileOwnershipLease",
+            "shared_execution_lease_enforced": False,
+        },
+        runner_provenance={"status": "provenance_matched"},
+        source_fingerprint={"status": "source_fingerprint_matched"},
+        exclusive_window={"exclusive_window_status": "awaiting_operator_confirmation"},
+        launch_pack={"launch_pack_state": "awaiting_window_arm"},
+        launch_surface_audit=audit,
+        report_dir=tmp_path,
+    )
+
+    assert payload["status"] == "blocked"
+    assert payload["launch_surface_newest_order_constant"] is False
     assert any(
         issue["code"] == "launch_surface_no_new_order_watch_not_clean"
         for issue in payload["issues"]

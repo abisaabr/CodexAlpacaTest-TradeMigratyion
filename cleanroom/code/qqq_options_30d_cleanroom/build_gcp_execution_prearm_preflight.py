@@ -81,12 +81,14 @@ def build_payload(
     launch_surface_watch_open_orders = _int_or_none(
         launch_surface_watch.get("open_order_count_all_samples")
     )
+    launch_surface_watch_newest_order_constant = launch_surface_watch.get("newest_order_constant") is True
     launch_surface_broker_flat = launch_surface_flat_check == "position_count=0, open_order_count=0"
     launch_surface_watch_clean = (
         launch_surface_watch_duration_seconds is not None
         and launch_surface_watch_duration_seconds >= 180
         and launch_surface_watch_positions == 0
         and launch_surface_watch_open_orders == 0
+        and launch_surface_watch_newest_order_constant
     )
 
     issues: list[dict[str, str]] = []
@@ -199,7 +201,7 @@ def build_payload(
             _issue(
                 "error",
                 "launch_surface_no_new_order_watch_not_clean",
-                "A post-fencing no-new-order watch of at least 180 seconds must be clean before arming.",
+                "A post-fencing no-new-order watch of at least 180 seconds must have zero positions, zero open orders, and a constant newest order timestamp before arming.",
             )
         )
 
@@ -225,6 +227,7 @@ def build_payload(
         "launch_surface_broker_flat": launch_surface_broker_flat,
         "launch_surface_no_new_order_watch_clean": launch_surface_watch_clean,
         "launch_surface_watch_duration_seconds": launch_surface_watch_duration_seconds,
+        "launch_surface_newest_order_constant": launch_surface_watch_newest_order_constant,
         "trader_process_absent": trader_process_absent,
         "ownership_enabled": ownership_enabled,
         "ownership_backend": ownership_backend,
@@ -277,6 +280,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         f"- Launch-surface broker flat: `{payload['launch_surface_broker_flat']}`",
         f"- Launch-surface no-new-order watch clean: `{payload['launch_surface_no_new_order_watch_clean']}`",
         f"- Launch-surface watch duration seconds: `{payload['launch_surface_watch_duration_seconds']}`",
+        f"- Launch-surface newest order timestamp constant: `{payload['launch_surface_newest_order_constant']}`",
         f"- Trader process absent: `{payload['trader_process_absent']}`",
         f"- Ownership enabled: `{payload['ownership_enabled']}`",
         f"- Ownership backend: `{payload['ownership_backend']}`",
@@ -320,6 +324,7 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         f"- Launch-surface audit status: `{payload['launch_surface_audit_status']}`",
         f"- Launch-surface broker flat: `{payload['launch_surface_broker_flat']}`",
         f"- Launch-surface no-new-order watch clean: `{payload['launch_surface_no_new_order_watch_clean']}`",
+        f"- Launch-surface newest order timestamp constant: `{payload['launch_surface_newest_order_constant']}`",
         f"- Trader process absent: `{payload['trader_process_absent']}`",
         f"- Ownership backend: `{payload['ownership_backend']}`",
         f"- Shared execution lease enforced: `{payload['shared_execution_lease_enforced']}`",

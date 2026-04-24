@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-24T12:31:27.585059-04:00",
+  "generated_at": "2026-04-24T12:39:04.579138-04:00",
   "project_id": "codexalpaca",
   "vm_name": "vm-execution-paper-01",
   "zone": "us-east1-b",
@@ -24,7 +24,7 @@
   "launch_surface_audit_blocks_launch": false,
   "launch_surface_broker_flat": true,
   "launch_surface_no_new_order_watch_clean": true,
-  "launch_surface_watch_duration_seconds": 182,
+  "launch_surface_watch_duration_seconds": 181,
   "runner_branch": "codex/qqq-paper-portfolio",
   "runner_commit": "f0080066c68d883286f4cb1b9c9e0edc601adf8d",
   "arm_window_command_template": "powershell -NoProfile -ExecutionPolicy Bypass -File \"<control-plane-root>\\cleanroom\\code\\qqq_options_30d_cleanroom\\arm_gcp_execution_exclusive_window.ps1\" -ControlPlaneRoot \"<control-plane-root>\" -VmName \"vm-execution-paper-01\" -ConfirmedBy \"<confirmed-by>\" -WindowStartsAt \"<window-starts-at>\" -WindowExpiresAt \"<window-expires-at>\" -ParallelPathState \"paused\" -MirrorToGcs",
