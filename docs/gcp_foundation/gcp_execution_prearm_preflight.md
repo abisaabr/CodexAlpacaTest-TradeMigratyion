@@ -2,9 +2,10 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T10:53:50.754537-04:00`
+- Generated at: `2026-04-24T10:58:14.432109-04:00`
 - Status: `ready_to_arm_window`
 - Next operator action: `arm_bounded_exclusive_window`
+- VM name: `vm-execution-paper-01`
 - Operator packet state: `ready_to_arm_window`
 - Runtime readiness status: `runtime_ready`
 - Runner provenance status: `provenance_matched`

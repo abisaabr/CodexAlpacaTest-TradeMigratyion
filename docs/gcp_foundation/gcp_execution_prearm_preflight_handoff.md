@@ -2,6 +2,7 @@
 
 - Status: `ready_to_arm_window`
 - Next operator action: `arm_bounded_exclusive_window`
+- VM name: `vm-execution-paper-01`
 - Operator packet state: `ready_to_arm_window`
 - Runtime readiness status: `runtime_ready`
 - Runner provenance status: `provenance_matched`

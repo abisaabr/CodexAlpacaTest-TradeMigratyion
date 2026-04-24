@@ -1,11 +1,12 @@
 {
-  "generated_at": "2026-04-24T10:53:50.754537-04:00",
+  "generated_at": "2026-04-24T10:58:14.432109-04:00",
   "status": "ready_to_arm_window",
   "next_operator_action": "arm_bounded_exclusive_window",
   "report_dir": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
+  "vm_name": "vm-execution-paper-01",
   "operator_packet_state": "ready_to_arm_window",
   "runtime_readiness_status": "runtime_ready",
   "runner_provenance_status": "provenance_matched",

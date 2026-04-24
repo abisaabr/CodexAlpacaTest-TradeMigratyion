@@ -22,6 +22,7 @@ def _ready_payload(tmp_path: Path) -> dict:
     return MODULE.build_payload(
         operator_packet={
             "operator_packet_state": "ready_to_arm_window",
+            "vm_name": "vm-execution-paper-01",
             "arm_window_command_template": "arm-command",
         },
         runtime_readiness={
@@ -45,6 +46,7 @@ def test_prearm_preflight_ready_when_all_non_broker_gates_align(tmp_path: Path) 
 
     assert payload["status"] == "ready_to_arm_window"
     assert payload["next_operator_action"] == "arm_bounded_exclusive_window"
+    assert payload["vm_name"] == "vm-execution-paper-01"
     assert payload["issues"] == []
     assert payload["broker_facing"] is False
     assert payload["live_manifest_effect"] == "none"

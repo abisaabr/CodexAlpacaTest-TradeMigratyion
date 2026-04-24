@@ -41,6 +41,7 @@ def build_payload(
     report_dir: Path,
 ) -> dict[str, Any]:
     operator_state = str(operator_packet.get("operator_packet_state") or "missing")
+    vm_name = str(operator_packet.get("vm_name") or "missing")
     runtime_status = str(runtime_readiness.get("status") or "missing")
     provenance_status = str(runner_provenance.get("status") or "missing")
     source_fingerprint_status = str(source_fingerprint.get("status") or "missing")
@@ -154,6 +155,7 @@ def build_payload(
         "broker_facing": False,
         "live_manifest_effect": "none",
         "risk_policy_effect": "none",
+        "vm_name": vm_name,
         "operator_packet_state": operator_state,
         "runtime_readiness_status": runtime_status,
         "runner_provenance_status": provenance_status,
@@ -199,6 +201,7 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         f"- Generated at: `{payload['generated_at']}`",
         f"- Status: `{payload['status']}`",
         f"- Next operator action: `{payload['next_operator_action']}`",
+        f"- VM name: `{payload['vm_name']}`",
         f"- Operator packet state: `{payload['operator_packet_state']}`",
         f"- Runtime readiness status: `{payload['runtime_readiness_status']}`",
         f"- Runner provenance status: `{payload['runner_provenance_status']}`",
@@ -240,6 +243,7 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         "",
         f"- Status: `{payload['status']}`",
         f"- Next operator action: `{payload['next_operator_action']}`",
+        f"- VM name: `{payload['vm_name']}`",
         f"- Operator packet state: `{payload['operator_packet_state']}`",
         f"- Runtime readiness status: `{payload['runtime_readiness_status']}`",
         f"- Runner provenance status: `{payload['runner_provenance_status']}`",
