@@ -2,15 +2,15 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T10:23:20.661203-04:00`
+- Generated at: `2026-04-24T10:33:00.372736-04:00`
 - Status: `provenance_matched`
 - VM name: `vm-execution-paper-01`
 - VM runner path: `/opt/codexalpaca/codexalpaca_repo`
 - Local runner branch: `codex/qqq-paper-portfolio`
-- Local runner commit: `f2b9bae7b2af26eefc086189a244e4d5a6c81a83`
+- Local runner commit: `8acef9ec83d6a89e043201e2aa67e2a3f92870ca`
 - VM path present: `True`
 - VM Git present: `False`
-- VM runner commit: `f2b9bae7b2af26eefc086189a244e4d5a6c81a83`
+- VM runner commit: `8acef9ec83d6a89e043201e2aa67e2a3f92870ca`
 - VM commit matches local: `True`
 - Source fingerprint status: `source_fingerprint_matched`
 - Source fingerprint safe to stamp: `True`

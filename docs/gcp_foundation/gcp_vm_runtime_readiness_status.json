@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-24T10:27:38.464213-04:00",
+  "generated_at": "2026-04-24T10:33:00.475381-04:00",
   "status": "runtime_ready",
   "vm_name": "vm-execution-paper-01",
   "vm_runner_path": "/opt/codexalpaca/codexalpaca_repo",
@@ -12,7 +12,7 @@
   "pytest_cache_writable": true,
   "doctor_status": "passed",
   "vm_pytest_status": "passed",
-  "vm_pytest_summary": "137 passed with explicit MULTI_TICKER_OWNERSHIP_ENABLED=true test override",
+  "vm_pytest_summary": "139 passed with explicit MULTI_TICKER_OWNERSHIP_ENABLED=true test override",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",

@@ -2,14 +2,14 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T10:27:38.464213-04:00`
+- Generated at: `2026-04-24T10:33:00.475381-04:00`
 - Status: `runtime_ready`
 - VM name: `vm-execution-paper-01`
 - VM runner path: `/opt/codexalpaca/codexalpaca_repo`
 - Source provenance status: `provenance_matched`
 - Doctor status: `passed`
 - VM pytest status: `passed`
-- VM pytest summary: `137 passed with explicit MULTI_TICKER_OWNERSHIP_ENABLED=true test override`
+- VM pytest summary: `139 passed with explicit MULTI_TICKER_OWNERSHIP_ENABLED=true test override`
 
 ## Path Checks
 
