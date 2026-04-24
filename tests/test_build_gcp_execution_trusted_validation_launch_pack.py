@@ -75,3 +75,6 @@ def test_build_payload_ready_to_launch_when_window_and_session_are_green() -> No
     assert payload["launch_pack_state"] == "ready_to_launch"
     assert payload["latest_lease_runtime_validation_status"] == "validated_not_enforced"
     assert not payload["operator_steps"][0].startswith("Do not start the session yet;")
+    assert payload["operator_steps"][0] == (
+        "Confirm the exclusive-window packet says `ready_for_launch` and this launch pack says `ready_to_launch`."
+    )

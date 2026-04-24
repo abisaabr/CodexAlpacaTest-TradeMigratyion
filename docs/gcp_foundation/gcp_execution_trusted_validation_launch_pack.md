@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T17:23:48.641633-04:00`
+- Generated at: `2026-04-23T21:09:43.943632-04:00`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
 - Launch pack state: `awaiting_window_arm`
@@ -35,7 +35,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 ## Operator Steps
 
 - Do not start the session yet; this pack is in preparation mode until the exclusive execution window is actively confirmed.
-- Confirm the exclusive-window packet says `ready_for_launch` and the trusted-validation readiness packet says `ready_for_manual_launch`.
+- Confirm the exclusive-window packet says `ready_for_launch` and this launch pack says `ready_to_launch`.
 - SSH to `vm-execution-paper-01` through IAP.
 - Run the trusted validation session command on the VM without changing strategy selection or risk policy.
 - When the session ends, run governed post-session assimilation from the control-plane machine.

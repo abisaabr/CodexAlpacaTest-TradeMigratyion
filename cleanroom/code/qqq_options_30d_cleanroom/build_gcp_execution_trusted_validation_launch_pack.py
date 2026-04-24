@@ -67,7 +67,7 @@ def build_payload(
     )
 
     operator_steps = [
-        "Confirm the exclusive-window packet says `ready_for_launch` and the trusted-validation readiness packet says `ready_for_manual_launch`.",
+        "Confirm the exclusive-window packet says `ready_for_launch` and this launch pack says `ready_to_launch`.",
         "SSH to `vm-execution-paper-01` through IAP.",
         "Run the trusted validation session command on the VM without changing strategy selection or risk policy.",
         "When the session ends, run governed post-session assimilation from the control-plane machine.",
