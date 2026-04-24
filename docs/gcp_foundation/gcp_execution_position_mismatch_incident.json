@@ -1,0 +1,42 @@
+{
+  "packet": "gcp_execution_position_mismatch_incident",
+  "as_of": "2026-04-24T11:21:56-04:00",
+  "status": "mitigated_flat",
+  "incident_date": "2026-04-24",
+  "summary": "Paper-runner mismatch alerts were traced to a stale local desktop runner from the April 22 staged release plus residual broker option positions.",
+  "execution_safety_findings": [
+    "The sanctioned VM execution path was not observed running the paper session from this machine.",
+    "A stale local Windows desktop runner process was active from the April 22 staged release and was stopped.",
+    "Legacy local Windows scheduled tasks pointing at the April 22 staged release were disabled to prevent relaunch.",
+    "Residual paper broker option positions were flattened under explicit incident remediation authority.",
+    "A read-only broker check after remediation reported zero positions and zero open orders."
+  ],
+  "root_cause": [
+    "Unexpected-position cleanup processed broker positions in API order.",
+    "For option spreads, that can close protective long legs before margin-reducing short covers.",
+    "Alpaca rejected the unsafe sequence in at least one cleanup path with an options buying-power error."
+  ],
+  "code_fix": {
+    "repo": "https://github.com/abisaabr/CodexAlpacaTest-Trade.git",
+    "branch": "codex/qqq-paper-portfolio",
+    "commit": "f008006",
+    "change": "Residual option cleanup now prioritizes short-leg buy-to-close orders before protective long-leg sell-to-close orders for both known-trade cleanup and unexpected broker-position cleanup."
+  },
+  "validation": {
+    "targeted_tests": "60 passed: python -m pytest -q tests/test_multi_ticker_portfolio.py",
+    "full_runner_tests": "140 passed: python -m pytest -q",
+    "broker_flat_check": "position_count=0, open_order_count=0",
+    "vm_process_check": "not_verified_from_local_machine_due_to_gcloud_ssh_timeout"
+  },
+  "hard_rules_preserved": [
+    "No live-trading path was enabled.",
+    "No strategy selection or risk policy was changed.",
+    "No live manifest was modified.",
+    "No raw session exhaust or raw trade log was committed."
+  ],
+  "remaining_actions": [
+    "Pull runner commit f008006 onto the sanctioned VM before the next broker-facing session.",
+    "Re-run the VM process/source-stamp check once SSH connectivity is available.",
+    "Keep legacy local scheduled tasks disabled; do not use the April 22 staged release as an execution path."
+  ]
+}
