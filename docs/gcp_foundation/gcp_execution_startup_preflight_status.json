@@ -1,28 +1,56 @@
 {
-  "generated_at": "2026-04-27T11:27:17.208780-04:00",
-  "status": "startup_preflight_passed",
-  "blocks_launch": false,
-  "raw_status": "startup_preflight_passed",
-  "startup_check_status": "passed",
-  "would_allow_trading": true,
+  "generated_at": "2026-04-27T11:33:27.462143-04:00",
+  "generated_at_utc": "2026-04-27T15:33:27.460015+00:00",
+  "status": "startup_preflight_blocked",
+  "blocks_launch": true,
+  "freshness_status": "fresh",
+  "preflight_observed_at_utc": "2026-04-27T15:32:33+00:00",
+  "preflight_age_seconds": 54,
+  "max_age_seconds": 600,
+  "raw_status": "startup_preflight_failed",
+  "startup_check_status": "failed",
+  "would_allow_trading": false,
   "broker_cleanup_allowed": false,
   "submit_paper_orders": false,
   "broker_position_count": 0,
   "open_order_count": 0,
   "underlying_count": 21,
-  "failures": [],
+  "failures": [
+    "SHOP stock data stale at 473s"
+  ],
   "pending_reasons": [],
   "runner_commit": "a3b5e926d9bfec0ec83603770a778e7974e38398",
   "runner_branch": "codex/qqq-paper-portfolio",
   "source_bundle_sha256": "773b5cb33e02c88f2675bfa73400c6b156c71b8f48d634d61ad6987722f37474",
   "source_bundle_file_count": 181,
-  "preflight_json_path": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation\\runtime_evidence\\startup_preflight\\20260427T152621Z\\startup_preflight.json",
-  "stderr_path": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation\\runtime_evidence\\startup_preflight\\20260427T152621Z\\startup_preflight.stderr",
-  "gcs_evidence_uri": "gs://codexalpaca-control-us/gcp_foundation/startup_preflight_evidence/20260427T152621Z/startup_preflight.json",
+  "preflight_json_path": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation\\runtime_evidence\\startup_preflight\\20260427T153233Z\\startup_preflight.json",
+  "stderr_path": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation\\runtime_evidence\\startup_preflight\\20260427T153233Z\\startup_preflight.stderr",
+  "gcs_evidence_uri": "gs://codexalpaca-control-us/gcp_foundation/startup_preflight_evidence/20260427T153233Z/startup_preflight.json",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
-  "issues": [],
+  "issues": [
+    {
+      "severity": "error",
+      "code": "startup_preflight_not_passed",
+      "message": "The VM startup preflight reported `startup_preflight_failed`."
+    },
+    {
+      "severity": "error",
+      "code": "startup_check_not_passed",
+      "message": "The runner startup check reported `failed`."
+    },
+    {
+      "severity": "error",
+      "code": "startup_preflight_would_not_allow_trading",
+      "message": "The startup preflight says the runner would not allow trading."
+    },
+    {
+      "severity": "error",
+      "code": "startup_preflight_failure",
+      "message": "SHOP stock data stale at 473s"
+    }
+  ],
   "operator_read": [
     "This packet distills read-only VM startup-preflight evidence; raw broker output should remain in ignored runtime evidence or GCS.",
     "If status is not `startup_preflight_passed`, do not arm the exclusive window or launch a VM session.",

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 
@@ -19,6 +20,11 @@ SPEC = importlib.util.spec_from_file_location(
 assert SPEC is not None and SPEC.loader is not None
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+
+
+def _evidence_path_for(observed_at: datetime) -> str:
+    stamp = observed_at.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    return f"C:/tmp/startup_preflight/{stamp}/startup_preflight.json"
 
 
 def test_startup_preflight_status_passes_only_when_read_only_and_clean() -> None:
@@ -43,10 +49,12 @@ def test_startup_preflight_status_passes_only_when_read_only_and_clean() -> None
             "source_bundle_sha256": "sha",
             "source_bundle_file_count": 164,
         },
+        preflight_json_path=_evidence_path_for(datetime.now(timezone.utc)),
     )
 
     assert payload["status"] == "startup_preflight_passed"
     assert payload["blocks_launch"] is False
+    assert payload["freshness_status"] == "fresh"
     assert payload["broker_facing"] is False
     assert payload["broker_cleanup_allowed"] is False
     assert payload["submit_paper_orders"] is False
@@ -70,6 +78,7 @@ def test_startup_preflight_status_blocks_when_broker_cleanup_would_be_allowed() 
                 "pending_reasons": [],
             },
         },
+        preflight_json_path=_evidence_path_for(datetime.now(timezone.utc)),
     )
 
     assert payload["status"] == "startup_preflight_blocked"
@@ -92,12 +101,38 @@ def test_startup_preflight_status_blocks_on_stale_data_failure() -> None:
                 "pending_reasons": [],
             },
         },
+        preflight_json_path=_evidence_path_for(datetime.now(timezone.utc)),
     )
 
     assert payload["status"] == "startup_preflight_blocked"
     assert payload["blocks_launch"] is True
     assert "IWM stock data stale at 189s" in payload["failures"]
     assert any(issue["code"] == "startup_preflight_failure" for issue in payload["issues"])
+
+
+def test_startup_preflight_status_blocks_when_evidence_is_stale() -> None:
+    payload = MODULE.build_payload(
+        preflight={
+            "status": "startup_preflight_passed",
+            "startup_check_status": "passed",
+            "would_allow_trading": True,
+            "broker_cleanup_allowed": False,
+            "submit_paper_orders": False,
+            "details": {
+                "broker_position_count": 0,
+                "open_order_count": 0,
+                "failures": [],
+                "pending_reasons": [],
+            },
+        },
+        preflight_json_path=_evidence_path_for(datetime.now(timezone.utc) - timedelta(seconds=601)),
+        max_age_seconds=600,
+    )
+
+    assert payload["status"] == "startup_preflight_blocked"
+    assert payload["blocks_launch"] is True
+    assert payload["freshness_status"] == "stale"
+    assert any(issue["code"] == "startup_preflight_stale" for issue in payload["issues"])
 
 
 def test_startup_preflight_status_blocks_when_missing() -> None:

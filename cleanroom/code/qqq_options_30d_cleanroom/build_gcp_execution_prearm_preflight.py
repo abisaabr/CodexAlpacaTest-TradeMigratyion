@@ -46,9 +46,11 @@ def build_payload(
     exclusive_window: dict[str, Any],
     launch_pack: dict[str, Any],
     launch_surface_audit: dict[str, Any] | None = None,
+    startup_preflight: dict[str, Any] | None = None,
     report_dir: Path,
 ) -> dict[str, Any]:
     launch_surface_audit = launch_surface_audit or {}
+    startup_preflight = startup_preflight or {}
     operator_state = str(operator_packet.get("operator_packet_state") or "missing")
     vm_name = str(operator_packet.get("vm_name") or "missing")
     runtime_status = str(runtime_readiness.get("status") or "missing")
@@ -57,6 +59,16 @@ def build_payload(
     exclusive_window_status = str(exclusive_window.get("exclusive_window_status") or "missing")
     launch_pack_state = str(launch_pack.get("launch_pack_state") or "missing")
     launch_surface_audit_status = str(launch_surface_audit.get("status") or "missing")
+    startup_preflight_status = str(startup_preflight.get("status") or "missing")
+    startup_preflight_freshness_status = str(
+        startup_preflight.get("freshness_status") or "missing"
+    )
+    startup_preflight_age_seconds = _int_or_none(startup_preflight.get("preflight_age_seconds"))
+    startup_preflight_max_age_seconds = _int_or_none(startup_preflight.get("max_age_seconds"))
+    startup_preflight_blocks_launch = (
+        startup_preflight_status != "startup_preflight_passed"
+        or startup_preflight.get("blocks_launch") is True
+    )
 
     trader_process_absent = runtime_readiness.get("trader_process_absent")
     ownership_enabled = runtime_readiness.get("ownership_enabled")
@@ -114,6 +126,14 @@ def build_payload(
                 "error",
                 "launch_pack_not_awaiting_window_arm",
                 "The launch pack must remain in preparation mode until the exclusive window is armed.",
+            )
+        )
+    if startup_preflight_blocks_launch:
+        issues.append(
+            _issue(
+                "error",
+                "startup_preflight_not_clean",
+                "The read-only VM startup preflight must be fresh and passed before arming.",
             )
         )
     if runtime_status != "runtime_ready":
@@ -223,6 +243,11 @@ def build_payload(
         "source_fingerprint_status": source_fingerprint_status,
         "exclusive_window_status": exclusive_window_status,
         "launch_pack_state": launch_pack_state,
+        "startup_preflight_status": startup_preflight_status,
+        "startup_preflight_freshness_status": startup_preflight_freshness_status,
+        "startup_preflight_age_seconds": startup_preflight_age_seconds,
+        "startup_preflight_max_age_seconds": startup_preflight_max_age_seconds,
+        "startup_preflight_blocks_launch": startup_preflight_blocks_launch,
         "launch_surface_audit_status": launch_surface_audit_status,
         "launch_surface_broker_flat": launch_surface_broker_flat,
         "launch_surface_no_new_order_watch_clean": launch_surface_watch_clean,
@@ -243,6 +268,7 @@ def build_payload(
             "docs/gcp_foundation/gcp_execution_exclusive_window_handoff.md",
             "docs/gcp_foundation/gcp_execution_trusted_validation_launch_handoff.md",
             "docs/gcp_foundation/gcp_execution_launch_surface_audit_handoff.md",
+            "docs/gcp_foundation/gcp_execution_startup_preflight_handoff.md",
         ],
         "issues": issues,
         "operator_read": [
@@ -276,6 +302,11 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         f"- Source fingerprint status: `{payload['source_fingerprint_status']}`",
         f"- Exclusive window status: `{payload['exclusive_window_status']}`",
         f"- Launch pack state: `{payload['launch_pack_state']}`",
+        f"- Startup preflight status: `{payload['startup_preflight_status']}`",
+        f"- Startup preflight freshness status: `{payload['startup_preflight_freshness_status']}`",
+        f"- Startup preflight age seconds: `{payload['startup_preflight_age_seconds']}`",
+        f"- Startup preflight max age seconds: `{payload['startup_preflight_max_age_seconds']}`",
+        f"- Startup preflight blocks launch: `{payload['startup_preflight_blocks_launch']}`",
         f"- Launch-surface audit status: `{payload['launch_surface_audit_status']}`",
         f"- Launch-surface broker flat: `{payload['launch_surface_broker_flat']}`",
         f"- Launch-surface no-new-order watch clean: `{payload['launch_surface_no_new_order_watch_clean']}`",
@@ -321,6 +352,11 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         f"- Runtime readiness status: `{payload['runtime_readiness_status']}`",
         f"- Runner provenance status: `{payload['runner_provenance_status']}`",
         f"- Source fingerprint status: `{payload['source_fingerprint_status']}`",
+        f"- Startup preflight status: `{payload['startup_preflight_status']}`",
+        f"- Startup preflight freshness status: `{payload['startup_preflight_freshness_status']}`",
+        f"- Startup preflight age seconds: `{payload['startup_preflight_age_seconds']}`",
+        f"- Startup preflight max age seconds: `{payload['startup_preflight_max_age_seconds']}`",
+        f"- Startup preflight blocks launch: `{payload['startup_preflight_blocks_launch']}`",
         f"- Launch-surface audit status: `{payload['launch_surface_audit_status']}`",
         f"- Launch-surface broker flat: `{payload['launch_surface_broker_flat']}`",
         f"- Launch-surface no-new-order watch clean: `{payload['launch_surface_no_new_order_watch_clean']}`",
@@ -353,6 +389,7 @@ def main() -> None:
         exclusive_window=read_json(report_dir / "gcp_execution_exclusive_window_status.json"),
         launch_pack=read_json(report_dir / "gcp_execution_trusted_validation_launch_pack.json"),
         launch_surface_audit=read_json(report_dir / "gcp_execution_launch_surface_audit.json"),
+        startup_preflight=read_json(report_dir / "gcp_execution_startup_preflight_status.json"),
         report_dir=report_dir,
     )
     write_json(report_dir / "gcp_execution_prearm_preflight.json", payload)

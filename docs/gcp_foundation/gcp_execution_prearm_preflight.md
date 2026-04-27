@@ -2,16 +2,21 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-27T11:27:43.690854-04:00`
-- Status: `ready_to_arm_window`
-- Next operator action: `arm_bounded_exclusive_window`
+- Generated at: `2026-04-27T11:35:04.943637-04:00`
+- Status: `blocked`
+- Next operator action: `resolve_prearm_blockers`
 - VM name: `vm-execution-paper-01`
-- Operator packet state: `ready_to_arm_window`
+- Operator packet state: `blocked`
 - Runtime readiness status: `runtime_ready`
 - Runner provenance status: `provenance_matched`
 - Source fingerprint status: `source_fingerprint_matched`
 - Exclusive window status: `awaiting_operator_confirmation`
 - Launch pack state: `awaiting_window_arm`
+- Startup preflight status: `startup_preflight_blocked`
+- Startup preflight freshness status: `fresh`
+- Startup preflight age seconds: `54`
+- Startup preflight max age seconds: `600`
+- Startup preflight blocks launch: `True`
 - Launch-surface audit status: `local_broker_capable_surfaces_fenced_broker_flat`
 - Launch-surface broker flat: `True`
 - Launch-surface no-new-order watch clean: `True`
@@ -31,7 +36,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 
 ## Issues
 
-- none
+- `error` `operator_packet_not_ready_to_arm`: The top-level operator packet must be `ready_to_arm_window` before arming.
+- `error` `startup_preflight_not_clean`: The read-only VM startup preflight must be fresh and passed before arming.
 
 ## Operator Read
 
@@ -51,3 +57,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 - `docs/gcp_foundation/gcp_execution_exclusive_window_handoff.md`
 - `docs/gcp_foundation/gcp_execution_trusted_validation_launch_handoff.md`
 - `docs/gcp_foundation/gcp_execution_launch_surface_audit_handoff.md`
+- `docs/gcp_foundation/gcp_execution_startup_preflight_handoff.md`

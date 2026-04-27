@@ -1,18 +1,23 @@
 {
-  "generated_at": "2026-04-27T11:27:43.690854-04:00",
-  "status": "ready_to_arm_window",
-  "next_operator_action": "arm_bounded_exclusive_window",
+  "generated_at": "2026-04-27T11:35:04.943637-04:00",
+  "status": "blocked",
+  "next_operator_action": "resolve_prearm_blockers",
   "report_dir": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
   "vm_name": "vm-execution-paper-01",
-  "operator_packet_state": "ready_to_arm_window",
+  "operator_packet_state": "blocked",
   "runtime_readiness_status": "runtime_ready",
   "runner_provenance_status": "provenance_matched",
   "source_fingerprint_status": "source_fingerprint_matched",
   "exclusive_window_status": "awaiting_operator_confirmation",
   "launch_pack_state": "awaiting_window_arm",
+  "startup_preflight_status": "startup_preflight_blocked",
+  "startup_preflight_freshness_status": "fresh",
+  "startup_preflight_age_seconds": 54,
+  "startup_preflight_max_age_seconds": 600,
+  "startup_preflight_blocks_launch": true,
   "launch_surface_audit_status": "local_broker_capable_surfaces_fenced_broker_flat",
   "launch_surface_broker_flat": true,
   "launch_surface_no_new_order_watch_clean": true,
@@ -32,9 +37,21 @@
     "docs/gcp_foundation/gcp_vm_runner_source_fingerprint_handoff.md",
     "docs/gcp_foundation/gcp_execution_exclusive_window_handoff.md",
     "docs/gcp_foundation/gcp_execution_trusted_validation_launch_handoff.md",
-    "docs/gcp_foundation/gcp_execution_launch_surface_audit_handoff.md"
+    "docs/gcp_foundation/gcp_execution_launch_surface_audit_handoff.md",
+    "docs/gcp_foundation/gcp_execution_startup_preflight_handoff.md"
   ],
-  "issues": [],
+  "issues": [
+    {
+      "severity": "error",
+      "code": "operator_packet_not_ready_to_arm",
+      "message": "The top-level operator packet must be `ready_to_arm_window` before arming."
+    },
+    {
+      "severity": "error",
+      "code": "startup_preflight_not_clean",
+      "message": "The read-only VM startup preflight must be fresh and passed before arming."
+    }
+  ],
   "operator_read": [
     "This packet is non-broker-facing; it does not arm the window or start a session.",
     "Use it immediately before arming the bounded exclusive window.",

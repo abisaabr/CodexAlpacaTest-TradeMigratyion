@@ -127,6 +127,11 @@ def build_payload(
     startup_preflight_startup_check_status = str(
         startup_preflight.get("startup_check_status") or "missing"
     )
+    startup_preflight_freshness_status = str(
+        startup_preflight.get("freshness_status") or "missing"
+    )
+    startup_preflight_age_seconds = _int_or_none(startup_preflight.get("preflight_age_seconds"))
+    startup_preflight_max_age_seconds = _int_or_none(startup_preflight.get("max_age_seconds"))
     startup_preflight_broker_position_count = _int_or_none(
         startup_preflight.get("broker_position_count")
     )
@@ -217,6 +222,9 @@ def build_payload(
         f"Launch-surface no-new-order watch clean: `{launch_surface_watch_clean}`",
         f"Startup preflight status: `{startup_preflight_status}`",
         f"Startup preflight startup-check status: `{startup_preflight_startup_check_status}`",
+        f"Startup preflight freshness status: `{startup_preflight_freshness_status}`",
+        f"Startup preflight age seconds: `{startup_preflight_age_seconds}`",
+        f"Startup preflight max age seconds: `{startup_preflight_max_age_seconds}`",
         f"Startup preflight blocks launch: `{startup_preflight_blocks_launch}`",
         f"Startup preflight broker position count: `{startup_preflight_broker_position_count}`",
         f"Startup preflight open order count: `{startup_preflight_open_order_count}`",
@@ -285,6 +293,9 @@ def build_payload(
         "launch_surface_watch_duration_seconds": launch_surface_watch_duration_seconds,
         "startup_preflight_status": startup_preflight_status,
         "startup_preflight_startup_check_status": startup_preflight_startup_check_status,
+        "startup_preflight_freshness_status": startup_preflight_freshness_status,
+        "startup_preflight_age_seconds": startup_preflight_age_seconds,
+        "startup_preflight_max_age_seconds": startup_preflight_max_age_seconds,
         "startup_preflight_blocks_launch": startup_preflight_blocks_launch,
         "startup_preflight_broker_position_count": startup_preflight_broker_position_count,
         "startup_preflight_open_order_count": startup_preflight_open_order_count,
@@ -417,6 +428,9 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         f"- Launch-surface no-new-order watch clean: `{payload.get('launch_surface_no_new_order_watch_clean')}`",
         f"- Startup preflight status: `{payload.get('startup_preflight_status')}`",
         f"- Startup preflight startup-check status: `{payload.get('startup_preflight_startup_check_status')}`",
+        f"- Startup preflight freshness status: `{payload.get('startup_preflight_freshness_status')}`",
+        f"- Startup preflight age seconds: `{payload.get('startup_preflight_age_seconds')}`",
+        f"- Startup preflight max age seconds: `{payload.get('startup_preflight_max_age_seconds')}`",
         f"- Startup preflight blocks launch: `{payload.get('startup_preflight_blocks_launch')}`",
         f"- Startup preflight broker position count: `{payload.get('startup_preflight_broker_position_count')}`",
         f"- Startup preflight open order count: `{payload.get('startup_preflight_open_order_count')}`",

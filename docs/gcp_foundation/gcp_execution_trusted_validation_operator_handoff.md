@@ -1,6 +1,6 @@
 # GCP Execution Trusted Validation Operator Handoff
 
-- Operator packet state: `ready_to_arm_window`
+- Operator packet state: `blocked`
 - Exclusive window status: `awaiting_operator_confirmation`
 - Launch pack state: `awaiting_window_arm`
 - Closeout status: `window_already_closed`
@@ -18,9 +18,12 @@
 - Launch-surface audit blocks launch: `False`
 - Launch-surface broker flat: `True`
 - Launch-surface no-new-order watch clean: `True`
-- Startup preflight status: `startup_preflight_passed`
-- Startup preflight startup-check status: `passed`
-- Startup preflight blocks launch: `False`
+- Startup preflight status: `startup_preflight_blocked`
+- Startup preflight startup-check status: `failed`
+- Startup preflight freshness status: `fresh`
+- Startup preflight age seconds: `54`
+- Startup preflight max age seconds: `600`
+- Startup preflight blocks launch: `True`
 - Startup preflight broker position count: `0`
 - Startup preflight open order count: `0`
 

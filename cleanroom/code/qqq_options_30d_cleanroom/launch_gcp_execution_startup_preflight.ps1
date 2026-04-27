@@ -8,6 +8,7 @@ param(
     [string]$PortfolioConfig = "config/multi_ticker_paper_portfolio.yaml",
     [switch]$MirrorToGcs,
     [string]$GcsPrefix = "gs://codexalpaca-control-us/gcp_foundation",
+    [int]$MaxAgeSeconds = 600,
     [switch]$FailOnBlock
 )
 
@@ -145,7 +146,8 @@ Invoke-PythonScript -PythonCommand $PythonCommand -ScriptPath $BuilderPath -Argu
     "--stderr-path", $LocalStderr,
     "--source-stamp-json", $LocalSourceStamp,
     "--report-dir", $ReportDir,
-    "--gcs-evidence-uri", $GcsEvidenceUri
+    "--gcs-evidence-uri", $GcsEvidenceUri,
+    "--max-age-seconds", ([string]$MaxAgeSeconds)
 )
 
 if ($MirrorToGcs) {

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +21,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--source-stamp-json", default="")
     parser.add_argument("--report-dir", default=str(DEFAULT_REPORT_DIR))
     parser.add_argument("--gcs-evidence-uri", default="")
+    parser.add_argument("--max-age-seconds", type=int, default=600)
     return parser
 
 
@@ -47,6 +48,33 @@ def _list_strings(value: Any) -> list[str]:
     return [str(item) for item in value]
 
 
+def _parse_observed_at_from_path(path_text: str) -> datetime | None:
+    if not path_text:
+        return None
+    path = Path(path_text)
+    candidates = [path.parent.name, path.stem]
+    for candidate in candidates:
+        parts = candidate.split("_")
+        for part in parts:
+            try:
+                if len(part) == 16 and part.endswith("Z") and "T" in part:
+                    return datetime.strptime(part, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
+            except ValueError:
+                continue
+    return None
+
+
+def _observed_at_utc(preflight_json_path: str) -> datetime | None:
+    parsed = _parse_observed_at_from_path(preflight_json_path)
+    if parsed is not None:
+        return parsed
+    if preflight_json_path:
+        path = Path(preflight_json_path)
+        if path.exists():
+            return datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
+    return None
+
+
 def build_payload(
     *,
     preflight: dict[str, Any],
@@ -54,7 +82,9 @@ def build_payload(
     preflight_json_path: str = "",
     stderr_path: str = "",
     gcs_evidence_uri: str = "",
+    max_age_seconds: int = 600,
 ) -> dict[str, Any]:
+    now = datetime.now(timezone.utc)
     source_stamp = source_stamp or {}
     details = preflight.get("details") or {}
     if not isinstance(details, dict):
@@ -72,6 +102,14 @@ def build_payload(
     open_order_count = _int_or_none(details.get("open_order_count"))
     failures = _list_strings(details.get("failures"))
     pending_reasons = _list_strings(details.get("pending_reasons"))
+    observed_at = _observed_at_utc(preflight_json_path)
+    age_seconds = None
+    if observed_at is not None:
+        age_seconds = max(0, int((now - observed_at).total_seconds()))
+    max_age_seconds = max(1, int(max_age_seconds))
+    freshness_status = "missing_observed_at"
+    if age_seconds is not None:
+        freshness_status = "fresh" if age_seconds <= max_age_seconds else "stale"
 
     issues: list[dict[str, str]] = []
     if not preflight:
@@ -122,6 +160,22 @@ def build_payload(
                 "Startup preflight must run with paper-order submission disabled.",
             )
         )
+    if observed_at is None:
+        issues.append(
+            _issue(
+                "error",
+                "startup_preflight_observed_at_missing",
+                "Startup preflight evidence must carry an observable timestamp.",
+            )
+        )
+    elif age_seconds is not None and age_seconds > max_age_seconds:
+        issues.append(
+            _issue(
+                "error",
+                "startup_preflight_stale",
+                f"Startup preflight evidence is {age_seconds}s old; maximum allowed age is {max_age_seconds}s.",
+            )
+        )
     if broker_position_count is None:
         issues.append(
             _issue(
@@ -167,8 +221,13 @@ def build_payload(
 
     return {
         "generated_at": datetime.now().astimezone().isoformat(),
+        "generated_at_utc": now.isoformat(),
         "status": status,
         "blocks_launch": status != "startup_preflight_passed",
+        "freshness_status": freshness_status,
+        "preflight_observed_at_utc": observed_at.isoformat() if observed_at else None,
+        "preflight_age_seconds": age_seconds,
+        "max_age_seconds": max_age_seconds,
         "raw_status": raw_status,
         "startup_check_status": startup_check_status,
         "would_allow_trading": would_allow_trading,
@@ -213,6 +272,10 @@ def write_markdown(path: Path, payload: dict[str, Any]) -> None:
         f"- Generated at: `{payload['generated_at']}`",
         f"- Status: `{payload['status']}`",
         f"- Blocks launch: `{payload['blocks_launch']}`",
+        f"- Freshness status: `{payload['freshness_status']}`",
+        f"- Preflight observed at UTC: `{payload['preflight_observed_at_utc']}`",
+        f"- Preflight age seconds: `{payload['preflight_age_seconds']}`",
+        f"- Max age seconds: `{payload['max_age_seconds']}`",
         f"- Raw status: `{payload['raw_status']}`",
         f"- Startup check status: `{payload['startup_check_status']}`",
         f"- Would allow trading: `{payload['would_allow_trading']}`",
@@ -246,6 +309,10 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         "",
         f"- Status: `{payload['status']}`",
         f"- Blocks launch: `{payload['blocks_launch']}`",
+        f"- Freshness status: `{payload['freshness_status']}`",
+        f"- Preflight observed at UTC: `{payload['preflight_observed_at_utc']}`",
+        f"- Preflight age seconds: `{payload['preflight_age_seconds']}`",
+        f"- Max age seconds: `{payload['max_age_seconds']}`",
         f"- Raw status: `{payload['raw_status']}`",
         f"- Startup check status: `{payload['startup_check_status']}`",
         f"- Would allow trading: `{payload['would_allow_trading']}`",
@@ -282,6 +349,7 @@ def main() -> None:
         preflight_json_path=str(preflight_path) if args.preflight_json else "",
         stderr_path=str(Path(args.stderr_path).resolve()) if args.stderr_path else "",
         gcs_evidence_uri=args.gcs_evidence_uri,
+        max_age_seconds=args.max_age_seconds,
     )
     write_json(report_dir / "gcp_execution_startup_preflight_status.json", payload)
     write_markdown(report_dir / "gcp_execution_startup_preflight_status.md", payload)

@@ -2,8 +2,8 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-27T11:27:43.571464-04:00`
-- Operator packet state: `ready_to_arm_window`
+- Generated at: `2026-04-27T11:35:04.823638-04:00`
+- Operator packet state: `blocked`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
 - Runner branch: `HEAD`
@@ -26,9 +26,12 @@
 - Launch-surface audit status: `local_broker_capable_surfaces_fenced_broker_flat`
 - Launch-surface broker flat: `True`
 - Launch-surface no-new-order watch clean: `True`
-- Startup preflight status: `startup_preflight_passed`
-- Startup preflight startup-check status: `passed`
-- Startup preflight blocks launch: `False`
+- Startup preflight status: `startup_preflight_blocked`
+- Startup preflight startup-check status: `failed`
+- Startup preflight freshness status: `fresh`
+- Startup preflight age seconds: `54`
+- Startup preflight max age seconds: `600`
+- Startup preflight blocks launch: `True`
 - Startup preflight broker position count: `0`
 - Startup preflight open order count: `0`
 
