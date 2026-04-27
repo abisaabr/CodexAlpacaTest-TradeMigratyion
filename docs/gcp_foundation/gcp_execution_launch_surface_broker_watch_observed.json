@@ -1,55 +1,79 @@
 {
-  "watch_start_utc": "2026-04-24T16:36:02.334159+00:00",
-  "watch_end_utc": "2026-04-24T16:39:04.227804+00:00",
-  "duration_seconds": 181,
-  "samples": 7,
+  "watch_start_utc": "2026-04-27T14:25:54.274813+00:00",
+  "watch_end_utc": "2026-04-27T14:30:55.809842+00:00",
+  "duration_seconds": 301,
+  "samples": 11,
   "sample_interval_seconds": 30,
   "position_count_all_samples": 0,
   "open_order_count_all_samples": 0,
-  "newest_order_created_at_all_samples": "2026-04-24T15:32:04.805373581Z",
+  "newest_order_created_at_all_samples": "2026-04-27T14:16:29.938830839Z",
   "newest_order_constant": true,
   "sample_rows": [
     {
       "sample": 0,
       "position_count": 0,
       "open_order_count": 0,
-      "newest_order_created_at": "2026-04-24T15:32:04.805373581Z"
+      "newest_order_created_at": "2026-04-27T14:16:29.938830839Z"
     },
     {
       "sample": 1,
       "position_count": 0,
       "open_order_count": 0,
-      "newest_order_created_at": "2026-04-24T15:32:04.805373581Z"
+      "newest_order_created_at": "2026-04-27T14:16:29.938830839Z"
     },
     {
       "sample": 2,
       "position_count": 0,
       "open_order_count": 0,
-      "newest_order_created_at": "2026-04-24T15:32:04.805373581Z"
+      "newest_order_created_at": "2026-04-27T14:16:29.938830839Z"
     },
     {
       "sample": 3,
       "position_count": 0,
       "open_order_count": 0,
-      "newest_order_created_at": "2026-04-24T15:32:04.805373581Z"
+      "newest_order_created_at": "2026-04-27T14:16:29.938830839Z"
     },
     {
       "sample": 4,
       "position_count": 0,
       "open_order_count": 0,
-      "newest_order_created_at": "2026-04-24T15:32:04.805373581Z"
+      "newest_order_created_at": "2026-04-27T14:16:29.938830839Z"
     },
     {
       "sample": 5,
       "position_count": 0,
       "open_order_count": 0,
-      "newest_order_created_at": "2026-04-24T15:32:04.805373581Z"
+      "newest_order_created_at": "2026-04-27T14:16:29.938830839Z"
     },
     {
       "sample": 6,
       "position_count": 0,
       "open_order_count": 0,
-      "newest_order_created_at": "2026-04-24T15:32:04.805373581Z"
+      "newest_order_created_at": "2026-04-27T14:16:29.938830839Z"
+    },
+    {
+      "sample": 7,
+      "position_count": 0,
+      "open_order_count": 0,
+      "newest_order_created_at": "2026-04-27T14:16:29.938830839Z"
+    },
+    {
+      "sample": 8,
+      "position_count": 0,
+      "open_order_count": 0,
+      "newest_order_created_at": "2026-04-27T14:16:29.938830839Z"
+    },
+    {
+      "sample": 9,
+      "position_count": 0,
+      "open_order_count": 0,
+      "newest_order_created_at": "2026-04-27T14:16:29.938830839Z"
+    },
+    {
+      "sample": 10,
+      "position_count": 0,
+      "open_order_count": 0,
+      "newest_order_created_at": "2026-04-27T14:16:29.938830839Z"
     }
   ]
 }

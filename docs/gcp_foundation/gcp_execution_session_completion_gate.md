@@ -2,17 +2,17 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T11:11:47.407709-04:00`
-- Completion status: `awaiting_launch_authorization`
-- Next operator action: `do_not_review_unlaunched_session`
-- Launch authorization status: `blocked`
-- Evidence refreshed after launch: `False`
-- Launch authorized: `False`
+- Generated at: `2026-04-27T10:54:26.661261-04:00`
+- Completion status: `evidence_gapped`
+- Next operator action: `repair_execution_evidence_bundle`
+- Launch authorization status: `ready_to_launch_session`
+- Evidence refreshed after launch: `True`
+- Launch authorized: `True`
 - Post-session assimilation status: `ready_for_post_session_assimilation`
 - Closeout status: `window_already_closed`
 - Exclusive window status: `awaiting_operator_confirmation`
 - Execution evidence contract status: `gapped`
-- Latest traded session date: `2026-04-16`
+- Latest traded session date: `2026-04-23`
 
 ## Required Next Session Artifacts
 
@@ -35,9 +35,6 @@
 - `error` `broker_activity_audit`: Broker account-activity audit coverage must be present in the session bundle.
 - `error` `broker_local_cashflow_comparable`: Broker/local economics comparison must be available when broker activity audit exists.
 - `error` `runner_unlock_baseline`: The session must be produced by a clean runner checkout that stamps the current unlock baseline.
-- `error` `latest_session_fresh_for_unlock`: The latest traded session must be recent enough to count toward unlock progression.
-- `error` `evidence_strength_progress`: Execution evidence should improve beyond `limited_entry_only` for the nearest unlock target.
-- `info` `launch_authorization_not_ready`: No broker-facing session is authorized yet; session completion cannot be evaluated.
 
 ## Operator Read
 

@@ -2,14 +2,14 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T18:00:41.339682`
+- Generated at: `2026-04-27T10:53:30.699958`
 - Morning decision posture: `keep_blocked_profiles_blocked`
 - Current unlocked profile: `down_choppy_coverage_ranked`
 - Repo update status: `ready`
 - Session reconciliation posture: `caution`
 - Execution posture: `caution`
 - Execution evidence contract: `gapped`
-- General evidence strength: `limited_entry_only`
+- General evidence strength: `limited`
 - Unlock evidence strength: `no_recent_trade_sessions`
 
 ## Current Missions
@@ -26,7 +26,7 @@
 - Treat broker-order audit coverage as incomplete and avoid over-trusting clean local order logs alone.
 - Treat broker account-activity coverage as incomplete and avoid over-trusting local fill telemetry alone.
 - Treat pre-baseline or dirty-runner sessions as calibration-only evidence, not unlock-grade evidence for blocked tournament profiles.
-- Use `raised` entry-fill penalties while observed entry friction remains around 0.80% mean absolute slippage and 0.65% mean adverse event slippage.
+- Use `raised` entry-fill penalties while observed entry friction remains around 1.98% mean absolute slippage and 1.71% mean adverse event slippage.
 - Keep exit-side execution modeling conservative until explicit exit slippage telemetry becomes reliable.
 - Do not activate tournament profiles above `moderate` risk until execution evidence improves.
 - Trust session reconciliation to exclude review-required paper-runner sessions before they can loosen execution calibration.
@@ -51,8 +51,6 @@
 - Close the immediate evidence gap `broker_activity_audit`: Broker account-activity audit coverage must be present in the session bundle.
 - Close the immediate evidence gap `broker_local_cashflow_comparable`: Broker/local economics comparison must be available when broker activity audit exists.
 - Close the immediate evidence gap `runner_unlock_baseline`: The session must be produced by a clean runner checkout that stamps the current unlock baseline.
-- Close the immediate evidence gap `latest_session_fresh_for_unlock`: The latest traded session must be recent enough to count toward unlock progression.
-- Close the immediate evidence gap `evidence_strength_progress`: Execution evidence should improve beyond `limited_entry_only` for the nearest unlock target.
 
 ## Required Next-Session Artifacts
 
@@ -73,7 +71,7 @@
 
 - `opening_30m_premium_defense`: policy_blocked via execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, broker_order_audit_coverage, broker_activity_audit_coverage
 - `balanced_family_expansion_benchmark`: policy_blocked via execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, broker_order_audit_coverage, broker_activity_audit_coverage
-- `opening_30m_convexity_butterfly`: policy_blocked via execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry
+- `opening_30m_convexity_butterfly`: policy_blocked via execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage
 
 ## By-Morning Success
 

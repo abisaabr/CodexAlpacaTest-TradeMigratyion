@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-24T12:39:04.845109-04:00",
+  "generated_at": "2026-04-27T10:54:26.886211-04:00",
   "status": "blocked",
   "next_operator_action": "resolve_launch_blockers",
   "report_dir": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation",
@@ -17,9 +17,9 @@
   "runner_provenance_status": "provenance_matched",
   "source_fingerprint_status": "source_fingerprint_matched",
   "prearm_preflight_status": "ready_to_arm_window",
-  "prearm_preflight_age_minutes": 0.00184635,
+  "prearm_preflight_age_minutes": 23.5088708,
   "launch_surface_audit_status": "local_broker_capable_surfaces_fenced_broker_flat",
-  "launch_surface_audit_age_minutes": 0.0069514166666666665,
+  "launch_surface_audit_age_minutes": 23.514163766666666,
   "launch_surface_broker_flat": true,
   "launch_surface_no_new_order_watch_clean": true,
   "max_prearm_age_minutes": 20,
@@ -63,6 +63,16 @@
       "severity": "error",
       "code": "closeout_not_reserved",
       "message": "Closeout must be reserved as `ready_to_close_window` before launch."
+    },
+    {
+      "severity": "error",
+      "code": "prearm_preflight_stale",
+      "message": "The pre-arm preflight is 23.51 minutes old; maximum allowed is 20."
+    },
+    {
+      "severity": "error",
+      "code": "launch_surface_audit_stale",
+      "message": "The launch-surface audit is 23.51 minutes old; maximum allowed is 20."
     }
   ],
   "operator_read": [

@@ -2,9 +2,9 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T18:00:39.002621`
+- Generated at: `2026-04-27T10:53:29.129201`
 - Posture: `caution`
-- Evidence strength: `limited_entry_only`
+- Evidence strength: `limited`
 - Unlock evidence strength: `no_recent_trade_sessions`
 - Trusted unlock-grade sessions: `0`
 - Trusted runner-baseline sessions: `0`
@@ -18,7 +18,7 @@
 - `sessions_excluded_by_session_reconciliation`: `true`
 - `high_guardrail_pressure`: `true`
 - `elevated_entry_friction`: `true`
-- `exit_telemetry_gap`: `true`
+- `exit_telemetry_gap`: `false`
 - `reconciliation_pressure`: `false`
 - `partial_fill_pressure`: `false`
 - `broker_order_audit_gap`: `true`
@@ -29,7 +29,7 @@
 ## Policy Guidance
 
 - Entry penalty mode: `raised`
-- Exit model posture: `conservative_fallback`
+- Exit model posture: `observed_exit_calibration`
 - Opening-window debit posture: `caution`
 - Preferred research bias: `defined_risk_and_premium_defense`
 - Profile activation confidence: `bootstrapping`
@@ -41,7 +41,7 @@
 
 ## Operator Actions
 
-- Use `raised` entry-fill penalties while observed entry friction remains around 0.80% mean absolute slippage and 0.65% mean adverse event slippage.
+- Use `raised` entry-fill penalties while observed entry friction remains around 1.98% mean absolute slippage and 1.71% mean adverse event slippage.
 - Keep exit-side execution modeling conservative until explicit exit slippage telemetry becomes reliable.
 - Do not activate tournament profiles above `moderate` risk until execution evidence improves.
 - Trust session reconciliation to exclude review-required paper-runner sessions before they can loosen execution calibration.
@@ -57,17 +57,17 @@
 
 ## Top Entry Slippage Clusters
 
-- `PLTR`: mean absolute entry slippage `0.0`% of expected across `1` filled entries
-- `TSLA`: mean absolute entry slippage `0.769231`% of expected across `1` filled entries
-- `QQQ`: mean absolute entry slippage `0.320366`% of expected across `1` filled entries
-- `SPY`: mean absolute entry slippage `0.539084`% of expected across `1` filled entries
-- `ARKK`: mean absolute entry slippage `2.389078`% of expected across `1` filled entries
+- `AMZN`: mean absolute entry slippage `0.542142`% of expected across `3` filled entries
+- `PLTR`: mean absolute entry slippage `0.979551`% of expected across `3` filled entries
+- `IWM`: mean absolute entry slippage `1.396111`% of expected across `3` filled entries
+- `NVDA`: mean absolute entry slippage `0.223714`% of expected across `3` filled entries
+- `QQQ`: mean absolute entry slippage `0.185713`% of expected across `4` filled entries
 
 ## Top Loss Clusters
 
-- `qqq__slow__orb_long_put_same_day`: estimated total net PnL `-507.50`, exit reason `severe_loss_flatten_all`
-- `pltr__fast__trend_long_put_next_expiry`: estimated total net PnL `-498.90`, exit reason `severe_loss_flatten_all`
-- `tsla__fast__trend_long_put_next_expiry`: estimated total net PnL `-196.30`, exit reason `severe_loss_flatten_all`
-- `spy__fast__trend_long_put_next_expiry`: estimated total net PnL `-98.60`, exit reason `severe_loss_flatten_all`
-- `arkk__fast__trend_long_put_next_expiry`: estimated total net PnL `-42.30`, exit reason `severe_loss_flatten_all`
+- `gdx__fast__trend_long_call_next_expiry`: estimated total net PnL `-475.80`, exit reason `stop_loss`
+- `pltr__fast__trend_long_put_next_expiry`: estimated total net PnL `-400.41`, exit reason `stop_loss`
+- `nvda__fast__trend_long_call_next_expiry_d70`: estimated total net PnL `-339.91`, exit reason `stop_loss`
+- `nvda__base__trend_long_put_next_expiry`: estimated total net PnL `-183.31`, exit reason `stop_loss`
+- `iwm__base__orb_long_put_next_expiry`: estimated total net PnL `-160.80`, exit reason `profit_target`
 

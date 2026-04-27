@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-04-22T18:00:40.596179",
-  "contract_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_evidence\\execution_evidence_contract.json",
+  "generated_at": "2026-04-27T10:53:30.125279",
+  "contract_json": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\execution_evidence\\execution_evidence_contract.json",
   "current_unlocked_profile": "down_choppy_coverage_ranked",
   "contract_status": "gapped",
-  "latest_traded_session_date": "2026-04-16",
+  "latest_traded_session_date": "2026-04-23",
   "required_next_session_artifacts": [
     "broker-order audit",
     "broker account-activity audit",
@@ -38,20 +38,6 @@
       "summary": "The session must be produced by a clean runner checkout that stamps the current unlock baseline.",
       "required": "runner_unlock_baseline_met = true",
       "current": false,
-      "passed": false
-    },
-    {
-      "check_id": "latest_session_fresh_for_unlock",
-      "summary": "The latest traded session must be recent enough to count toward unlock progression.",
-      "required": "latest_traded_session_age_days <= 5",
-      "current": 6,
-      "passed": false
-    },
-    {
-      "check_id": "evidence_strength_progress",
-      "summary": "Execution evidence should improve beyond `limited_entry_only` for the nearest unlock target.",
-      "required": "execution_evidence_strength != limited_entry_only",
-      "current": "limited_entry_only",
       "passed": false
     }
   ]

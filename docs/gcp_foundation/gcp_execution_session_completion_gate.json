@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-04-24T11:11:47.407709-04:00",
-  "completion_status": "awaiting_launch_authorization",
-  "next_operator_action": "do_not_review_unlaunched_session",
+  "generated_at": "2026-04-27T10:54:26.661261-04:00",
+  "completion_status": "evidence_gapped",
+  "next_operator_action": "repair_execution_evidence_bundle",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
   "report_dir": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation",
-  "launch_authorization_generated_at": "2026-04-24T11:11:47.285438-04:00",
-  "evidence_handoff_generated_at": "2026-04-22T18:00:40.596179",
-  "evidence_refreshed_after_launch": false,
-  "launch_authorization_status": "blocked",
-  "launch_authorized": false,
+  "launch_authorization_generated_at": "2026-04-27T10:50:45.429716-04:00",
+  "evidence_handoff_generated_at": "2026-04-27T10:53:30.125279",
+  "evidence_refreshed_after_launch": true,
+  "launch_authorization_status": "ready_to_launch_session",
+  "launch_authorized": true,
   "post_session_assimilation_status": "ready_for_post_session_assimilation",
   "closeout_status": "window_already_closed",
   "exclusive_window_status": "awaiting_operator_confirmation",
@@ -18,7 +18,7 @@
   "session_reconciliation_posture": "caution",
   "execution_posture": "caution",
   "morning_decision_posture": "keep_blocked_profiles_blocked",
-  "latest_traded_session_date": "2026-04-16",
+  "latest_traded_session_date": "2026-04-23",
   "required_next_session_artifacts": [
     "broker-order audit",
     "broker account-activity audit",
@@ -77,20 +77,6 @@
       "required": "runner_unlock_baseline_met = true",
       "current": false,
       "passed": false
-    },
-    {
-      "check_id": "latest_session_fresh_for_unlock",
-      "summary": "The latest traded session must be recent enough to count toward unlock progression.",
-      "required": "latest_traded_session_age_days <= 5",
-      "current": 6,
-      "passed": false
-    },
-    {
-      "check_id": "evidence_strength_progress",
-      "summary": "Execution evidence should improve beyond `limited_entry_only` for the nearest unlock target.",
-      "required": "execution_evidence_strength != limited_entry_only",
-      "current": "limited_entry_only",
-      "passed": false
     }
   ],
   "issues": [
@@ -113,21 +99,6 @@
       "severity": "error",
       "code": "runner_unlock_baseline",
       "message": "The session must be produced by a clean runner checkout that stamps the current unlock baseline."
-    },
-    {
-      "severity": "error",
-      "code": "latest_session_fresh_for_unlock",
-      "message": "The latest traded session must be recent enough to count toward unlock progression."
-    },
-    {
-      "severity": "error",
-      "code": "evidence_strength_progress",
-      "message": "Execution evidence should improve beyond `limited_entry_only` for the nearest unlock target."
-    },
-    {
-      "severity": "info",
-      "code": "launch_authorization_not_ready",
-      "message": "No broker-facing session is authorized yet; session completion cannot be evaluated."
     }
   ],
   "operator_read": [

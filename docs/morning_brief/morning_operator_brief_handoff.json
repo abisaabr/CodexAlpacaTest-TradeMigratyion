@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-04-22T18:00:41.339682",
-  "brief_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\morning_brief\\morning_operator_brief.json",
+  "generated_at": "2026-04-27T10:53:30.699958",
+  "brief_json": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\morning_brief\\morning_operator_brief.json",
   "morning_decision_posture": "keep_blocked_profiles_blocked",
   "current_unlocked_profile": "down_choppy_coverage_ranked",
   "repo_update_status": "ready",
   "session_reconciliation_posture": "caution",
   "execution_posture": "caution",
   "execution_evidence_contract_status": "gapped",
-  "execution_evidence_strength": "limited_entry_only",
+  "execution_evidence_strength": "limited",
   "unlock_execution_evidence_strength": "no_recent_trade_sessions",
   "blocked_profiles_must_remain_blocked": [
     "opening_30m_premium_defense",
@@ -30,7 +30,7 @@
     "Treat broker-order audit coverage as incomplete and avoid over-trusting clean local order logs alone.",
     "Treat broker account-activity coverage as incomplete and avoid over-trusting local fill telemetry alone.",
     "Treat pre-baseline or dirty-runner sessions as calibration-only evidence, not unlock-grade evidence for blocked tournament profiles.",
-    "Use `raised` entry-fill penalties while observed entry friction remains around 0.80% mean absolute slippage and 0.65% mean adverse event slippage."
+    "Use `raised` entry-fill penalties while observed entry friction remains around 1.98% mean absolute slippage and 1.71% mean adverse event slippage."
   ],
   "nearest_unlock_targets": [
     {
@@ -64,8 +64,7 @@
         "unlock_evidence_freshness",
         "risk_tier_cap",
         "broker_order_audit_coverage",
-        "broker_activity_audit_coverage",
-        "exit_telemetry"
+        "broker_activity_audit_coverage"
       ]
     }
   ]

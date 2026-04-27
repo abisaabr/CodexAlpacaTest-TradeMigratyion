@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-04-22T18:00:39.637943",
-  "registry_generated_at": "2026-04-22T18:00:39.443070",
-  "execution_handoff_generated_at": "2026-04-22T18:00:39.002621",
+  "generated_at": "2026-04-27T10:53:29.516584",
+  "registry_generated_at": "2026-04-27T10:53:29.385208",
+  "execution_handoff_generated_at": "2026-04-27T10:53:29.129201",
   "requested_profile": "auto",
   "resolved_profile": "down_choppy_coverage_ranked",
   "resolution_mode": "auto_recommended",
   "resolution_warning": "",
   "default_profile": "down_choppy_coverage_ranked",
   "execution_posture": "caution",
-  "execution_evidence_strength": "limited_entry_only",
+  "execution_evidence_strength": "limited",
   "unlock_execution_evidence_strength": "no_recent_trade_sessions",
   "preferred_research_bias": "defined_risk_and_premium_defense",
   "recommended_profiles_from_execution": [
@@ -32,12 +32,11 @@
       "profile_id": "down_choppy_coverage_ranked",
       "status": "active",
       "executable_now": true,
-      "score": 97,
+      "score": 105,
       "reasons": [
         "execution handoff explicitly recommends this profile (+100)",
         "posture caution favors moderate risk tier (+5)",
         "elevated entry friction penalizes medium sensitivity (-10)",
-        "exit telemetry gap penalizes medium exit-model dependency (-8)",
         "profile keeps a premium-defense tilt under cautious execution posture (+10)"
       ],
       "execution_risk_tier": "moderate",
@@ -58,11 +57,10 @@
       "profile_id": "down_choppy_full_ready",
       "status": "active",
       "executable_now": true,
-      "score": -3,
+      "score": 5,
       "reasons": [
         "posture caution favors moderate risk tier (+5)",
         "elevated entry friction penalizes medium sensitivity (-10)",
-        "exit telemetry gap penalizes medium exit-model dependency (-8)",
         "profile keeps a premium-defense tilt under cautious execution posture (+10)"
       ],
       "execution_risk_tier": "moderate",
@@ -83,7 +81,7 @@
       "profile_id": "opening_30m_premium_defense",
       "status": "partial",
       "executable_now": true,
-      "score": -1128,
+      "score": -1120,
       "reasons": [
         "execution handoff explicitly recommends this profile (+100)",
         "posture caution favors conservative risk tier (+15)",
@@ -93,7 +91,6 @@
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
         "elevated entry friction penalizes low sensitivity (-0)",
-        "exit telemetry gap penalizes medium exit-model dependency (-8)",
         "profile research bias matches preferred execution-informed research bias (+15)"
       ],
       "execution_risk_tier": "conservative",
@@ -114,7 +111,7 @@
       "profile_id": "balanced_family_expansion_benchmark",
       "status": "partial",
       "executable_now": true,
-      "score": -1263,
+      "score": -1255,
       "reasons": [
         "posture caution favors moderate risk tier (+5)",
         "current execution evidence `no_recent_trade_sessions` is below the profile floor `entry_and_reconciliation` (-250)",
@@ -122,8 +119,7 @@
         "latest trusted unlock-grade session age `none` day(s) is older than this profile's freshness ceiling `7` (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
-        "elevated entry friction penalizes medium sensitivity (-10)",
-        "exit telemetry gap penalizes medium exit-model dependency (-8)"
+        "elevated entry friction penalizes medium sensitivity (-10)"
       ],
       "execution_risk_tier": "moderate",
       "entry_friction_sensitivity": "medium",
@@ -143,7 +139,7 @@
       "profile_id": "opening_30m_convexity_butterfly",
       "status": "partial",
       "executable_now": true,
-      "score": -1920,
+      "score": -1655,
       "reasons": [
         "execution handoff explicitly deprioritizes this profile (-100)",
         "posture caution favors aggressive risk tier (-15)",
@@ -153,9 +149,7 @@
         "latest trusted unlock-grade session age `none` day(s) is older than this profile's freshness ceiling `5` (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
-        "profile requires reliable exit telemetry, but the current execution posture still flags an exit-telemetry gap (-250)",
         "elevated entry friction penalizes high sensitivity (-20)",
-        "exit telemetry gap penalizes high exit-model dependency (-15)",
         "sample size is still limited, so aggressive profiles are discounted (-10)",
         "recent guardrail pressure further discounts aggressive profiles (-10)"
       ],
@@ -177,7 +171,7 @@
       "profile_id": "opening_30m_single_vs_multileg",
       "status": "partial",
       "executable_now": true,
-      "score": -1920,
+      "score": -1655,
       "reasons": [
         "execution handoff explicitly deprioritizes this profile (-100)",
         "posture caution favors aggressive risk tier (-15)",
@@ -187,9 +181,7 @@
         "latest trusted unlock-grade session age `none` day(s) is older than this profile's freshness ceiling `5` (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
-        "profile requires reliable exit telemetry, but the current execution posture still flags an exit-telemetry gap (-250)",
         "elevated entry friction penalizes high sensitivity (-20)",
-        "exit telemetry gap penalizes high exit-model dependency (-15)",
         "sample size is still limited, so aggressive profiles are discounted (-10)",
         "recent guardrail pressure further discounts aggressive profiles (-10)"
       ],
@@ -208,6 +200,6 @@
       "activation_blocked": true
     }
   ],
-  "registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_profiles\\tournament_profile_registry.json",
-  "execution_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_calibration\\execution_calibration_handoff.json"
+  "registry_json": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\tournament_profiles\\tournament_profile_registry.json",
+  "execution_handoff_json": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\execution_calibration\\execution_calibration_handoff.json"
 }

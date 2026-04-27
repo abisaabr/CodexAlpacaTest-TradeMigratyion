@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-04-24T12:35:58.949446-04:00",
+  "generated_at": "2026-04-27T10:25:50.824148-04:00",
   "status": "source_fingerprint_matched",
   "vm_name": "vm-execution-paper-01",
   "vm_runner_path": "/opt/codexalpaca/codexalpaca_repo",
   "vm_manifest_root": "/opt/codexalpaca/codexalpaca_repo",
-  "runner_repo_root": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed",
-  "local_runner_branch": "codex/qqq-paper-portfolio",
+  "runner_repo_root": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_vm_f008",
+  "local_runner_branch": "HEAD",
   "local_runner_commit": "f0080066c68d883286f4cb1b9c9e0edc601adf8d",
   "report_dir": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation",
   "include_roots": [

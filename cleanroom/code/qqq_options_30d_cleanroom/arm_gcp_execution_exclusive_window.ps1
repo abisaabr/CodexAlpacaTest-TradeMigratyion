@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$ControlPlaneRoot = "",
+    [string]$RunnerRepoRoot = "",
     [string]$VmName = "vm-execution-paper-01",
     [Parameter(Mandatory = $true)]
     [string]$ConfirmedBy,
@@ -137,6 +138,18 @@ $attestationPath = Join-Path $reportDir "gcp_execution_exclusive_window_attestat
 $prearmPath = Join-Path $reportDir "gcp_execution_prearm_preflight.json"
 $pythonCommand = Resolve-PythonCommand
 
+if (-not $RunnerRepoRoot) {
+    if (Test-Path $prearmPath) {
+        $prearmForRunnerRoot = Get-Content -Path $prearmPath -Raw | ConvertFrom-Json
+        if ($prearmForRunnerRoot.runner_repo_root) {
+            $RunnerRepoRoot = [string]$prearmForRunnerRoot.runner_repo_root
+        }
+    }
+}
+if (-not $RunnerRepoRoot) {
+    throw "RunnerRepoRoot was not provided and could not be inferred from the pre-arm packet."
+}
+
 $builderSpecs = @(
     @{
         Path = Join-Path $PSScriptRoot "build_gcp_execution_exclusive_window_status.py"
@@ -144,7 +157,7 @@ $builderSpecs = @(
     },
     @{
         Path = Join-Path $PSScriptRoot "build_gcp_execution_trusted_validation_session_status.py"
-        Arguments = @("--report-dir", $reportDir, "--project-id", "codexalpaca", "--vm-name", $VmName)
+        Arguments = @("--report-dir", $reportDir, "--project-id", "codexalpaca", "--vm-name", $VmName, "--runner-repo-root", $RunnerRepoRoot)
     },
     @{
         Path = Join-Path $PSScriptRoot "build_gcp_execution_trusted_validation_launch_pack.py"
@@ -196,7 +209,9 @@ $attestation = @{
     notes = $Notes
 }
 
-$attestation | ConvertTo-Json -Depth 6 | Set-Content -Path $attestationPath -Encoding utf8
+$attestationJson = ($attestation | ConvertTo-Json -Depth 6) + [Environment]::NewLine
+$utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+[System.IO.File]::WriteAllText($attestationPath, $attestationJson, $utf8NoBom)
 
 foreach ($builderSpec in $builderSpecs) {
     Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath $builderSpec.Path -Arguments $builderSpec.Arguments

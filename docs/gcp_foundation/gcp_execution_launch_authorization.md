@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T12:39:04.845109-04:00`
+- Generated at: `2026-04-27T10:54:26.886211-04:00`
 - Status: `blocked`
 - Next operator action: `resolve_launch_blockers`
 - VM name: `vm-execution-paper-01`
@@ -14,9 +14,9 @@
 - Runner provenance status: `provenance_matched`
 - Source fingerprint status: `source_fingerprint_matched`
 - Pre-arm preflight status: `ready_to_arm_window`
-- Pre-arm preflight age minutes: `0.00184635`
+- Pre-arm preflight age minutes: `23.5088708`
 - Launch-surface audit status: `local_broker_capable_surfaces_fenced_broker_flat`
-- Launch-surface audit age minutes: `0.0069514166666666665`
+- Launch-surface audit age minutes: `23.514163766666666`
 - Launch-surface broker flat: `True`
 - Launch-surface no-new-order watch clean: `True`
 - Trader process absent: `True`
@@ -56,6 +56,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 - `error` `trusted_validation_not_ready`: Trusted validation readiness must be `ready_for_manual_launch` before launch.
 - `error` `exclusive_window_not_ready`: The exclusive-window packet must say `ready_for_launch` before launch.
 - `error` `closeout_not_reserved`: Closeout must be reserved as `ready_to_close_window` before launch.
+- `error` `prearm_preflight_stale`: The pre-arm preflight is 23.51 minutes old; maximum allowed is 20.
+- `error` `launch_surface_audit_stale`: The launch-surface audit is 23.51 minutes old; maximum allowed is 20.
 
 ## Required Evidence
 

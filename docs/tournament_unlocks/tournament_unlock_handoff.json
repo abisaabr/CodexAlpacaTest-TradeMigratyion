@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-04-22T18:00:39.834158",
-  "registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_registry.json",
+  "generated_at": "2026-04-27T10:53:29.646277",
+  "registry_json": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\tournament_unlocks\\tournament_unlock_registry.json",
   "current_resolved_profile": "down_choppy_coverage_ranked",
   "execution_posture": "caution",
-  "execution_evidence_strength": "limited_entry_only",
+  "execution_evidence_strength": "limited",
   "session_reconciliation_posture": "caution",
   "trusted_learning_scope": "trusted_and_cautious_sessions",
   "unlocked_now": [
@@ -20,7 +20,7 @@
       "activation_state": "policy_blocked",
       "recommendation_level": "recommended_but_not_yet_unlocked",
       "resolved_now": false,
-      "current_score": -1128,
+      "current_score": -1120,
       "unmet_requirement_count": 5,
       "blocker_codes": [
         "execution_evidence_floor",
@@ -126,7 +126,6 @@
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
         "elevated entry friction penalizes low sensitivity (-0)",
-        "exit telemetry gap penalizes medium exit-model dependency (-8)",
         "profile research bias matches preferred execution-informed research bias (+15)"
       ]
     },
@@ -137,7 +136,7 @@
       "activation_state": "policy_blocked",
       "recommendation_level": "blocked",
       "resolved_now": false,
-      "current_score": -1263,
+      "current_score": -1255,
       "unmet_requirement_count": 5,
       "blocker_codes": [
         "execution_evidence_floor",
@@ -252,8 +251,7 @@
         "latest trusted unlock-grade session age `none` day(s) is older than this profile's freshness ceiling `7` (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
-        "elevated entry friction penalizes medium sensitivity (-10)",
-        "exit telemetry gap penalizes medium exit-model dependency (-8)"
+        "elevated entry friction penalizes medium sensitivity (-10)"
       ]
     },
     {
@@ -263,16 +261,15 @@
       "activation_state": "policy_blocked",
       "recommendation_level": "blocked",
       "resolved_now": false,
-      "current_score": -1920,
-      "unmet_requirement_count": 7,
+      "current_score": -1655,
+      "unmet_requirement_count": 6,
       "blocker_codes": [
         "execution_evidence_floor",
         "unlock_session_count_floor",
         "unlock_evidence_freshness",
         "risk_tier_cap",
         "broker_order_audit_coverage",
-        "broker_activity_audit_coverage",
-        "exit_telemetry"
+        "broker_activity_audit_coverage"
       ],
       "blockers": [
         {
@@ -316,13 +313,6 @@
           "category": "audit",
           "current": "true",
           "required": "broker_activity_audit_coverage_available"
-        },
-        {
-          "blocker_code": "exit_telemetry",
-          "summary": "Profile requires reliable exit telemetry, but the current execution posture still flags an exit-telemetry gap.",
-          "category": "telemetry",
-          "current": "gap_present",
-          "required": "reliable_exit_telemetry"
         }
       ],
       "next_unlock_objectives": [
@@ -360,12 +350,6 @@
           "objective_code": "land_trusted_broker_activity_audit_sessions",
           "summary": "Land fresh trusted paper sessions with broker account-activity audit coverage so broker-audited profiles can activate.",
           "category": "audit",
-          "priority": 1
-        },
-        {
-          "objective_code": "land_reliable_exit_telemetry",
-          "summary": "Capture reliable exit telemetry from fresh broker-audited paper sessions before activating exit-sensitive profiles.",
-          "category": "telemetry",
           "priority": 1
         }
       ],
@@ -397,9 +381,7 @@
         "latest trusted unlock-grade session age `none` day(s) is older than this profile's freshness ceiling `5` (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
-        "profile requires reliable exit telemetry, but the current execution posture still flags an exit-telemetry gap (-250)",
         "elevated entry friction penalizes high sensitivity (-20)",
-        "exit telemetry gap penalizes high exit-model dependency (-15)",
         "sample size is still limited, so aggressive profiles are discounted (-10)",
         "recent guardrail pressure further discounts aggressive profiles (-10)"
       ]
@@ -411,16 +393,15 @@
       "activation_state": "policy_blocked",
       "recommendation_level": "blocked",
       "resolved_now": false,
-      "current_score": -1920,
-      "unmet_requirement_count": 7,
+      "current_score": -1655,
+      "unmet_requirement_count": 6,
       "blocker_codes": [
         "execution_evidence_floor",
         "unlock_session_count_floor",
         "unlock_evidence_freshness",
         "risk_tier_cap",
         "broker_order_audit_coverage",
-        "broker_activity_audit_coverage",
-        "exit_telemetry"
+        "broker_activity_audit_coverage"
       ],
       "blockers": [
         {
@@ -464,13 +445,6 @@
           "category": "audit",
           "current": "true",
           "required": "broker_activity_audit_coverage_available"
-        },
-        {
-          "blocker_code": "exit_telemetry",
-          "summary": "Profile requires reliable exit telemetry, but the current execution posture still flags an exit-telemetry gap.",
-          "category": "telemetry",
-          "current": "gap_present",
-          "required": "reliable_exit_telemetry"
         }
       ],
       "next_unlock_objectives": [
@@ -508,12 +482,6 @@
           "objective_code": "land_trusted_broker_activity_audit_sessions",
           "summary": "Land fresh trusted paper sessions with broker account-activity audit coverage so broker-audited profiles can activate.",
           "category": "audit",
-          "priority": 1
-        },
-        {
-          "objective_code": "land_reliable_exit_telemetry",
-          "summary": "Capture reliable exit telemetry from fresh broker-audited paper sessions before activating exit-sensitive profiles.",
-          "category": "telemetry",
           "priority": 1
         }
       ],
@@ -552,9 +520,7 @@
         "latest trusted unlock-grade session age `none` day(s) is older than this profile's freshness ceiling `5` (-250)",
         "profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)",
         "profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)",
-        "profile requires reliable exit telemetry, but the current execution posture still flags an exit-telemetry gap (-250)",
         "elevated entry friction penalizes high sensitivity (-20)",
-        "exit telemetry gap penalizes high exit-model dependency (-15)",
         "sample size is still limited, so aggressive profiles are discounted (-10)",
         "recent guardrail pressure further discounts aggressive profiles (-10)"
       ]

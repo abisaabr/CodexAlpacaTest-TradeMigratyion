@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T18:00:39.834158`
+- Generated at: `2026-04-27T10:53:29.646277`
 - Current resolved profile: `down_choppy_coverage_ranked`
 - Execution posture: `caution`
 - Session reconciliation posture: `caution`
@@ -14,8 +14,8 @@
 
 - `opening_30m_premium_defense`: state `policy_blocked`, blockers `execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, broker_order_audit_coverage, broker_activity_audit_coverage`, next objectives `upgrade_execution_evidence_to_entry_and_reconciliation, land_1_trusted_unlock_sessions, refresh_unlock_evidence_within_7_days, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
 - `balanced_family_expansion_benchmark`: state `policy_blocked`, blockers `execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, broker_order_audit_coverage, broker_activity_audit_coverage`, next objectives `upgrade_execution_evidence_to_entry_and_reconciliation, land_1_trusted_unlock_sessions, refresh_unlock_evidence_within_7_days, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
-- `opening_30m_convexity_butterfly`: state `policy_blocked`, blockers `execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry`, next objectives `upgrade_execution_evidence_to_broad, land_2_trusted_unlock_sessions, refresh_unlock_evidence_within_5_days, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`
-- `opening_30m_single_vs_multileg`: state `policy_blocked`, blockers `execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage, exit_telemetry`, next objectives `upgrade_execution_evidence_to_broad, land_2_trusted_unlock_sessions, refresh_unlock_evidence_within_5_days, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions, land_reliable_exit_telemetry`
+- `opening_30m_convexity_butterfly`: state `policy_blocked`, blockers `execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage`, next objectives `upgrade_execution_evidence_to_broad, land_2_trusted_unlock_sessions, refresh_unlock_evidence_within_5_days, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
+- `opening_30m_single_vs_multileg`: state `policy_blocked`, blockers `execution_evidence_floor, unlock_session_count_floor, unlock_evidence_freshness, risk_tier_cap, broker_order_audit_coverage, broker_activity_audit_coverage`, next objectives `upgrade_execution_evidence_to_broad, land_2_trusted_unlock_sessions, refresh_unlock_evidence_within_5_days, raise_execution_risk_ceiling_to_aggressive, land_trusted_broker_order_audit_sessions, land_trusted_broker_activity_audit_sessions`
 
 ## Immediate Unlock Objectives
 

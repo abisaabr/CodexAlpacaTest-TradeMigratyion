@@ -1,6 +1,6 @@
 # GCP Execution Launch Surface Audit
 
-As of: 2026-04-24T12:39:04.428024-04:00
+As of: 2026-04-27T10:30:56.036385-04:00
 
 Status: local_broker_capable_surfaces_fenced_broker_flat
 
@@ -18,11 +18,11 @@ VM runner commit matches expected: `True`
 ## Broker State
 
 - Read-only check: `position_count=0, open_order_count=0`
-- Watch duration seconds: `181`
-- Watch samples: `7`
+- Watch duration seconds: `301`
+- Watch samples: `11`
 - Watch position count all samples: `0`
 - Watch open order count all samples: `0`
-- Newest order timestamp all samples: `2026-04-24T15:32:04.805373581Z`
+- Newest order timestamp all samples: `2026-04-27T14:16:29.938830839Z`
 - Newest order timestamp constant: `True`
 
 ## Local Task Scheduler

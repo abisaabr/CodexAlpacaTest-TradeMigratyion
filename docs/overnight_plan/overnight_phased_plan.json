@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-04-22T18:00:40.985169",
-  "repo_update_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\repo_updates\\repo_update_handoff.json",
-  "unlock_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_handoff.json",
-  "workplan_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_workplan_handoff.json",
-  "execution_evidence_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_evidence\\execution_evidence_contract_handoff.json",
+  "generated_at": "2026-04-27T10:53:30.454311",
+  "repo_update_handoff_json": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\repo_updates\\repo_update_handoff.json",
+  "unlock_handoff_json": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\tournament_unlocks\\tournament_unlock_handoff.json",
+  "workplan_handoff_json": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\tournament_unlocks\\tournament_unlock_workplan_handoff.json",
+  "execution_evidence_handoff_json": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\execution_evidence\\execution_evidence_contract_handoff.json",
   "repo_update_status": "ready",
   "safe_to_run_nightly_cycle": true,
   "safe_to_run_execution_plane_without_update_review": true,
@@ -134,14 +134,6 @@
         {
           "check_id": "runner_unlock_baseline",
           "summary": "The session must be produced by a clean runner checkout that stamps the current unlock baseline."
-        },
-        {
-          "check_id": "latest_session_fresh_for_unlock",
-          "summary": "The latest traded session must be recent enough to count toward unlock progression."
-        },
-        {
-          "check_id": "evidence_strength_progress",
-          "summary": "Execution evidence should improve beyond `limited_entry_only` for the nearest unlock target."
         }
       ]
     },

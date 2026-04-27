@@ -2,11 +2,11 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T12:39:04.579138-04:00`
+- Generated at: `2026-04-27T10:54:26.775745-04:00`
 - Operator packet state: `ready_to_arm_window`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
-- Runner branch: `codex/qqq-paper-portfolio`
+- Runner branch: `HEAD`
 - Runner commit: `f0080066c68d883286f4cb1b9c9e0edc601adf8d`
 
 ## Current Gates
@@ -22,7 +22,7 @@
 - Runtime ownership backend: `file`
 - Runtime ownership lease class: `FileOwnershipLease`
 - Runtime shared execution lease enforced: `False`
-- Session completion gate: `awaiting_launch_authorization`
+- Session completion gate: `evidence_gapped`
 - Launch-surface audit status: `local_broker_capable_surfaces_fenced_broker_flat`
 - Launch-surface broker flat: `True`
 - Launch-surface no-new-order watch clean: `True`

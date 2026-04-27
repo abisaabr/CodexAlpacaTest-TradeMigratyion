@@ -29,3 +29,5 @@
 - `trusted_validation_not_ready`: Trusted validation readiness must be `ready_for_manual_launch` before launch.
 - `exclusive_window_not_ready`: The exclusive-window packet must say `ready_for_launch` before launch.
 - `closeout_not_reserved`: Closeout must be reserved as `ready_to_close_window` before launch.
+- `prearm_preflight_stale`: The pre-arm preflight is 23.51 minutes old; maximum allowed is 20.
+- `launch_surface_audit_stale`: The launch-surface audit is 23.51 minutes old; maximum allowed is 20.

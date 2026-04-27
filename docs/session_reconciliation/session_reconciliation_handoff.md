@@ -2,12 +2,12 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-22T18:00:38.621377`
+- Generated at: `2026-04-27T10:53:28.713708`
 - Posture: `caution`
 - Evidence strength: `limited`
-- Latest traded session: `2026-04-16`
-- Latest traded session age days: `6`
-- Freshness posture: `stale`
+- Latest traded session: `2026-04-23`
+- Latest traded session age days: `4`
+- Freshness posture: `aging`
 
 ## Flags
 
@@ -38,5 +38,6 @@
 
 ## Sessions Needing Attention
 
-- `2026-04-16`: tier `caution`, quality `70`, reasons `broker_order_audit_gap, broker_activity_audit_gap, runner_unlock_baseline_gap, guardrail_manual_review, severe_loss_flatten_triggered`
+- `2026-04-23`: tier `caution`, quality `70`, reasons `broker_order_audit_gap, broker_activity_audit_gap, runner_unlock_baseline_gap, guardrail_manual_review, severe_loss_flatten_triggered`
+- `2026-04-22`: tier `caution`, quality `75`, reasons `broker_order_audit_gap, broker_activity_audit_gap, runner_unlock_baseline_gap, startup_check_not_passed`
 

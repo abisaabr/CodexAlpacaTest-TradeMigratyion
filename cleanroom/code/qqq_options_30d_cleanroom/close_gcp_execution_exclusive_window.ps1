@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$ControlPlaneRoot = "",
+    [string]$RunnerRepoRoot = "",
     [string]$VmName = "vm-execution-paper-01",
     [switch]$MirrorToGcs,
     [string]$GcsPrefix = "gs://codexalpaca-control-us/gcp_foundation"
@@ -37,14 +38,39 @@ if (-not $ControlPlaneRoot) {
 
 $reportDir = Join-Path $ControlPlaneRoot "docs\gcp_foundation"
 $attestationPath = Join-Path $reportDir "gcp_execution_exclusive_window_attestation.json"
+$prearmPath = Join-Path $reportDir "gcp_execution_prearm_preflight.json"
 $archiveDir = Join-Path $reportDir "exclusive_window_archive"
 $pythonCommand = Resolve-PythonCommand
 
+if (-not $RunnerRepoRoot) {
+    if (Test-Path $prearmPath) {
+        $prearmForRunnerRoot = Get-Content -Path $prearmPath -Raw | ConvertFrom-Json
+        if ($prearmForRunnerRoot.runner_repo_root) {
+            $RunnerRepoRoot = [string]$prearmForRunnerRoot.runner_repo_root
+        }
+    }
+}
+if (-not $RunnerRepoRoot) {
+    throw "RunnerRepoRoot was not provided and could not be inferred from the pre-arm packet."
+}
+
 $builders = @(
-    Join-Path $PSScriptRoot "build_gcp_execution_exclusive_window_status.py",
-    Join-Path $PSScriptRoot "build_gcp_execution_trusted_validation_session_status.py",
-    Join-Path $PSScriptRoot "build_gcp_execution_trusted_validation_launch_pack.py",
-    Join-Path $PSScriptRoot "build_gcp_execution_closeout_status.py"
+    @{
+        Path = Join-Path $PSScriptRoot "build_gcp_execution_exclusive_window_status.py"
+        Arguments = @("--report-dir", $reportDir, "--vm-name", $VmName)
+    },
+    @{
+        Path = Join-Path $PSScriptRoot "build_gcp_execution_trusted_validation_session_status.py"
+        Arguments = @("--report-dir", $reportDir, "--vm-name", $VmName, "--runner-repo-root", $RunnerRepoRoot)
+    },
+    @{
+        Path = Join-Path $PSScriptRoot "build_gcp_execution_trusted_validation_launch_pack.py"
+        Arguments = @("--report-dir", $reportDir, "--vm-name", $VmName)
+    },
+    @{
+        Path = Join-Path $PSScriptRoot "build_gcp_execution_closeout_status.py"
+        Arguments = @("--report-dir", $reportDir, "--vm-name", $VmName)
+    }
 )
 $postCloseoutBuilders = @{
     SessionCompletionGate = Join-Path $PSScriptRoot "build_gcp_execution_session_completion_gate.py"
@@ -53,8 +79,8 @@ $postCloseoutBuilders = @{
 }
 
 foreach ($builder in $builders) {
-    if (-not (Test-Path $builder)) {
-        throw "Builder not found: $builder"
+    if (-not (Test-Path $builder.Path)) {
+        throw "Builder not found: $($builder.Path)"
     }
 }
 foreach ($builder in $postCloseoutBuilders.GetEnumerator()) {
@@ -72,10 +98,7 @@ if (Test-Path $attestationPath) {
 }
 
 foreach ($builder in $builders) {
-    Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath $builder -Arguments @(
-        "--report-dir", $reportDir,
-        "--vm-name", $VmName
-    )
+    Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath $builder.Path -Arguments $builder.Arguments
 }
 
 Invoke-PythonScript -PythonCommand $pythonCommand -ScriptPath $postCloseoutBuilders.SessionCompletionGate -Arguments @(

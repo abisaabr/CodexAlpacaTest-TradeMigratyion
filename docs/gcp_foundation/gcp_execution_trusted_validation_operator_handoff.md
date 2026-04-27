@@ -13,7 +13,7 @@
 - Runtime ownership backend: `file`
 - Runtime ownership lease class: `FileOwnershipLease`
 - Runtime shared execution lease enforced: `False`
-- Session completion gate: `awaiting_launch_authorization`
+- Session completion gate: `evidence_gapped`
 - Launch-surface audit status: `local_broker_capable_surfaces_fenced_broker_flat`
 - Launch-surface audit blocks launch: `False`
 - Launch-surface broker flat: `True`

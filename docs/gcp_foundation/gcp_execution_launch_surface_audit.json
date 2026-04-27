@@ -1,7 +1,7 @@
 {
   "packet": "gcp_execution_launch_surface_audit",
-  "as_of": "2026-04-24T12:39:04.428024-04:00",
-  "generated_at": "2026-04-24T12:39:04.428024-04:00",
+  "as_of": "2026-04-27T10:30:56.036385-04:00",
+  "generated_at": "2026-04-27T10:30:56.036385-04:00",
   "status": "local_broker_capable_surfaces_fenced_broker_flat",
   "scope": "Repeatable local and sanctioned-VM launch-surface audit before the bounded sanctioned paper session.",
   "report_dir": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation",
@@ -13,14 +13,14 @@
     "read_only_check_after_fencing": "position_count=0, open_order_count=0",
     "broker_flat": true,
     "post_fencing_no_new_order_watch": {
-      "duration_seconds": 181,
-      "start_utc": "2026-04-24T16:36:02.334159+00:00",
-      "end_utc": "2026-04-24T16:39:04.227804+00:00",
-      "samples": 7,
+      "duration_seconds": 301,
+      "start_utc": "2026-04-27T14:25:54.274813+00:00",
+      "end_utc": "2026-04-27T14:30:55.809842+00:00",
+      "samples": 11,
       "sample_interval_seconds": 30,
       "position_count_all_samples": 0,
       "open_order_count_all_samples": 0,
-      "newest_order_created_at_all_samples": "2026-04-24T15:32:04.805373581Z",
+      "newest_order_created_at_all_samples": "2026-04-27T14:16:29.938830839Z",
       "newest_order_constant": true,
       "watch_clean": true
     }

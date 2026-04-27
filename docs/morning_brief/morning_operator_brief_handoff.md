@@ -8,7 +8,7 @@
 - Session reconciliation posture: `caution`
 - Execution posture: `caution`
 - Execution evidence contract: `gapped`
-- General evidence strength: `limited_entry_only`
+- General evidence strength: `limited`
 - Unlock evidence strength: `no_recent_trade_sessions`
 
 ## Immediate Actions
@@ -20,4 +20,4 @@
 - Treat broker-order audit coverage as incomplete and avoid over-trusting clean local order logs alone.
 - Treat broker account-activity coverage as incomplete and avoid over-trusting local fill telemetry alone.
 - Treat pre-baseline or dirty-runner sessions as calibration-only evidence, not unlock-grade evidence for blocked tournament profiles.
-- Use `raised` entry-fill penalties while observed entry friction remains around 0.80% mean absolute slippage and 0.65% mean adverse event slippage.
+- Use `raised` entry-fill penalties while observed entry friction remains around 1.98% mean absolute slippage and 1.71% mean adverse event slippage.

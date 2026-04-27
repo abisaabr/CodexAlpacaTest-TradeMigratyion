@@ -2,13 +2,13 @@
 
 ## Resolution
 
-- Generated at: `2026-04-22T18:00:39.637943`
+- Generated at: `2026-04-27T10:53:29.516584`
 - Requested profile: `auto`
 - Resolved profile: `down_choppy_coverage_ranked`
 - Resolution mode: `auto_recommended`
 - Resolution warning: `none`
 - Execution posture: `caution`
-- Evidence strength: `limited_entry_only`
+- Evidence strength: `limited`
 - Unlock evidence strength: `no_recent_trade_sessions`
 - Preferred research bias: `defined_risk_and_premium_defense`
 - Recommended executable profile: `down_choppy_coverage_ranked`
@@ -24,7 +24,7 @@
 
 ### down_choppy_coverage_ranked
 
-- Score: `97`
+- Score: `105`
 - Executable now: `true`
 - Execution risk tier: `moderate`
 - Entry friction sensitivity: `medium`
@@ -43,12 +43,11 @@
   - execution handoff explicitly recommends this profile (+100)
   - posture caution favors moderate risk tier (+5)
   - elevated entry friction penalizes medium sensitivity (-10)
-  - exit telemetry gap penalizes medium exit-model dependency (-8)
   - profile keeps a premium-defense tilt under cautious execution posture (+10)
 
 ### down_choppy_full_ready
 
-- Score: `-3`
+- Score: `5`
 - Executable now: `true`
 - Execution risk tier: `moderate`
 - Entry friction sensitivity: `medium`
@@ -66,12 +65,11 @@
 - Reasons:
   - posture caution favors moderate risk tier (+5)
   - elevated entry friction penalizes medium sensitivity (-10)
-  - exit telemetry gap penalizes medium exit-model dependency (-8)
   - profile keeps a premium-defense tilt under cautious execution posture (+10)
 
 ### opening_30m_premium_defense
 
-- Score: `-1128`
+- Score: `-1120`
 - Executable now: `true`
 - Execution risk tier: `conservative`
 - Entry friction sensitivity: `low`
@@ -95,12 +93,11 @@
   - profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)
   - profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)
   - elevated entry friction penalizes low sensitivity (-0)
-  - exit telemetry gap penalizes medium exit-model dependency (-8)
   - profile research bias matches preferred execution-informed research bias (+15)
 
 ### balanced_family_expansion_benchmark
 
-- Score: `-1263`
+- Score: `-1255`
 - Executable now: `true`
 - Execution risk tier: `moderate`
 - Entry friction sensitivity: `medium`
@@ -123,11 +120,10 @@
   - profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)
   - profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)
   - elevated entry friction penalizes medium sensitivity (-10)
-  - exit telemetry gap penalizes medium exit-model dependency (-8)
 
 ### opening_30m_convexity_butterfly
 
-- Score: `-1920`
+- Score: `-1655`
 - Executable now: `true`
 - Execution risk tier: `aggressive`
 - Entry friction sensitivity: `high`
@@ -151,15 +147,13 @@
   - latest trusted unlock-grade session age `none` day(s) is older than this profile's freshness ceiling `5` (-250)
   - profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)
   - profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)
-  - profile requires reliable exit telemetry, but the current execution posture still flags an exit-telemetry gap (-250)
   - elevated entry friction penalizes high sensitivity (-20)
-  - exit telemetry gap penalizes high exit-model dependency (-15)
   - sample size is still limited, so aggressive profiles are discounted (-10)
   - recent guardrail pressure further discounts aggressive profiles (-10)
 
 ### opening_30m_single_vs_multileg
 
-- Score: `-1920`
+- Score: `-1655`
 - Executable now: `true`
 - Execution risk tier: `aggressive`
 - Entry friction sensitivity: `high`
@@ -183,8 +177,6 @@
   - latest trusted unlock-grade session age `none` day(s) is older than this profile's freshness ceiling `5` (-250)
   - profile requires broker-order audit coverage, which is not yet permitted by current execution policy (-250)
   - profile requires broker-activity audit coverage, which is not yet permitted by current execution policy (-250)
-  - profile requires reliable exit telemetry, but the current execution posture still flags an exit-telemetry gap (-250)
   - elevated entry friction penalizes high sensitivity (-20)
-  - exit telemetry gap penalizes high exit-model dependency (-15)
   - sample size is still limited, so aggressive profiles are discounted (-10)
   - recent guardrail pressure further discounts aggressive profiles (-10)

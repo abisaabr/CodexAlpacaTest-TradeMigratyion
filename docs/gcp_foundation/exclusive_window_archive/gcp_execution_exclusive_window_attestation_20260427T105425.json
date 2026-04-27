@@ -1,0 +1,16 @@
+{
+    "scope":  "paper_account_single_writer",
+    "confirmed_by":  "codex-steward",
+    "window_id":  "trusted-validation-session-vm-execution-paper-01",
+    "assertions":  {
+                       "session_starts_only_on_sanctioned_vm":  true,
+                       "no_other_machine_active":  true,
+                       "parallel_exception_path_not_running_broker_session":  true,
+                       "post_session_assimilation_reserved":  true
+                   },
+    "notes":  "Bounded exclusive window for the first sanctioned GCP trusted validation session.",
+    "target_vm_name":  "vm-execution-paper-01",
+    "window_starts_at":  "2026-04-27T10:49:44.0521815-04:00",
+    "confirmed_at":  "2026-04-27T10:50:44.5931497-04:00",
+    "window_expires_at":  "2026-04-27T11:22:44.0619023-04:00"
+}

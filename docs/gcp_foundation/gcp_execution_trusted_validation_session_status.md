@@ -2,11 +2,11 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-24T12:35:59.630574-04:00`
+- Generated at: `2026-04-27T10:54:26.255092-04:00`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
 - Readiness: `awaiting_exclusive_execution_window`
-- Runner branch: `codex/qqq-paper-portfolio`
+- Runner branch: `HEAD`
 - Runner commit: `f0080066c68d883286f4cb1b9c9e0edc601adf8d`
 - Exclusive window status: `awaiting_operator_confirmation`
 - Lease runtime validation: `validated_not_enforced`

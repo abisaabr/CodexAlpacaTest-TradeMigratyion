@@ -2,10 +2,10 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-23T16:35:12.933144-04:00`
+- Generated at: `2026-04-27T10:53:28.353653-04:00`
 - Status: `ready_for_post_session_assimilation`
 - Evidence source preference: `runtime_live`
-- Runner repo root: `C:\Users\abisa\Downloads\codexalpaca_repo_gcp_lease_lane_refreshed`
+- Runner repo root: `C:\Users\abisa\Downloads\codexalpaca_repo_vm_f008`
 - Runtime root: `C:\Users\abisa\Downloads\codexalpaca_runtime\multi_ticker_portfolio_live`
 - Preferred reports root: `C:\Users\abisa\Downloads\codexalpaca_runtime\multi_ticker_portfolio_live`
 - Session reports root: `C:\Users\abisa\Downloads\codexalpaca_runtime\multi_ticker_portfolio_live\runs`

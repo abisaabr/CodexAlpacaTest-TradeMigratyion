@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-24T12:39:04.734328-04:00",
+  "generated_at": "2026-04-27T10:30:56.353963-04:00",
   "status": "ready_to_arm_window",
   "next_operator_action": "arm_bounded_exclusive_window",
   "report_dir": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation",
@@ -16,7 +16,7 @@
   "launch_surface_audit_status": "local_broker_capable_surfaces_fenced_broker_flat",
   "launch_surface_broker_flat": true,
   "launch_surface_no_new_order_watch_clean": true,
-  "launch_surface_watch_duration_seconds": 181,
+  "launch_surface_watch_duration_seconds": 301,
   "launch_surface_newest_order_constant": true,
   "trader_process_absent": true,
   "ownership_enabled": true,

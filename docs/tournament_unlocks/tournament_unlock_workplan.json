@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-04-22T18:00:40.231183",
-  "unlock_registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_registry.json",
-  "unlock_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_handoff.json",
+  "generated_at": "2026-04-27T10:53:29.893681",
+  "unlock_registry_json": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\tournament_unlocks\\tournament_unlock_registry.json",
+  "unlock_handoff_json": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\tournament_unlocks\\tournament_unlock_handoff.json",
   "current_unlocked_profile": "down_choppy_coverage_ranked",
   "available_but_not_preferred": [
     "down_choppy_full_ready"
@@ -88,8 +88,7 @@
         "unlock_evidence_freshness",
         "risk_tier_cap",
         "broker_order_audit_coverage",
-        "broker_activity_audit_coverage",
-        "exit_telemetry"
+        "broker_activity_audit_coverage"
       ],
       "next_unlock_objectives": [
         "upgrade_execution_evidence_to_broad",
@@ -97,8 +96,7 @@
         "refresh_unlock_evidence_within_5_days",
         "raise_execution_risk_ceiling_to_aggressive",
         "land_trusted_broker_order_audit_sessions",
-        "land_trusted_broker_activity_audit_sessions",
-        "land_reliable_exit_telemetry"
+        "land_trusted_broker_activity_audit_sessions"
       ]
     }
   ]

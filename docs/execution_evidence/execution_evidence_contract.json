@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-04-22T18:00:40.596179",
-  "workplan_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\tournament_unlocks\\tournament_unlock_workplan.json",
-  "session_registry_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\session_reconciliation\\session_reconciliation_registry.json",
-  "session_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\session_reconciliation\\session_reconciliation_handoff.json",
-  "execution_handoff_json": "C:\\Users\\rabisaab\\Downloads\\CodexAlpacaTest-TradeMigratyion\\docs\\execution_calibration\\execution_calibration_handoff.json",
+  "generated_at": "2026-04-27T10:53:30.125279",
+  "workplan_json": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\tournament_unlocks\\tournament_unlock_workplan.json",
+  "session_registry_json": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\session_reconciliation\\session_reconciliation_registry.json",
+  "session_handoff_json": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\session_reconciliation\\session_reconciliation_handoff.json",
+  "execution_handoff_json": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\execution_calibration\\execution_calibration_handoff.json",
   "current_unlocked_profile": "down_choppy_coverage_ranked",
   "execution_mission_title": "Produce the next trusted broker-audited execution evidence package.",
-  "latest_traded_session_date": "2026-04-16",
-  "latest_traded_session_age_days": 6,
+  "latest_traded_session_date": "2026-04-23",
+  "latest_traded_session_age_days": 4,
   "contract_status": "gapped",
   "checks": [
     {
@@ -63,7 +63,7 @@
       "check_id": "completed_trade_count_positive",
       "summary": "The session must contain at least one completed trade to improve execution evidence beyond idle status.",
       "required": "completed_trade_count > 0",
-      "current": 5,
+      "current": 14,
       "passed": true
     },
     {
@@ -84,15 +84,15 @@
       "check_id": "latest_session_fresh_for_unlock",
       "summary": "The latest traded session must be recent enough to count toward unlock progression.",
       "required": "latest_traded_session_age_days <= 5",
-      "current": 6,
-      "passed": false
+      "current": 4,
+      "passed": true
     },
     {
       "check_id": "evidence_strength_progress",
       "summary": "Execution evidence should improve beyond `limited_entry_only` for the nearest unlock target.",
       "required": "execution_evidence_strength != limited_entry_only",
-      "current": "limited_entry_only",
-      "passed": false
+      "current": "limited",
+      "passed": true
     }
   ],
   "failed_checks": [
@@ -122,20 +122,6 @@
       "summary": "The session must be produced by a clean runner checkout that stamps the current unlock baseline.",
       "required": "runner_unlock_baseline_met = true",
       "current": false,
-      "passed": false
-    },
-    {
-      "check_id": "latest_session_fresh_for_unlock",
-      "summary": "The latest traded session must be recent enough to count toward unlock progression.",
-      "required": "latest_traded_session_age_days <= 5",
-      "current": 6,
-      "passed": false
-    },
-    {
-      "check_id": "evidence_strength_progress",
-      "summary": "Execution evidence should improve beyond `limited_entry_only` for the nearest unlock target.",
-      "required": "execution_evidence_strength != limited_entry_only",
-      "current": "limited_entry_only",
       "passed": false
     }
   ]
