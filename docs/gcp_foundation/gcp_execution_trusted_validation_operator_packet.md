@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-27T10:54:26.775745-04:00`
+- Generated at: `2026-04-27T11:27:43.571464-04:00`
 - Operator packet state: `ready_to_arm_window`
 - Project ID: `codexalpaca`
 - VM name: `vm-execution-paper-01`
@@ -26,6 +26,11 @@
 - Launch-surface audit status: `local_broker_capable_surfaces_fenced_broker_flat`
 - Launch-surface broker flat: `True`
 - Launch-surface no-new-order watch clean: `True`
+- Startup preflight status: `startup_preflight_passed`
+- Startup preflight startup-check status: `passed`
+- Startup preflight blocks launch: `False`
+- Startup preflight broker position count: `0`
+- Startup preflight open order count: `0`
 
 ## Commands
 
@@ -62,6 +67,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 ## Lifecycle Steps
 
 - Read the local launch-surface audit and require broker-flat, task-fenced, no-new-order evidence before arming.
+- Run the read-only VM startup preflight and require `startup_preflight_passed` before arming or launching.
 - Run the non-broker pre-arm preflight and require `ready_to_arm_window` before arming the exclusive window.
 - Pick a bounded exclusive window and confirm the temporary parallel runtime path is paused for that window.
 - Arm the exclusive window from the control-plane root and confirm the refreshed packets move to `ready_for_launch` / `ready_to_launch`.
@@ -94,6 +100,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 - `docs/gcp_foundation/gcp_execution_launch_surface_audit_handoff.md`
 - `docs/gcp_foundation/gcp_execution_prearm_preflight_handoff.md`
 - `docs/gcp_foundation/gcp_execution_session_completion_gate_handoff.md`
+- `docs/gcp_foundation/gcp_execution_startup_preflight_handoff.md`
 
 ## Guardrails
 
@@ -103,6 +110,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "<control-plane-root>\cleanr
 - Do not arm or launch a trusted session while VM runtime readiness starts with `blocked_`.
 - Do not arm the exclusive window if the non-broker pre-arm preflight is missing or blocked.
 - Do not arm the exclusive window if the launch-surface audit is missing, stale, not broker-flat, or not task-fenced.
+- Do not arm or launch if the latest read-only VM startup preflight is missing or blocked.
 - Do not run the VM session command if launch authorization is missing or blocked.
 - Do not enable shared-lease enforcement by default during the first trusted validation session.
 - Do not use unstamped VM runner provenance as strategy-promotion evidence.

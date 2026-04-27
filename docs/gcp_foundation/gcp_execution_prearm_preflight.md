@@ -2,7 +2,7 @@
 
 ## Snapshot
 
-- Generated at: `2026-04-27T10:30:56.353963-04:00`
+- Generated at: `2026-04-27T11:27:43.690854-04:00`
 - Status: `ready_to_arm_window`
 - Next operator action: `arm_bounded_exclusive_window`
 - VM name: `vm-execution-paper-01`

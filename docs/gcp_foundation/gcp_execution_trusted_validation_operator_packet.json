@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-27T10:54:26.775745-04:00",
+  "generated_at": "2026-04-27T11:27:43.571464-04:00",
   "project_id": "codexalpaca",
   "vm_name": "vm-execution-paper-01",
   "zone": "us-east1-b",
@@ -25,6 +25,12 @@
   "launch_surface_broker_flat": true,
   "launch_surface_no_new_order_watch_clean": true,
   "launch_surface_watch_duration_seconds": 301,
+  "startup_preflight_status": "startup_preflight_passed",
+  "startup_preflight_startup_check_status": "passed",
+  "startup_preflight_blocks_launch": false,
+  "startup_preflight_broker_position_count": 0,
+  "startup_preflight_open_order_count": 0,
+  "startup_preflight_failures": [],
   "runner_branch": "HEAD",
   "runner_commit": "f0080066c68d883286f4cb1b9c9e0edc601adf8d",
   "arm_window_command_template": "powershell -NoProfile -ExecutionPolicy Bypass -File \"<control-plane-root>\\cleanroom\\code\\qqq_options_30d_cleanroom\\arm_gcp_execution_exclusive_window.ps1\" -ControlPlaneRoot \"<control-plane-root>\" -VmName \"vm-execution-paper-01\" -ConfirmedBy \"<confirmed-by>\" -WindowStartsAt \"<window-starts-at>\" -WindowExpiresAt \"<window-expires-at>\" -ParallelPathState \"paused\" -MirrorToGcs",
@@ -50,10 +56,12 @@
     "docs/gcp_foundation/gcp_vm_runtime_readiness_handoff.md",
     "docs/gcp_foundation/gcp_execution_launch_surface_audit_handoff.md",
     "docs/gcp_foundation/gcp_execution_prearm_preflight_handoff.md",
-    "docs/gcp_foundation/gcp_execution_session_completion_gate_handoff.md"
+    "docs/gcp_foundation/gcp_execution_session_completion_gate_handoff.md",
+    "docs/gcp_foundation/gcp_execution_startup_preflight_handoff.md"
   ],
   "lifecycle_steps": [
     "Read the local launch-surface audit and require broker-flat, task-fenced, no-new-order evidence before arming.",
+    "Run the read-only VM startup preflight and require `startup_preflight_passed` before arming or launching.",
     "Run the non-broker pre-arm preflight and require `ready_to_arm_window` before arming the exclusive window.",
     "Pick a bounded exclusive window and confirm the temporary parallel runtime path is paused for that window.",
     "Arm the exclusive window from the control-plane root and confirm the refreshed packets move to `ready_for_launch` / `ready_to_launch`.",
@@ -80,7 +88,12 @@
     "Session completion gate: `evidence_gapped`",
     "Launch-surface audit status: `local_broker_capable_surfaces_fenced_broker_flat`",
     "Launch-surface broker flat: `True`",
-    "Launch-surface no-new-order watch clean: `True`"
+    "Launch-surface no-new-order watch clean: `True`",
+    "Startup preflight status: `startup_preflight_passed`",
+    "Startup preflight startup-check status: `passed`",
+    "Startup preflight blocks launch: `False`",
+    "Startup preflight broker position count: `0`",
+    "Startup preflight open order count: `0`"
   ],
   "guardrails": [
     "Do not arm the exclusive window until you are ready to actually reserve the paper-account slot.",
@@ -89,6 +102,7 @@
     "Do not arm or launch a trusted session while VM runtime readiness starts with `blocked_`.",
     "Do not arm the exclusive window if the non-broker pre-arm preflight is missing or blocked.",
     "Do not arm the exclusive window if the launch-surface audit is missing, stale, not broker-flat, or not task-fenced.",
+    "Do not arm or launch if the latest read-only VM startup preflight is missing or blocked.",
     "Do not run the VM session command if launch authorization is missing or blocked.",
     "Do not enable shared-lease enforcement by default during the first trusted validation session.",
     "Do not use unstamped VM runner provenance as strategy-promotion evidence.",

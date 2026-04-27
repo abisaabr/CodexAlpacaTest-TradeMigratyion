@@ -60,11 +60,13 @@ def build_payload(
     runtime_readiness: dict[str, Any] | None = None,
     session_completion_gate: dict[str, Any] | None = None,
     launch_surface_audit: dict[str, Any] | None = None,
+    startup_preflight: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     runner_provenance = runner_provenance or {}
     runtime_readiness = runtime_readiness or {}
     session_completion_gate = session_completion_gate or {}
     launch_surface_audit = launch_surface_audit or {}
+    startup_preflight = startup_preflight or {}
     exclusive_window_status = str(exclusive_window.get("exclusive_window_status") or "missing")
     trusted_validation_readiness = str(
         trusted_validation.get("trusted_validation_readiness") or "missing"
@@ -117,12 +119,28 @@ def build_payload(
         and launch_surface_watch_clean
     )
     launch_surface_audit_blocks_launch = not launch_surface_audit_clean
+    startup_preflight_status = str(startup_preflight.get("status") or "missing")
+    startup_preflight_blocks_launch = (
+        startup_preflight_status != "startup_preflight_passed"
+        or startup_preflight.get("blocks_launch") is True
+    )
+    startup_preflight_startup_check_status = str(
+        startup_preflight.get("startup_check_status") or "missing"
+    )
+    startup_preflight_broker_position_count = _int_or_none(
+        startup_preflight.get("broker_position_count")
+    )
+    startup_preflight_open_order_count = _int_or_none(startup_preflight.get("open_order_count"))
+    startup_preflight_failures = [
+        str(item) for item in list(startup_preflight.get("failures") or [])
+    ]
 
     operator_packet_state = "blocked"
     if (
         runner_provenance_blocks_launch
         or runtime_readiness_blocks_launch
         or launch_surface_audit_blocks_launch
+        or startup_preflight_blocks_launch
     ):
         operator_packet_state = "blocked"
     elif (
@@ -168,6 +186,7 @@ def build_payload(
 
     lifecycle_steps = [
         "Read the local launch-surface audit and require broker-flat, task-fenced, no-new-order evidence before arming.",
+        "Run the read-only VM startup preflight and require `startup_preflight_passed` before arming or launching.",
         "Run the non-broker pre-arm preflight and require `ready_to_arm_window` before arming the exclusive window.",
         "Pick a bounded exclusive window and confirm the temporary parallel runtime path is paused for that window.",
         "Arm the exclusive window from the control-plane root and confirm the refreshed packets move to `ready_for_launch` / `ready_to_launch`.",
@@ -196,6 +215,11 @@ def build_payload(
         f"Launch-surface audit status: `{launch_surface_audit_status}`",
         f"Launch-surface broker flat: `{launch_surface_broker_flat}`",
         f"Launch-surface no-new-order watch clean: `{launch_surface_watch_clean}`",
+        f"Startup preflight status: `{startup_preflight_status}`",
+        f"Startup preflight startup-check status: `{startup_preflight_startup_check_status}`",
+        f"Startup preflight blocks launch: `{startup_preflight_blocks_launch}`",
+        f"Startup preflight broker position count: `{startup_preflight_broker_position_count}`",
+        f"Startup preflight open order count: `{startup_preflight_open_order_count}`",
     ]
     review_targets = list(launch_pack.get("review_targets") or [])
     if runner_provenance_status != "missing":
@@ -222,6 +246,9 @@ def build_payload(
     session_completion_handoff = "docs/gcp_foundation/gcp_execution_session_completion_gate_handoff.md"
     if session_completion_handoff not in review_targets:
         review_targets.append(session_completion_handoff)
+    startup_preflight_handoff = "docs/gcp_foundation/gcp_execution_startup_preflight_handoff.md"
+    if startup_preflight_handoff not in review_targets:
+        review_targets.append(startup_preflight_handoff)
 
     runner_provenance_issue_codes = [
         str(issue.get("code"))
@@ -256,6 +283,12 @@ def build_payload(
         "launch_surface_broker_flat": launch_surface_broker_flat,
         "launch_surface_no_new_order_watch_clean": launch_surface_watch_clean,
         "launch_surface_watch_duration_seconds": launch_surface_watch_duration_seconds,
+        "startup_preflight_status": startup_preflight_status,
+        "startup_preflight_startup_check_status": startup_preflight_startup_check_status,
+        "startup_preflight_blocks_launch": startup_preflight_blocks_launch,
+        "startup_preflight_broker_position_count": startup_preflight_broker_position_count,
+        "startup_preflight_open_order_count": startup_preflight_open_order_count,
+        "startup_preflight_failures": startup_preflight_failures,
         "runner_branch": trusted_validation.get("runner_branch"),
         "runner_commit": trusted_validation.get("runner_commit"),
         "arm_window_command_template": arm_window_command_template,
@@ -274,6 +307,7 @@ def build_payload(
             "Do not arm or launch a trusted session while VM runtime readiness starts with `blocked_`.",
             "Do not arm the exclusive window if the non-broker pre-arm preflight is missing or blocked.",
             "Do not arm the exclusive window if the launch-surface audit is missing, stale, not broker-flat, or not task-fenced.",
+            "Do not arm or launch if the latest read-only VM startup preflight is missing or blocked.",
             "Do not run the VM session command if launch authorization is missing or blocked.",
             "Do not enable shared-lease enforcement by default during the first trusted validation session.",
             "Do not use unstamped VM runner provenance as strategy-promotion evidence.",
@@ -381,12 +415,18 @@ def write_handoff(path: Path, payload: dict[str, Any]) -> None:
         f"- Launch-surface audit blocks launch: `{payload.get('launch_surface_audit_blocks_launch')}`",
         f"- Launch-surface broker flat: `{payload.get('launch_surface_broker_flat')}`",
         f"- Launch-surface no-new-order watch clean: `{payload.get('launch_surface_no_new_order_watch_clean')}`",
+        f"- Startup preflight status: `{payload.get('startup_preflight_status')}`",
+        f"- Startup preflight startup-check status: `{payload.get('startup_preflight_startup_check_status')}`",
+        f"- Startup preflight blocks launch: `{payload.get('startup_preflight_blocks_launch')}`",
+        f"- Startup preflight broker position count: `{payload.get('startup_preflight_broker_position_count')}`",
+        f"- Startup preflight open order count: `{payload.get('startup_preflight_open_order_count')}`",
         "",
         "## Operator Rule",
         "",
         "- Use this packet as the single top-level checklist for the first sanctioned VM trusted validation session.",
         "- If the packet state is `blocked`, resolve the blocking gate and refresh packets before arming the window.",
         "- If the launch-surface audit blocks launch, do not arm the window even if older packets looked ready.",
+        "- If the startup preflight blocks launch, do not arm or launch; rerun it immediately before any new launch attempt.",
         "- If the packet says `ready_to_arm_window`, arm the window first and re-read the refreshed packets before launching anything.",
         "- Do not start the VM session unless the refreshed launch packet says `ready_to_launch`.",
         "- Always follow with post-session assimilation and exclusive-window closeout.",
@@ -412,6 +452,7 @@ def main() -> None:
         runtime_readiness=read_json(report_dir / "gcp_vm_runtime_readiness_status.json"),
         session_completion_gate=read_json(report_dir / "gcp_execution_session_completion_gate.json"),
         launch_surface_audit=read_json(report_dir / "gcp_execution_launch_surface_audit.json"),
+        startup_preflight=read_json(report_dir / "gcp_execution_startup_preflight_status.json"),
     )
     write_json(report_dir / "gcp_execution_trusted_validation_operator_packet.json", payload)
     write_markdown(report_dir / "gcp_execution_trusted_validation_operator_packet.md", payload)

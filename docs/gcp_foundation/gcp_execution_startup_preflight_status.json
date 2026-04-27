@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-04-27T11:27:17.208780-04:00",
+  "status": "startup_preflight_passed",
+  "blocks_launch": false,
+  "raw_status": "startup_preflight_passed",
+  "startup_check_status": "passed",
+  "would_allow_trading": true,
+  "broker_cleanup_allowed": false,
+  "submit_paper_orders": false,
+  "broker_position_count": 0,
+  "open_order_count": 0,
+  "underlying_count": 21,
+  "failures": [],
+  "pending_reasons": [],
+  "runner_commit": "a3b5e926d9bfec0ec83603770a778e7974e38398",
+  "runner_branch": "codex/qqq-paper-portfolio",
+  "source_bundle_sha256": "773b5cb33e02c88f2675bfa73400c6b156c71b8f48d634d61ad6987722f37474",
+  "source_bundle_file_count": 181,
+  "preflight_json_path": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation\\runtime_evidence\\startup_preflight\\20260427T152621Z\\startup_preflight.json",
+  "stderr_path": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane\\docs\\gcp_foundation\\runtime_evidence\\startup_preflight\\20260427T152621Z\\startup_preflight.stderr",
+  "gcs_evidence_uri": "gs://codexalpaca-control-us/gcp_foundation/startup_preflight_evidence/20260427T152621Z/startup_preflight.json",
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "issues": [],
+  "operator_read": [
+    "This packet distills read-only VM startup-preflight evidence; raw broker output should remain in ignored runtime evidence or GCS.",
+    "If status is not `startup_preflight_passed`, do not arm the exclusive window or launch a VM session.",
+    "The preflight must be rerun immediately before any sanctioned launch because market-data freshness is time-sensitive.",
+    "Passing this packet is necessary but not sufficient; exclusive-window, runtime, provenance, launch-surface, and pre-arm gates must also pass."
+  ]
+}

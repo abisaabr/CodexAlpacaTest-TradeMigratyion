@@ -18,16 +18,18 @@
 - Launch-surface audit blocks launch: `False`
 - Launch-surface broker flat: `True`
 - Launch-surface no-new-order watch clean: `True`
-- Startup preflight gate: `blocking_until_passed`
-- Latest startup preflight result: `startup_preflight_failed`
-- Latest startup preflight blockers: `IWM stock data stale at 189s`; `JPM stock data stale at 189s`
+- Startup preflight status: `startup_preflight_passed`
+- Startup preflight startup-check status: `passed`
+- Startup preflight blocks launch: `False`
+- Startup preflight broker position count: `0`
+- Startup preflight open order count: `0`
 
 ## Operator Rule
 
 - Use this packet as the single top-level checklist for the first sanctioned VM trusted validation session.
 - If the packet state is `blocked`, resolve the blocking gate and refresh packets before arming the window.
 - If the launch-surface audit blocks launch, do not arm the window even if older packets looked ready.
-- Run the read-only VM startup preflight immediately before arming. Do not arm or launch unless it returns `startup_preflight_passed`.
+- If the startup preflight blocks launch, do not arm or launch; rerun it immediately before any new launch attempt.
 - If the packet says `ready_to_arm_window`, arm the window first and re-read the refreshed packets before launching anything.
 - Do not start the VM session unless the refreshed launch packet says `ready_to_launch`.
 - Always follow with post-session assimilation and exclusive-window closeout.
