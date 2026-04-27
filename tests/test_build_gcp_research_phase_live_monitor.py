@@ -31,6 +31,7 @@ def test_live_monitor_detects_active_downloader() -> None:
             "batch_state": "RUNNING",
             "batch_run_duration": "123.45s",
             "gcs_final_artifacts_visible": False,
+            "latest_checkpoint_prefix": "gs://bucket/checkpoints/20260427T155608Z",
             "remote_observation": {
                 "container_name": "container",
                 "container_status": "Up 1 hour",
@@ -59,6 +60,7 @@ def test_live_monitor_detects_active_downloader() -> None:
     assert payload["latest_observed_symbol_family"] == "AMZN option contracts"
     assert payload["latest_observed_download_date"] == "2026-03-27"
     assert payload["promotion_review_state"] == "not_started"
+    assert payload["latest_checkpoint_prefix"] == "gs://bucket/checkpoints/20260427T155608Z"
     assert payload["hard_rules"]["trading_started"] is False
 
 
@@ -99,3 +101,25 @@ def test_live_monitor_detects_failed_job() -> None:
 
     assert payload["status"] == "failed_needs_diagnosis"
     assert payload["active_stage"] == "bootstrap_or_waiting"
+
+
+def test_handoff_preserves_latest_checkpoint_prefix(tmp_path: Path) -> None:
+    payload = MODULE.build_payload(
+        {
+            "batch_state": "RUNNING",
+            "batch_run_duration": "123s",
+            "gcs_final_artifacts_visible": False,
+            "latest_checkpoint_prefix": "gs://bucket/checkpoints/20260427T155608Z",
+            "remote_observation": {
+                "container_found": True,
+                "selected_contract_files": 1,
+            },
+        }
+    )
+
+    handoff_path = tmp_path / "handoff.md"
+    MODULE.write_handoff(handoff_path, payload)
+
+    assert "Latest checkpoint prefix: `gs://bucket/checkpoints/20260427T155608Z`" in handoff_path.read_text(
+        encoding="utf-8"
+    )

@@ -14,7 +14,8 @@ param(
     [switch]$MirrorToGcs,
     [string]$GcsFoundationPrefix = "gs://codexalpaca-control-us/gcp_foundation",
     [string]$GcsResearchPrefix = "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/phase19_live_monitor",
-    [string]$GcsFinalArtifactPrefix = "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase19_targeted_fill_diagnostic_20260427022000"
+    [string]$GcsFinalArtifactPrefix = "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase19_targeted_fill_diagnostic_20260427022000",
+    [string]$GcsCheckpointPrefix = "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/phase19_live_checkpoints"
 )
 
 $ErrorActionPreference = "Stop"
@@ -230,6 +231,16 @@ if ($GcsLsExitCode -eq 0) {
     $GcsFinalArtifactsVisible = $true
 }
 
+$LatestCheckpointPrefix = $null
+$OldErrorActionPreference = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+$CheckpointListing = & gcloud storage ls "$GcsCheckpointPrefix/" 2> $null
+$CheckpointLsExitCode = $LASTEXITCODE
+$ErrorActionPreference = $OldErrorActionPreference
+if ($CheckpointLsExitCode -eq 0 -and $CheckpointListing) {
+    $LatestCheckpointPrefix = [string](($CheckpointListing | Sort-Object | Select-Object -Last 1).TrimEnd("/"))
+}
+
 $Observation = [ordered]@{
     project_id = $ProjectId
     location = $Location
@@ -241,6 +252,7 @@ $Observation = [ordered]@{
     batch_state = $BatchState
     batch_run_duration = $BatchRunDuration
     gcs_final_artifacts_visible = $GcsFinalArtifactsVisible
+    latest_checkpoint_prefix = $LatestCheckpointPrefix
     artifact_upload_model = "final_exit_trap"
     runtime_evidence_path = $EvidenceDir
     remote_observation = $RemoteObservation

@@ -4,15 +4,15 @@
 - Batch state: `RUNNING`
 - Active stage: `download_option_market_data_for_selected_contracts`
 - Latest observed symbol family: `AMZN option contracts`
-- Latest observed download date: `2026-04-01`
+- Latest observed download date: `2026-04-16`
 - Selected-contract files: `266`
-- Raw download files: `17036`
-- Silver download files: `17302`
+- Raw download files: `17705`
+- Silver download files: `17972`
 - Replay files: `0`
 - Portfolio-report files: `0`
 - Promotion-review state: `not_started`
 - GCS final artifacts visible: `False`
-- Latest lightweight checkpoint: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/phase19_live_checkpoints/20260427T155608Z`
+- Latest checkpoint prefix: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/phase19_live_checkpoints/20260427T155608Z`
 
 ## Operator Rule
 
