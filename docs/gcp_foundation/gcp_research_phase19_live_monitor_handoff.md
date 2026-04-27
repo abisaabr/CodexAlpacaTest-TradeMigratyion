@@ -12,6 +12,7 @@
 - Portfolio-report files: `0`
 - Promotion-review state: `not_started`
 - GCS final artifacts visible: `False`
+- Latest lightweight checkpoint: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/phase19_live_checkpoints/20260427T155608Z`
 
 ## Operator Rule
 
