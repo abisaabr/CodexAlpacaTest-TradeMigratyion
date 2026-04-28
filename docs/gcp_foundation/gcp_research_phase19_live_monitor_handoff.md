@@ -82,13 +82,19 @@
 - Isolated stress min fill coverage: `0.8776`
 - Isolated stress max fill coverage: `0.966`
 - Wide-lag exit-policy job: `phase26-widelag-policy-20260428100000`
-- Wide-lag exit-policy state: `SCHEDULED`
+- Wide-lag exit-policy state: `SUCCEEDED`
 - Wide-lag exit-policy phase id: `phase26_widelag_exit_policy_20260428100000`
 - Wide-lag exit-policy launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase26_widelag_exit_policy_20260428100000/launch/`
 - Wide-lag exit-policy result root: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase26_widelag_exit_policy_20260428100000/`
 - Wide-lag exit-policy scope: four Phase24 AAPL/NVDA wide-lag candidates only
 - Wide-lag exit-policy purpose: `exit_policy_cost_sensitivity_for_wide_lag_candidates`
 - Wide-lag exit-policy promotion effect: `none_research_only`
+- Wide-lag exit-policy decision: `ready_for_governed_validation_review`
+- Wide-lag exit-policy eligible count: `1`
+- Wide-lag exit-policy review candidate: `AAPL` `b150__aapl__long_call__wide_reward__exit_360__liq_baseline`
+- Wide-lag exit-policy review candidate metrics: min net `$1715.93`, min test `$591.28`, fill `0.9474-1.0`, worst drawdown `$-3330.115`
+- Wide-lag exit-policy blocker counts: `fill_coverage_below_0.90=3`, `test_net_pnl_not_above_0=1`
+- Wide-lag exit-policy blocked leads: `NVDA exit_300`, `AAPL exit_210`, `NVDA exit_360`
 
 ## Operator Rule
 
@@ -107,7 +113,9 @@
 - Phase25 completed as the isolated economic stress packet for the single full-stack fill-feasible INTC candidate.
 - Phase25 blocked INTC from promotion review. The candidate remains positive under lighter cost assumptions, but harsher `10/10` cost stress turns net and holdout PnL negative, and `30/30 slip25 fee1.00` has negative holdout PnL.
 - The current research read is `cost_sensitive_research_lead`, not a governed validation candidate.
-- Phase26 is active as the non-broker-facing exit-policy and cost-sensitivity diagnostic for the AAPL/NVDA wide-lag candidates.
+- Phase26 completed as the non-broker-facing exit-policy and cost-sensitivity diagnostic for the AAPL/NVDA wide-lag candidates.
+- Phase26 opened one research/governed-validation review candidate: `AAPL` `b150__aapl__long_call__wide_reward__exit_360__liq_baseline`.
+- Phase26 did not authorize deployment. The candidate remains research review only and still requires governance review plus clean broker-audited paper-session evidence before any activation discussion.
 - This is research-only. Do not arm windows, start trading, change live manifests, or change risk policy from this packet.
 
 ## Next Research Step
@@ -116,4 +124,4 @@ Do not promote the Phase22/Phase23 candidates from the current evidence. Keep th
 
 Keep INTC in research-only hold. The next safe research step is execution-cost sensitivity work and exit-policy design across the AAPL/NVDA wide-lag candidates, with explicit spread/slippage assumptions. Do not relax gates or modify live strategy selection from Phase24 or Phase25 alone.
 
-Phase26 is now executing that next safe research step. Monitor the Batch job and GCS result root above. Do not promote candidates, relax gates, or modify live strategy selection from Phase26 launch alone.
+Phase26 completed that next safe research step. Do not promote candidates, relax gates, or modify live strategy selection from Phase26 alone. The next safe step is to publish a governance review packet for the AAPL research candidate and keep the blocked NVDA/AAPL leads in data-repair or strategy-design review.

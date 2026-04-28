@@ -134,7 +134,7 @@ The institutional read is that INTC is not a promotion candidate today. It is a 
 Phase26 has been launched as the next non-broker-facing research step for the remaining AAPL/NVDA wide-lag candidates. This is an exit-policy and cost-sensitivity diagnostic, not a promotion packet and not a live-manifest change.
 
 - Job: `phase26-widelag-policy-20260428100000`
-- Initial state: `SCHEDULED`
+- State: `SUCCEEDED`
 - Phase id: `phase26_widelag_exit_policy_20260428100000`
 - Scope: four Phase24 wide-lag-only or short-lag-conditional candidates across `AAPL` and `NVDA`
 - Profiles: `30/30 slip25 fee1.00`, `30/30 slip50 fee1.50`, `60/60 slip25 fee1.00`, `60/60 slip50 fee1.50`, `60/90 slip25 fee1.00`, `60/120 slip50 fee1.50`
@@ -143,6 +143,15 @@ Phase26 has been launched as the next non-broker-facing research step for the re
 - Promotion effect: `none_research_only`
 
 Phase26 should answer whether the AAPL/NVDA leads are merely short-exit-lag mismatches or whether their economics break under realistic wider-lag and higher-cost assumptions.
+
+Phase26 opened one research/governed-validation review candidate and kept three candidates blocked:
+
+- `AAPL` `b150__aapl__long_call__wide_reward__exit_360__liq_baseline`: eligible for research review only, min net `$1715.93`, min holdout/test net `$591.28`, fill `0.9474-1.0`, min option trades `36`, worst drawdown `$-3330.115`, no blockers.
+- `NVDA` `b150__nvda__long_call__tight_reward__exit_300__liq_tight`: blocked by `fill_coverage_below_0.90`, min net `$2521.905`, min holdout/test net `$658.86`, fill `0.8657-0.9701`.
+- `AAPL` `b150__aapl__long_call__wide_reward__exit_210__liq_tight`: blocked by `fill_coverage_below_0.90`, min net `$1331.56`, min holdout/test net `$321.165`, fill `0.8871-0.9032`.
+- `NVDA` `b150__nvda__long_call__tight_reward__exit_360__liq_tight`: blocked by `fill_coverage_below_0.90` and `test_net_pnl_not_above_0`, min net `$2124.85`, min holdout/test net `$-29.005`, fill `0.8525-0.9672`.
+
+The Phase26 capital plan allocates only `25%` research weight to the AAPL review candidate and leaves `$18750` unallocated. This is intentionally conservative. It is not an instruction to update live strategy selection or risk policy.
 
 ## Safe Use
 
@@ -202,4 +211,4 @@ Do not promote candidates, relax gates, or change strategy/risk policy from Phas
 
 Keep INTC in research-only hold. Do not promote candidates, relax gates, or change strategy/risk policy from Phase24 or Phase25 alone. The next safest research step is not more promotion review; it is execution-cost sensitivity work and exit-policy design across the AAPL/NVDA wide-lag candidates, with explicit spread/slippage assumptions.
 
-Phase26 is now the active diagnostic for that next step. Do not promote candidates, relax gates, or change strategy/risk policy from Phase26 launch alone.
+Phase26 completed the active diagnostic for that next step. Do not promote candidates, relax gates, or change strategy/risk policy from Phase26 alone. The next safe step is a governance review packet for the AAPL research candidate plus a separate fill-repair or strategy-design decision for the blocked NVDA/AAPL leads.
