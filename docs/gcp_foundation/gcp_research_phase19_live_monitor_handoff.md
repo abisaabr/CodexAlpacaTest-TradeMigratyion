@@ -1,8 +1,8 @@
 # GCP Research Phase Live Monitor Handoff
 
-- Status: `phase25_intc_isolated_stress_active`
+- Status: `phase25_intc_isolated_stress_blocked_no_promotion`
 - Phase19 batch state: `FAILED`
-- Active stage: `phase25_intc_isolated_stress`
+- Active stage: `none_phase25_complete`
 - Latest observed symbol family: `AMZN option contracts`
 - Latest observed download date: `2026-04-16`
 - Selected-contract files at checkpoint: `266`
@@ -67,11 +67,20 @@
 - Exit-lag feasibility candidate scope: `five profitable Phase23 blocked candidates`
 - Exit-lag feasibility purpose: `classify no-exit-bar gaps as data sparsity, execution timing mismatch, or strategy design issue`
 - Isolated stress job: `phase25-intc-stress-20260428085000`
-- Isolated stress state at launch: `SCHEDULED`
+- Isolated stress state: `SUCCEEDED`
 - Isolated stress phase id: `phase25_intc_isolated_stress_20260428085000`
 - Isolated stress launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase25_intc_isolated_stress_20260428085000/launch/`
 - Isolated stress candidate: `INTC` `b150__intc__long_call__tight_reward__exit_210__liq_baseline`
 - Isolated stress purpose: `single-candidate economic stress after full-stack fill feasibility`
+- Isolated stress portfolio report: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase25_intc_isolated_stress_20260428085000/portfolio_report/research_portfolio_report.json`
+- Isolated stress promotion packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase25_intc_isolated_stress_20260428085000/promotion_review_packet/research_promotion_review_packet.json`
+- Isolated stress decision: `research_only_blocked`
+- Isolated stress eligible count: `0`
+- Isolated stress blockers: `fill_coverage_below_0.90`, `test_net_pnl_not_above_0`, `min_net_pnl_not_positive`
+- Isolated stress min net PnL: `$-2726.7175`
+- Isolated stress min test PnL: `$-305.9375`
+- Isolated stress min fill coverage: `0.8776`
+- Isolated stress max fill coverage: `0.966`
 
 ## Operator Rule
 
@@ -87,11 +96,13 @@
 - Phase24 found one full-stack fill-feasible candidate: `INTC` `b150__intc__long_call__tight_reward__exit_210__liq_baseline`.
 - Phase24 found four wide-lag-only or short-lag-conditional candidates: `AAPL` wide-reward 360 passes at `30` minutes, while `NVDA` 300, `NVDA` 360, and `AAPL` 210 require `60` minutes or more.
 - Phase24 is a feasibility classification packet, not a promotion packet.
-- Phase25 is active as the isolated economic stress packet for the single full-stack fill-feasible INTC candidate.
+- Phase25 completed as the isolated economic stress packet for the single full-stack fill-feasible INTC candidate.
+- Phase25 blocked INTC from promotion review. The candidate remains positive under lighter cost assumptions, but harsher `10/10` cost stress turns net and holdout PnL negative, and `30/30 slip25 fee1.00` has negative holdout PnL.
+- The current research read is `cost_sensitive_research_lead`, not a governed validation candidate.
 - This is research-only. Do not arm windows, start trading, change live manifests, or change risk policy from this packet.
 
 ## Next Research Step
 
 Do not promote the Phase22/Phase23 candidates from the current evidence. Keep the `0.90` fill-coverage gate intact and require clean broker-audited paper-session evidence before any activation discussion.
 
-Monitor Phase25 until it emits portfolio and promotion-review packets. Passing Phase25 would be a governed validation-review candidate signal only, not a live manifest authorization. Do not relax gates or modify live strategy selection from Phase24 or Phase25 alone.
+Keep INTC in research-only hold. The next safe research step is execution-cost sensitivity work and exit-policy design across the AAPL/NVDA wide-lag candidates, with explicit spread/slippage assumptions. Do not relax gates or modify live strategy selection from Phase24 or Phase25 alone.
