@@ -1,21 +1,21 @@
 {
   "packet": "gcp_research_promotion_board_from_packets",
-  "generated_at_utc": "2026-04-28T17:42:56Z",
+  "generated_at_utc": "2026-04-28T17:52:00Z",
   "broker_facing": false,
   "trading_effect": "none",
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
   "promotion_allowed_from_this_packet": false,
-  "packet_count": 16,
-  "candidate_count": 257,
+  "packet_count": 18,
+  "candidate_count": 288,
   "eligible_for_promotion_review_count": 0,
   "new_governed_validation_candidates": 0,
   "dominant_blocker": "fill_coverage_below_0.90",
   "aggregate_blocker_counts": {
-    "fill_coverage_below_0.90": 257,
-    "option_trades_below_20": 79,
-    "test_net_pnl_not_above_0": 128,
-    "min_net_pnl_not_positive": 96
+    "fill_coverage_below_0.90": 288,
+    "option_trades_below_20": 100,
+    "test_net_pnl_not_above_0": 149,
+    "min_net_pnl_not_positive": 119
   },
   "best_research_only_leads": [
     {
@@ -298,6 +298,36 @@
       }
     },
     {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/CRM/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "CRM",
+      "decision": "research_only_blocked",
+      "candidate_count": 11,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 11,
+        "min_net_pnl_not_positive": 8,
+        "option_trades_below_20": 1,
+        "test_net_pnl_not_above_0": 6
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__crm__long_put__balanced_reward__exit_360__liq_tight",
+        "symbol": "CRM",
+        "source_strategy_id": "crm__broad150__trend_long_put_research",
+        "directional_option_type": "put",
+        "min_net_pnl": 417.3025,
+        "min_test_net_pnl": 2644.145,
+        "min_fill_coverage": 0.4808,
+        "min_option_trade_count": 25,
+        "worst_drawdown": -4213.4075,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90"
+        ]
+      }
+    },
+    {
       "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/GE/promotion_review_packet/research_promotion_review_packet.json",
       "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
       "symbol": "GE",
@@ -563,6 +593,38 @@
         "promotion_status": "research_only_blocked",
         "promotion_blockers": [
           "fill_coverage_below_0.90"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/XLI/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "XLI",
+      "decision": "research_only_blocked",
+      "candidate_count": 20,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 20,
+        "min_net_pnl_not_positive": 15,
+        "option_trades_below_20": 20,
+        "test_net_pnl_not_above_0": 15
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__xli__long_call__wide_reward__exit_360__liq_tight",
+        "symbol": "XLI",
+        "source_strategy_id": "xli__broad150__trend_long_call_research",
+        "directional_option_type": "call",
+        "min_net_pnl": 805.96,
+        "min_test_net_pnl": 1111.4525,
+        "min_fill_coverage": 0.0811,
+        "max_fill_coverage": 0.2432,
+        "min_option_trade_count": 3,
+        "worst_drawdown": -783.96,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90",
+          "option_trades_below_20"
         ]
       }
     },

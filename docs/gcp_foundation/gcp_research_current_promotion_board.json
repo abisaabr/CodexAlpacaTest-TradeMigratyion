@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T17:47:12Z",
+  "generated_at_utc": "2026-04-28T17:52:00Z",
   "state": "phase32_phase32b_and_phase34_running",
   "broker_facing": false,
   "live_manifest_effect": "none",
@@ -10,10 +10,9 @@
     {
       "job_id": "phase32-unexplored-top100-tranche1-20260428120500",
       "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
-      "latest_state": "RUNNING",
+      "latest_state": "SUCCEEDED",
       "latest_task_counts": {
-        "RUNNING": 2,
-        "SUCCEEDED": 13
+        "SUCCEEDED": 15
       },
       "location": "us-central1",
       "task_count": 15,
@@ -45,8 +44,8 @@
       "phase_id": "phase32b_unexplored_top100_tranche2_20260428122500",
       "latest_state": "RUNNING",
       "latest_task_counts": {
-        "RUNNING": 2,
-        "PENDING": 10,
+        "RUNNING": 3,
+        "PENDING": 9,
         "SUCCEEDED": 3
       },
       "location": "us-central1",
@@ -115,7 +114,7 @@
     }
   ],
   "current_interim_summary": {
-    "completed_shards_scanned": 16,
+    "completed_shards_scanned": 18,
     "new_governed_validation_candidates": 0,
     "dominant_blocker": "fill_coverage_below_0.90",
     "best_research_only_leads": [
@@ -308,7 +307,7 @@
   ],
   "current_recommendation": {
     "paper_validation": "AAPL_exit360_only_if_operator_explicitly_arms_exclusive_window",
-    "research": "monitor Phase32 and Phase32b to completion; Phase34 and Phase35 blocked the current top fill-repair leads, so the next research step is liquidity-gated candidate discovery rather than economic stress on low-fill names",
+    "research": "Phase32 completed with no new governed-validation candidate; monitor Phase32b to completion, then build portfolio-level aggregation and prioritize liquidity-gated candidate discovery rather than economic stress on low-fill names",
     "promotion_policy": "do_not_promote_any_candidate_without_broker_audited_bounded_paper_validation"
   },
   "hard_rules": [

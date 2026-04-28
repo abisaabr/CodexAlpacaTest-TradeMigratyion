@@ -2,8 +2,8 @@
 
 ## State
 
-- Generated at: `2026-04-28T17:42:56Z`
-- Completed output packets scanned: `16`
+- Generated at: `2026-04-28T17:52:00Z`
+- Completed output packets scanned: `18`
 - New governed-validation candidates: `0`
 - Dominant blocker: `fill_coverage_below_0.90`
 - Broker-facing: `false`
@@ -12,8 +12,8 @@
 
 ## Active Jobs
 
-- `phase32-unexplored-top100-tranche1-20260428120500`: `RUNNING`, `13` succeeded / `2` running.
-- `phase32b-unexplored-top100-tranche2-20260428122500`: `RUNNING`, `3` succeeded / `2` running / `10` pending.
+- `phase32-unexplored-top100-tranche1-20260428120500`: `SUCCEEDED`, `15` succeeded.
+- `phase32b-unexplored-top100-tranche2-20260428122500`: `RUNNING`, `3` succeeded / `3` running / `9` pending.
 
 ## Best Research-Only Leads
 
@@ -30,7 +30,7 @@
 
 No new candidate is eligible for governed validation from the completed shards. Positive-economics names are fill-repair research leads only.
 
-Phase34 completed its top-lead exit-lag feasibility diagnostic and did not find a fill-feasible path for `AMD`, `GE`, `ORCL`, or `PLTR`. Phase35 also completed and blocked the new top `UNH` lead, with max fill `0.6792`.
+Phase32 completed all 15 shards with no new governed-validation candidates. Phase34 completed its top-lead exit-lag feasibility diagnostic and did not find a fill-feasible path for `AMD`, `GE`, `ORCL`, or `PLTR`. Phase35 also completed and blocked the new top `UNH` lead, with max fill `0.6792`.
 
 ## Next Safe Step
 

@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_phase32_phase32b_interim_board",
-  "generated_at_utc": "2026-04-28T17:42:56Z",
+  "generated_at_utc": "2026-04-28T17:52:00Z",
   "broker_facing": false,
   "trading_effect": "none",
   "live_manifest_effect": "none",
@@ -9,10 +9,9 @@
   "active_jobs": [
     {
       "job_id": "phase32-unexplored-top100-tranche1-20260428120500",
-      "state": "RUNNING",
+      "state": "SUCCEEDED",
       "counts": {
-        "SUCCEEDED": 13,
-        "RUNNING": 2
+        "SUCCEEDED": 15
       }
     },
     {
@@ -20,12 +19,12 @@
       "state": "RUNNING",
       "counts": {
         "SUCCEEDED": 3,
-        "RUNNING": 2,
-        "PENDING": 10
+        "RUNNING": 3,
+        "PENDING": 9
       }
     }
   ],
-  "completed_shards_scanned": 16,
+  "completed_shards_scanned": 18,
   "new_governed_validation_candidates": 0,
   "dominant_blocker": "fill_coverage_below_0.90",
   "completed_shard_decisions": [
@@ -52,6 +51,18 @@
       "best_min_test_net_pnl": 2713.1575,
       "best_min_fill_coverage": 0.6923,
       "best_worst_drawdown": -1435.7275
+    },
+    {
+      "phase": "phase32",
+      "symbol": "CRM",
+      "decision": "research_only_blocked",
+      "candidate_count": 11,
+      "eligible": 0,
+      "best_candidate": "b150__crm__long_put__balanced_reward__exit_360__liq_tight",
+      "best_min_net_pnl": 417.3025,
+      "best_min_test_net_pnl": 2644.145,
+      "best_min_fill_coverage": 0.4808,
+      "best_worst_drawdown": -4213.4075
     },
     {
       "phase": "phase32",
@@ -112,6 +123,18 @@
       "best_min_test_net_pnl": 1193.055,
       "best_min_fill_coverage": 0.3704,
       "best_worst_drawdown": -1322.0975
+    },
+    {
+      "phase": "phase32",
+      "symbol": "XLI",
+      "decision": "research_only_blocked",
+      "candidate_count": 20,
+      "eligible": 0,
+      "best_candidate": "b150__xli__long_call__wide_reward__exit_360__liq_tight",
+      "best_min_net_pnl": 805.96,
+      "best_min_test_net_pnl": 1111.4525,
+      "best_min_fill_coverage": 0.0811,
+      "best_worst_drawdown": -783.96
     },
     {
       "phase": "phase32",
@@ -211,8 +234,8 @@
     }
   ],
   "next_safe_steps": [
-    "wait for remaining Phase32 and Phase32b shards to complete",
-    "build Phase33 portfolio-level aggregation only from completed shard packets",
+    "wait for remaining Phase32b shards to complete",
+    "build Phase33 portfolio-level aggregation from completed Phase32 and available Phase32b shard packets",
     "treat positive but fill-blocked candidates as redesign leads, not promotion candidates",
     "prioritize liquidity-gated candidate discovery because Phase34 and Phase35 did not repair the top fill-blocked leads through exit-lag changes",
     "do not modify live manifests or risk policy"

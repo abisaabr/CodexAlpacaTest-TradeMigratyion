@@ -1,7 +1,7 @@
 # GCP Research Promotion Board From Packets Handoff
 
-- Packet count: `16`
-- Candidate count: `257`
+- Packet count: `18`
+- Candidate count: `288`
 - Eligible for promotion review: `0`
 - New governed-validation candidates: `0`
 - Dominant blocker: `fill_coverage_below_0.90`

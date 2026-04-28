@@ -2,9 +2,9 @@
 
 ## State
 
-- Generated at UTC: `2026-04-28T17:42:56Z`
-- Packet count: `16`
-- Candidate count: `257`
+- Generated at UTC: `2026-04-28T17:52:00Z`
+- Packet count: `18`
+- Candidate count: `288`
 - Eligible for promotion review: `0`
 - New governed-validation candidates: `0`
 - Dominant blocker: `fill_coverage_below_0.90`

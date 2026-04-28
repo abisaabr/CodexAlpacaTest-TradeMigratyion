@@ -4,8 +4,8 @@
 
 - Phase ID: `phase32_unexplored_top100_tranche1_20260428120500`
 - Batch job: `phase32-unexplored-top100-tranche1-20260428120500`
-- Latest state: `RUNNING`
-- Latest task counts: `13` succeeded / `2` running
+- Latest state: `SUCCEEDED`
+- Latest task counts: `15` succeeded
 - Location: `codexalpaca/us-central1`
 - Tasks: `15`
 - Parallelism: `5`
@@ -32,7 +32,7 @@ Monitor the Batch job and shard artifacts under:
 
 `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/`
 
-If all shards succeed, aggregate per-symbol promotion packets into a portfolio-level review. If any shard fails, repair only the affected symbol shard.
+All shards succeeded. Aggregate per-symbol promotion packets into a portfolio-level review before any promotion decision.
 
 ## Hard Rules
 

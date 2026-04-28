@@ -1,14 +1,13 @@
 {
   "packet": "gcp_research_phase32_unexplored_top100_tranche1_status",
-  "generated_at_utc": "2026-04-28T17:42:56Z",
+  "generated_at_utc": "2026-04-28T17:52:00Z",
   "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
   "gcp_batch_job": "phase32-unexplored-top100-tranche1-20260428120500",
   "gcp_project": "codexalpaca",
   "gcp_location": "us-central1",
-  "latest_state": "RUNNING",
+  "latest_state": "SUCCEEDED",
   "latest_task_counts": {
-    "RUNNING": 2,
-    "SUCCEEDED": 13
+    "SUCCEEDED": 15
   },
   "broker_facing": false,
   "trading_effect": "none",
@@ -63,8 +62,7 @@
     "promotion_result_before_aggregation": "not_allowed"
   },
   "next_safe_steps": [
-    "monitor Batch task completion and failed chunks",
-    "if all shards finish cleanly, aggregate per-symbol promotion packets into a portfolio-level review",
+    "aggregate per-symbol promotion packets into a portfolio-level review",
     "if shards fail from recoverable API/data issues, repair only the affected symbol shard",
     "do not modify live manifests or risk policy from Phase32 output"
   ],

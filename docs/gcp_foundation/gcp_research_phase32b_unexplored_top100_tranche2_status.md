@@ -5,7 +5,7 @@
 - Phase ID: `phase32b_unexplored_top100_tranche2_20260428122500`
 - Batch job: `phase32b-unexplored-top100-tranche2-20260428122500`
 - Latest state: `RUNNING`
-- Latest task counts: `3` succeeded / `2` running / `10` pending
+- Latest task counts: `3` succeeded / `3` running / `9` pending
 - Location: `codexalpaca/us-central1`
 - Tasks: `15`
 - Parallelism: `3`
