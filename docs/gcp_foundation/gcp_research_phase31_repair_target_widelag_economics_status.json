@@ -1,0 +1,88 @@
+{
+  "packet": "gcp_research_phase31_repair_target_widelag_economics_status",
+  "generated_at_utc": "2026-04-28T15:29:00Z",
+  "state": "queued",
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "exclusive_window_effect": "none",
+  "gcp_project": "codexalpaca",
+  "batch_location": "us-central1",
+  "batch_job": "phase31-widelag-econ-20260428112900",
+  "batch_state_at_launch": "QUEUED",
+  "wave_id": "top100_liquidity_research_20260426",
+  "phase_id": "phase31_repair_target_widelag_economics_20260428112900",
+  "source_runner_commit": "95379e4166b4",
+  "source_uri": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_95379e4166b4.zip",
+  "result_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase31_repair_target_widelag_economics_20260428112900/",
+  "launch_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase31_repair_target_widelag_economics_20260428112900/launch/",
+  "candidate_scope": [
+    "b150__amzn__long_call__wide_reward__exit_360__liq_baseline",
+    "b150__amzn__long_call__wide_reward__exit_360__liq_tight",
+    "b150__avgo__long_call__tight_reward__exit_360__liq_baseline",
+    "b150__avgo__long_call__wide_reward__exit_300__liq_baseline",
+    "b150__msft__long_call__wide_reward__exit_360__liq_baseline",
+    "b150__mu__long_call__balanced_reward__exit_300__liq_tight",
+    "b150__mu__long_call__tight_reward__exit_360__liq_tight"
+  ],
+  "underlyings": [
+    "AMZN",
+    "AVGO",
+    "MSFT",
+    "MU"
+  ],
+  "profiles": [
+    {
+      "name": "phase31_lag60_exit90_slip25_fee100",
+      "max_entry_lag_minutes": 60,
+      "max_exit_lag_minutes": 90,
+      "slippage_bps": 25,
+      "fee_per_contract": 1.0
+    },
+    {
+      "name": "phase31_lag60_exit120_slip50_fee150",
+      "max_entry_lag_minutes": 60,
+      "max_exit_lag_minutes": 120,
+      "slippage_bps": 50,
+      "fee_per_contract": 1.5
+    },
+    {
+      "name": "phase31_lag90_exit180_slip75_fee200",
+      "max_entry_lag_minutes": 90,
+      "max_exit_lag_minutes": 180,
+      "slippage_bps": 75,
+      "fee_per_contract": 2.0
+    },
+    {
+      "name": "phase31_lag120_exit240_slip100_fee250",
+      "max_entry_lag_minutes": 120,
+      "max_exit_lag_minutes": 240,
+      "slippage_bps": 100,
+      "fee_per_contract": 2.5
+    }
+  ],
+  "gates": {
+    "fill_coverage_minimum": 0.9,
+    "min_option_trades": 20,
+    "min_test_net_pnl": 0,
+    "initial_cash": 25000,
+    "max_positions": 4,
+    "max_strategies_per_symbol": 2,
+    "max_symbol_weight": 0.25
+  },
+  "source_evidence": {
+    "phase29_decision": "research_only_blocked_exit_lag",
+    "phase29_full_stack_fill_gate_pass_count": 0,
+    "phase29_wide_lag_only_candidate_count": 7,
+    "phase29_shortest_passing_exit_lag_range_minutes": "60-90"
+  },
+  "expected_decision": "ready_for_governed_validation_review_or_quarantine_wide_lag_candidates",
+  "hard_rules": [
+    "do_not_trade",
+    "do_not_arm_window",
+    "do_not_start_broker_facing_session",
+    "do_not_modify_live_manifests",
+    "do_not_change_risk_policy",
+    "do_not_relax_0_90_fill_gate"
+  ]
+}
