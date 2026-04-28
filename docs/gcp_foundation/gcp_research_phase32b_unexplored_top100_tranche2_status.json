@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_phase32b_unexplored_top100_tranche2_status",
-  "generated_at_utc": "2026-04-28T17:25:36Z",
+  "generated_at_utc": "2026-04-28T17:37:46Z",
   "phase_id": "phase32b_unexplored_top100_tranche2_20260428122500",
   "gcp_batch_job": "phase32b-unexplored-top100-tranche2-20260428122500",
   "gcp_project": "codexalpaca",
@@ -8,8 +8,8 @@
   "latest_state": "RUNNING",
   "latest_task_counts": {
     "RUNNING": 2,
-    "PENDING": 11,
-    "SUCCEEDED": 2
+    "PENDING": 10,
+    "SUCCEEDED": 3
   },
   "broker_facing": false,
   "trading_effect": "none",

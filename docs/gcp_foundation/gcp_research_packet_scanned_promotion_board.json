@@ -1,0 +1,640 @@
+{
+  "packet": "gcp_research_promotion_board_from_packets",
+  "generated_at_utc": "2026-04-28T17:30:26Z",
+  "broker_facing": false,
+  "trading_effect": "none",
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "promotion_allowed_from_this_packet": false,
+  "packet_count": 14,
+  "candidate_count": 229,
+  "eligible_for_promotion_review_count": 0,
+  "new_governed_validation_candidates": 0,
+  "dominant_blocker": "fill_coverage_below_0.90",
+  "aggregate_blocker_counts": {
+    "fill_coverage_below_0.90": 229,
+    "option_trades_below_20": 67,
+    "test_net_pnl_not_above_0": 112,
+    "min_net_pnl_not_positive": 80
+  },
+  "best_research_only_leads": [
+    {
+      "candidate_variant_id": "b150__amd__long_call__balanced_reward__exit_360__liq_tight",
+      "symbol": "AMD",
+      "source_strategy_id": "amd__broad150__trend_long_call_research",
+      "directional_option_type": "call",
+      "min_net_pnl": 5834.6425,
+      "min_test_net_pnl": 2713.1575,
+      "min_fill_coverage": 0.6923,
+      "min_option_trade_count": 54,
+      "worst_drawdown": -1435.7275,
+      "promotion_status": "research_only_blocked",
+      "promotion_blockers": [
+        "fill_coverage_below_0.90"
+      ]
+    },
+    {
+      "candidate_variant_id": "b150__ge__long_put__tight_reward__exit_360__liq_tight",
+      "symbol": "GE",
+      "source_strategy_id": "ge__broad150__trend_long_put_research",
+      "directional_option_type": "put",
+      "min_net_pnl": 4128.955,
+      "min_test_net_pnl": 2747.52,
+      "min_fill_coverage": 0.2703,
+      "min_option_trade_count": 20,
+      "worst_drawdown": -1331.36,
+      "promotion_status": "research_only_blocked",
+      "promotion_blockers": [
+        "fill_coverage_below_0.90"
+      ]
+    },
+    {
+      "candidate_variant_id": "b150__orcl__long_call__balanced_reward__exit_360__liq_tight",
+      "symbol": "ORCL",
+      "source_strategy_id": "orcl__broad150__trend_long_call_research",
+      "directional_option_type": "call",
+      "min_net_pnl": 3584.26,
+      "min_test_net_pnl": 4254.38,
+      "min_fill_coverage": 0.4865,
+      "min_option_trade_count": 36,
+      "worst_drawdown": -5076.86,
+      "promotion_status": "research_only_blocked",
+      "promotion_blockers": [
+        "fill_coverage_below_0.90"
+      ]
+    },
+    {
+      "candidate_variant_id": "b150__pltr__long_put__balanced_reward__exit_300__liq_tight",
+      "symbol": "PLTR",
+      "source_strategy_id": "pltr__broad150__trend_long_put_research",
+      "directional_option_type": "put",
+      "min_net_pnl": 2860.17,
+      "min_test_net_pnl": 2353.3925,
+      "min_fill_coverage": 0.625,
+      "min_option_trade_count": 50,
+      "worst_drawdown": -1832.59,
+      "promotion_status": "research_only_blocked",
+      "promotion_blockers": [
+        "fill_coverage_below_0.90"
+      ]
+    },
+    {
+      "candidate_variant_id": "b150__amat__long_call__tight_reward__exit_210__liq_baseline",
+      "symbol": "AMAT",
+      "source_strategy_id": "amat__broad150__trend_long_call_research",
+      "directional_option_type": "call",
+      "min_net_pnl": 2532.795,
+      "min_test_net_pnl": 548.595,
+      "min_fill_coverage": 0.1053,
+      "max_fill_coverage": 0.3684,
+      "min_option_trade_count": 10,
+      "worst_drawdown": -992.5575,
+      "promotion_status": "research_only_blocked",
+      "promotion_blockers": [
+        "fill_coverage_below_0.90",
+        "option_trades_below_20"
+      ]
+    },
+    {
+      "candidate_variant_id": "b150__kre__long_call__wide_reward__exit_360__liq_baseline",
+      "symbol": "KRE",
+      "source_strategy_id": "kre__broad150__trend_long_call_research",
+      "directional_option_type": "call",
+      "min_net_pnl": 2005.715,
+      "min_test_net_pnl": 1605.65,
+      "min_fill_coverage": 0.122,
+      "max_fill_coverage": 0.3659,
+      "min_option_trade_count": 5,
+      "worst_drawdown": -1378.3625,
+      "promotion_status": "research_only_blocked",
+      "promotion_blockers": [
+        "fill_coverage_below_0.90",
+        "option_trades_below_20"
+      ]
+    },
+    {
+      "candidate_variant_id": "b150__jpm__long_call__tight_reward__exit_300__liq_tight",
+      "symbol": "JPM",
+      "source_strategy_id": "jpm__broad150__trend_long_call_research",
+      "directional_option_type": "call",
+      "min_net_pnl": 1780.5725,
+      "min_test_net_pnl": 1193.055,
+      "min_fill_coverage": 0.3704,
+      "min_option_trade_count": 20,
+      "worst_drawdown": -1322.0975,
+      "promotion_status": "research_only_blocked",
+      "promotion_blockers": [
+        "fill_coverage_below_0.90"
+      ]
+    },
+    {
+      "candidate_variant_id": "b150__now__long_put__tight_reward__exit_360__liq_baseline",
+      "symbol": "NOW",
+      "source_strategy_id": "now__broad150__trend_long_put_research",
+      "directional_option_type": "put",
+      "min_net_pnl": 1641.445,
+      "min_test_net_pnl": -1088.665,
+      "min_fill_coverage": 0.37,
+      "max_fill_coverage": 0.61,
+      "min_option_trade_count": 37,
+      "worst_drawdown": -1621.51,
+      "promotion_status": "research_only_blocked",
+      "promotion_blockers": [
+        "fill_coverage_below_0.90",
+        "test_net_pnl_not_above_0"
+      ]
+    },
+    {
+      "candidate_variant_id": "b150__xom__long_call__wide_reward__exit_300__liq_tight",
+      "symbol": "XOM",
+      "source_strategy_id": "xom__broad150__trend_long_call_research",
+      "directional_option_type": "call",
+      "min_net_pnl": 1588.35,
+      "min_test_net_pnl": 2788.5925,
+      "min_fill_coverage": 0.5294,
+      "min_option_trade_count": 27,
+      "worst_drawdown": -4311.6975,
+      "promotion_status": "research_only_blocked",
+      "promotion_blockers": [
+        "fill_coverage_below_0.90"
+      ]
+    },
+    {
+      "candidate_variant_id": "b150__goog__long_call__wide_reward__exit_360__liq_baseline",
+      "symbol": "GOOG",
+      "source_strategy_id": "goog__broad150__trend_long_call_research",
+      "directional_option_type": "call",
+      "min_net_pnl": 1165.495,
+      "min_test_net_pnl": 4.71,
+      "min_fill_coverage": 0.575,
+      "min_option_trade_count": 23,
+      "worst_drawdown": -3020.005,
+      "promotion_status": "research_only_blocked",
+      "promotion_blockers": [
+        "fill_coverage_below_0.90"
+      ]
+    },
+    {
+      "candidate_variant_id": "b150__tqqq__long_call__wide_reward__exit_300__liq_tight",
+      "symbol": "TQQQ",
+      "source_strategy_id": "tqqq__broad150__trend_long_call_research",
+      "directional_option_type": "call",
+      "min_net_pnl": 1146.865,
+      "min_test_net_pnl": 190.505,
+      "min_fill_coverage": 0.3158,
+      "min_option_trade_count": 24,
+      "worst_drawdown": -2667.58,
+      "promotion_status": "research_only_blocked",
+      "promotion_blockers": [
+        "fill_coverage_below_0.90"
+      ]
+    },
+    {
+      "candidate_variant_id": "b150__bkng__long_call__wide_reward__exit_360__liq_tight",
+      "symbol": "BKNG",
+      "source_strategy_id": "bkng__broad150__trend_long_call_research",
+      "directional_option_type": "call",
+      "min_net_pnl": 984.64,
+      "min_test_net_pnl": 455.82,
+      "min_fill_coverage": 0.25,
+      "max_fill_coverage": 0.4375,
+      "min_option_trade_count": 4,
+      "worst_drawdown": -656.61,
+      "promotion_status": "research_only_blocked",
+      "promotion_blockers": [
+        "fill_coverage_below_0.90",
+        "option_trades_below_20"
+      ]
+    }
+  ],
+  "review_candidates": [],
+  "packet_summaries": [
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/AMAT/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "AMAT",
+      "decision": "research_only_blocked",
+      "candidate_count": 16,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 16,
+        "option_trades_below_20": 16,
+        "test_net_pnl_not_above_0": 5
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__amat__long_call__tight_reward__exit_210__liq_baseline",
+        "symbol": "AMAT",
+        "source_strategy_id": "amat__broad150__trend_long_call_research",
+        "directional_option_type": "call",
+        "min_net_pnl": 2532.795,
+        "min_test_net_pnl": 548.595,
+        "min_fill_coverage": 0.1053,
+        "max_fill_coverage": 0.3684,
+        "min_option_trade_count": 10,
+        "worst_drawdown": -992.5575,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90",
+          "option_trades_below_20"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/AMD/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "AMD",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 18,
+        "test_net_pnl_not_above_0": 3
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__amd__long_call__balanced_reward__exit_360__liq_tight",
+        "symbol": "AMD",
+        "source_strategy_id": "amd__broad150__trend_long_call_research",
+        "directional_option_type": "call",
+        "min_net_pnl": 5834.6425,
+        "min_test_net_pnl": 2713.1575,
+        "min_fill_coverage": 0.6923,
+        "min_option_trade_count": 54,
+        "worst_drawdown": -1435.7275,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/BAC/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "BAC",
+      "decision": "research_only_blocked",
+      "candidate_count": 11,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 11,
+        "min_net_pnl_not_positive": 10,
+        "test_net_pnl_not_above_0": 11
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__bac__long_call__tight_reward__exit_360__liq_tight",
+        "symbol": "BAC",
+        "source_strategy_id": "bac__broad150__trend_long_call_research",
+        "directional_option_type": "call",
+        "min_net_pnl": 548.9125,
+        "min_test_net_pnl": -2016.9475,
+        "min_fill_coverage": 0.5741,
+        "max_fill_coverage": 0.7037,
+        "min_option_trade_count": 31,
+        "worst_drawdown": -2692.3225,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90",
+          "test_net_pnl_not_above_0"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/GE/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "GE",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 18,
+        "min_net_pnl_not_positive": 1,
+        "option_trades_below_20": 11
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__ge__long_put__tight_reward__exit_360__liq_tight",
+        "symbol": "GE",
+        "source_strategy_id": "ge__broad150__trend_long_put_research",
+        "directional_option_type": "put",
+        "min_net_pnl": 4128.955,
+        "min_test_net_pnl": 2747.52,
+        "min_fill_coverage": 0.2703,
+        "min_option_trade_count": 20,
+        "worst_drawdown": -1331.36,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/GOOG/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "GOOG",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 18,
+        "min_net_pnl_not_positive": 2,
+        "test_net_pnl_not_above_0": 16
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__goog__long_call__wide_reward__exit_360__liq_baseline",
+        "symbol": "GOOG",
+        "source_strategy_id": "goog__broad150__trend_long_call_research",
+        "directional_option_type": "call",
+        "min_net_pnl": 1165.495,
+        "min_test_net_pnl": 4.71,
+        "min_fill_coverage": 0.575,
+        "min_option_trade_count": 23,
+        "worst_drawdown": -3020.005,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/JPM/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "JPM",
+      "decision": "research_only_blocked",
+      "candidate_count": 12,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 12,
+        "min_net_pnl_not_positive": 8,
+        "option_trades_below_20": 8,
+        "test_net_pnl_not_above_0": 6
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__jpm__long_call__tight_reward__exit_300__liq_tight",
+        "symbol": "JPM",
+        "source_strategy_id": "jpm__broad150__trend_long_call_research",
+        "directional_option_type": "call",
+        "min_net_pnl": 1780.5725,
+        "min_test_net_pnl": 1193.055,
+        "min_fill_coverage": 0.3704,
+        "min_option_trade_count": 20,
+        "worst_drawdown": -1322.0975,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/ORCL/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "ORCL",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 18,
+        "min_net_pnl_not_positive": 2,
+        "test_net_pnl_not_above_0": 6
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__orcl__long_call__balanced_reward__exit_360__liq_tight",
+        "symbol": "ORCL",
+        "source_strategy_id": "orcl__broad150__trend_long_call_research",
+        "directional_option_type": "call",
+        "min_net_pnl": 3584.26,
+        "min_test_net_pnl": 4254.38,
+        "min_fill_coverage": 0.4865,
+        "min_option_trade_count": 36,
+        "worst_drawdown": -5076.86,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/PLTR/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "PLTR",
+      "decision": "research_only_blocked",
+      "candidate_count": 31,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 31,
+        "min_net_pnl_not_positive": 13,
+        "test_net_pnl_not_above_0": 13
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__pltr__long_put__balanced_reward__exit_300__liq_tight",
+        "symbol": "PLTR",
+        "source_strategy_id": "pltr__broad150__trend_long_put_research",
+        "directional_option_type": "put",
+        "min_net_pnl": 2860.17,
+        "min_test_net_pnl": 2353.3925,
+        "min_fill_coverage": 0.625,
+        "min_option_trade_count": 50,
+        "worst_drawdown": -1832.59,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/TQQQ/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "TQQQ",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 18,
+        "min_net_pnl_not_positive": 13,
+        "test_net_pnl_not_above_0": 16
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__tqqq__long_call__wide_reward__exit_300__liq_tight",
+        "symbol": "TQQQ",
+        "source_strategy_id": "tqqq__broad150__trend_long_call_research",
+        "directional_option_type": "call",
+        "min_net_pnl": 1146.865,
+        "min_test_net_pnl": 190.505,
+        "min_fill_coverage": 0.3158,
+        "min_option_trade_count": 24,
+        "worst_drawdown": -2667.58,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/XLE/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "XLE",
+      "decision": "research_only_blocked",
+      "candidate_count": 9,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 9,
+        "min_net_pnl_not_positive": 7,
+        "option_trades_below_20": 1,
+        "test_net_pnl_not_above_0": 1
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__xle__long_call__balanced_reward__exit_210__liq_tight",
+        "symbol": "XLE",
+        "source_strategy_id": "xle__broad150__trend_long_call_research",
+        "directional_option_type": "call",
+        "min_net_pnl": 880.62,
+        "min_test_net_pnl": 1492.55,
+        "min_fill_coverage": 0.5968,
+        "min_option_trade_count": 37,
+        "worst_drawdown": -2067.7525,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/XOM/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "XOM",
+      "decision": "research_only_blocked",
+      "candidate_count": 12,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 12,
+        "min_net_pnl_not_positive": 7
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__xom__long_call__wide_reward__exit_300__liq_tight",
+        "symbol": "XOM",
+        "source_strategy_id": "xom__broad150__trend_long_call_research",
+        "directional_option_type": "call",
+        "min_net_pnl": 1588.35,
+        "min_test_net_pnl": 2788.5925,
+        "min_fill_coverage": 0.5294,
+        "min_option_trade_count": 27,
+        "worst_drawdown": -4311.6975,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32b_unexplored_top100_tranche2_20260428122500/data_shards/BKNG/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32b_unexplored_top100_tranche2_20260428122500",
+      "symbol": "BKNG",
+      "decision": "research_only_blocked",
+      "candidate_count": 17,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 17,
+        "min_net_pnl_not_positive": 9,
+        "option_trades_below_20": 17,
+        "test_net_pnl_not_above_0": 11
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__bkng__long_call__wide_reward__exit_360__liq_tight",
+        "symbol": "BKNG",
+        "source_strategy_id": "bkng__broad150__trend_long_call_research",
+        "directional_option_type": "call",
+        "min_net_pnl": 984.64,
+        "min_test_net_pnl": 455.82,
+        "min_fill_coverage": 0.25,
+        "max_fill_coverage": 0.4375,
+        "min_option_trade_count": 4,
+        "worst_drawdown": -656.61,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90",
+          "option_trades_below_20"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32b_unexplored_top100_tranche2_20260428122500/data_shards/KRE/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32b_unexplored_top100_tranche2_20260428122500",
+      "symbol": "KRE",
+      "decision": "research_only_blocked",
+      "candidate_count": 12,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 12,
+        "min_net_pnl_not_positive": 4,
+        "option_trades_below_20": 12,
+        "test_net_pnl_not_above_0": 6
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__kre__long_call__wide_reward__exit_360__liq_baseline",
+        "symbol": "KRE",
+        "source_strategy_id": "kre__broad150__trend_long_call_research",
+        "directional_option_type": "call",
+        "min_net_pnl": 2005.715,
+        "min_test_net_pnl": 1605.65,
+        "min_fill_coverage": 0.122,
+        "max_fill_coverage": 0.3659,
+        "min_option_trade_count": 5,
+        "worst_drawdown": -1378.3625,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90",
+          "option_trades_below_20"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32b_unexplored_top100_tranche2_20260428122500/data_shards/NOW/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32b_unexplored_top100_tranche2_20260428122500",
+      "symbol": "NOW",
+      "decision": "research_only_blocked",
+      "candidate_count": 19,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 19,
+        "min_net_pnl_not_positive": 4,
+        "option_trades_below_20": 2,
+        "test_net_pnl_not_above_0": 18
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__now__long_put__tight_reward__exit_360__liq_baseline",
+        "symbol": "NOW",
+        "source_strategy_id": "now__broad150__trend_long_put_research",
+        "directional_option_type": "put",
+        "min_net_pnl": 1641.445,
+        "min_test_net_pnl": -1088.665,
+        "min_fill_coverage": 0.37,
+        "max_fill_coverage": 0.61,
+        "min_option_trade_count": 37,
+        "worst_drawdown": -1621.51,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90",
+          "test_net_pnl_not_above_0"
+        ]
+      }
+    }
+  ],
+  "hard_rules": [
+    "do_not_trade",
+    "do_not_arm_window",
+    "do_not_start_broker_facing_session",
+    "do_not_modify_live_manifests",
+    "do_not_change_risk_policy",
+    "do_not_relax_0_90_fill_gate"
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T17:30:26Z",
+  "generated_at_utc": "2026-04-28T17:37:46Z",
   "state": "phase32_phase32b_and_phase34_running",
   "broker_facing": false,
   "live_manifest_effect": "none",
@@ -12,8 +12,8 @@
       "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
       "latest_state": "RUNNING",
       "latest_task_counts": {
-        "RUNNING": 5,
-        "SUCCEEDED": 10
+        "RUNNING": 4,
+        "SUCCEEDED": 11
       },
       "location": "us-central1",
       "task_count": 15,
@@ -46,8 +46,8 @@
       "latest_state": "RUNNING",
       "latest_task_counts": {
         "RUNNING": 2,
-        "PENDING": 11,
-        "SUCCEEDED": 2
+        "PENDING": 10,
+        "SUCCEEDED": 3
       },
       "location": "us-central1",
       "task_count": 15,
@@ -97,7 +97,7 @@
     }
   ],
   "current_interim_summary": {
-    "completed_shards_scanned": 13,
+    "completed_shards_scanned": 14,
     "new_governed_validation_candidates": 0,
     "dominant_blocker": "fill_coverage_below_0.90",
     "best_research_only_leads": [
@@ -136,6 +136,15 @@
         "min_fill_coverage": 0.625,
         "worst_drawdown": -1832.59,
         "decision": "research_only_blocked_fill_repair_lead"
+      },
+      {
+        "symbol": "AMAT",
+        "candidate_variant_id": "b150__amat__long_call__tight_reward__exit_210__liq_baseline",
+        "min_net_pnl": 2532.795,
+        "min_test_net_pnl": 548.595,
+        "min_fill_coverage": 0.1053,
+        "worst_drawdown": -992.5575,
+        "decision": "research_only_blocked_low_fill_data_repair_lead"
       },
       {
         "symbol": "KRE",

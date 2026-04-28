@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_phase32_phase32b_interim_board",
-  "generated_at_utc": "2026-04-28T17:30:26Z",
+  "generated_at_utc": "2026-04-28T17:37:46Z",
   "broker_facing": false,
   "trading_effect": "none",
   "live_manifest_effect": "none",
@@ -11,21 +11,21 @@
       "job_id": "phase32-unexplored-top100-tranche1-20260428120500",
       "state": "RUNNING",
       "counts": {
-        "SUCCEEDED": 10,
-        "RUNNING": 5
+        "SUCCEEDED": 11,
+        "RUNNING": 4
       }
     },
     {
       "job_id": "phase32b-unexplored-top100-tranche2-20260428122500",
       "state": "RUNNING",
       "counts": {
-        "SUCCEEDED": 2,
+        "SUCCEEDED": 3,
         "RUNNING": 2,
-        "PENDING": 11
+        "PENDING": 10
       }
     }
   ],
-  "completed_shards_scanned": 13,
+  "completed_shards_scanned": 14,
   "new_governed_validation_candidates": 0,
   "dominant_blocker": "fill_coverage_below_0.90",
   "completed_shard_decisions": [
@@ -64,6 +64,18 @@
       "best_min_test_net_pnl": 4254.38,
       "best_min_fill_coverage": 0.4865,
       "best_worst_drawdown": -5076.86
+    },
+    {
+      "phase": "phase32",
+      "symbol": "AMAT",
+      "decision": "research_only_blocked",
+      "candidate_count": 16,
+      "eligible": 0,
+      "best_candidate": "b150__amat__long_call__tight_reward__exit_210__liq_baseline",
+      "best_min_net_pnl": 2532.795,
+      "best_min_test_net_pnl": 548.595,
+      "best_min_fill_coverage": 0.1053,
+      "best_worst_drawdown": -992.5575
     },
     {
       "phase": "phase32",

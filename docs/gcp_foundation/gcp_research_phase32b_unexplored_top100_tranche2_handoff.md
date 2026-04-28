@@ -7,7 +7,7 @@ Phase32b is active as a non-broker-facing research Batch job:
 - Job: `phase32b-unexplored-top100-tranche2-20260428122500`
 - Phase: `phase32b_unexplored_top100_tranche2_20260428122500`
 - Latest status: `RUNNING`
-- Latest task counts: `2` succeeded / `2` running / `11` pending
+- Latest task counts: `3` succeeded / `2` running / `10` pending
 - Task count: `15`
 - Parallelism: `3`
 - Symbols: `NOW`, `BKNG`, `MA`, `CSCO`, `JNJ`, `CVX`, `WMT`, `HOOD`, `KRE`, `CAT`, `GS`, `IBM`, `SLV`, `XLK`, `BA`
