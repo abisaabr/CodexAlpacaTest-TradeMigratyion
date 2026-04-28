@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T20:45:00Z",
+  "generated_at_utc": "2026-04-28T20:58:00Z",
   "state": "phase32b_completed_phase37_phase38_running_phase36_completed",
   "broker_facing": false,
   "live_manifest_effect": "none",
@@ -167,8 +167,8 @@
       "phase_id": "phase37_top10_weekly_atm_20260428183723",
       "latest_state": "RUNNING",
       "latest_task_counts": {
-        "SUCCEEDED": 5,
-        "RUNNING": 5
+        "SUCCEEDED": 9,
+        "RUNNING": 1
       },
       "location": "us-central1",
       "task_count": 10,

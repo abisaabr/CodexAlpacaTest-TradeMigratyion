@@ -6,7 +6,7 @@
 - Broker-facing: `false`
 - Live manifest effect: `none`
 - Risk policy effect: `none`
-- Active Batch jobs: `phase37-top10-atm-20260428183723` (`RUNNING`, 5 succeeded / 5 running at last check) and `phase38-dense-top10-20260428203428` (`RUNNING`, 2 running / 8 pending at last check). Phase32b and Phase36 both completed with all shards succeeded and are awaiting aggregation.
+- Active Batch jobs: `phase37-top10-atm-20260428183723` (`RUNNING`, 9 succeeded / 1 running at last check) and `phase38-dense-top10-20260428203428` (`RUNNING`, 2 running / 8 pending at last check). Phase32b and Phase36 both completed with all shards succeeded and are awaiting aggregation.
 
 ## Bounded-Validation Candidates
 
