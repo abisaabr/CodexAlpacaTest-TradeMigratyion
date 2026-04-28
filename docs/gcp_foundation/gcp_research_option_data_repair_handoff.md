@@ -1,6 +1,6 @@
 # GCP Research Option Data Repair Handoff
 
-- Status: `phase22_ready_for_governed_validation_review_research_only`
+- Status: `phase23_candidate_stress_holdout_active`
 - Runner branch: `codex/qqq-paper-portfolio`
 - Runner commit: `952aea4`
 - Tool: `scripts/build_option_data_repair_plan.py`
@@ -45,6 +45,14 @@
 - Phase22 blocker counts: `fill_coverage_below_0.90=5`, `test_net_pnl_not_above_0=2`
 - Phase22 research-only capital plan: `AAPL=25%`, `INTC=25%`, `NVDA=25%`, `unallocated=25%`
 - Phase22 caveat: `wide_exit_lag_diagnostic_not_deployment_authorization`
+- Active stress job: `phase23-candidate-stress-20260428062500`
+- Active stress state at launch: `SCHEDULED`
+- Active stress phase id: `phase23_candidate_stress_holdout_20260428062500`
+- Active stress launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase23_candidate_stress_holdout_20260428062500/launch/`
+- Active stress candidate scope: `six Phase22 review candidates only`
+- Active stress underlyings: `AAPL`, `INTC`, `NVDA`
+- Active stress profiles: `10/10`, `30/30`, `60/60`, `60/90`, `60/120`, `60/180 high-cost`
+- Active stress holdout: `test_date_count=5`
 
 ## Why This Exists
 
@@ -58,6 +66,8 @@ Phase22 completed as a research-only wide-exit-lag diagnostic using the same rep
 
 Phase22 does not authorize live manifest, strategy-selection, or risk-policy changes. The pass is a governed-validation review signal only and must be reviewed against strategy governance, paper-session execution evidence, and stricter stress/holdout checks before any activation discussion.
 
+Phase23 was launched as the candidate-only stress/holdout step for the six Phase22 review candidates. It deliberately narrows compute to `AAPL`, `INTC`, and `NVDA`, reruns the same option-aware research path with shorter-lag controls and wider-lag stress, and increases the holdout split to five most-recent filled trade dates. Its output should decide whether Phase22 is a robust review signal or only a lag-sensitive artifact.
+
 ## Safe Use
 
 Phase22 is complete. Use the Phase22 promotion packet as the current research-only review queue, not as a deployment packet. The current eligible review candidates are:
@@ -69,7 +79,7 @@ Phase22 is complete. Use the Phase22 promotion packet as the current research-on
 - `b150__nvda__long_call__tight_reward__exit_360__liq_tight`
 - `b150__intc__long_call__wide_reward__exit_210__liq_baseline`
 
-Treat these as research/governed-validation review only. The next safe research step is candidate-only stress and holdout validation that explicitly compares Phase21 shorter-lag failures against Phase22 wider-lag passes.
+Treat these as research/governed-validation review only. Phase23 is now running candidate-only stress and holdout validation that explicitly compares Phase21 shorter-lag failures against Phase22 wider-lag passes.
 
 If a shard fails or times out, prefer a narrower retry for the failed underlying/date ranges, not another broad monolithic rerun. If a completed shard still has fill gaps, copy or expose that shard's downloader manifest and selected-contract root, then run:
 
@@ -102,4 +112,4 @@ Then run the recommended command in the plan. It should use `--no-include-option
 
 ## Next Operator Decision
 
-Build the governed-validation review packet for the six Phase22 candidates and run candidate-only stress/holdout validation. Keep the `0.90` fill-coverage gate intact, preserve the non-broker-facing posture, and require clean broker-audited paper-session evidence before any live manifest or strategy-selection change.
+Monitor Phase23 until it emits portfolio and promotion-review packets. Keep the `0.90` fill-coverage gate intact, preserve the non-broker-facing posture, and require clean broker-audited paper-session evidence before any live manifest or strategy-selection change.

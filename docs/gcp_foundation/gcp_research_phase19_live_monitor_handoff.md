@@ -1,6 +1,6 @@
 # GCP Research Phase Live Monitor Handoff
 
-- Status: `phase22_ready_for_governed_validation_review_research_only`
+- Status: `phase23_candidate_stress_holdout_active`
 - Phase19 batch state: `FAILED`
 - Active stage: `none_phase19_closed_phase22_complete`
 - Latest observed symbol family: `AMZN option contracts`
@@ -38,6 +38,14 @@
 - Diagnostic eligible symbols: `AAPL`, `INTC`, `NVDA`
 - Diagnostic blocker counts: `fill_coverage_below_0.90=5`, `test_net_pnl_not_above_0=2`
 - Diagnostic caveat: `wide_exit_lag_diagnostic_not_deployment_authorization`
+- Candidate stress job: `phase23-candidate-stress-20260428062500`
+- Candidate stress state at launch: `SCHEDULED`
+- Candidate stress phase id: `phase23_candidate_stress_holdout_20260428062500`
+- Candidate stress launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase23_candidate_stress_holdout_20260428062500/launch/`
+- Candidate stress scope: `six Phase22 review candidates only`
+- Candidate stress underlyings: `AAPL`, `INTC`, `NVDA`
+- Candidate stress profiles: `10/10`, `30/30`, `60/60`, `60/90`, `60/120`, `60/180 high-cost`
+- Candidate stress holdout: `test_date_count=5`
 
 ## Operator Rule
 
@@ -46,8 +54,9 @@
 - Phase21 succeeded but found no promotion-review eligible candidates under shorter-lag replay assumptions.
 - Phase22 succeeded and opened a research-only governed-validation review queue for six candidates, but only under wider exit-lag assumptions.
 - Treat Phase22 as a diagnostic review signal, not a production promotion or deployment authorization.
+- Phase23 is the active candidate-only stress/holdout validation for those six candidates.
 - This is research-only. Do not arm windows, start trading, change live manifests, or change risk policy from this packet.
 
 ## Next Research Step
 
-Build a candidate-only governed-validation review packet for the six Phase22 candidates and run stress/holdout validation that explicitly compares the shorter-lag Phase21 failure against the wider-lag Phase22 pass. Keep the `0.90` fill-coverage gate intact and require clean broker-audited paper-session evidence before any activation discussion.
+Monitor Phase23 until it emits portfolio and promotion-review packets. Use the result to classify whether the Phase22 pass is robust under shorter-lag controls and five-date holdout, or only a wide-lag artifact. Keep the `0.90` fill-coverage gate intact and require clean broker-audited paper-session evidence before any activation discussion.
