@@ -2,11 +2,11 @@
 
 ## State
 
-- State: `phase32b_completed_phase37_phase38_running_phase36_completed`
+- State: `phase37_complete_atm_blocked_phase38_running_coverage_gap_identified`
 - Broker-facing: `false`
 - Live manifest effect: `none`
 - Risk policy effect: `none`
-- Active Batch jobs: `phase37-top10-atm-20260428183723` (`RUNNING`, 9 succeeded / 1 running at last check) and `phase38-dense-top10-20260428203428` (`RUNNING`, 2 running / 8 pending at last check). Phase32b and Phase36 both completed with all shards succeeded and are awaiting aggregation.
+- Active Batch job: `phase38-dense-top10-20260428203428` (`RUNNING`, 3 succeeded / 2 running / 5 pending at last check). Phase37 completed and was aggregated; Phase32b and Phase36 are already included in the completed wave rollup.
 
 ## Bounded-Validation Candidates
 
@@ -36,18 +36,21 @@ One candidate is ready for a bounded paper-validation operator decision:
 - Phase35 completed and blocked `UNH`; max fill was `0.6792`, below the mandatory `0.90` gate.
 - Phase32 completed all 15 shards with no new governed-validation candidates.
 - Phase32b completed all 15 shards and is ready for wave-level aggregation; no Phase32b result can be promoted directly without the rollup and gate review.
-- Phase37 is active as a top-10 liquid-underlying weekly ATM lane using `0-7` DTE, ATM-only contracts, and `entry_liquidity_first_research_only` replay; `MSFT` and `NVDA` shards are visible as completed at this checkpoint.
+- Phase37 completed as a top-10 liquid-underlying weekly ATM lane using `0-7` DTE, ATM-only contracts, and `entry_liquidity_first_research_only` replay. Its rollup scanned `183` candidates, found `0` eligible, and classified all candidates as `selected_contract_universe_gap`; max min-fill was only `0.1111`.
 - The local QQQ dense cleanroom downloader succeeded for `2026-03-18` through `2026-04-17` with `2794/2794` successful contract-day requests and `96.242%` dense selected-contract-day fill. This is a data-foundation repair template, not a promotion packet.
-- Phase38 is active as the direct dense-universe fill diagnostic for `SPY`, `NVDA`, `QQQ`, `AMZN`, `TSLA`, `MSFT`, `IWM`, `AAPL`, `META`, and `MU`; it builds a daily `0-7` DTE ATM +/- 5 strike universe before download/replay to determine whether sparse selected-contract construction is the dominant fill-rate bottleneck.
+- Phase38 is active as the direct dense-universe fill diagnostic for `SPY`, `NVDA`, `QQQ`, `AMZN`, `TSLA`, `MSFT`, `IWM`, `AAPL`, `META`, and `MU`; the first visible shards (`MSFT`, `NVDA`, `QQQ`) are still blocked by `selected_contract_universe_gap`.
+- Phase38 dense-universe packets for visible shards selected only `4` trade dates, not the full intended `2026-03-02` to `2026-04-23` window. The next engineering fix is dense-universe reference-date coverage diagnostics and repair.
 - Runner commit `5578a6803ae7` adds the wave-level rollup tool that aggregates shard-level portfolio reports into one capital plan, fill-failure map, data-repair queue, strategy-redesign queue, and promotion-review packet.
 - Runner commit `6dca362e41bf` hardens the rollup to infer fill-failure reasons from older shard packets.
+- Runner commit `83e2803b4aab` adds the fill-experiment comparison tool so sparse, ATM-only, dense, and future stock/ETF fallback lanes can be compared under one gate.
 - Completed Phase32/Phase32b/Phase36 rollup scanned `45` source reports and `640` candidates; `0` are eligible for governed promotion review. Fill blockers are `276` entry timing gaps, `339` exit timing gaps, and `25` mixed low-fill gaps.
+- Fill comparison between the completed event-sparse rollup and Phase37 ATM-only rollup concludes `continue_dense_or_broader_contract_universe_repair`; ATM-only is worse than sparse/event-selected fill and is not a promotion path.
 
 ## Current Recommendation
 
 - Paper validation: keep scope to `AAPL` exit-360 only, and only if an exclusive execution window is explicitly armed.
-- Research: aggregate completed Phase32/Phase32b/Phase36 packets now; continue monitoring Phase37 and Phase38 to completion, then compare Phase37 ATM-only fill against Phase38 dense-universe fill before deciding whether candidates need data repair or strategy/exit redesign.
-- Aggregation: use `scripts/build_research_wave_portfolio_rollup.py` after shards are staged locally so promotion review is systematic and not manually cherry-picked from individual shard packets.
+- Research: keep monitoring Phase38, but patch dense-universe coverage diagnostics now because visible dense shards selected only four trade dates.
+- Aggregation: use `scripts/build_research_wave_portfolio_rollup.py` and `scripts/build_research_fill_experiment_comparison.py` after shards are staged locally so promotion review is systematic and not manually cherry-picked from individual shard packets.
 - Promotion: do not promote any candidate to live or durable paper allocation without broker-audited bounded paper validation evidence.
 
 ## Guardrails

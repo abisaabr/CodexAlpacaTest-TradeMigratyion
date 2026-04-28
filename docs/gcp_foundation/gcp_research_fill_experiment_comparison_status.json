@@ -1,0 +1,60 @@
+{
+  "generated_at_utc": "2026-04-28T21:30:38Z",
+  "status": "research_fill_experiment_comparison_complete",
+  "decision": "continue_dense_or_broader_contract_universe_repair",
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "runner_commit": "83e2803b4aab",
+  "source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_83e2803b4aab.zip",
+  "artifact_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/rollups/fill_experiment_comparison_20260428213000/",
+  "baseline_label": "event_sparse",
+  "fill_coverage_gate": 0.9,
+  "lane_summaries": [
+    {
+      "label": "event_sparse",
+      "decision": "research_only_blocked",
+      "source_report_count": 45,
+      "candidate_count": 640,
+      "eligible_for_promotion_review_count": 0,
+      "capital_plan_count": 8,
+      "positive_economics_candidate_count": 95,
+      "max_min_fill_coverage": 0.747,
+      "median_min_fill_coverage": 0.5294,
+      "fill_failure_counts": {
+        "entry_bar_gap_or_entry_timing_mismatch": 276,
+        "exit_bar_gap_or_exit_policy_mismatch": 339,
+        "mixed_low_fill_gap": 25
+      }
+    },
+    {
+      "label": "top10_atm",
+      "decision": "research_only_blocked",
+      "source_report_count": 10,
+      "candidate_count": 183,
+      "eligible_for_promotion_review_count": 0,
+      "capital_plan_count": 0,
+      "positive_economics_candidate_count": 24,
+      "max_min_fill_coverage": 0.1111,
+      "median_min_fill_coverage": 0.0676,
+      "fill_failure_counts": {
+        "selected_contract_universe_gap": 183
+      }
+    }
+  ],
+  "aggregate_fill_failure_counts": {
+    "entry_bar_gap_or_entry_timing_mismatch": 276,
+    "exit_bar_gap_or_exit_policy_mismatch": 339,
+    "mixed_low_fill_gap": 25,
+    "selected_contract_universe_gap": 183
+  },
+  "next_safe_step": "repair dense/broader contract-universe coverage diagnostics before judging strategy economics or promotion readiness",
+  "hard_rules": [
+    "do_not_trade",
+    "do_not_arm_window",
+    "do_not_start_broker_facing_session",
+    "do_not_modify_live_manifests",
+    "do_not_change_risk_policy",
+    "do_not_relax_0_90_fill_gate"
+  ]
+}

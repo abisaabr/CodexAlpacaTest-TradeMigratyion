@@ -1,0 +1,35 @@
+{
+  "generated_at_utc": "2026-04-28T21:30:38Z",
+  "status": "phase37_top10_atm_rollup_complete",
+  "decision": "research_only_blocked",
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "source_phase": "phase37_top10_weekly_atm_20260428183723",
+  "source_report_count": 10,
+  "candidate_count": 183,
+  "eligible_for_promotion_review_count": 0,
+  "capital_plan_count": 0,
+  "fill_failure_counts": {
+    "selected_contract_universe_gap": 183
+  },
+  "positive_economics_candidate_count": 24,
+  "max_min_fill_coverage": 0.1111,
+  "median_min_fill_coverage": 0.0676,
+  "artifact_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/rollups/phase37_top10_atm_20260428212500/",
+  "conclusion": "ATM-only 0-7 DTE top10 lane is too narrow and is not a promotion path",
+  "promotion_gate": {
+    "minimum_fill_coverage": 0.9,
+    "minimum_option_trades": 20,
+    "minimum_test_net_pnl": 0
+  },
+  "next_safe_step": "continue dense/broader contract-universe repair with explicit coverage diagnostics before replay",
+  "hard_rules": [
+    "do_not_trade",
+    "do_not_arm_window",
+    "do_not_start_broker_facing_session",
+    "do_not_modify_live_manifests",
+    "do_not_change_risk_policy",
+    "do_not_relax_0_90_fill_gate"
+  ]
+}

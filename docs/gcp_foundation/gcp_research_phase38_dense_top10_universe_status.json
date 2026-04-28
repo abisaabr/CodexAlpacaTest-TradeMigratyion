@@ -1,15 +1,16 @@
 {
-  "generated_at": "2026-04-28T20:34:28Z",
-  "status": "phase38_dense_top10_universe_submitted",
+  "generated_at": "2026-04-28T21:30:38Z",
+  "status": "phase38_dense_top10_universe_running_interim_coverage_gap_identified",
   "phase_id": "phase38_dense_top10_universe_20260428203428",
   "batch_job": "phase38-dense-top10-20260428203428",
   "latest_state": "RUNNING",
   "latest_task_counts": {
+    "SUCCEEDED": 3,
     "RUNNING": 2,
-    "PENDING": 8
+    "PENDING": 5
   },
   "create_time": "2026-04-28T20:37:06.446050181Z",
-  "update_time": "2026-04-28T20:45:00Z",
+  "update_time": "2026-04-28T21:30:38Z",
   "project": "codexalpaca",
   "location": "us-central1",
   "broker_facing": false,
@@ -61,6 +62,17 @@
       "fee_per_contract": 1.5
     }
   ],
+  "interim_visible_shards": {
+    "completed_symbols": [
+      "MSFT",
+      "NVDA",
+      "QQQ"
+    ],
+    "eligible_for_promotion_review_count": 0,
+    "dominant_fill_failure_reason": "selected_contract_universe_gap",
+    "dense_universe_trade_date_count_observed": 4,
+    "diagnosis": "dense universe construction is only selecting four reference trade dates for completed symbols; repair or instrument reference-date coverage before judging strategy economics"
+  },
   "promotion_gate": {
     "fill_coverage_gate": 0.9,
     "min_option_trades": 20,
