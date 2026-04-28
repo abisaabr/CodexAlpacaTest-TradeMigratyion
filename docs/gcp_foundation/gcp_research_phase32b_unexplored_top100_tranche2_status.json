@@ -24,7 +24,7 @@
     "worker_source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/launch/phase32_worker.sh"
   },
   "report_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32b_unexplored_top100_tranche2_20260428122500/",
-  "data_root_pattern": "gs://codexalpaca-data-us/research_option_data/top100_liquidity_research_20260426/top100_phase32b_<SYMBOL>_unexplored_options_20260302_20260423/",
+  "data_root_pattern": "gs://codexalpaca-data-us/research_option_data/top100_liquidity_research_20260426/top100_phase32_<SYMBOL>_unexplored_options_20260302_20260423/",
   "symbol_tranche": [
     "NOW",
     "BKNG",
