@@ -4,8 +4,8 @@
 
 - Phase ID: `phase34_top_lead_exit_lag_feasibility_20260428172500`
 - Batch job: `phase34-top-lead-exitlag-20260428172500`
-- Latest state: `SCHEDULED`
-- Latest task counts: `4` pending
+- Latest state: `SUCCEEDED`
+- Latest task counts: `4` succeeded
 - Location: `codexalpaca/us-central1`
 - Tasks: `4`
 - Parallelism: `4`
@@ -16,7 +16,7 @@
 
 ## Scope
 
-Phase34 is a candidate-only diagnostic for the best positive-economics Phase32 leads that are still blocked by `fill_coverage_below_0.90`.
+Phase34 was a candidate-only diagnostic for the best positive-economics Phase32 leads that were still blocked by `fill_coverage_below_0.90`.
 
 - `AMD` `b150__amd__long_call__balanced_reward__exit_360__liq_tight`
 - `GE` `b150__ge__long_put__tight_reward__exit_360__liq_tight`
@@ -35,12 +35,21 @@ The diagnostic tests exit-lag feasibility at `10`, `30`, `60`, `90`, `120`, `180
 - Launch worker: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase34_top_lead_exit_lag_feasibility_20260428172500/launch/phase34_worker.sh`
 - Launch config: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase34_top_lead_exit_lag_feasibility_20260428172500/launch/phase34_batch_job.yaml`
 
+## Result
+
+All four candidates remain blocked. None passed the `0.90` fill gate under tested exit lags.
+
+- `AMD` max fill `0.8333`, no passing exit lag.
+- `GE` max fill `0.5811`, no passing exit lag.
+- `ORCL` max fill `0.6757`, no passing exit lag.
+- `PLTR` max fill `0.75`, no passing exit lag.
+
 ## Decision Boundary
 
-No candidate can be promoted directly from Phase34. Phase34 only classifies whether the fill gap is repairable by exit-policy timing, wide-lag-only behavior, or a strategy/data-design issue.
+No candidate can be promoted from Phase34. The four tested candidates should be treated as exit-fill-not-feasible under the current data and timing model.
 
 ## Next Safe Step
 
-Monitor the four shard outputs. If a candidate passes the `0.90` fill gate under practical lags, run isolated economic stress before any governed-validation recommendation.
+Prioritize new candidate discovery and targeted diagnostics for stronger new leads, including the Phase35 UNH exit-lag feasibility diagnostic.
 
 Do not trade, arm a window, start broker-facing execution, modify live manifests, change risk policy, or relax the `0.90` fill gate.

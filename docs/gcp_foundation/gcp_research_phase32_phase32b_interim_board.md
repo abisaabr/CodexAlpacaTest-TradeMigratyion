@@ -2,8 +2,8 @@
 
 ## State
 
-- Generated at: `2026-04-28T17:37:46Z`
-- Completed output packets scanned: `14`
+- Generated at: `2026-04-28T17:42:56Z`
+- Completed output packets scanned: `16`
 - New governed-validation candidates: `0`
 - Dominant blocker: `fill_coverage_below_0.90`
 - Broker-facing: `false`
@@ -12,11 +12,12 @@
 
 ## Active Jobs
 
-- `phase32-unexplored-top100-tranche1-20260428120500`: `RUNNING`, `11` succeeded / `4` running.
+- `phase32-unexplored-top100-tranche1-20260428120500`: `RUNNING`, `13` succeeded / `2` running.
 - `phase32b-unexplored-top100-tranche2-20260428122500`: `RUNNING`, `3` succeeded / `2` running / `10` pending.
 
 ## Best Research-Only Leads
 
+- `UNH` `b150__unh__long_call__tight_reward__exit_360__liq_baseline`: min net `$5870.42`, min test `$3885.025`, fill `0.5472`, worst drawdown `$-899.7375`.
 - `AMD` `b150__amd__long_call__balanced_reward__exit_360__liq_tight`: min net `$5834.6425`, min test `$2713.1575`, fill `0.6923`, worst drawdown `$-1435.7275`.
 - `GE` `b150__ge__long_put__tight_reward__exit_360__liq_tight`: min net `$4128.955`, min test `$2747.52`, fill `0.2703`, worst drawdown `$-1331.36`.
 - `ORCL` `b150__orcl__long_call__balanced_reward__exit_360__liq_tight`: min net `$3584.26`, min test `$4254.38`, fill `0.4865`, worst drawdown `$-5076.86`.
@@ -28,6 +29,8 @@
 ## Decision
 
 No new candidate is eligible for governed validation from the completed shards. Positive-economics names are fill-repair research leads only.
+
+Phase34 completed its top-lead exit-lag feasibility diagnostic and did not find a fill-feasible path for `AMD`, `GE`, `ORCL`, or `PLTR`. Phase35 is now queued for the new top `UNH` lead.
 
 ## Next Safe Step
 

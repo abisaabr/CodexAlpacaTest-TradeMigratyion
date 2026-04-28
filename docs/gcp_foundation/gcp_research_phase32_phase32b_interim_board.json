@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_phase32_phase32b_interim_board",
-  "generated_at_utc": "2026-04-28T17:37:46Z",
+  "generated_at_utc": "2026-04-28T17:42:56Z",
   "broker_facing": false,
   "trading_effect": "none",
   "live_manifest_effect": "none",
@@ -11,8 +11,8 @@
       "job_id": "phase32-unexplored-top100-tranche1-20260428120500",
       "state": "RUNNING",
       "counts": {
-        "SUCCEEDED": 11,
-        "RUNNING": 4
+        "SUCCEEDED": 13,
+        "RUNNING": 2
       }
     },
     {
@@ -25,10 +25,22 @@
       }
     }
   ],
-  "completed_shards_scanned": 14,
+  "completed_shards_scanned": 16,
   "new_governed_validation_candidates": 0,
   "dominant_blocker": "fill_coverage_below_0.90",
   "completed_shard_decisions": [
+    {
+      "phase": "phase32",
+      "symbol": "UNH",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible": 0,
+      "best_candidate": "b150__unh__long_call__tight_reward__exit_360__liq_baseline",
+      "best_min_net_pnl": 5870.42,
+      "best_min_test_net_pnl": 3885.025,
+      "best_min_fill_coverage": 0.5472,
+      "best_worst_drawdown": -899.7375
+    },
     {
       "phase": "phase32",
       "symbol": "AMD",
@@ -136,6 +148,18 @@
       "best_min_test_net_pnl": 190.505,
       "best_min_fill_coverage": 0.3158,
       "best_worst_drawdown": -2667.58
+    },
+    {
+      "phase": "phase32",
+      "symbol": "V",
+      "decision": "research_only_blocked",
+      "candidate_count": 10,
+      "eligible": 0,
+      "best_candidate": "b150__v__long_call__tight_reward__exit_360__liq_tight",
+      "best_min_net_pnl": -324.2175,
+      "best_min_test_net_pnl": -712.325,
+      "best_min_fill_coverage": 0.2195,
+      "best_worst_drawdown": -1170.8325
     },
     {
       "phase": "phase32",

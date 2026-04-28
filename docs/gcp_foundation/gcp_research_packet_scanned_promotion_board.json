@@ -1,23 +1,38 @@
 {
   "packet": "gcp_research_promotion_board_from_packets",
-  "generated_at_utc": "2026-04-28T17:30:26Z",
+  "generated_at_utc": "2026-04-28T17:42:56Z",
   "broker_facing": false,
   "trading_effect": "none",
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
   "promotion_allowed_from_this_packet": false,
-  "packet_count": 14,
-  "candidate_count": 229,
+  "packet_count": 16,
+  "candidate_count": 257,
   "eligible_for_promotion_review_count": 0,
   "new_governed_validation_candidates": 0,
   "dominant_blocker": "fill_coverage_below_0.90",
   "aggregate_blocker_counts": {
-    "fill_coverage_below_0.90": 229,
-    "option_trades_below_20": 67,
-    "test_net_pnl_not_above_0": 112,
-    "min_net_pnl_not_positive": 80
+    "fill_coverage_below_0.90": 257,
+    "option_trades_below_20": 79,
+    "test_net_pnl_not_above_0": 128,
+    "min_net_pnl_not_positive": 96
   },
   "best_research_only_leads": [
+    {
+      "candidate_variant_id": "b150__unh__long_call__tight_reward__exit_360__liq_baseline",
+      "symbol": "UNH",
+      "source_strategy_id": "unh__broad150__trend_long_call_research",
+      "directional_option_type": "call",
+      "min_net_pnl": 5870.42,
+      "min_test_net_pnl": 3885.025,
+      "min_fill_coverage": 0.5472,
+      "min_option_trade_count": 29,
+      "worst_drawdown": -899.7375,
+      "promotion_status": "research_only_blocked",
+      "promotion_blockers": [
+        "fill_coverage_below_0.90"
+      ]
+    },
     {
       "candidate_variant_id": "b150__amd__long_call__balanced_reward__exit_360__liq_tight",
       "symbol": "AMD",
@@ -187,23 +202,6 @@
       "promotion_status": "research_only_blocked",
       "promotion_blockers": [
         "fill_coverage_below_0.90"
-      ]
-    },
-    {
-      "candidate_variant_id": "b150__bkng__long_call__wide_reward__exit_360__liq_tight",
-      "symbol": "BKNG",
-      "source_strategy_id": "bkng__broad150__trend_long_call_research",
-      "directional_option_type": "call",
-      "min_net_pnl": 984.64,
-      "min_test_net_pnl": 455.82,
-      "min_fill_coverage": 0.25,
-      "max_fill_coverage": 0.4375,
-      "min_option_trade_count": 4,
-      "worst_drawdown": -656.61,
-      "promotion_status": "research_only_blocked",
-      "promotion_blockers": [
-        "fill_coverage_below_0.90",
-        "option_trades_below_20"
       ]
     }
   ],
@@ -471,6 +469,70 @@
         "promotion_status": "research_only_blocked",
         "promotion_blockers": [
           "fill_coverage_below_0.90"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/UNH/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "UNH",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 18,
+        "min_net_pnl_not_positive": 6,
+        "option_trades_below_20": 2,
+        "test_net_pnl_not_above_0": 6
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__unh__long_call__tight_reward__exit_360__liq_baseline",
+        "symbol": "UNH",
+        "source_strategy_id": "unh__broad150__trend_long_call_research",
+        "directional_option_type": "call",
+        "min_net_pnl": 5870.42,
+        "min_test_net_pnl": 3885.025,
+        "min_fill_coverage": 0.5472,
+        "min_option_trade_count": 29,
+        "worst_drawdown": -899.7375,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/V/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "V",
+      "decision": "research_only_blocked",
+      "candidate_count": 10,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 10,
+        "min_net_pnl_not_positive": 10,
+        "option_trades_below_20": 10,
+        "test_net_pnl_not_above_0": 10
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__v__long_call__tight_reward__exit_360__liq_tight",
+        "symbol": "V",
+        "source_strategy_id": "v__broad150__trend_long_call_research",
+        "directional_option_type": "call",
+        "min_net_pnl": -324.2175,
+        "min_test_net_pnl": -712.325,
+        "min_fill_coverage": 0.2195,
+        "max_fill_coverage": 0.561,
+        "min_option_trade_count": 9,
+        "worst_drawdown": -1170.8325,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90",
+          "option_trades_below_20",
+          "test_net_pnl_not_above_0",
+          "min_net_pnl_not_positive"
         ]
       }
     },

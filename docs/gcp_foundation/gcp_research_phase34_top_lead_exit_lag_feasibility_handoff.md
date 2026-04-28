@@ -6,8 +6,8 @@ Phase34 is active as a non-broker-facing research Batch diagnostic:
 
 - Job: `phase34-top-lead-exitlag-20260428172500`
 - Phase: `phase34_top_lead_exit_lag_feasibility_20260428172500`
-- Latest status: `SCHEDULED`
-- Latest task counts: `4` pending
+- Latest status: `SUCCEEDED`
+- Latest task counts: `4` succeeded
 - Task count: `4`
 - Parallelism: `4`
 - Symbols: `AMD`, `GE`, `ORCL`, `PLTR`
@@ -23,6 +23,15 @@ gcloud batch jobs describe phase34-top-lead-exitlag-20260428172500 --project cod
 gcloud storage ls gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase34_top_lead_exit_lag_feasibility_20260428172500/data_shards/
 ```
 
+## Completion Result
+
+All four tested candidates remain research-only blocked:
+
+- `AMD`: max fill `0.8333`, no passing exit lag.
+- `GE`: max fill `0.5811`, no passing exit lag.
+- `ORCL`: max fill `0.6757`, no passing exit lag.
+- `PLTR`: max fill `0.75`, no passing exit lag.
+
 ## Completion Handling
 
 Inspect each shard's `exit_lag_feasibility` output and classify candidates as:
@@ -31,4 +40,4 @@ Inspect each shard's `exit_lag_feasibility` output and classify candidates as:
 - `wide_lag_only`: candidate needs an explicit exit-policy design packet before any stress.
 - `not_fill_feasible`: quarantine or redesign; do not rerun unchanged.
 
-No Phase34 result is allowed to alter live manifests, risk policy, or broker-facing execution without a separate governed packet.
+No Phase34 result is allowed to alter live manifests, risk policy, or broker-facing execution. The safe follow-up is new candidate search or targeted diagnostics for stronger leads such as Phase35 UNH.

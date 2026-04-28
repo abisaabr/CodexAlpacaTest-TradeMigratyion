@@ -1,13 +1,13 @@
 {
   "packet": "gcp_research_phase34_top_lead_exit_lag_feasibility_status",
-  "generated_at_utc": "2026-04-28T17:25:36Z",
-  "state": "scheduled",
+  "generated_at_utc": "2026-04-28T17:42:56Z",
+  "state": "succeeded_research_only_blocked",
   "phase_id": "phase34_top_lead_exit_lag_feasibility_20260428172500",
   "job_id": "phase34-top-lead-exitlag-20260428172500",
   "location": "codexalpaca/us-central1",
   "create_time_utc": "2026-04-28T17:25:17.736411589Z",
   "latest_task_counts": {
-    "PENDING": 4
+    "SUCCEEDED": 4
   },
   "task_count": 4,
   "parallelism": 4,
@@ -86,8 +86,46 @@
     "launch_worker": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase34_top_lead_exit_lag_feasibility_20260428172500/launch/phase34_worker.sh",
     "launch_batch_config": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase34_top_lead_exit_lag_feasibility_20260428172500/launch/phase34_batch_job.yaml"
   },
+  "result_summary": {
+    "full_stack_fill_gate_pass_count": 0,
+    "wide_lag_only_candidate_count": 0,
+    "candidate_results": [
+      {
+        "symbol": "AMD",
+        "candidate_variant_id": "b150__amd__long_call__balanced_reward__exit_360__liq_tight",
+        "min_fill_coverage": 0.7564,
+        "max_fill_coverage": 0.8333,
+        "shortest_passing_exit_lag_minutes": null,
+        "recommendation": "do_not_promote_exit_fill_not_feasible"
+      },
+      {
+        "symbol": "GE",
+        "candidate_variant_id": "b150__ge__long_put__tight_reward__exit_360__liq_tight",
+        "min_fill_coverage": 0.3108,
+        "max_fill_coverage": 0.5811,
+        "shortest_passing_exit_lag_minutes": null,
+        "recommendation": "do_not_promote_exit_fill_not_feasible"
+      },
+      {
+        "symbol": "ORCL",
+        "candidate_variant_id": "b150__orcl__long_call__balanced_reward__exit_360__liq_tight",
+        "min_fill_coverage": 0.527,
+        "max_fill_coverage": 0.6757,
+        "shortest_passing_exit_lag_minutes": null,
+        "recommendation": "do_not_promote_exit_fill_not_feasible"
+      },
+      {
+        "symbol": "PLTR",
+        "candidate_variant_id": "b150__pltr__long_put__balanced_reward__exit_300__liq_tight",
+        "min_fill_coverage": 0.65,
+        "max_fill_coverage": 0.75,
+        "shortest_passing_exit_lag_minutes": null,
+        "recommendation": "do_not_promote_exit_fill_not_feasible"
+      }
+    ]
+  },
   "promotion_allowed_from_this_packet": false,
-  "next_safe_step": "monitor Phase34 to classify each lead as short-lag fill-feasible, wide-lag-only, or strategy/data-design blocked; do not promote directly from this diagnostic",
+  "next_safe_step": "do not promote the four Phase34 candidates; use the result to prioritize new candidate search and stronger fill-repair diagnostics such as Phase35 UNH",
   "hard_rules": [
     "do_not_trade",
     "do_not_arm_window",
