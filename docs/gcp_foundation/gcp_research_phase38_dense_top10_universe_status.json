@@ -5,11 +5,11 @@
   "batch_job": "phase38-dense-top10-20260428203428",
   "latest_state": "RUNNING",
   "latest_task_counts": {
-    "RUNNING": 1,
-    "PENDING": 9
+    "RUNNING": 2,
+    "PENDING": 8
   },
   "create_time": "2026-04-28T20:37:06.446050181Z",
-  "update_time": "2026-04-28T20:38:10.260460299Z",
+  "update_time": "2026-04-28T20:45:00Z",
   "project": "codexalpaca",
   "location": "us-central1",
   "broker_facing": false,

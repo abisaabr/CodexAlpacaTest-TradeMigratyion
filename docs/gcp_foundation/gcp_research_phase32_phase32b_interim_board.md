@@ -2,7 +2,7 @@
 
 ## State
 
-- Generated at: `2026-04-28T19:16:57Z`
+- Generated at: `2026-04-28T20:45:00Z`
 - Completed output packets scanned: `32`
 - New governed-validation candidates: `0`
 - Dominant blocker: `fill_coverage_below_0.90`
@@ -13,7 +13,7 @@
 ## Active Jobs
 
 - `phase32-unexplored-top100-tranche1-20260428120500`: `SUCCEEDED`, `15` succeeded.
-- `phase32b-unexplored-top100-tranche2-20260428122500`: `RUNNING`, `11` succeeded / `3` running / `1` pending.
+- `phase32b-unexplored-top100-tranche2-20260428122500`: `SUCCEEDED`, `15` succeeded.
 
 ## Best Research-Only Leads
 
@@ -40,4 +40,4 @@ The newly completed `GS` and `MA` shards are also research-only blocked. `GS` be
 
 ## Next Safe Step
 
-Wait for the remaining shards to complete, then build Phase33 portfolio-level aggregation from completed promotion packets. Do not trade, arm a window, start broker-facing execution, modify live manifests, change risk policy, or relax the `0.90` fill gate.
+Build the completed Phase32/Phase32b portfolio-level aggregation with the wave rollup tooling, then compare it against Phase37 and Phase38 once those complete. Do not trade, arm a window, start broker-facing execution, modify live manifests, change risk policy, or relax the `0.90` fill gate.

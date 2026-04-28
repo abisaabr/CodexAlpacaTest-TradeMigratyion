@@ -1,7 +1,7 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T20:37:11Z",
-  "state": "phase32b_phase37_phase38_running_phase36_completed",
+  "generated_at_utc": "2026-04-28T20:45:00Z",
+  "state": "phase32b_completed_phase37_phase38_running_phase36_completed",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -49,10 +49,9 @@
     {
       "job_id": "phase32b-unexplored-top100-tranche2-20260428122500",
       "phase_id": "phase32b_unexplored_top100_tranche2_20260428122500",
-      "latest_state": "RUNNING",
+      "latest_state": "SUCCEEDED",
       "latest_task_counts": {
-        "SUCCEEDED": 14,
-        "RUNNING": 1
+        "SUCCEEDED": 15
       },
       "location": "us-central1",
       "task_count": 15,
@@ -155,9 +154,8 @@
       "phase_id": "phase37_top10_weekly_atm_20260428183723",
       "latest_state": "RUNNING",
       "latest_task_counts": {
-        "SUCCEEDED": 4,
-        "RUNNING": 5,
-        "PENDING": 1
+        "SUCCEEDED": 5,
+        "RUNNING": 5
       },
       "location": "us-central1",
       "task_count": 10,
@@ -190,8 +188,8 @@
       "phase_id": "phase38_dense_top10_universe_20260428203428",
       "latest_state": "RUNNING",
       "latest_task_counts": {
-        "RUNNING": 1,
-        "PENDING": 9
+        "RUNNING": 2,
+        "PENDING": 8
       },
       "location": "us-central1",
       "task_count": 10,

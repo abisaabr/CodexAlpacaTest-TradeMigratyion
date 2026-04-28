@@ -1,16 +1,13 @@
 {
   "packet": "gcp_research_phase32b_unexplored_top100_tranche2_status",
-  "generated_at_utc": "2026-04-28T19:16:57Z",
+  "generated_at_utc": "2026-04-28T20:45:00Z",
   "phase_id": "phase32b_unexplored_top100_tranche2_20260428122500",
   "gcp_batch_job": "phase32b-unexplored-top100-tranche2-20260428122500",
   "gcp_project": "codexalpaca",
   "gcp_location": "us-central1",
-  "latest_state": "RUNNING",
+  "latest_state": "SUCCEEDED",
   "latest_task_counts": {
-    "RUNNING": 3,
-    "PENDING": 1,
-    "RUNNING": 3,
-    "SUCCEEDED": 11
+    "SUCCEEDED": 15
   },
   "completed_visible_shards": [
     "BA",
@@ -23,7 +20,11 @@
     "KRE",
     "MA",
     "NOW",
-    "WMT"
+    "WMT",
+    "CAT",
+    "HOOD",
+    "SLV",
+    "XLK"
   ],
   "broker_facing": false,
   "trading_effect": "none",

@@ -1,15 +1,14 @@
 {
   "packet": "gcp_research_phase37_top10_weekly_atm_status",
-  "generated_at_utc": "2026-04-28T20:37:11Z",
+  "generated_at_utc": "2026-04-28T20:45:00Z",
   "phase_id": "phase37_top10_weekly_atm_20260428183723",
   "gcp_batch_job": "phase37-top10-atm-20260428183723",
   "gcp_project": "codexalpaca",
   "gcp_location": "us-central1",
   "latest_state": "RUNNING",
   "latest_task_counts": {
-    "SUCCEEDED": 4,
-    "RUNNING": 5,
-    "PENDING": 1
+    "SUCCEEDED": 5,
+    "RUNNING": 5
   },
   "completed_visible_shards": [
     "MSFT",
