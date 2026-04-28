@@ -8,10 +8,23 @@
   "exclusive_window_effect": "none",
   "rollup_tooling": {
     "status": "ready",
-    "runner_commit": "5578a6803ae7",
-    "source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_5578a6803ae7.zip",
+    "runner_commit": "6dca362e41bf",
+    "source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_6dca362e41bf.zip",
     "tool": "scripts/build_research_wave_portfolio_rollup.py",
     "purpose": "aggregate shard-level portfolio reports into one research-only capital plan, fill-failure map, data-repair queue, strategy-redesign queue, and promotion-review packet"
+  },
+  "latest_wave_rollup": {
+    "phase_id": "phase32_32b_36_20260428204500",
+    "decision": "research_only_blocked",
+    "source_report_count": 45,
+    "candidate_count": 640,
+    "eligible_for_promotion_review_count": 0,
+    "fill_failure_counts": {
+      "entry_bar_gap_or_entry_timing_mismatch": 276,
+      "exit_bar_gap_or_exit_policy_mismatch": 339,
+      "mixed_low_fill_gap": 25
+    },
+    "artifact_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/rollups/phase32_32b_36_20260428204500/"
   },
   "active_batch_jobs": [
     {

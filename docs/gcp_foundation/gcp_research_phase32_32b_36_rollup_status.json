@@ -1,0 +1,73 @@
+{
+  "generated_at_utc": "2026-04-28T20:55:15Z",
+  "status": "phase32_32b_36_wave_rollup_complete",
+  "decision": "research_only_blocked",
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "runner_commit": "6dca362e41bf",
+  "source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_6dca362e41bf.zip",
+  "source_phases": [
+    "phase32_unexplored_top100_tranche1_20260428120500",
+    "phase32b_unexplored_top100_tranche2_20260428122500",
+    "phase36_core_liquidity_tranche_20260428180637"
+  ],
+  "source_report_count": 45,
+  "candidate_count": 640,
+  "eligible_for_promotion_review_count": 0,
+  "capital_plan_count": 8,
+  "fill_failure_counts": {
+    "entry_bar_gap_or_entry_timing_mismatch": 276,
+    "exit_bar_gap_or_exit_policy_mismatch": 339,
+    "mixed_low_fill_gap": 25
+  },
+  "top_data_repair_candidates": [
+    {
+      "symbol": "UNH",
+      "candidate_variant_id": "b150__unh__long_call__wide_reward__exit_360__liq_tight",
+      "min_net_pnl": 5527.66,
+      "min_test_net_pnl": 5006.64,
+      "min_fill_coverage": 0.4474,
+      "fill_failure_reason": "entry_bar_gap_or_entry_timing_mismatch"
+    },
+    {
+      "symbol": "UNH",
+      "candidate_variant_id": "b150__unh__long_call__tight_reward__exit_360__liq_baseline",
+      "min_net_pnl": 5870.42,
+      "min_test_net_pnl": 3885.025,
+      "min_fill_coverage": 0.5472,
+      "fill_failure_reason": "entry_bar_gap_or_entry_timing_mismatch"
+    },
+    {
+      "symbol": "AMD",
+      "candidate_variant_id": "b150__amd__long_call__balanced_reward__exit_360__liq_tight",
+      "min_net_pnl": 5834.6425,
+      "min_test_net_pnl": 2713.1575,
+      "min_fill_coverage": 0.6923,
+      "fill_failure_reason": "entry_bar_gap_or_entry_timing_mismatch"
+    },
+    {
+      "symbol": "ORCL",
+      "candidate_variant_id": "b150__orcl__long_call__balanced_reward__exit_360__liq_tight",
+      "min_net_pnl": 3584.26,
+      "min_test_net_pnl": 4254.38,
+      "min_fill_coverage": 0.4865,
+      "fill_failure_reason": "entry_bar_gap_or_entry_timing_mismatch"
+    }
+  ],
+  "artifact_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/rollups/phase32_32b_36_20260428204500/",
+  "promotion_gate": {
+    "minimum_fill_coverage": 0.9,
+    "minimum_option_trades": 20,
+    "minimum_test_net_pnl": 0
+  },
+  "next_safe_step": "continue Phase37 and Phase38, then compare ATM-only and dense-universe fill before any promotion decision",
+  "hard_rules": [
+    "do_not_trade",
+    "do_not_arm_window",
+    "do_not_start_broker_facing_session",
+    "do_not_modify_live_manifests",
+    "do_not_change_risk_policy",
+    "do_not_relax_0_90_fill_gate"
+  ]
+}

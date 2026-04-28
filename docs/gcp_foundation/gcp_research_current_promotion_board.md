@@ -40,6 +40,8 @@ One candidate is ready for a bounded paper-validation operator decision:
 - The local QQQ dense cleanroom downloader succeeded for `2026-03-18` through `2026-04-17` with `2794/2794` successful contract-day requests and `96.242%` dense selected-contract-day fill. This is a data-foundation repair template, not a promotion packet.
 - Phase38 is active as the direct dense-universe fill diagnostic for `SPY`, `NVDA`, `QQQ`, `AMZN`, `TSLA`, `MSFT`, `IWM`, `AAPL`, `META`, and `MU`; it builds a daily `0-7` DTE ATM +/- 5 strike universe before download/replay to determine whether sparse selected-contract construction is the dominant fill-rate bottleneck.
 - Runner commit `5578a6803ae7` adds the wave-level rollup tool that aggregates shard-level portfolio reports into one capital plan, fill-failure map, data-repair queue, strategy-redesign queue, and promotion-review packet.
+- Runner commit `6dca362e41bf` hardens the rollup to infer fill-failure reasons from older shard packets.
+- Completed Phase32/Phase32b/Phase36 rollup scanned `45` source reports and `640` candidates; `0` are eligible for governed promotion review. Fill blockers are `276` entry timing gaps, `339` exit timing gaps, and `25` mixed low-fill gaps.
 
 ## Current Recommendation
 

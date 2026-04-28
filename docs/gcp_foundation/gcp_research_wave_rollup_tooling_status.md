@@ -4,8 +4,8 @@
 
 - Status: `research_wave_rollup_tooling_ready`
 - Runner branch: `codex/qqq-paper-portfolio`
-- Runner commit: `5578a6803ae7`
-- Source archive: `gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_5578a6803ae7.zip`
+- Runner commit: `6dca362e41bf`
+- Source archive: `gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_6dca362e41bf.zip`
 - Broker-facing: `false`
 - Live manifest effect: `none`
 - Risk policy effect: `none`
@@ -31,7 +31,7 @@ This is the missing systematic aggregation layer for large brute-force runs. It 
 .\.venv\Scripts\python.exe -m pytest -q tests/test_build_research_wave_portfolio_rollup.py tests/test_build_research_portfolio_report.py tests/test_build_research_promotion_review_packet.py tests/test_build_dense_option_universe.py tests/test_run_option_aware_research_backtest.py
 ```
 
-Result: `12 passed`.
+Result after fill-inference hardening: `10 passed` for rollup/portfolio/promotion tests.
 
 ## Operator Use
 
