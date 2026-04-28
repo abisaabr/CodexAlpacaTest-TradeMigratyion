@@ -1,0 +1,66 @@
+{
+  "packet": "gcp_research_phase37_top10_weekly_atm_status",
+  "generated_at_utc": "2026-04-28T18:40:17Z",
+  "phase_id": "phase37_top10_weekly_atm_20260428183723",
+  "gcp_batch_job": "phase37-top10-atm-20260428183723",
+  "gcp_project": "codexalpaca",
+  "gcp_location": "us-central1",
+  "latest_state": "SCHEDULED",
+  "latest_task_counts": {
+    "PENDING": 6
+  },
+  "broker_facing": false,
+  "trading_effect": "none",
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "promotion_allowed_from_this_packet": false,
+  "task_count": 10,
+  "parallelism": 5,
+  "machine_type": "e2-standard-4",
+  "boot_disk_gb": 150,
+  "source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_95379e4166b4.zip",
+  "launch_artifacts": {
+    "batch_config": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase37_top10_weekly_atm_20260428183723/launch/phase37_batch_job.yaml",
+    "worker_source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/launch/phase32_worker.sh"
+  },
+  "report_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase37_top10_weekly_atm_20260428183723/",
+  "data_root_pattern": "gs://codexalpaca-data-us/research_option_data/top100_liquidity_research_20260426/top100_phase37_<SYMBOL>_weekly_atm_options_20260302_20260423/",
+  "symbol_tranche": [
+    "SPY",
+    "NVDA",
+    "QQQ",
+    "AMZN",
+    "TSLA",
+    "MSFT",
+    "IWM",
+    "AAPL",
+    "META",
+    "MU"
+  ],
+  "contract_scope": {
+    "min_dte": 0,
+    "max_dte": 7,
+    "strike_steps": 0,
+    "replay_contract_selection_method": "entry_liquidity_first_research_only",
+    "stress_profiles": [
+      "lag5_exit10_slip10_fee065",
+      "lag10_exit30_slip25_fee100",
+      "lag30_exit60_slip50_fee150"
+    ]
+  },
+  "selection_rationale": "top 10 liquid underlyings from the canonical top100 queue, constrained to ATM 0-7 DTE contracts to test whether fill coverage improves before any promotion discussion",
+  "promotion_gate": {
+    "minimum_fill_coverage": 0.9,
+    "minimum_option_trades": 20,
+    "minimum_test_net_pnl": 0,
+    "promotion_result_before_aggregation": "not_allowed"
+  },
+  "hard_rules": [
+    "do_not_trade",
+    "do_not_arm_window",
+    "do_not_start_broker_facing_session",
+    "do_not_modify_live_manifests",
+    "do_not_change_risk_policy",
+    "do_not_relax_0_90_fill_gate"
+  ]
+}

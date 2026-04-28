@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_phase32_phase32b_interim_board",
-  "generated_at_utc": "2026-04-28T18:09:39Z",
+  "generated_at_utc": "2026-04-28T18:40:17Z",
   "broker_facing": false,
   "trading_effect": "none",
   "live_manifest_effect": "none",
@@ -18,13 +18,13 @@
       "job_id": "phase32b-unexplored-top100-tranche2-20260428122500",
       "state": "RUNNING",
       "counts": {
-        "SUCCEEDED": 6,
+        "SUCCEEDED": 8,
         "RUNNING": 3,
-        "PENDING": 6
+        "PENDING": 4
       }
     }
   ],
-  "completed_shards_scanned": 21,
+  "completed_shards_scanned": 23,
   "new_governed_validation_candidates": 0,
   "dominant_blocker": "fill_coverage_below_0.90",
   "completed_shard_decisions": [
@@ -214,6 +214,18 @@
     },
     {
       "phase": "phase32b",
+      "symbol": "GS",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible": 0,
+      "best_candidate": "b150__gs__long_call__wide_reward__exit_300__liq_baseline",
+      "best_min_net_pnl": 2155.1175,
+      "best_min_test_net_pnl": 2155.1175,
+      "best_min_fill_coverage": 0.0541,
+      "best_worst_drawdown": 0.0
+    },
+    {
+      "phase": "phase32b",
       "symbol": "IBM",
       "decision": "research_only_blocked",
       "candidate_count": 18,
@@ -247,6 +259,14 @@
       "best_min_test_net_pnl": 1605.65,
       "best_min_fill_coverage": 0.122,
       "best_worst_drawdown": -1378.3625
+    },
+    {
+      "phase": "phase32b",
+      "symbol": "MA",
+      "decision": "research_only_blocked",
+      "candidate_count": 15,
+      "eligible": 0,
+      "best_candidate": null
     },
     {
       "phase": "phase32b",

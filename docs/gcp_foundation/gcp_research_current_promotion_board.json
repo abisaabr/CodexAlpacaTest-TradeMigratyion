@@ -1,7 +1,7 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T18:09:39Z",
-  "state": "phase32b_and_phase36_running_phase34_phase35_completed",
+  "generated_at_utc": "2026-04-28T18:40:17Z",
+  "state": "phase32b_phase36_phase37_running_phase34_phase35_completed",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -45,8 +45,8 @@
       "latest_state": "RUNNING",
       "latest_task_counts": {
         "RUNNING": 3,
-        "PENDING": 6,
-        "SUCCEEDED": 6
+        "PENDING": 4,
+        "SUCCEEDED": 8
       },
       "location": "us-central1",
       "task_count": 15,
@@ -144,10 +144,43 @@
         "XBI"
       ],
       "objective": "research-only core-liquidity tranche to search for fill-feasible option-aware candidates without replaying quarantined severe-loser clusters"
+    },
+    {
+      "job_id": "phase37-top10-atm-20260428183723",
+      "phase_id": "phase37_top10_weekly_atm_20260428183723",
+      "latest_state": "SCHEDULED",
+      "latest_task_counts": {
+        "PENDING": 6
+      },
+      "location": "us-central1",
+      "task_count": 10,
+      "parallelism": 5,
+      "broker_facing": false,
+      "live_manifest_effect": "none",
+      "risk_policy_effect": "none",
+      "symbol_tranche": [
+        "SPY",
+        "NVDA",
+        "QQQ",
+        "AMZN",
+        "TSLA",
+        "MSFT",
+        "IWM",
+        "AAPL",
+        "META",
+        "MU"
+      ],
+      "contract_scope": {
+        "min_dte": 0,
+        "max_dte": 7,
+        "strike_steps": 0,
+        "replay_contract_selection_method": "entry_liquidity_first_research_only"
+      },
+      "objective": "research-only top-10 liquid underlying sweep over ATM 0-7 DTE contracts to test whether tight weekly liquidity-first contract design can satisfy the 0.90 fill gate"
     }
   ],
   "current_interim_summary": {
-    "completed_shards_scanned": 21,
+    "completed_shards_scanned": 23,
     "new_governed_validation_candidates": 0,
     "dominant_blocker": "fill_coverage_below_0.90",
     "best_research_only_leads": [
@@ -340,7 +373,7 @@
   ],
   "current_recommendation": {
     "paper_validation": "AAPL_exit360_only_if_operator_explicitly_arms_exclusive_window",
-    "research": "Phase32 completed with no new governed-validation candidate; monitor Phase32b and Phase36 to completion, then build portfolio-level aggregation and prioritize liquidity-gated candidate discovery rather than economic stress on low-fill names",
+    "research": "Phase32 completed with no new governed-validation candidate; monitor Phase32b, Phase36, and Phase37 to completion, then build portfolio-level aggregation and prioritize liquidity-gated candidate discovery rather than economic stress on low-fill names",
     "promotion_policy": "do_not_promote_any_candidate_without_broker_audited_bounded_paper_validation"
   },
   "hard_rules": [

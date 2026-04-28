@@ -2,8 +2,8 @@
 
 ## State
 
-- Generated at: `2026-04-28T18:09:39Z`
-- Completed output packets scanned: `21`
+- Generated at: `2026-04-28T18:40:17Z`
+- Completed output packets scanned: `23`
 - New governed-validation candidates: `0`
 - Dominant blocker: `fill_coverage_below_0.90`
 - Broker-facing: `false`
@@ -13,7 +13,7 @@
 ## Active Jobs
 
 - `phase32-unexplored-top100-tranche1-20260428120500`: `SUCCEEDED`, `15` succeeded.
-- `phase32b-unexplored-top100-tranche2-20260428122500`: `RUNNING`, `6` succeeded / `3` running / `6` pending.
+- `phase32b-unexplored-top100-tranche2-20260428122500`: `RUNNING`, `8` succeeded / `3` running / `4` pending.
 
 ## Best Research-Only Leads
 
@@ -35,6 +35,8 @@ Phase32 completed all 15 shards with no new governed-validation candidates. Phas
 The newly completed `WMT` shard is also research-only blocked: best candidate `b150__wmt__long_call__tight_reward__exit_210__liq_tight`, min net `$876.7725`, min test `$3201.4`, fill `0.5758`.
 
 The newly completed `IBM` and `JNJ` shards are also research-only blocked. `IBM` best candidate `b150__ibm__long_call__tight_reward__exit_360__liq_baseline` has min net `$1530.045`, min test `$1171.755`, fill `0.3077`; `JNJ` best candidate `b150__jnj__long_put__balanced_reward__exit_300__liq_baseline` has min net `$1416.23`, min test `$2221.6`, fill `0.275`.
+
+The newly completed `GS` and `MA` shards are also research-only blocked. `GS` best candidate `b150__gs__long_call__wide_reward__exit_300__liq_baseline` has min net `$2155.1175`, min test `$2155.1175`, fill `0.0541`; `MA` did not produce a positive eligible lead.
 
 ## Next Safe Step
 

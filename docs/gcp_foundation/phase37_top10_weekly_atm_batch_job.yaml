@@ -1,0 +1,79 @@
+taskGroups:
+  - taskCount: 10
+    parallelism: 5
+    taskSpec:
+      computeResource:
+        cpuMilli: 4000
+        memoryMib: 16384
+      maxRunDuration: 43200s
+      runnables:
+        - container:
+            imageUri: python:3.11-slim-bookworm
+            commands:
+              - /bin/sh
+              - -c
+              - |
+                set -eu
+                python3 -m pip install --upgrade pip
+                python3 -m pip install google-cloud-storage
+                cat > /tmp/download_phase37_worker.py <<'PY'
+                from __future__ import annotations
+
+                import pathlib
+
+                from google.cloud import storage
+
+                source_uri = "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/launch/phase32_worker.sh"
+                bucket_name, _, blob_name = source_uri[5:].partition("/")
+                base = pathlib.Path("/tmp/phase32_worker_base.sh")
+                storage.Client(project="codexalpaca").bucket(bucket_name).blob(blob_name).download_to_filename(str(base))
+                text = base.read_text(encoding="utf-8")
+                replacements = {
+                    'PHASE_ID="phase32_unexplored_top100_tranche1_20260428120500"': 'PHASE_ID="phase37_top10_weekly_atm_20260428183723"',
+                    'SYMBOLS="AMD PLTR GOOG ORCL XOM XLE JPM UNH V BAC CRM XLI GE AMAT TQQQ"': 'SYMBOLS="SPY NVDA QQQ AMZN TSLA MSFT IWM AAPL META MU"',
+                    'BUILD_NAME="top100_phase32_${SYMBOL}_unexplored_options_20260302_20260423"': 'BUILD_NAME="top100_phase37_${SYMBOL}_weekly_atm_options_20260302_20260423"',
+                    'CANDIDATE_QUEUE_JSON="$WORK/phase32_${SYMBOL}_queue.json"': 'CANDIDATE_QUEUE_JSON="$WORK/phase37_${SYMBOL}_queue.json"',
+                    '"status": "phase32_unexplored_top100_tranche1_symbol_queue"': '"status": "phase37_top10_weekly_atm_symbol_queue"',
+                    '"objective": "research_only_expand_unexplored_top100_option_aware_candidate_coverage"': '"objective": "research_only_top10_liquid_underlyings_weekly_atm_option_candidate_discovery"',
+                    'Path(f"phase32_{symbol}_queue.json")': 'Path(f"phase37_{symbol}_queue.json")',
+                    'print(f"phase32_symbol_queue symbol={symbol} candidate_count={len(queue_items)}")': 'print(f"phase37_symbol_queue symbol={symbol} candidate_count={len(queue_items)}")',
+                    '--min-dte 1 \\\n  --max-dte 60 \\\n  --strike-steps 8 \\\n': '--min-dte 0 \\\n  --max-dte 7 \\\n  --strike-steps 0 \\\n',
+                    'phase32_lag10_exit10_slip25_fee100 10 10 25 1.00': 'phase37_lag5_exit10_slip10_fee065 5 10 10 0.65',
+                    'phase32_lag30_exit60_slip50_fee150 30 60 50 1.50': 'phase37_lag10_exit30_slip25_fee100 10 30 25 1.00',
+                    'phase32_lag60_exit120_slip75_fee200 60 120 75 2.00': 'phase37_lag30_exit60_slip50_fee150 30 60 50 1.50',
+                    '${REPORT_ROOT}/candidate_queue/phase32_${SYMBOL}_queue.json': '${REPORT_ROOT}/candidate_queue/phase37_${SYMBOL}_queue.json',
+                }
+                for old, new in replacements.items():
+                    text = text.replace(old, new)
+                target = pathlib.Path("/tmp/phase37_worker.sh")
+                target.write_text(text, encoding="utf-8")
+                target.chmod(0o755)
+                PY
+                python3 /tmp/download_phase37_worker.py
+                /bin/sh /tmp/phase37_worker.sh
+allocationPolicy:
+  instances:
+    - policy:
+        machineType: e2-standard-4
+        provisioningModel: STANDARD
+        bootDisk:
+          type: pd-standard
+          sizeGb: 150
+  location:
+    allowedLocations:
+      - regions/us-central1
+      - zones/us-central1-a
+      - zones/us-central1-b
+      - zones/us-central1-c
+      - zones/us-central1-f
+  serviceAccount:
+    email: 922745393036-compute@developer.gserviceaccount.com
+  labels:
+    app: codexalpaca
+    plane: research
+    broker: "false"
+    wave: top100
+    phase: phase37
+    tranche: top10-weekly-atm
+logsPolicy:
+  destination: CLOUD_LOGGING
