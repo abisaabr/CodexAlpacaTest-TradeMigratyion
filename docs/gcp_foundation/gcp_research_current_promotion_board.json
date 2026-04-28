@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T17:25:36Z",
+  "generated_at_utc": "2026-04-28T17:30:26Z",
   "state": "phase32_phase32b_and_phase34_running",
   "broker_facing": false,
   "live_manifest_effect": "none",
@@ -13,8 +13,7 @@
       "latest_state": "RUNNING",
       "latest_task_counts": {
         "RUNNING": 5,
-        "PENDING": 1,
-        "SUCCEEDED": 9
+        "SUCCEEDED": 10
       },
       "location": "us-central1",
       "task_count": 15,
@@ -98,7 +97,7 @@
     }
   ],
   "current_interim_summary": {
-    "completed_shards_scanned": 11,
+    "completed_shards_scanned": 13,
     "new_governed_validation_candidates": 0,
     "dominant_blocker": "fill_coverage_below_0.90",
     "best_research_only_leads": [
@@ -137,6 +136,24 @@
         "min_fill_coverage": 0.625,
         "worst_drawdown": -1832.59,
         "decision": "research_only_blocked_fill_repair_lead"
+      },
+      {
+        "symbol": "KRE",
+        "candidate_variant_id": "b150__kre__long_call__wide_reward__exit_360__liq_baseline",
+        "min_net_pnl": 2005.715,
+        "min_test_net_pnl": 1605.65,
+        "min_fill_coverage": 0.122,
+        "worst_drawdown": -1378.3625,
+        "decision": "research_only_blocked_low_fill_data_repair_lead"
+      },
+      {
+        "symbol": "TQQQ",
+        "candidate_variant_id": "b150__tqqq__long_call__wide_reward__exit_300__liq_tight",
+        "min_net_pnl": 1146.865,
+        "min_test_net_pnl": 190.505,
+        "min_fill_coverage": 0.3158,
+        "worst_drawdown": -2667.58,
+        "decision": "research_only_blocked_low_fill_data_repair_lead"
       }
     ]
   },

@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_phase32_phase32b_interim_board",
-  "generated_at_utc": "2026-04-28T17:20:33Z",
+  "generated_at_utc": "2026-04-28T17:30:26Z",
   "broker_facing": false,
   "trading_effect": "none",
   "live_manifest_effect": "none",
@@ -11,9 +11,8 @@
       "job_id": "phase32-unexplored-top100-tranche1-20260428120500",
       "state": "RUNNING",
       "counts": {
-        "SUCCEEDED": 9,
-        "RUNNING": 5,
-        "PENDING": 1
+        "SUCCEEDED": 10,
+        "RUNNING": 5
       }
     },
     {
@@ -26,7 +25,7 @@
       }
     }
   ],
-  "completed_shards_scanned": 11,
+  "completed_shards_scanned": 13,
   "new_governed_validation_candidates": 0,
   "dominant_blocker": "fill_coverage_below_0.90",
   "completed_shard_decisions": [
@@ -116,6 +115,18 @@
     },
     {
       "phase": "phase32",
+      "symbol": "TQQQ",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible": 0,
+      "best_candidate": "b150__tqqq__long_call__wide_reward__exit_300__liq_tight",
+      "best_min_net_pnl": 1146.865,
+      "best_min_test_net_pnl": 190.505,
+      "best_min_fill_coverage": 0.3158,
+      "best_worst_drawdown": -2667.58
+    },
+    {
+      "phase": "phase32",
       "symbol": "XLE",
       "decision": "research_only_blocked",
       "candidate_count": 9,
@@ -141,6 +152,18 @@
       "candidate_count": 17,
       "eligible": 0,
       "best_candidate": null
+    },
+    {
+      "phase": "phase32b",
+      "symbol": "KRE",
+      "decision": "research_only_blocked",
+      "candidate_count": 12,
+      "eligible": 0,
+      "best_candidate": "b150__kre__long_call__wide_reward__exit_360__liq_baseline",
+      "best_min_net_pnl": 2005.715,
+      "best_min_test_net_pnl": 1605.65,
+      "best_min_fill_coverage": 0.122,
+      "best_worst_drawdown": -1378.3625
     },
     {
       "phase": "phase32b",

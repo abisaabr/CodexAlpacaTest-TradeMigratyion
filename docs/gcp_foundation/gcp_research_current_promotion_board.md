@@ -6,7 +6,7 @@
 - Broker-facing: `false`
 - Live manifest effect: `none`
 - Risk policy effect: `none`
-- Active Batch jobs: `phase32-unexplored-top100-tranche1-20260428120500` (`RUNNING`, 5 running / 1 pending / 9 succeeded at last check), `phase32b-unexplored-top100-tranche2-20260428122500` (`RUNNING`, 2 running / 11 pending / 2 succeeded at last check), and `phase34-top-lead-exitlag-20260428172500` (`SCHEDULED`, 4 pending at launch)
+- Active Batch jobs: `phase32-unexplored-top100-tranche1-20260428120500` (`RUNNING`, 10 succeeded / 5 running at last check), `phase32b-unexplored-top100-tranche2-20260428122500` (`RUNNING`, 2 running / 11 pending / 2 succeeded at last check), and `phase34-top-lead-exitlag-20260428172500` (`SCHEDULED`, 4 pending at launch)
 
 ## Bounded-Validation Candidates
 
@@ -30,8 +30,8 @@ One candidate is ready for a bounded paper-validation operator decision:
 - Phase32 is actively expanding unexplored top100 coverage across `AMD`, `PLTR`, `GOOG`, `ORCL`, `XOM`, `XLE`, `JPM`, `UNH`, `V`, `BAC`, `CRM`, `XLI`, `GE`, `AMAT`, and `TQQQ`.
 - Phase32b is actively expanding candidate-rich unexplored coverage across `NOW`, `BKNG`, `MA`, `CSCO`, `JNJ`, `CVX`, `WMT`, `HOOD`, `KRE`, `CAT`, `GS`, `IBM`, `SLV`, `XLK`, and `BA`.
 - Interim Phase32 `XLE` result is research-only blocked: `0/9` eligible, zero download failures, best two variants have positive economics but only about `0.60` fill coverage.
-- Interim scan across 11 completed shards has `0` new governed-validation candidates. The dominant blocker remains `fill_coverage_below_0.90`.
-- Best research-only fill-repair leads so far: `AMD` balanced exit-360, `GE` tight put exit-360, `ORCL` balanced exit-360, and `PLTR` balanced put exit-300.
+- Interim scan across 13 completed output packets has `0` new governed-validation candidates. The dominant blocker remains `fill_coverage_below_0.90`.
+- Best research-only fill-repair leads so far: `AMD` balanced exit-360, `GE` tight put exit-360, `ORCL` balanced exit-360, `PLTR` balanced put exit-300, `KRE` wide exit-360, and `TQQQ` wide exit-300.
 - Phase34 is actively testing those four best fill-repair leads for exit-lag feasibility. Phase34 is diagnostic only and cannot directly promote candidates.
 
 ## Current Recommendation
