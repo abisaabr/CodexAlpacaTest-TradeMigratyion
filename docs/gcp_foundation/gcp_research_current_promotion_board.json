@@ -1,7 +1,7 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T16:09:52Z",
-  "state": "phase32_unexplored_top100_tranche1_running",
+  "generated_at_utc": "2026-04-28T16:24:18Z",
+  "state": "phase32_and_phase32b_unexplored_top100_running",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -39,6 +39,38 @@
         "TQQQ"
       ],
       "objective": "expand unexplored top-100 option-aware candidate coverage using sharded research-only selected-contract build, Alpaca historical option data download, and stress replay"
+    },
+    {
+      "job_id": "phase32b-unexplored-top100-tranche2-20260428122500",
+      "phase_id": "phase32b_unexplored_top100_tranche2_20260428122500",
+      "latest_state": "SCHEDULED",
+      "latest_task_counts": {
+        "PENDING": 3
+      },
+      "location": "us-central1",
+      "task_count": 15,
+      "parallelism": 3,
+      "broker_facing": false,
+      "live_manifest_effect": "none",
+      "risk_policy_effect": "none",
+      "symbol_tranche": [
+        "NOW",
+        "BKNG",
+        "MA",
+        "CSCO",
+        "JNJ",
+        "CVX",
+        "WMT",
+        "HOOD",
+        "KRE",
+        "CAT",
+        "GS",
+        "IBM",
+        "SLV",
+        "XLK",
+        "BA"
+      ],
+      "objective": "expand candidate-rich unexplored top-100 option-aware coverage after Phase32 shard path validated with zero failed AMD data chunks"
     }
   ],
   "bounded_validation_candidates": [
@@ -125,7 +157,7 @@
   ],
   "current_recommendation": {
     "paper_validation": "AAPL_exit360_only_if_operator_explicitly_arms_exclusive_window",
-    "research": "monitor Phase32 unexplored-top100 tranche; aggregate promotion review only after all shards finish cleanly",
+    "research": "monitor Phase32 and Phase32b unexplored-top100 tranches; aggregate promotion review only after shards finish cleanly",
     "promotion_policy": "do_not_promote_any_candidate_without_broker_audited_bounded_paper_validation"
   },
   "hard_rules": [

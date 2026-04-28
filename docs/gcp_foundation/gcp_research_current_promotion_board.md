@@ -2,11 +2,11 @@
 
 ## State
 
-- State: `phase32_unexplored_top100_tranche1_running`
+- State: `phase32_and_phase32b_unexplored_top100_running`
 - Broker-facing: `false`
 - Live manifest effect: `none`
 - Risk policy effect: `none`
-- Active Batch jobs: `phase32-unexplored-top100-tranche1-20260428120500` (`RUNNING`, 5 running / 10 pending at last check)
+- Active Batch jobs: `phase32-unexplored-top100-tranche1-20260428120500` (`RUNNING`, 5 running / 10 pending at last check) and `phase32b-unexplored-top100-tranche2-20260428122500` (`SCHEDULED`, 3 pending at last check)
 
 ## Bounded-Validation Candidates
 
@@ -28,11 +28,12 @@ One candidate is ready for a bounded paper-validation operator decision:
 - `NVDA` exit-360 tight-reward tight-liquidity remains blocked by `test_net_pnl_not_above_0`.
 - The Phase31 `AMZN`/`AVGO`/`MSFT`/`MU` wide-lag cluster is blocked and should be quarantined or redesigned, not replayed unchanged.
 - Phase32 is actively expanding unexplored top100 coverage across `AMD`, `PLTR`, `GOOG`, `ORCL`, `XOM`, `XLE`, `JPM`, `UNH`, `V`, `BAC`, `CRM`, `XLI`, `GE`, `AMAT`, and `TQQQ`.
+- Phase32b is actively expanding candidate-rich unexplored coverage across `NOW`, `BKNG`, `MA`, `CSCO`, `JNJ`, `CVX`, `WMT`, `HOOD`, `KRE`, `CAT`, `GS`, `IBM`, `SLV`, `XLK`, and `BA`.
 
 ## Current Recommendation
 
 - Paper validation: keep scope to `AAPL` exit-360 only, and only if an exclusive execution window is explicitly armed.
-- Research: monitor Phase32; if all shards finish cleanly, aggregate per-symbol promotion packets into a portfolio-level review.
+- Research: monitor Phase32 and Phase32b; if shards finish cleanly, aggregate per-symbol promotion packets into a portfolio-level review.
 - Promotion: do not promote any candidate to live or durable paper allocation without broker-audited bounded paper validation evidence.
 
 ## Guardrails
