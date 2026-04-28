@@ -1,7 +1,7 @@
 {
   "packet": "gcp_research_phase29_repair_target_exit_feasibility_status",
-  "generated_at_utc": "2026-04-28T15:11:00Z",
-  "state": "scheduled",
+  "generated_at_utc": "2026-04-28T15:26:00Z",
+  "state": "succeeded",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -10,6 +10,7 @@
   "batch_location": "us-central1",
   "batch_job": "phase29-repair-exit-feas-20260428110900",
   "batch_state_at_launch": "SCHEDULED",
+  "batch_state_latest": "SUCCEEDED",
   "wave_id": "top100_liquidity_research_20260426",
   "phase_id": "phase29_repair_target_exit_feasibility_20260428110900",
   "source_runner_commit": "95379e4166b4",
@@ -48,7 +49,65 @@
     "initial_cash": 25000,
     "allocation_fraction": 0.1
   },
-  "expected_decision": "classify_remaining_phase22_repair_targets_as_fill_feasible_wide_lag_or_quarantine",
+  "decision": "research_only_blocked_exit_lag",
+  "result_summary": {
+    "candidate_count": 7,
+    "full_stack_fill_gate_pass_count": 0,
+    "wide_lag_only_candidate_count": 7,
+    "recommended_next_step": "focused_wide_lag_economics_replay_before_any_promotion_review"
+  },
+  "candidate_results": [
+    {
+      "symbol": "AVGO",
+      "candidate_variant_id": "b150__avgo__long_call__wide_reward__exit_300__liq_baseline",
+      "min_fill_coverage": 0.7812,
+      "max_fill_coverage": 0.9844,
+      "shortest_passing_exit_lag_minutes": 60
+    },
+    {
+      "symbol": "MSFT",
+      "candidate_variant_id": "b150__msft__long_call__wide_reward__exit_360__liq_baseline",
+      "min_fill_coverage": 0.7872,
+      "max_fill_coverage": 0.9787,
+      "shortest_passing_exit_lag_minutes": 90
+    },
+    {
+      "symbol": "AMZN",
+      "candidate_variant_id": "b150__amzn__long_call__wide_reward__exit_360__liq_tight",
+      "min_fill_coverage": 0.8913,
+      "max_fill_coverage": 0.9783,
+      "shortest_passing_exit_lag_minutes": 60
+    },
+    {
+      "symbol": "AVGO",
+      "candidate_variant_id": "b150__avgo__long_call__tight_reward__exit_360__liq_baseline",
+      "min_fill_coverage": 0.8312,
+      "max_fill_coverage": 0.974,
+      "shortest_passing_exit_lag_minutes": 60
+    },
+    {
+      "symbol": "MU",
+      "candidate_variant_id": "b150__mu__long_call__balanced_reward__exit_300__liq_tight",
+      "min_fill_coverage": 0.8077,
+      "max_fill_coverage": 0.9519,
+      "shortest_passing_exit_lag_minutes": 60
+    },
+    {
+      "symbol": "MU",
+      "candidate_variant_id": "b150__mu__long_call__tight_reward__exit_360__liq_tight",
+      "min_fill_coverage": 0.7647,
+      "max_fill_coverage": 0.9496,
+      "shortest_passing_exit_lag_minutes": 90
+    },
+    {
+      "symbol": "AMZN",
+      "candidate_variant_id": "b150__amzn__long_call__wide_reward__exit_360__liq_baseline",
+      "min_fill_coverage": 0.8444,
+      "max_fill_coverage": 0.9333,
+      "shortest_passing_exit_lag_minutes": 90
+    }
+  ],
+  "expected_decision": "wide_lag_economics_replay_or_quarantine",
   "parallel_jobs_at_launch": [
     {
       "batch_job": "phase28-widelag-recheck-20260428110100",

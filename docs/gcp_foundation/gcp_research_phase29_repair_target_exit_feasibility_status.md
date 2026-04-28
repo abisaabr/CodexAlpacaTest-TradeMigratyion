@@ -2,7 +2,7 @@
 
 ## State
 
-- State: `scheduled`
+- State: `succeeded`
 - Batch job: `phase29-repair-exit-feas-20260428110900`
 - Batch location: `codexalpaca/us-central1`
 - Phase id: `phase29_repair_target_exit_feasibility_20260428110900`
@@ -28,6 +28,25 @@ This phase does not run promotion economics. It classifies whether these candida
 
 - Launch root: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase29_repair_target_exit_feasibility_20260428110900/launch/`
 - Result root: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase29_repair_target_exit_feasibility_20260428110900/`
+
+## Result
+
+- Decision: `research_only_blocked_exit_lag`
+- Candidate count: `7`
+- Full-stack fill-feasible candidates: `0`
+- Wide-lag-only candidates: `7`
+
+Shortest passing exit lags:
+
+- `AVGO` exit-300 wide-reward baseline: `60` minutes.
+- `MSFT` exit-360 wide-reward baseline: `90` minutes.
+- `AMZN` exit-360 wide-reward tight-liquidity: `60` minutes.
+- `AVGO` exit-360 tight-reward baseline: `60` minutes.
+- `MU` exit-300 balanced-reward tight-liquidity: `60` minutes.
+- `MU` exit-360 tight-reward tight-liquidity: `90` minutes.
+- `AMZN` exit-360 wide-reward baseline: `90` minutes.
+
+This does not authorize promotion. It supports a focused wide-lag economics replay before quarantine or governed-review decisions.
 
 ## Parallel Context
 
