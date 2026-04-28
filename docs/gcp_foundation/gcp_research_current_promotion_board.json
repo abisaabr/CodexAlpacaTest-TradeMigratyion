@@ -1,7 +1,7 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T17:52:00Z",
-  "state": "phase32_phase32b_and_phase34_running",
+  "generated_at_utc": "2026-04-28T18:00:35Z",
+  "state": "phase32b_running_phase34_phase35_completed",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -45,8 +45,8 @@
       "latest_state": "RUNNING",
       "latest_task_counts": {
         "RUNNING": 3,
-        "PENDING": 9,
-        "SUCCEEDED": 3
+        "PENDING": 8,
+        "SUCCEEDED": 4
       },
       "location": "us-central1",
       "task_count": 15,
@@ -114,7 +114,7 @@
     }
   ],
   "current_interim_summary": {
-    "completed_shards_scanned": 18,
+    "completed_shards_scanned": 19,
     "new_governed_validation_candidates": 0,
     "dominant_blocker": "fill_coverage_below_0.90",
     "best_research_only_leads": [

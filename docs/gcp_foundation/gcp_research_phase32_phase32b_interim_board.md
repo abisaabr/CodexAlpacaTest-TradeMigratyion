@@ -2,8 +2,8 @@
 
 ## State
 
-- Generated at: `2026-04-28T17:52:00Z`
-- Completed output packets scanned: `18`
+- Generated at: `2026-04-28T18:00:35Z`
+- Completed output packets scanned: `19`
 - New governed-validation candidates: `0`
 - Dominant blocker: `fill_coverage_below_0.90`
 - Broker-facing: `false`
@@ -13,7 +13,7 @@
 ## Active Jobs
 
 - `phase32-unexplored-top100-tranche1-20260428120500`: `SUCCEEDED`, `15` succeeded.
-- `phase32b-unexplored-top100-tranche2-20260428122500`: `RUNNING`, `3` succeeded / `3` running / `9` pending.
+- `phase32b-unexplored-top100-tranche2-20260428122500`: `RUNNING`, `4` succeeded / `3` running / `8` pending.
 
 ## Best Research-Only Leads
 
@@ -31,6 +31,8 @@
 No new candidate is eligible for governed validation from the completed shards. Positive-economics names are fill-repair research leads only.
 
 Phase32 completed all 15 shards with no new governed-validation candidates. Phase34 completed its top-lead exit-lag feasibility diagnostic and did not find a fill-feasible path for `AMD`, `GE`, `ORCL`, or `PLTR`. Phase35 also completed and blocked the new top `UNH` lead, with max fill `0.6792`.
+
+The newly completed `WMT` shard is also research-only blocked: best candidate `b150__wmt__long_call__tight_reward__exit_210__liq_tight`, min net `$876.7725`, min test `$3201.4`, fill `0.5758`.
 
 ## Next Safe Step
 

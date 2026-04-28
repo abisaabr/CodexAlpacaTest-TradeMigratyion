@@ -2,11 +2,11 @@
 
 ## State
 
-- State: `phase32_phase32b_and_phase34_running`
+- State: `phase32b_running_phase34_phase35_completed`
 - Broker-facing: `false`
 - Live manifest effect: `none`
 - Risk policy effect: `none`
-- Active Batch jobs: `phase32b-unexplored-top100-tranche2-20260428122500` (`RUNNING`, 3 succeeded / 3 running / 9 pending at last check)
+- Active Batch jobs: `phase32b-unexplored-top100-tranche2-20260428122500` (`RUNNING`, 4 succeeded / 3 running / 8 pending at last check)
 
 ## Bounded-Validation Candidates
 
@@ -30,7 +30,7 @@ One candidate is ready for a bounded paper-validation operator decision:
 - Phase32 is actively expanding unexplored top100 coverage across `AMD`, `PLTR`, `GOOG`, `ORCL`, `XOM`, `XLE`, `JPM`, `UNH`, `V`, `BAC`, `CRM`, `XLI`, `GE`, `AMAT`, and `TQQQ`.
 - Phase32b is actively expanding candidate-rich unexplored coverage across `NOW`, `BKNG`, `MA`, `CSCO`, `JNJ`, `CVX`, `WMT`, `HOOD`, `KRE`, `CAT`, `GS`, `IBM`, `SLV`, `XLK`, and `BA`.
 - Interim Phase32 `XLE` result is research-only blocked: `0/9` eligible, zero download failures, best two variants have positive economics but only about `0.60` fill coverage.
-- Interim scan across 18 completed output packets has `0` new governed-validation candidates. The dominant blocker remains `fill_coverage_below_0.90`.
+- Interim scan across 19 completed output packets has `0` new governed-validation candidates. The dominant blocker remains `fill_coverage_below_0.90`; the newly scanned `WMT` packet is also research-only blocked.
 - Best research-only fill-repair leads so far: `UNH` tight exit-360, `AMD` balanced exit-360, `GE` tight put exit-360, `ORCL` balanced exit-360, `PLTR` balanced put exit-300, `AMAT` tight exit-210, `KRE` wide exit-360, and `TQQQ` wide exit-300.
 - Phase34 completed and blocked all four tested top leads (`AMD`, `GE`, `ORCL`, `PLTR`) because none reached `0.90` fill coverage under tested exit lags.
 - Phase35 completed and blocked `UNH`; max fill was `0.6792`, below the mandatory `0.90` gate.

@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_phase32_phase32b_interim_board",
-  "generated_at_utc": "2026-04-28T17:52:00Z",
+  "generated_at_utc": "2026-04-28T18:00:35Z",
   "broker_facing": false,
   "trading_effect": "none",
   "live_manifest_effect": "none",
@@ -18,13 +18,13 @@
       "job_id": "phase32b-unexplored-top100-tranche2-20260428122500",
       "state": "RUNNING",
       "counts": {
-        "SUCCEEDED": 3,
+        "SUCCEEDED": 4,
         "RUNNING": 3,
-        "PENDING": 9
+        "PENDING": 8
       }
     }
   ],
-  "completed_shards_scanned": 18,
+  "completed_shards_scanned": 19,
   "new_governed_validation_candidates": 0,
   "dominant_blocker": "fill_coverage_below_0.90",
   "completed_shard_decisions": [
@@ -231,6 +231,18 @@
       "candidate_count": 19,
       "eligible": 0,
       "best_candidate": null
+    },
+    {
+      "phase": "phase32b",
+      "symbol": "WMT",
+      "decision": "research_only_blocked",
+      "candidate_count": 15,
+      "eligible": 0,
+      "best_candidate": "b150__wmt__long_call__tight_reward__exit_210__liq_tight",
+      "best_min_net_pnl": 876.7725,
+      "best_min_test_net_pnl": 3201.4,
+      "best_min_fill_coverage": 0.5758,
+      "best_worst_drawdown": -2963.125
     }
   ],
   "next_safe_steps": [
