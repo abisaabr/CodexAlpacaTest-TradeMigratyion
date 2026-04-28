@@ -4,8 +4,8 @@
 
 - Phase ID: `phase37_top10_weekly_atm_20260428183723`
 - Batch job: `phase37-top10-atm-20260428183723`
-- Latest state: `SCHEDULED`
-- Latest task counts: `6` pending
+- Latest state: `RUNNING`
+- Latest task counts: `2` succeeded / `5` running / `3` pending
 - Location: `codexalpaca/us-central1`
 - Tasks: `10`
 - Parallelism: `5`
@@ -21,6 +21,8 @@ Phase37 runs a research-only top-10 liquid-underlying sweep across:
 `SPY`, `NVDA`, `QQQ`, `AMZN`, `TSLA`, `MSFT`, `IWM`, `AAPL`, `META`, and `MU`.
 
 The option universe is intentionally tight: ATM-only contracts, `0-7` DTE, then `entry_liquidity_first_research_only` replay chooses the contract with the strongest entry-window prints/volume. This is designed to test whether fill coverage improves when contract choice is liquidity-first from the start.
+
+Visible completed shards at this checkpoint: `MSFT` and `NVDA`. Completed shards must be aggregated before any promotion-board change.
 
 ## Gate
 

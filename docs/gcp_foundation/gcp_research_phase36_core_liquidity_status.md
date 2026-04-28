@@ -4,8 +4,8 @@
 
 - Phase ID: `phase36_core_liquidity_tranche_20260428180637`
 - Batch job: `phase36-core-liq-20260428180637`
-- Latest state: `RUNNING`
-- Latest task counts: `5` succeeded / `4` running / `6` pending
+- Latest state: `SUCCEEDED`
+- Latest task counts: `15` succeeded
 - Location: `codexalpaca/us-central1`
 - Tasks: `15`
 - Parallelism: `4`
@@ -22,7 +22,7 @@ Phase36 runs a research-only core-liquidity tranche across:
 
 It excludes active Phase32b symbols and the quarantined severe-loser/replay-unchanged clusters. The objective is to find fill-feasible candidates that can satisfy the mandatory `0.90` fill gate, not to promote from this packet.
 
-Visible completed shards at this checkpoint: `GLD`, `IWM`, `QQQ`, `SPY`, `TSLA`, and `WFC`. All scanned Phase36 shards remain research-only blocked.
+Completed shards at this checkpoint: `EEM`, `EFA`, `EWZ`, `GLD`, `IWM`, `NKE`, `QQQ`, `SPY`, `TSLA`, `TSM`, `WFC`, `XBI`, `XLF`, `XLP`, and `XLV`. Completed shards must be aggregated before any promotion-board change; this status packet alone is not a promotion packet.
 
 ## Gate
 

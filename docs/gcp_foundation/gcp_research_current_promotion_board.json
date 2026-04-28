@@ -1,7 +1,7 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T19:16:57Z",
-  "state": "phase32b_phase36_phase37_running_phase34_phase35_completed",
+  "generated_at_utc": "2026-04-28T20:21:08Z",
+  "state": "phase32b_phase37_running_phase36_completed",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -44,10 +44,8 @@
       "phase_id": "phase32b_unexplored_top100_tranche2_20260428122500",
       "latest_state": "RUNNING",
       "latest_task_counts": {
-        "RUNNING": 3,
-        "PENDING": 1,
-        "RUNNING": 3,
-        "SUCCEEDED": 11
+        "SUCCEEDED": 14,
+        "RUNNING": 1
       },
       "location": "us-central1",
       "task_count": 15,
@@ -116,11 +114,9 @@
     {
       "job_id": "phase36-core-liq-20260428180637",
       "phase_id": "phase36_core_liquidity_tranche_20260428180637",
-      "latest_state": "RUNNING",
+      "latest_state": "SUCCEEDED",
       "latest_task_counts": {
-        "SUCCEEDED": 5,
-        "RUNNING": 4,
-        "PENDING": 6
+        "SUCCEEDED": 15
       },
       "location": "us-central1",
       "task_count": 15,
@@ -150,9 +146,11 @@
     {
       "job_id": "phase37-top10-atm-20260428183723",
       "phase_id": "phase37_top10_weekly_atm_20260428183723",
-      "latest_state": "SCHEDULED",
+      "latest_state": "RUNNING",
       "latest_task_counts": {
-        "PENDING": 6
+        "SUCCEEDED": 2,
+        "RUNNING": 5,
+        "PENDING": 3
       },
       "location": "us-central1",
       "task_count": 10,
@@ -185,6 +183,18 @@
     "completed_shards_scanned": 32,
     "new_governed_validation_candidates": 0,
     "dominant_blocker": "fill_coverage_below_0.90",
+    "qqq_dense_data_foundation": {
+      "state": "completed",
+      "source_packet": "docs/gcp_foundation/gcp_research_qqq_dense_downloader_status.md",
+      "window_start": "2026-03-18",
+      "window_end": "2026-04-17",
+      "selected_contract_days": 2794,
+      "successful_contract_day_requests": 2794,
+      "failed_contract_day_requests": 0,
+      "request_fill_rate_pct": 100.0,
+      "dense_minute_fill_pct_on_selected_contract_days": 96.242,
+      "institutional_use": "data_foundation_repair_template_not_promotion_packet"
+    },
     "best_research_only_leads": [
       {
         "symbol": "UNH",
@@ -375,7 +385,7 @@
   ],
   "current_recommendation": {
     "paper_validation": "AAPL_exit360_only_if_operator_explicitly_arms_exclusive_window",
-    "research": "Phase32 completed with no new governed-validation candidate; monitor Phase32b, Phase36, and Phase37 to completion, then build portfolio-level aggregation and prioritize liquidity-gated candidate discovery rather than economic stress on low-fill names",
+    "research": "Phase32 completed with no new governed-validation candidate; monitor Phase32b, Phase36, and Phase37 to completion, then build portfolio-level aggregation and adapt the dense single-symbol QQQ downloader pattern for liquid names where sparse selected-contract data is blocking otherwise promising candidates",
     "promotion_policy": "do_not_promote_any_candidate_without_broker_audited_bounded_paper_validation"
   },
   "hard_rules": [
