@@ -1,6 +1,6 @@
 # GCP Research Option Data Repair Handoff
 
-- Status: `phase21_blocked_phase22_wide_lag_diagnostic_launched`
+- Status: `phase22_ready_for_governed_validation_review_research_only`
 - Runner branch: `codex/qqq-paper-portfolio`
 - Runner commit: `952aea4`
 - Tool: `scripts/build_option_data_repair_plan.py`
@@ -32,9 +32,19 @@
 - Phase21 eligible for promotion review: `0`
 - Phase21 blocker counts: `fill_coverage_below_0.90=13`, `test_net_pnl_not_above_0=3`
 - Phase21 best research-only symbols: `AAPL`, `MU`, `NVDA`, `AVGO`, `INTC`, `MSFT`
-- Active diagnostic job: `phase22-wide-lag-diagnostic-20260428045000`
-- Active diagnostic state at launch: `QUEUED`
-- Active diagnostic launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase22_wide_lag_diagnostic_20260428045000/launch/`
+- Completed diagnostic job: `phase22-wide-lag-diagnostic-20260428045000`
+- Completed diagnostic state: `SUCCEEDED`
+- Completed diagnostic launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase22_wide_lag_diagnostic_20260428045000/launch/`
+- Phase22 portfolio report: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase22_wide_lag_diagnostic_20260428045000/portfolio_report/research_portfolio_report.json`
+- Phase22 promotion packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase22_wide_lag_diagnostic_20260428045000/promotion_review_packet/research_promotion_review_packet.json`
+- Phase22 decision: `ready_for_governed_validation_review`
+- Phase22 promotion scope: `research_governed_validation_review_only`
+- Phase22 candidate count: `13`
+- Phase22 eligible for promotion review: `6`
+- Phase22 eligible symbols: `AAPL`, `INTC`, `NVDA`
+- Phase22 blocker counts: `fill_coverage_below_0.90=5`, `test_net_pnl_not_above_0=2`
+- Phase22 research-only capital plan: `AAPL=25%`, `INTC=25%`, `NVDA=25%`, `unallocated=25%`
+- Phase22 caveat: `wide_exit_lag_diagnostic_not_deployment_authorization`
 
 ## Why This Exists
 
@@ -44,11 +54,22 @@ Phase20 was launched as a sharded repair using the checkpoint selected contracts
 
 Phase21 combined the Phase20 shard roots, ran option-aware replay, produced a portfolio report, and emitted a promotion-review packet. It found 13 research-only positive candidates in the capital plan, but zero candidates passed promotion-review gates because all 13 were still blocked by minimum fill coverage below `0.90`; three were also blocked by non-positive test net PnL.
 
-Phase22 is launched as a research-only wide-exit-lag diagnostic using the same repaired data roots. Its purpose is to classify whether the remaining fill gap is data availability or a fill-lag/modeling assumption problem. It does not authorize live manifest, strategy-selection, or risk-policy changes.
+Phase22 completed as a research-only wide-exit-lag diagnostic using the same repaired data roots. It showed that six candidates can pass the fill-coverage, trade-count, and positive test-PnL gates when replayed with wider exit-lag assumptions. The passing candidates are two `AAPL` long-call variants, two `INTC` long-call variants, and two `NVDA` long-call variants. This classifies much of the Phase21 blocker as a fill-lag/modeling assumption issue, not only missing data.
+
+Phase22 does not authorize live manifest, strategy-selection, or risk-policy changes. The pass is a governed-validation review signal only and must be reviewed against strategy governance, paper-session execution evidence, and stricter stress/holdout checks before any activation discussion.
 
 ## Safe Use
 
-Phase22 should be allowed to finish before any further repair or promotion decision. Inspect whether wider exit lag improves fill coverage without destroying out-of-sample economics. Treat any result as research/governed-validation review only.
+Phase22 is complete. Use the Phase22 promotion packet as the current research-only review queue, not as a deployment packet. The current eligible review candidates are:
+
+- `b150__aapl__long_call__wide_reward__exit_210__liq_tight`
+- `b150__intc__long_call__tight_reward__exit_210__liq_baseline`
+- `b150__aapl__long_call__wide_reward__exit_360__liq_baseline`
+- `b150__nvda__long_call__tight_reward__exit_300__liq_tight`
+- `b150__nvda__long_call__tight_reward__exit_360__liq_tight`
+- `b150__intc__long_call__wide_reward__exit_210__liq_baseline`
+
+Treat these as research/governed-validation review only. The next safe research step is candidate-only stress and holdout validation that explicitly compares Phase21 shorter-lag failures against Phase22 wider-lag passes.
 
 If a shard fails or times out, prefer a narrower retry for the failed underlying/date ranges, not another broad monolithic rerun. If a completed shard still has fill gaps, copy or expose that shard's downloader manifest and selected-contract root, then run:
 
@@ -73,11 +94,12 @@ Then run the recommended command in the plan. It should use `--no-include-option
 
 ## Guardrails
 
-- Do not launch another broad monolithic downloader for this campaign while Phase22 is active.
+- Do not launch another broad monolithic downloader for this campaign.
 - Do not use this as a broker-facing process.
 - Do not change live manifests, live strategy selection, or risk policy from this packet.
 - Treat any candidate promoted by repaired data as research/governed-validation review only until execution evidence clears.
+- Do not treat Phase22 as a production promotion because the pass depends on wide exit-lag assumptions.
 
 ## Next Operator Decision
 
-Monitor Phase22 diagnostic state and output artifacts. Require at least `0.90` fill coverage before any research candidate can move to governed-validation review, and do not relax this gate just because PnL is attractive.
+Build the governed-validation review packet for the six Phase22 candidates and run candidate-only stress/holdout validation. Keep the `0.90` fill-coverage gate intact, preserve the non-broker-facing posture, and require clean broker-audited paper-session evidence before any live manifest or strategy-selection change.
