@@ -4,8 +4,8 @@
 
 - Phase ID: `phase38_dense_top10_universe_20260428203428`
 - Batch job: `phase38-dense-top10-20260428203428`
-- Latest state: `RUNNING`
-- Latest task counts: `3` succeeded / `2` running / `5` pending
+- Latest state: `DELETION_IN_PROGRESS`
+- Latest task counts at stop request: `6` succeeded / `1` running / `3` pending
 - Created: `2026-04-28T20:37:06.446050181Z`
 - Updated: `2026-04-28T21:30:38Z`
 - Location: `codexalpaca/us-central1`
@@ -43,6 +43,10 @@ The `0.90` fill gate remains mandatory. Phase38 can open a research-only governe
 ## Interim Finding
 
 The first visible dense shards (`MSFT`, `NVDA`, and `QQQ`) remain blocked by `selected_contract_universe_gap`. The dense-universe packets selected only `4` trade dates, not the full `2026-03-02` to `2026-04-23` window. Downloads for the selected contracts completed, so the next fix is not to relax promotion gates; it is to instrument and repair dense-universe reference-date coverage before judging strategy economics.
+
+## Disposition
+
+Phase38 was superseded by Phase39, Phase40, and Phase41. Phase39 proved the blocker was incomplete option contract inventory, Phase40 repaired inventory with active+inactive contract discovery, and Phase41 passed dense selected-contract coverage. Phase38 was stopped to free Batch capacity for Phase42.
 
 ## Gate
 

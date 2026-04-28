@@ -1,13 +1,13 @@
 {
   "generated_at": "2026-04-28T21:30:38Z",
-  "status": "phase38_dense_top10_universe_running_interim_coverage_gap_identified",
+  "status": "phase38_dense_top10_universe_stopped_superseded_by_phase40_phase41",
   "phase_id": "phase38_dense_top10_universe_20260428203428",
   "batch_job": "phase38-dense-top10-20260428203428",
-  "latest_state": "RUNNING",
+  "latest_state": "DELETION_IN_PROGRESS",
   "latest_task_counts": {
-    "SUCCEEDED": 3,
-    "RUNNING": 2,
-    "PENDING": 5
+    "SUCCEEDED": 6,
+    "RUNNING": 1,
+    "PENDING": 3
   },
   "create_time": "2026-04-28T20:37:06.446050181Z",
   "update_time": "2026-04-28T21:30:38Z",
@@ -72,6 +72,11 @@
     "dominant_fill_failure_reason": "selected_contract_universe_gap",
     "dense_universe_trade_date_count_observed": 4,
     "diagnosis": "dense universe construction is only selecting four reference trade dates for completed symbols; repair or instrument reference-date coverage before judging strategy economics"
+  },
+  "disposition": {
+    "action": "delete_requested_to_free_batch_capacity",
+    "reason": "superseded_by_phase39_inventory_gap_diagnosis_phase40_active_inactive_inventory_repair_and_phase41_dense_coverage_pass",
+    "successor_phase": "phase42_dense_download_replay_20260428182000"
   },
   "promotion_gate": {
     "fill_coverage_gate": 0.9,

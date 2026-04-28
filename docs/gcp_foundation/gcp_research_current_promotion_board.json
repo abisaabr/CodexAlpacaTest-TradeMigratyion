@@ -219,11 +219,11 @@
     {
       "job_id": "phase38-dense-top10-20260428203428",
       "phase_id": "phase38_dense_top10_universe_20260428203428",
-      "latest_state": "RUNNING",
+      "latest_state": "DELETION_IN_PROGRESS",
       "latest_task_counts": {
-        "SUCCEEDED": 3,
-        "RUNNING": 2,
-        "PENDING": 5
+        "SUCCEEDED": 6,
+        "RUNNING": 1,
+        "PENDING": 3
       },
       "location": "us-central1",
       "task_count": 10,
@@ -261,6 +261,11 @@
         "dominant_fill_failure_reason": "selected_contract_universe_gap",
         "observed_dense_universe_trade_date_count": 4,
         "next_safe_fix": "instrument and repair dense-universe reference-date coverage before judging strategy economics"
+      },
+      "disposition": {
+        "action": "delete_requested_to_free_batch_capacity",
+        "reason": "superseded_by_phase39_inventory_gap_diagnosis_phase40_active_inactive_inventory_repair_and_phase41_dense_coverage_pass",
+        "successor_phase": "phase42_dense_download_replay_20260428182000"
       }
     },
     {
@@ -409,7 +414,7 @@
     {
       "job_id": "phase42-dense-download-replay-20260428182000",
       "phase_id": "phase42_dense_download_replay_20260428182000",
-      "latest_state": "SCHEDULED",
+      "latest_state": "RUNNING",
       "latest_task_counts": {
         "PENDING": 4
       },

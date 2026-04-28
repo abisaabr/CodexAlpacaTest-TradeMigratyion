@@ -6,7 +6,7 @@
 - Broker-facing: `false`
 - Live manifest effect: `none`
 - Risk policy effect: `none`
-- Active Batch jobs: `phase38-dense-top10-20260428203428` (`RUNNING`, older baseline lane) and `phase42-dense-download-replay-20260428182000` (`SCHEDULED`, repaired dense option download/replay). Phase41 completed and passed dense selected-contract coverage for all ten top-liquid symbols.
+- Active Batch job: `phase42-dense-download-replay-20260428182000` (`RUNNING`, repaired dense option download/replay). Phase38 was stopped as a superseded older baseline lane after Phase39-41 repaired the fill foundation.
 
 ## Bounded-Validation Candidates
 
@@ -38,7 +38,7 @@ One candidate is ready for a bounded paper-validation operator decision:
 - Phase32b completed all 15 shards and is ready for wave-level aggregation; no Phase32b result can be promoted directly without the rollup and gate review.
 - Phase37 completed as a top-10 liquid-underlying weekly ATM lane using `0-7` DTE, ATM-only contracts, and `entry_liquidity_first_research_only` replay. Its rollup scanned `183` candidates, found `0` eligible, and classified all candidates as `selected_contract_universe_gap`; max min-fill was only `0.1111`.
 - The local QQQ dense cleanroom downloader succeeded for `2026-03-18` through `2026-04-17` with `2794/2794` successful contract-day requests and `96.242%` dense selected-contract-day fill. This is a data-foundation repair template, not a promotion packet.
-- Phase38 is active as the direct dense-universe fill diagnostic for `SPY`, `NVDA`, `QQQ`, `AMZN`, `TSLA`, `MSFT`, `IWM`, `AAPL`, `META`, and `MU`; the first visible shards (`MSFT`, `NVDA`, `QQQ`) are still blocked by `selected_contract_universe_gap`.
+- Phase38 was stopped because it used the incomplete old inventory and was superseded by the Phase39-41 repair path.
 - Phase38 dense-universe packets for visible shards selected only `4` trade dates, not the full intended `2026-03-02` to `2026-04-23` window. The next engineering fix is dense-universe reference-date coverage diagnostics and repair.
 - Phase39 completed using runner commit `b6e48cddce0f` and the curated top-150 stock parquet (`2026-04-01` to `2026-04-23`). It showed stock reference coverage was usable (`16/17` weekdays) but dense selected-contract coverage failed (`4/17` weekdays for most symbols, `0/17` for `MU`), proving the current top100 option contract inventory is incomplete for historical `0-7` DTE testing.
 - Runner commit `91d75fb36c7c` adds `scripts/download_historical_option_contract_inventory.py`, a research-only active+inactive contract inventory downloader based on the proven QQQ dense cleanroom pattern.

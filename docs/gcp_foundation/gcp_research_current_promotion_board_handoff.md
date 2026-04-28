@@ -5,7 +5,7 @@
 - Control packet: `docs/gcp_foundation/gcp_research_current_promotion_board.md`
 - Control JSON: `docs/gcp_foundation/gcp_research_current_promotion_board.json`
 - State: `phase41_dense_coverage_passed_phase42_download_replay_running`
-- Active research Batch jobs: `phase38-dense-top10-20260428203428` (`RUNNING`, older baseline lane) and `phase42-dense-download-replay-20260428182000` (`SCHEDULED`, repaired dense option download/replay)
+- Active research Batch job: `phase42-dense-download-replay-20260428182000` (`RUNNING`, repaired dense option download/replay)
 - Broker-facing status: `not_started`
 
 ## Canonical Candidate State
@@ -29,6 +29,8 @@ Phase40 fixed the inventory coverage gate: all ten symbols reached `17/17` reque
 Phase41 passed dense selected-contract coverage for all ten symbols: `16/17` selected weekdays (`0.941176`), with the remaining weekday being the market holiday gap.
 
 Phase42 is now running option bar/trade download and strategy replay against the repaired dense selected-contract roots.
+
+Phase38 was stopped as a superseded older baseline lane because it used the incomplete old inventory.
 
 ## Next Safe Research Step
 
