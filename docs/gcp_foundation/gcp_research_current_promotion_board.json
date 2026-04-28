@@ -1,12 +1,46 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T15:55:00Z",
-  "state": "current_after_phase31",
+  "generated_at_utc": "2026-04-28T16:09:52Z",
+  "state": "phase32_unexplored_top100_tranche1_running",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
   "exclusive_window_effect": "none",
-  "active_batch_jobs": [],
+  "active_batch_jobs": [
+    {
+      "job_id": "phase32-unexplored-top100-tranche1-20260428120500",
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "latest_state": "RUNNING",
+      "latest_task_counts": {
+        "RUNNING": 5,
+        "PENDING": 10
+      },
+      "location": "us-central1",
+      "task_count": 15,
+      "parallelism": 5,
+      "broker_facing": false,
+      "live_manifest_effect": "none",
+      "risk_policy_effect": "none",
+      "symbol_tranche": [
+        "AMD",
+        "PLTR",
+        "GOOG",
+        "ORCL",
+        "XOM",
+        "XLE",
+        "JPM",
+        "UNH",
+        "V",
+        "BAC",
+        "CRM",
+        "XLI",
+        "GE",
+        "AMAT",
+        "TQQQ"
+      ],
+      "objective": "expand unexplored top-100 option-aware candidate coverage using sharded research-only selected-contract build, Alpaca historical option data download, and stress replay"
+    }
+  ],
   "bounded_validation_candidates": [
     {
       "symbol": "AAPL",
@@ -91,7 +125,7 @@
   ],
   "current_recommendation": {
     "paper_validation": "AAPL_exit360_only_if_operator_explicitly_arms_exclusive_window",
-    "research": "stop_replaying_failed_wide_lag_cluster_and_expand_new_candidate_search_or_strategy_redesign",
+    "research": "monitor Phase32 unexplored-top100 tranche; aggregate promotion review only after all shards finish cleanly",
     "promotion_policy": "do_not_promote_any_candidate_without_broker_audited_bounded_paper_validation"
   },
   "hard_rules": [

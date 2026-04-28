@@ -4,8 +4,8 @@
 
 - Control packet: `docs/gcp_foundation/gcp_research_current_promotion_board.md`
 - Control JSON: `docs/gcp_foundation/gcp_research_current_promotion_board.json`
-- State: `current_after_phase31`
-- Active research Batch jobs: `none`
+- State: `phase32_unexplored_top100_tranche1_running`
+- Active research Batch jobs: `phase32-unexplored-top100-tranche1-20260428120500` (`RUNNING`, 5 running / 10 pending at last check)
 - Broker-facing status: `not_started`
 
 ## Canonical Candidate State
@@ -16,13 +16,11 @@
 
 The `AMZN`/`AVGO`/`MSFT`/`MU` wide-lag cluster failed Phase31 economics and should not be replayed unchanged.
 
+Phase32 is currently using GCP Batch to expand option-aware research coverage across `AMD`, `PLTR`, `GOOG`, `ORCL`, `XOM`, `XLE`, `JPM`, `UNH`, `V`, `BAC`, `CRM`, `XLI`, `GE`, `AMAT`, and `TQQQ`.
+
 ## Next Safe Research Step
 
-Redirect compute to either:
-
-- New candidate discovery outside the failed wide-lag cluster.
-- Strategy redesign for cost/fill sensitivity.
-- Loser-trade and severe-loser exclusion hardening.
+Monitor Phase32 until all shards finish. If clean, aggregate per-symbol promotion packets into a portfolio-level review. If any shard fails, repair only the affected symbol shard.
 
 Do not broaden broker-facing paper validation beyond the current AAPL candidate without a new governed packet.
 
