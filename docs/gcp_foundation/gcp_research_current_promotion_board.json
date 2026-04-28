@@ -1,7 +1,7 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T17:20:33Z",
-  "state": "phase32_and_phase32b_unexplored_top100_running",
+  "generated_at_utc": "2026-04-28T17:25:36Z",
+  "state": "phase32_phase32b_and_phase34_running",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -44,7 +44,7 @@
     {
       "job_id": "phase32b-unexplored-top100-tranche2-20260428122500",
       "phase_id": "phase32b_unexplored_top100_tranche2_20260428122500",
-      "latest_state": "SCHEDULED",
+      "latest_state": "RUNNING",
       "latest_task_counts": {
         "RUNNING": 2,
         "PENDING": 11,
@@ -74,6 +74,27 @@
         "BA"
       ],
       "objective": "expand candidate-rich unexplored top-100 option-aware coverage after Phase32 shard path validated with zero failed AMD data chunks"
+    },
+    {
+      "job_id": "phase34-top-lead-exitlag-20260428172500",
+      "phase_id": "phase34_top_lead_exit_lag_feasibility_20260428172500",
+      "latest_state": "SCHEDULED",
+      "latest_task_counts": {
+        "PENDING": 4
+      },
+      "location": "us-central1",
+      "task_count": 4,
+      "parallelism": 4,
+      "broker_facing": false,
+      "live_manifest_effect": "none",
+      "risk_policy_effect": "none",
+      "symbol_tranche": [
+        "AMD",
+        "GE",
+        "ORCL",
+        "PLTR"
+      ],
+      "objective": "candidate-only exit-lag feasibility diagnostic for the best positive-economics Phase32 leads still blocked by fill_coverage_below_0.90"
     }
   ],
   "current_interim_summary": {
@@ -234,7 +255,7 @@
   ],
   "current_recommendation": {
     "paper_validation": "AAPL_exit360_only_if_operator_explicitly_arms_exclusive_window",
-    "research": "monitor Phase32 and Phase32b unexplored-top100 tranches; aggregate promotion review only after shards finish cleanly",
+    "research": "monitor Phase32, Phase32b, and Phase34; aggregate promotion review only after shards finish cleanly, and use Phase34 solely to classify whether top fill-blocked leads deserve isolated stress or redesign",
     "promotion_policy": "do_not_promote_any_candidate_without_broker_audited_bounded_paper_validation"
   },
   "hard_rules": [

@@ -2,11 +2,11 @@
 
 ## State
 
-- State: `phase32_and_phase32b_unexplored_top100_running`
+- State: `phase32_phase32b_and_phase34_running`
 - Broker-facing: `false`
 - Live manifest effect: `none`
 - Risk policy effect: `none`
-- Active Batch jobs: `phase32-unexplored-top100-tranche1-20260428120500` (`RUNNING`, 5 running / 1 pending / 9 succeeded at last check) and `phase32b-unexplored-top100-tranche2-20260428122500` (`RUNNING`, 2 running / 11 pending / 2 succeeded at last check)
+- Active Batch jobs: `phase32-unexplored-top100-tranche1-20260428120500` (`RUNNING`, 5 running / 1 pending / 9 succeeded at last check), `phase32b-unexplored-top100-tranche2-20260428122500` (`RUNNING`, 2 running / 11 pending / 2 succeeded at last check), and `phase34-top-lead-exitlag-20260428172500` (`SCHEDULED`, 4 pending at launch)
 
 ## Bounded-Validation Candidates
 
@@ -32,11 +32,12 @@ One candidate is ready for a bounded paper-validation operator decision:
 - Interim Phase32 `XLE` result is research-only blocked: `0/9` eligible, zero download failures, best two variants have positive economics but only about `0.60` fill coverage.
 - Interim scan across 11 completed shards has `0` new governed-validation candidates. The dominant blocker remains `fill_coverage_below_0.90`.
 - Best research-only fill-repair leads so far: `AMD` balanced exit-360, `GE` tight put exit-360, `ORCL` balanced exit-360, and `PLTR` balanced put exit-300.
+- Phase34 is actively testing those four best fill-repair leads for exit-lag feasibility. Phase34 is diagnostic only and cannot directly promote candidates.
 
 ## Current Recommendation
 
 - Paper validation: keep scope to `AAPL` exit-360 only, and only if an exclusive execution window is explicitly armed.
-- Research: monitor Phase32 and Phase32b; if shards finish cleanly, aggregate per-symbol promotion packets into a portfolio-level review.
+- Research: monitor Phase32, Phase32b, and Phase34; if unexplored shards finish cleanly, aggregate per-symbol promotion packets into a portfolio-level review, and use Phase34 only to decide whether top fill-blocked leads deserve isolated economic stress or redesign.
 - Promotion: do not promote any candidate to live or durable paper allocation without broker-audited bounded paper validation evidence.
 
 ## Guardrails

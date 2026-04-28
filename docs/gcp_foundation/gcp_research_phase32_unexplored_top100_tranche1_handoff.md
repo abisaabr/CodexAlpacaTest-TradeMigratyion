@@ -7,7 +7,7 @@ Phase32 is active as a non-broker-facing research Batch job:
 - Job: `phase32-unexplored-top100-tranche1-20260428120500`
 - Phase: `phase32_unexplored_top100_tranche1_20260428120500`
 - Latest status: `RUNNING`
-- Latest task counts: `5` running / `10` pending
+- Latest task counts: `9` succeeded / `5` running / `1` pending
 - Task count: `15`
 - Parallelism: `5`
 - Symbols: `AMD`, `PLTR`, `GOOG`, `ORCL`, `XOM`, `XLE`, `JPM`, `UNH`, `V`, `BAC`, `CRM`, `XLI`, `GE`, `AMAT`, `TQQQ`
