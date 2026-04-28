@@ -5,7 +5,7 @@
 - Control packet: `docs/gcp_foundation/gcp_research_current_promotion_board.md`
 - Control JSON: `docs/gcp_foundation/gcp_research_current_promotion_board.json`
 - State: `phase41_dense_coverage_passed_phase42_download_replay_running`
-- Active research Batch job: `phase42-dense-download-replay-20260428182000` (`RUNNING`, repaired dense option download/replay)
+- Active research Batch job: `phase42-dense-download-replay-20260428182000` (`RUNNING`, `9` succeeded / `1` running)
 - Broker-facing status: `not_started`
 
 ## Canonical Candidate State
@@ -30,11 +30,13 @@ Phase41 passed dense selected-contract coverage for all ten symbols: `16/17` sel
 
 Phase42 is now running option bar/trade download and strategy replay against the repaired dense selected-contract roots.
 
+Phase42 interim scan has `9/10` shard reports visible and `0/165` candidates eligible so far. The current blocker is no longer selected-contract universe coverage; it is exit-bar/exit-policy mismatch under the unchanged `0.90` fill gate.
+
 Phase38 was deleted as a superseded older baseline lane because it used the incomplete old inventory.
 
 ## Next Safe Research Step
 
-Monitor Phase42 completion. If clean, aggregate shard portfolio reports into a wave-level promotion review. Do not promote from individual shard packets.
+Monitor final Phase42 completion. If clean, aggregate shard portfolio reports into a wave-level promotion review. Do not promote from individual shard packets.
 
 Do not broaden broker-facing paper validation beyond the current AAPL candidate without a new governed packet.
 

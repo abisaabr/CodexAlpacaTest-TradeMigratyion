@@ -6,7 +6,7 @@
 - Broker-facing: `false`
 - Live manifest effect: `none`
 - Risk policy effect: `none`
-- Active Batch job: `phase42-dense-download-replay-20260428182000` (`RUNNING`, repaired dense option download/replay). Phase38 was deleted as a superseded older baseline lane after Phase39-41 repaired the fill foundation.
+- Active Batch job: `phase42-dense-download-replay-20260428182000` (`RUNNING`, `9` succeeded / `1` running). Phase38 was deleted as a superseded older baseline lane after Phase39-41 repaired the fill foundation.
 
 ## Bounded-Validation Candidates
 
@@ -45,6 +45,7 @@ One candidate is ready for a bounded paper-validation operator decision:
 - Phase40 completed and fixed the top-10 option contract inventory foundation: all ten symbols reached `17/17` requested weekday coverage for the `0-7` DTE inventory window.
 - Phase41 completed and passed dense selected-contract coverage for all ten top-liquid symbols (`16/17` selected weekdays, `0.941176` coverage).
 - Phase42 is now launched to download option bars/trades and replay top-10 strategy queues against the repaired dense selected-contract roots.
+- Phase42 interim scan has `9/10` shard reports visible and `0/165` candidates eligible so far. The dominant blocker remains `fill_coverage_below_0.90`, but now the failure reason is primarily `exit_bar_gap_or_exit_policy_mismatch`, not selected-contract universe gaps.
 - Runner commit `5578a6803ae7` adds the wave-level rollup tool that aggregates shard-level portfolio reports into one capital plan, fill-failure map, data-repair queue, strategy-redesign queue, and promotion-review packet.
 - Runner commit `6dca362e41bf` hardens the rollup to infer fill-failure reasons from older shard packets.
 - Runner commit `83e2803b4aab` adds the fill-experiment comparison tool so sparse, ATM-only, dense, and future stock/ETF fallback lanes can be compared under one gate.
@@ -54,7 +55,7 @@ One candidate is ready for a bounded paper-validation operator decision:
 ## Current Recommendation
 
 - Paper validation: keep scope to `AAPL` exit-360 only, and only if an exclusive execution window is explicitly armed.
-- Research: monitor Phase42 completion, then aggregate shard portfolio reports into a wave-level promotion review. Do not promote from individual shard packets.
+- Research: monitor final Phase42 shard completion, then aggregate shard portfolio reports into a wave-level promotion review. The next engineering direction is exit-policy redesign/repair, not more contract-inventory repair.
 - Aggregation: use `scripts/build_research_wave_portfolio_rollup.py` and `scripts/build_research_fill_experiment_comparison.py` after shards are staged locally so promotion review is systematic and not manually cherry-picked from individual shard packets.
 - Promotion: do not promote any candidate to live or durable paper allocation without broker-audited bounded paper validation evidence.
 

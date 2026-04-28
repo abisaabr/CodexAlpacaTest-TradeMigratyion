@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T22:08:00Z",
+  "generated_at_utc": "2026-04-28T22:49:00Z",
   "state": "phase41_dense_coverage_passed_phase42_download_replay_running",
   "broker_facing": false,
   "live_manifest_effect": "none",
@@ -416,7 +416,8 @@
       "phase_id": "phase42_dense_download_replay_20260428182000",
       "latest_state": "RUNNING",
       "latest_task_counts": {
-        "PENDING": 4
+        "SUCCEEDED": 9,
+        "RUNNING": 1
       },
       "location": "us-central1",
       "task_count": 10,
@@ -449,7 +450,15 @@
         "contract_selection_method": "entry_liquidity_first_research_only",
         "test_date_count": 5
       },
-      "objective": "research-only option bar/trade download and strategy replay using repaired dense selected-contract roots"
+      "objective": "research-only option bar/trade download and strategy replay using repaired dense selected-contract roots",
+      "interim_result": {
+        "visible_portfolio_report_count": 9,
+        "candidate_count_scanned": 165,
+        "eligible_for_promotion_review_count": 0,
+        "dominant_blocker": "fill_coverage_below_0.90",
+        "dominant_fill_failure_reason": "exit_bar_gap_or_exit_policy_mismatch",
+        "interim_conclusion": "dense selected-contract coverage is repaired, but current strategy exits still fail promotion fill gates"
+      }
     }
   ],
   "current_interim_summary": {
@@ -492,6 +501,15 @@
       "requested_weekday_trade_date_count": 17,
       "selected_trade_date_coverage_ratio": 0.941176,
       "next_phase": "phase42_dense_download_replay_20260428182000"
+    },
+    "phase42_dense_download_replay": {
+      "state": "running_partial_results",
+      "visible_portfolio_report_count": 9,
+      "candidate_count_scanned": 165,
+      "eligible_for_promotion_review_count": 0,
+      "dominant_blocker": "fill_coverage_below_0.90",
+      "dominant_fill_failure_reason": "exit_bar_gap_or_exit_policy_mismatch",
+      "remaining_symbol": "MSFT"
     },
     "best_research_only_leads": [
       {
@@ -683,7 +701,7 @@
   ],
   "current_recommendation": {
     "paper_validation": "AAPL_exit360_only_if_operator_explicitly_arms_exclusive_window",
-    "research": "Monitor Phase42 completion, then aggregate shard portfolio reports into a wave-level promotion review; do not promote from individual shard packets",
+    "research": "Monitor final Phase42 shard completion, then aggregate shard portfolio reports into a wave-level promotion review; next engineering direction is exit-policy redesign/repair, not more contract-inventory repair",
     "promotion_policy": "do_not_promote_any_candidate_without_broker_audited_bounded_paper_validation"
   },
   "hard_rules": [

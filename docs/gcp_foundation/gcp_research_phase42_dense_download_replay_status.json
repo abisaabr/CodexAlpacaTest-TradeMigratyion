@@ -1,11 +1,12 @@
 {
-  "generated_at_utc": "2026-04-28T22:08:00Z",
-  "status": "phase42_dense_download_replay_scheduled",
+  "generated_at_utc": "2026-04-28T22:49:00Z",
+  "status": "phase42_dense_download_replay_running_partial_results",
   "phase_id": "phase42_dense_download_replay_20260428182000",
   "batch_job": "phase42-dense-download-replay-20260428182000",
-  "latest_state": "SCHEDULED",
+  "latest_state": "RUNNING",
   "latest_task_counts": {
-    "PENDING": 4
+    "SUCCEEDED": 9,
+    "RUNNING": 1
   },
   "project": "codexalpaca",
   "location": "us-central1",
@@ -70,6 +71,32 @@
     "launch_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase42_dense_download_replay_20260428182000/launch/",
     "control_shard_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase42_dense_download_replay_20260428182000/data_shards/",
     "data_shard_root": "gs://codexalpaca-data-us/research_option_data/top100_liquidity_research_20260426/phase42_dense_download_replay_20260428182000/data_shards/"
+  },
+  "interim_result": {
+    "visible_portfolio_report_count": 9,
+    "visible_symbols": [
+      "AAPL",
+      "AMZN",
+      "IWM",
+      "META",
+      "MU",
+      "NVDA",
+      "QQQ",
+      "SPY",
+      "TSLA"
+    ],
+    "remaining_symbol": "MSFT",
+    "candidate_count_scanned": 165,
+    "eligible_for_promotion_review_count": 0,
+    "dominant_blocker": "fill_coverage_below_0.90",
+    "blocker_counts": {
+      "fill_coverage_below_0.90": 165,
+      "option_trades_below_20": 113,
+      "test_net_pnl_not_above_0": 79,
+      "min_net_pnl_not_positive": 17
+    },
+    "dominant_fill_failure_reason": "exit_bar_gap_or_exit_policy_mismatch",
+    "interim_conclusion": "dense selected-contract coverage is repaired, but current strategy exits still fail promotion fill gates"
   },
   "promotion_gate_effect": "research_governed_validation_review_only",
   "next_safe_step": "monitor Phase42 completion, then aggregate shard portfolio reports into a wave-level promotion review",
