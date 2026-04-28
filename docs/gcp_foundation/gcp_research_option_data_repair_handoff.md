@@ -157,10 +157,14 @@ An AAPL governance review packet has been published:
 
 - Packet: `docs/gcp_foundation/gcp_research_aapl_candidate_governance_review_packet.md`
 - Handoff: `docs/gcp_foundation/gcp_research_aapl_candidate_governance_review_handoff.md`
-- State: `research_review_open_pending_phase27_adversarial_stress`
-- Active confirmation job: `phase27-aapl-governance-stress-20260428141000`
+- State: `research_review_ready_for_governance_decision`
+- Completed confirmation job: `phase27-aapl-governance-stress-20260428141000`
 - Confirmation phase id: `phase27_aapl_governance_stress_20260428141000`
 - Result root: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase27_aapl_governance_stress_20260428141000/`
+- Confirmation result: `ready_for_governed_validation_review`, min net `$1715.93`, min test `$341.155`, fill `0.9474-1.0`, blockers `none`
+- Bounded validation plan: `docs/gcp_foundation/gcp_research_aapl_bounded_paper_validation_plan.md`
+- Non-live manifest candidate: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_manifest_candidate.yaml`
+- Operator checklist: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_operator_checklist.md`
 
 ## Safe Use
 
@@ -222,4 +226,4 @@ Keep INTC in research-only hold. Do not promote candidates, relax gates, or chan
 
 Phase26 completed the active diagnostic for that next step. Do not promote candidates, relax gates, or change strategy/risk policy from Phase26 alone. The next safe step is a governance review packet for the AAPL research candidate plus a separate fill-repair or strategy-design decision for the blocked NVDA/AAPL leads.
 
-The AAPL governance review packet is now published, and Phase27 is active. Wait for Phase27 before any activation discussion. Keep the blocked NVDA/AAPL leads in data-repair or strategy-design review.
+The AAPL governance review packet is now updated with Phase27 results. A planning-only bounded paper validation plan, non-live manifest candidate, and operator checklist exist. The next safe step is dry-run startup preflight on the sanctioned VM after copying the candidate config into the runner checkout. Keep the blocked NVDA/AAPL leads in data-repair or strategy-design review.

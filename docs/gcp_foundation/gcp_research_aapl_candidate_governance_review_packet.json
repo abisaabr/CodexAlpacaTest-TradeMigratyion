@@ -1,7 +1,7 @@
 {
   "packet_id": "gcp_research_aapl_candidate_governance_review_20260428",
   "generated_at": "2026-04-28T14:12:00Z",
-  "state": "research_review_open_pending_phase27_adversarial_stress",
+  "state": "research_review_ready_for_governance_decision",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -30,18 +30,26 @@
   "current_blockers": [
     "not_broker_audited",
     "not_validated_in_sanctioned_vm_paper_session",
-    "pending_phase27_adversarial_cost_and_lag_stress",
     "not_approved_for_live_manifest_or_risk_policy_change"
   ],
   "phase27_adversarial_stress": {
     "job": "phase27-aapl-governance-stress-20260428141000",
-    "initial_state": "SCHEDULED",
+    "state": "SUCCEEDED",
     "phase_id": "phase27_aapl_governance_stress_20260428141000",
     "purpose": "test the AAPL candidate under harsher slippage, fee, entry-lag, and exit-lag assumptions before any activation discussion",
-    "result_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase27_aapl_governance_stress_20260428141000/"
+    "result_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase27_aapl_governance_stress_20260428141000/",
+    "decision": "ready_for_governed_validation_review",
+    "min_net_pnl": 1715.93,
+    "min_test_net_pnl": 341.155,
+    "min_fill_coverage": 0.9474,
+    "max_fill_coverage": 1.0,
+    "min_option_trade_count": 36,
+    "worst_drawdown": -4167.955,
+    "positive_net_profile_count": 5,
+    "positive_test_profile_count": 5,
+    "promotion_blockers": []
   },
   "required_next_evidence": [
-    "Phase27 adversarial stress result",
     "governance review against strategy promotion policy",
     "bounded broker-audited VM paper session only after explicit exclusive execution window",
     "broker order audit",

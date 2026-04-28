@@ -3,12 +3,15 @@
 ## Current State
 
 - Candidate: `AAPL` `b150__aapl__long_call__wide_reward__exit_360__liq_baseline`
-- State: `research_review_open_pending_phase27_adversarial_stress`
+- State: `research_review_ready_for_governance_decision`
 - Broker-facing status: `not_broker_facing`
 - Live manifest effect: `none`
 - Risk policy effect: `none`
 - Current control-plane packet: `docs/gcp_foundation/gcp_research_aapl_candidate_governance_review_packet.md`
 - Current control-plane JSON: `docs/gcp_foundation/gcp_research_aapl_candidate_governance_review_packet.json`
+- Bounded validation plan: `docs/gcp_foundation/gcp_research_aapl_bounded_paper_validation_plan.md`
+- Non-live manifest candidate: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_manifest_candidate.yaml`
+- Operator checklist: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_operator_checklist.md`
 
 ## Why This Candidate Matters
 
@@ -20,23 +23,25 @@ This is still research evidence, not broker-audited execution evidence. It has n
 
 Do not change live manifests, live strategy selection, or risk policy from this packet.
 
-## Active Phase27 Job
+## Phase27 Result
 
 - Job: `phase27-aapl-governance-stress-20260428141000`
-- Initial state: `SCHEDULED`
+- State: `SUCCEEDED`
 - Phase id: `phase27_aapl_governance_stress_20260428141000`
 - Result root: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase27_aapl_governance_stress_20260428141000/`
 - Launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase27_aapl_governance_stress_20260428141000/launch/`
+- Decision: `ready_for_governed_validation_review`
+- Minimum net PnL: `$1715.93`
+- Minimum holdout/test net PnL: `$341.155`
+- Fill coverage: `0.9474-1.0`
+- Minimum option trades: `36`
+- Worst drawdown: `$-4167.955`
+- Promotion blockers: `none`
 
 ## Next Operator Action
 
-Monitor Phase27. If it succeeds, inspect:
+Classify the AAPL candidate against `docs/STRATEGY_PROMOTION_POLICY.md` as a possible `governed_validation` paper-session candidate. That still does not authorize live trading or manifest changes; it only prepares a bounded paper validation discussion.
 
-- promotion review packet
-- portfolio report
-- minimum fill coverage
-- minimum holdout/test net PnL
-- worst drawdown
-- severe loser clusters or cost sensitivity
+Do not activate the strategy until an explicit governance packet says the candidate is allowed into a bounded paper validation run and an exclusive execution window is armed.
 
-If Phase27 stays clean, the next governance step is to classify the AAPL candidate as a possible `governed_validation` paper-session candidate. That still does not authorize live trading or manifest changes; it only prepares a bounded paper validation discussion.
+A bounded paper-validation plan, non-live manifest candidate, and operator checklist now exist. The next implementation step is a dry-run startup preflight on the sanctioned VM after copying the candidate config into the runner checkout. Do not run broker-facing paper validation until an exclusive execution window is armed and explicitly authorized.

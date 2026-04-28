@@ -96,11 +96,18 @@
 - Wide-lag exit-policy blocker counts: `fill_coverage_below_0.90=3`, `test_net_pnl_not_above_0=1`
 - Wide-lag exit-policy blocked leads: `NVDA exit_300`, `AAPL exit_210`, `NVDA exit_360`
 - AAPL governance packet: `docs/gcp_foundation/gcp_research_aapl_candidate_governance_review_packet.md`
-- AAPL governance state: `research_review_open_pending_phase27_adversarial_stress`
+- AAPL governance state: `research_review_ready_for_governance_decision`
 - AAPL adversarial stress job: `phase27-aapl-governance-stress-20260428141000`
-- AAPL adversarial stress initial state: `SCHEDULED`
+- AAPL adversarial stress state: `SUCCEEDED`
 - AAPL adversarial stress phase id: `phase27_aapl_governance_stress_20260428141000`
 - AAPL adversarial stress result root: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase27_aapl_governance_stress_20260428141000/`
+- AAPL adversarial stress decision: `ready_for_governed_validation_review`
+- AAPL adversarial stress metrics: min net `$1715.93`, min test `$341.155`, fill `0.9474-1.0`, worst drawdown `$-4167.955`
+- AAPL adversarial stress blockers: `none`
+- AAPL bounded validation plan: `docs/gcp_foundation/gcp_research_aapl_bounded_paper_validation_plan.md`
+- AAPL bounded validation state: `ready_to_prepare_bounded_paper_validation`
+- AAPL non-live manifest candidate: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_manifest_candidate.yaml`
+- AAPL operator checklist: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_operator_checklist.md`
 
 ## Operator Rule
 
@@ -122,7 +129,8 @@
 - Phase26 completed as the non-broker-facing exit-policy and cost-sensitivity diagnostic for the AAPL/NVDA wide-lag candidates.
 - Phase26 opened one research/governed-validation review candidate: `AAPL` `b150__aapl__long_call__wide_reward__exit_360__liq_baseline`.
 - Phase26 did not authorize deployment. The candidate remains research review only and still requires governance review plus clean broker-audited paper-session evidence before any activation discussion.
-- Phase27 is active as a non-broker-facing adversarial cost and lag stress test for that single AAPL candidate.
+- Phase27 completed as a non-broker-facing adversarial cost and lag stress test for that single AAPL candidate.
+- Phase27 kept the AAPL candidate eligible for research/governed-validation review under harsher cost and lag assumptions.
 - This is research-only. Do not arm windows, start trading, change live manifests, or change risk policy from this packet.
 
 ## Next Research Step
@@ -133,4 +141,4 @@ Keep INTC in research-only hold. The next safe research step is execution-cost s
 
 Phase26 completed that next safe research step. Do not promote candidates, relax gates, or modify live strategy selection from Phase26 alone. The next safe step is to publish a governance review packet for the AAPL research candidate and keep the blocked NVDA/AAPL leads in data-repair or strategy-design review.
 
-The AAPL governance review packet is now published, and Phase27 is the active confirmation job. Monitor Phase27 before any paper-session activation discussion.
+The AAPL governance review packet is now updated with Phase27 results. A planning-only bounded paper validation plan, non-live manifest candidate, and operator checklist exist. The next safe step is dry-run startup preflight on the sanctioned VM after copying the candidate config into the runner checkout. Do not modify live manifests or run a broker-facing session from this research packet alone.

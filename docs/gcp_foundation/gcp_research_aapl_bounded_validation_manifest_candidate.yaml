@@ -1,0 +1,109 @@
+name: aapl_bounded_validation_candidate_non_live
+description: >
+  Non-live bounded validation candidate for the AAPL research/governed-validation
+  review strategy. This packet is a control-plane candidate only; it is not a
+  live manifest and must not be used for broker-facing paper orders until an
+  exclusive execution window and explicit operator authorization are present.
+
+metadata:
+  packet_id: gcp_research_aapl_bounded_validation_manifest_candidate_20260428
+  state: non_live_candidate
+  broker_facing: false
+  live_manifest_effect: none
+  risk_policy_effect: none
+  source_candidate_variant_id: b150__aapl__long_call__wide_reward__exit_360__liq_baseline
+  source_strategy_id: aapl__broad150__trend_long_call_research
+  required_control_plane_preconditions:
+    - exclusive_execution_window_armed
+    - bounded_operator_authorization
+    - sanctioned_vm_execution_path_vm-execution-paper-01
+    - post_session_assimilation_ready
+
+risk:
+  sleeve_starting_equity: 25000
+  max_open_risk_fraction: 0.02
+  daily_loss_gate_pct: 0.01
+  delever_drawdown_pct: 2.0
+  delever_risk_scale: 0.25
+  max_open_positions: 1
+  max_positions_per_regime: 1
+  max_positions_per_symbol: 1
+  entry_cluster_window_minutes: 390
+  max_positions_per_regime_window: 1
+  max_positions_per_bucket_regime_window: 1
+  max_open_risk_fraction_per_symbol: 0.02
+  bucket_caps:
+    - name: aapl_single_candidate
+      symbols: [AAPL]
+      max_open_risk_fraction: 0.02
+  min_required_buying_power: 20000
+  broker_min_equity_to_trade: 26000
+  broker_equity_emergency_stop: 25500
+  severe_loss_halt_new_entries_pct: 0.01
+  severe_loss_flatten_all_pct: 0.015
+  soft_alert_delta_shares: 600
+  soft_alert_vega_dollars_1pct: 120
+  hard_cap_delta_shares: 900
+  hard_cap_vega_dollars_1pct: 180
+  entry_failure_streak_limit: 1
+  entry_adverse_slippage_fraction_limit: 0.12
+  entry_adverse_slippage_lookback: 2
+  entry_cutoff_minute: 300
+  same_day_entry_cutoff_minute: 0
+  event_blackouts: []
+
+execution:
+  underlying_symbols: [AAPL]
+  option_feed: indicative
+  stock_feed: iex
+  submit_paper_orders: false
+  poll_interval_seconds: 20
+  order_status_poll_seconds: 10
+  order_fill_timeout_seconds: 45
+  contract_refresh_minutes: 15
+  quote_stale_seconds: 120
+  stock_freshness_seconds: 180
+  max_relative_spread: 0.25
+  max_dte_days: 7
+  state_root: reports/multi_ticker_portfolio/aapl_bounded_validation/state
+  run_root: reports/multi_ticker_portfolio/aapl_bounded_validation/runs
+  task_name: AAPL Bounded Validation Candidate
+  allow_market_exit_fallback: true
+  market_exit_fallback_minute: 385
+  startup_lead_minutes: 10
+  midday_report_minute: 180
+  auto_flatten_unexpected_positions: true
+  unexpected_position_cleanup_timeout_seconds: 45
+
+ownership:
+  enabled: true
+  lease_backend: gcs_generation_match
+  gcs_lease_uri: gs://codexalpaca-control-us/execution_lease/aapl_bounded_validation_lease.json
+  lease_path: reports/multi_ticker_portfolio/aapl_bounded_validation/state/ownership_lease.json
+  lease_ttl_seconds: 180
+  machine_label: vm-execution-paper-01
+
+strategies:
+  - name: aapl__governed_validation__trend_long_call_next_expiry_wide_reward_exit360
+    underlying_symbol: AAPL
+    regime: bull
+    family: Single-leg long call
+    description: >
+      AAPL bounded validation candidate derived from
+      b150__aapl__long_call__wide_reward__exit_360__liq_baseline. Research-only
+      evidence cleared Phase26 and Phase27; broker-audited validation is still
+      required before promotion.
+    dte_mode: next_expiry
+    signal_name: trend_call
+    timing_profile: slow
+    hard_exit_minute: 360
+    risk_fraction: 0.02
+    max_contracts: 1
+    profit_target_multiple: 0.55
+    stop_loss_multiple: 0.30
+    legs:
+      - option_type: call
+        side: long
+        target_delta: 0.60
+        min_abs_delta: 0.05
+        max_abs_delta: 0.95

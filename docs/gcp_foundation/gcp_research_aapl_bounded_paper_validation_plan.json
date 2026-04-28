@@ -1,0 +1,58 @@
+{
+  "packet_id": "gcp_research_aapl_bounded_paper_validation_plan_20260428",
+  "generated_at": "2026-04-28T14:24:00Z",
+  "state": "ready_to_prepare_bounded_paper_validation",
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "candidate": {
+    "symbol": "AAPL",
+    "candidate_variant_id": "b150__aapl__long_call__wide_reward__exit_360__liq_baseline",
+    "source_strategy_id": "aapl__broad150__trend_long_call_research",
+    "strategy_class": "Class A liquid single-leg directional",
+    "directional_option_type": "call"
+  },
+  "research_evidence": {
+    "phase26_decision": "ready_for_governed_validation_review",
+    "phase26_min_net_pnl": 1715.93,
+    "phase26_min_test_net_pnl": 591.28,
+    "phase26_min_fill_coverage": 0.9474,
+    "phase27_decision": "ready_for_governed_validation_review",
+    "phase27_min_net_pnl": 1715.93,
+    "phase27_min_test_net_pnl": 341.155,
+    "phase27_min_fill_coverage": 0.9474,
+    "phase27_worst_drawdown": -4167.955,
+    "phase27_promotion_blockers": []
+  },
+  "bounded_validation_plan": {
+    "status": "planning_only_not_armed",
+    "non_live_manifest_candidate": "docs/gcp_foundation/gcp_research_aapl_bounded_validation_manifest_candidate.yaml",
+    "operator_checklist": "docs/gcp_foundation/gcp_research_aapl_bounded_validation_operator_checklist.md",
+    "runner_scope": "single_candidate_aapl_only",
+    "account_scope": "paper_only",
+    "execution_path": "vm-execution-paper-01",
+    "requires_explicit_exclusive_window": true,
+    "requires_operator_launch": true,
+    "requires_broker_audited_evidence": true,
+    "suggested_initial_cap": "one tiny governed paper validation sleeve, no automatic scale-up",
+    "session_goal": "evidence quality and fill realism, not profit maximization",
+    "promotion_goal": "count only clean broker-audited evidence toward Class A trusted-session requirements"
+  },
+  "hard_blocks_before_any_run": [
+    "exclusive execution window must be armed",
+    "strategy must be wired into a bounded validation manifest without changing live production selection",
+    "risk cap must be explicitly reviewed",
+    "paper runner must produce broker-order audit",
+    "paper runner must produce account-activity audit",
+    "paper runner must end flat or reconcile positions",
+    "post-session assimilation must run immediately"
+  ],
+  "do_not_do": [
+    "do_not_start_trading_from_this_packet",
+    "do_not_change_live_manifest_from_this_packet",
+    "do_not_relax_fill_gate",
+    "do_not_increase_risk_policy",
+    "do_not_count_research_results_as_broker_audited_sessions"
+  ],
+  "next_safe_step": "run a dry-run startup preflight only after the candidate config is copied into the sanctioned VM runner checkout; do not run broker-facing paper validation until the exclusive execution window is armed and the operator explicitly authorizes the session"
+}
