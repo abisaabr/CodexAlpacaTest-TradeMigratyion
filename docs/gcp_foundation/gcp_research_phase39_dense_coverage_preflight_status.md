@@ -4,8 +4,8 @@
 
 - Phase ID: `phase39_dense_coverage_preflight_20260428214000`
 - Batch job: `phase39-dense-coverage-20260428214000`
-- Latest state: `SCHEDULED`
-- Latest task counts: `4` pending at last check
+- Latest state: `SUCCEEDED`
+- Latest task counts: `10` succeeded
 - Location: `codexalpaca/us-central1`
 - Tasks: `10`
 - Parallelism: `4`
@@ -27,11 +27,24 @@ The job tests `SPY`, `NVDA`, `QQQ`, `AMZN`, `TSLA`, `MSFT`, `IWM`, `AAPL`, `META
 
 ## Purpose
 
-Phase38 exposed a likely input defect: dense-universe packets selected only `4` trade dates. Phase39 tests whether the curated top-150 stock bars produce full selected-date coverage before launching another expensive option download and replay.
+Phase38 exposed a likely input defect: dense-universe packets selected only `4` trade dates. Phase39 tested whether the curated top-150 stock bars produce full selected-date coverage before launching another expensive option download and replay.
+
+## Result
+
+Phase39 confirmed the bottleneck is option contract inventory coverage, not stock reference bars.
+
+Across all ten symbols (`SPY`, `NVDA`, `QQQ`, `AMZN`, `TSLA`, `MSFT`, `IWM`, `AAPL`, `META`, `MU`):
+
+- stock reference coverage was usable: `16/17` requested weekdays for every symbol, with the expected non-trading holiday gap on `2026-04-03`
+- selected dense contract coverage failed: most symbols selected only `4/17` requested weekdays (`2026-04-20` through `2026-04-23`)
+- `MU` selected `0/17` weekdays
+- every packet returned `selected_contract_trade_date_coverage_gap`
+
+The old top100 contract inventory only exposed recent active/future contracts for this dense `0-7` DTE lane. It is not a valid foundation for historical fill-rate testing.
 
 ## Gate
 
-If Phase39 coverage diagnostics are `ok`, the next safe action is a corrected dense option data download/replay lane using the same complete stock reference source. If diagnostics are not `ok`, repair the stock/reference inputs first.
+The next safe action is Phase40: rebuild top-10 contract inventory with the proven QQQ cleanroom pattern of fetching both `active` and `inactive` contracts, then rerun dense coverage preflight before downloading option bars/trades.
 
 ## Hard Rules
 

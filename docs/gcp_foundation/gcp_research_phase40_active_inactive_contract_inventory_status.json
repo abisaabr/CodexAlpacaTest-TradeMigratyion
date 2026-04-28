@@ -1,0 +1,86 @@
+{
+  "generated_at_utc": "2026-04-28T22:02:00Z",
+  "status": "phase40_active_inactive_contract_inventory_succeeded",
+  "phase_id": "phase40_active_inactive_contract_inventory_20260428175500",
+  "batch_job": "phase40-active-inactive-inv-20260428175500",
+  "latest_state": "SUCCEEDED",
+  "latest_task_counts": {
+    "SUCCEEDED": 10
+  },
+  "project": "codexalpaca",
+  "location": "us-central1",
+  "task_count": 10,
+  "parallelism": 4,
+  "machine_type": "e2-standard-4",
+  "boot_disk_gb": 80,
+  "broker_facing": false,
+  "broker_order_facing": false,
+  "alpaca_metadata_endpoint_used": true,
+  "trading_effect": "none",
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "source_runner_commit": "91d75fb36c7c",
+  "source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_91d75fb36c7c.zip",
+  "secret_manager": {
+    "api_key_secret": "execution-alpaca-paper-api-key",
+    "secret_key_secret": "execution-alpaca-paper-secret-key",
+    "plaintext_secret_committed": false
+  },
+  "symbols": [
+    "SPY",
+    "NVDA",
+    "QQQ",
+    "AMZN",
+    "TSLA",
+    "MSFT",
+    "IWM",
+    "AAPL",
+    "META",
+    "MU"
+  ],
+  "contract_inventory": {
+    "start_date": "2026-04-01",
+    "end_date": "2026-04-23",
+    "min_dte": 0,
+    "max_dte": 7,
+    "contract_chunk_days": 7,
+    "statuses": [
+      "active",
+      "inactive"
+    ]
+  },
+  "expected_outputs": {
+    "launch_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase40_active_inactive_contract_inventory_20260428175500/launch/",
+    "control_shard_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase40_active_inactive_contract_inventory_20260428175500/data_shards/",
+    "data_shard_root": "gs://codexalpaca-data-us/research_option_data/top100_liquidity_research_20260426/phase40_active_inactive_contract_inventory_20260428175500/data_shards/"
+  },
+  "result": {
+    "all_symbols_inventory_coverage_status": "ok",
+    "covered_trade_date_count": 17,
+    "requested_weekday_trade_date_count": 17,
+    "coverage_ratio": 1.0,
+    "contract_counts": {
+      "SPY": 8202,
+      "QQQ": 6416,
+      "IWM": 3514,
+      "META": 3404,
+      "TSLA": 2556,
+      "NVDA": 1844,
+      "MSFT": 1594,
+      "MU": 1572,
+      "AAPL": 1342,
+      "AMZN": 1270
+    },
+    "next_phase": "phase41_dense_coverage_on_phase40_inventory_20260428181000"
+  },
+  "promotion_gate_effect": "none_contract_inventory_only",
+  "next_safe_step": "monitor Phase41 dense selected-contract coverage against Phase40 inventory before downloading option bars/trades",
+  "hard_rules": [
+    "do_not_trade",
+    "do_not_arm_window",
+    "do_not_start_broker_facing_session",
+    "do_not_modify_live_manifests",
+    "do_not_change_risk_policy",
+    "do_not_relax_0_90_fill_gate"
+  ]
+}

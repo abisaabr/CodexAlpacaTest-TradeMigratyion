@@ -1,11 +1,11 @@
 {
-  "generated_at_utc": "2026-04-28T21:37:20Z",
-  "status": "phase39_dense_coverage_preflight_scheduled",
+  "generated_at_utc": "2026-04-28T21:58:00Z",
+  "status": "phase39_dense_coverage_preflight_succeeded_inventory_gap_confirmed",
   "phase_id": "phase39_dense_coverage_preflight_20260428214000",
   "batch_job": "phase39-dense-coverage-20260428214000",
-  "latest_state": "SCHEDULED",
+  "latest_state": "SUCCEEDED",
   "latest_task_counts": {
-    "PENDING": 4
+    "SUCCEEDED": 10
   },
   "project": "codexalpaca",
   "location": "us-central1",
@@ -45,8 +45,20 @@
     "shard_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase39_dense_coverage_preflight_20260428214000/data_shards/",
     "packet_name": "dense_option_universe_packet.json"
   },
+  "result": {
+    "diagnosis": "option_contract_inventory_coverage_gap_not_stock_reference_gap",
+    "stock_reference_trade_date_count": 16,
+    "requested_weekday_trade_date_count": 17,
+    "dominant_selected_trade_date_count": 4,
+    "dominant_selected_trade_date_ratio": 0.235294,
+    "dominant_first_selected_trade_date": "2026-04-20",
+    "dominant_last_selected_trade_date": "2026-04-23",
+    "mu_selected_trade_date_count": 0,
+    "all_symbols_status": "selected_contract_trade_date_coverage_gap",
+    "next_repair_phase": "phase40_active_inactive_contract_inventory_20260428175500"
+  },
   "promotion_gate_effect": "none_coverage_preflight_only",
-  "next_safe_step": "if coverage diagnostics are ok, launch corrected dense option download/replay using the complete stock reference source; otherwise repair stock/reference inputs",
+  "next_safe_step": "rebuild top10 option contract inventory with active+inactive historical contract discovery, then rerun dense coverage before option bar/trade download",
   "hard_rules": [
     "do_not_trade",
     "do_not_arm_window",

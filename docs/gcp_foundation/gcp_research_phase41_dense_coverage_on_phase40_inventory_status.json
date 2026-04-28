@@ -1,0 +1,69 @@
+{
+  "generated_at_utc": "2026-04-28T22:08:00Z",
+  "status": "phase41_dense_coverage_on_phase40_inventory_succeeded",
+  "phase_id": "phase41_dense_coverage_on_phase40_inventory_20260428181000",
+  "batch_job": "phase41-dense-coverage-20260428181000",
+  "latest_state": "SUCCEEDED",
+  "latest_task_counts": {
+    "SUCCEEDED": 10
+  },
+  "project": "codexalpaca",
+  "location": "us-central1",
+  "task_count": 10,
+  "parallelism": 5,
+  "machine_type": "e2-standard-4",
+  "boot_disk_gb": 80,
+  "broker_facing": false,
+  "trading_effect": "none",
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "source_runner_commit": "91d75fb36c7c",
+  "source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_91d75fb36c7c.zip",
+  "stock_reference_source": "gs://codexalpaca-data-us/curated/stocks/research_150_1min_20260401_20260423_stock_only.parquet",
+  "contract_inventory_source_template": "gs://codexalpaca-data-us/research_option_data/top100_liquidity_research_20260426/phase40_active_inactive_contract_inventory_20260428175500/data_shards/<SYMBOL>/silver/option_contract_inventory/",
+  "symbols": [
+    "SPY",
+    "NVDA",
+    "QQQ",
+    "AMZN",
+    "TSLA",
+    "MSFT",
+    "IWM",
+    "AAPL",
+    "META",
+    "MU"
+  ],
+  "dense_universe": {
+    "start_date": "2026-04-01",
+    "end_date": "2026-04-23",
+    "min_dte": 0,
+    "max_dte": 7,
+    "strike_steps": 5,
+    "reference_bar": "first"
+  },
+  "expected_outputs": {
+    "launch_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase41_dense_coverage_on_phase40_inventory_20260428181000/launch/",
+    "shard_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase41_dense_coverage_on_phase40_inventory_20260428181000/data_shards/",
+    "packet_name": "dense_option_universe_packet.json"
+  },
+  "result": {
+    "all_symbols_dense_coverage_status": "ok",
+    "stock_reference_trade_date_count": 16,
+    "selected_trade_date_count": 16,
+    "requested_weekday_trade_date_count": 17,
+    "selected_trade_date_coverage_ratio": 0.941176,
+    "first_selected_trade_date": "2026-04-01",
+    "last_selected_trade_date": "2026-04-23",
+    "next_phase": "phase42_dense_download_replay_20260428182000"
+  },
+  "promotion_gate_effect": "none_coverage_preflight_only",
+  "next_safe_step": "monitor Phase42 option bar/trade download and strategy replay",
+  "hard_rules": [
+    "do_not_trade",
+    "do_not_arm_window",
+    "do_not_start_broker_facing_session",
+    "do_not_modify_live_manifests",
+    "do_not_change_risk_policy",
+    "do_not_relax_0_90_fill_gate"
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "generated_at_utc": "2026-04-28T22:08:00Z",
+  "status": "phase42_dense_download_replay_scheduled",
+  "phase_id": "phase42_dense_download_replay_20260428182000",
+  "batch_job": "phase42-dense-download-replay-20260428182000",
+  "latest_state": "SCHEDULED",
+  "latest_task_counts": {
+    "PENDING": 4
+  },
+  "project": "codexalpaca",
+  "location": "us-central1",
+  "task_count": 10,
+  "parallelism": 4,
+  "machine_type": "e2-standard-4",
+  "boot_disk_gb": 160,
+  "broker_facing": false,
+  "alpaca_data_metadata_used": true,
+  "trading_effect": "none",
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "source_runner_commit": "91d75fb36c7c",
+  "source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_91d75fb36c7c.zip",
+  "selected_contracts_source_phase": "phase41_dense_coverage_on_phase40_inventory_20260428181000",
+  "stock_reference_source": "gs://codexalpaca-data-us/curated/stocks/research_150_1min_20260401_20260423_stock_only.parquet",
+  "symbols": [
+    "SPY",
+    "NVDA",
+    "QQQ",
+    "AMZN",
+    "TSLA",
+    "MSFT",
+    "IWM",
+    "AAPL",
+    "META",
+    "MU"
+  ],
+  "download_replay": {
+    "start_date": "2026-04-01",
+    "end_date": "2026-04-23",
+    "option_batch_size": 30,
+    "initial_cash": 25000,
+    "allocation_fraction": 0.1,
+    "contract_selection_method": "entry_liquidity_first_research_only",
+    "test_date_count": 5,
+    "stress_profiles": [
+      {
+        "name": "phase42_lag5_exit10_slip10_fee065",
+        "entry_lag_minutes": 5,
+        "exit_lag_minutes": 10,
+        "slippage_bps": 10,
+        "fee_per_contract": 0.65
+      },
+      {
+        "name": "phase42_lag10_exit30_slip25_fee100",
+        "entry_lag_minutes": 10,
+        "exit_lag_minutes": 30,
+        "slippage_bps": 25,
+        "fee_per_contract": 1.0
+      },
+      {
+        "name": "phase42_lag30_exit60_slip50_fee150",
+        "entry_lag_minutes": 30,
+        "exit_lag_minutes": 60,
+        "slippage_bps": 50,
+        "fee_per_contract": 1.5
+      }
+    ]
+  },
+  "expected_outputs": {
+    "launch_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase42_dense_download_replay_20260428182000/launch/",
+    "control_shard_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase42_dense_download_replay_20260428182000/data_shards/",
+    "data_shard_root": "gs://codexalpaca-data-us/research_option_data/top100_liquidity_research_20260426/phase42_dense_download_replay_20260428182000/data_shards/"
+  },
+  "promotion_gate_effect": "research_governed_validation_review_only",
+  "next_safe_step": "monitor Phase42 completion, then aggregate shard portfolio reports into a wave-level promotion review",
+  "hard_rules": [
+    "do_not_trade",
+    "do_not_arm_window",
+    "do_not_start_broker_facing_session",
+    "do_not_modify_live_manifests",
+    "do_not_change_risk_policy",
+    "do_not_relax_0_90_fill_gate"
+  ]
+}
