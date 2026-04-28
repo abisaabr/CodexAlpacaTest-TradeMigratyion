@@ -1,7 +1,7 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T22:49:00Z",
-  "state": "phase41_dense_coverage_passed_phase42_download_replay_running",
+  "generated_at_utc": "2026-04-28T23:26:32Z",
+  "state": "phase42_dense_download_replay_complete_promotion_blocked_exit_policy_redesign_required",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -414,10 +414,9 @@
     {
       "job_id": "phase42-dense-download-replay-20260428182000",
       "phase_id": "phase42_dense_download_replay_20260428182000",
-      "latest_state": "RUNNING",
+      "latest_state": "SUCCEEDED",
       "latest_task_counts": {
-        "SUCCEEDED": 9,
-        "RUNNING": 1
+        "SUCCEEDED": 10
       },
       "location": "us-central1",
       "task_count": 10,
@@ -451,18 +450,25 @@
         "test_date_count": 5
       },
       "objective": "research-only option bar/trade download and strategy replay using repaired dense selected-contract roots",
-      "interim_result": {
-        "visible_portfolio_report_count": 9,
-        "candidate_count_scanned": 165,
+      "final_result": {
+        "source_report_count": 10,
+        "candidate_count": 183,
         "eligible_for_promotion_review_count": 0,
         "dominant_blocker": "fill_coverage_below_0.90",
+        "blocker_counts": {
+          "fill_coverage_below_0.90": 183,
+          "min_net_pnl_not_positive": 17,
+          "option_trades_below_20": 120,
+          "test_net_pnl_not_above_0": 89
+        },
         "dominant_fill_failure_reason": "exit_bar_gap_or_exit_policy_mismatch",
-        "interim_conclusion": "dense selected-contract coverage is repaired, but current strategy exits still fail promotion fill gates"
+        "rollup_artifact_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/rollups/phase42_dense_download_replay_20260428232000/output/",
+        "conclusion": "dense selected-contract coverage is repaired, but current option strategy exit policies still fail the 0.90 fill gate"
       }
     }
   ],
   "current_interim_summary": {
-    "completed_shards_scanned": 32,
+    "completed_shards_scanned": 42,
     "new_governed_validation_candidates": 0,
     "dominant_blocker": "fill_coverage_below_0.90",
     "qqq_dense_data_foundation": {
@@ -503,13 +509,20 @@
       "next_phase": "phase42_dense_download_replay_20260428182000"
     },
     "phase42_dense_download_replay": {
-      "state": "running_partial_results",
-      "visible_portfolio_report_count": 9,
-      "candidate_count_scanned": 165,
+      "state": "complete_promotion_blocked",
+      "source_report_count": 10,
+      "candidate_count_scanned": 183,
       "eligible_for_promotion_review_count": 0,
       "dominant_blocker": "fill_coverage_below_0.90",
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 183,
+        "min_net_pnl_not_positive": 17,
+        "option_trades_below_20": 120,
+        "test_net_pnl_not_above_0": 89
+      },
       "dominant_fill_failure_reason": "exit_bar_gap_or_exit_policy_mismatch",
-      "remaining_symbol": "MSFT"
+      "rollup_artifact_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/rollups/phase42_dense_download_replay_20260428232000/output/",
+      "next_safe_step": "run research-only exit-policy redesign/repair diagnostics on the highest-positive candidates and build the stock/ETF fallback lane in parallel; do not promote Phase42 candidates"
     },
     "best_research_only_leads": [
       {
@@ -701,8 +714,8 @@
   ],
   "current_recommendation": {
     "paper_validation": "AAPL_exit360_only_if_operator_explicitly_arms_exclusive_window",
-    "research": "Monitor final Phase42 shard completion, then aggregate shard portfolio reports into a wave-level promotion review; next engineering direction is exit-policy redesign/repair, not more contract-inventory repair",
-    "promotion_policy": "do_not_promote_any_candidate_without_broker_audited_bounded_paper_validation"
+    "research": "Phase42 final rollup is complete and promotion-blocked; next work is research-only exit-policy redesign/repair on the highest-positive option candidates plus a parallel stock/ETF fallback portfolio lane",
+    "promotion_policy": "do_not_promote_any_candidate_without_0_90_fill_gate_survival_and_broker_audited_bounded_paper_validation"
   },
   "hard_rules": [
     "do_not_trade",
@@ -711,5 +724,43 @@
     "do_not_modify_live_manifests",
     "do_not_change_risk_policy",
     "do_not_relax_0_90_fill_gate"
-  ]
+  ],
+  "latest_phase42_rollup": {
+    "decision": "research_only_blocked",
+    "promotion_allowed": false,
+    "source_report_count": 10,
+    "candidate_count": 183,
+    "eligible_for_promotion_review_count": 0,
+    "fill_coverage_gate": 0.9,
+    "min_option_trades": 20,
+    "blocker_counts": {
+      "fill_coverage_below_0.90": 183,
+      "min_net_pnl_not_positive": 17,
+      "option_trades_below_20": 120,
+      "test_net_pnl_not_above_0": 89
+    },
+    "fill_failure_counts": {
+      "exit_bar_gap_or_exit_policy_mismatch": 183
+    },
+    "capital_plan_count": 8,
+    "best_min_fill_coverage_observed": 0.8594,
+    "highest_min_fill_candidate": {
+      "symbol": "MU",
+      "candidate_variant_id": "b150__mu__long_call__tight_reward__exit_210__liq_baseline",
+      "min_fill_coverage": 0.8594,
+      "max_fill_coverage": 0.9062,
+      "min_net_pnl": 2469.63,
+      "min_test_net_pnl": -849.8375,
+      "min_option_trade_count": 55,
+      "promotion_blockers": [
+        "fill_coverage_below_0.90",
+        "test_net_pnl_not_above_0"
+      ],
+      "fill_failure_reason": "exit_bar_gap_or_exit_policy_mismatch",
+      "research_score": 1370.462
+    },
+    "phase_id": "phase42_dense_download_replay_20260428182000",
+    "artifact_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/rollups/phase42_dense_download_replay_20260428232000/output/",
+    "conclusion": "dense selected-contract coverage is repaired, but current option strategy exit policies still fail the 0.90 fill gate"
+  }
 }

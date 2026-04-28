@@ -1,19 +1,16 @@
 {
-  "generated_at_utc": "2026-04-28T22:49:00Z",
-  "status": "phase42_dense_download_replay_running_partial_results",
+  "generated_at_utc": "2026-04-28T23:26:32Z",
+  "status": "phase42_dense_download_replay_complete_promotion_blocked",
   "phase_id": "phase42_dense_download_replay_20260428182000",
   "batch_job": "phase42-dense-download-replay-20260428182000",
-  "latest_state": "RUNNING",
+  "latest_state": "SUCCEEDED",
   "latest_task_counts": {
-    "SUCCEEDED": 9,
-    "RUNNING": 1
+    "SUCCEEDED": 10
   },
   "project": "codexalpaca",
   "location": "us-central1",
   "task_count": 10,
   "parallelism": 4,
-  "machine_type": "e2-standard-4",
-  "boot_disk_gb": 160,
   "broker_facing": false,
   "alpaca_data_metadata_used": true,
   "trading_effect": "none",
@@ -67,39 +64,49 @@
       }
     ]
   },
-  "expected_outputs": {
-    "launch_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase42_dense_download_replay_20260428182000/launch/",
-    "control_shard_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase42_dense_download_replay_20260428182000/data_shards/",
-    "data_shard_root": "gs://codexalpaca-data-us/research_option_data/top100_liquidity_research_20260426/phase42_dense_download_replay_20260428182000/data_shards/"
+  "artifact_roots": {
+    "control_shards": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase42_dense_download_replay_20260428182000/data_shards/",
+    "data_shards": "gs://codexalpaca-data-us/research_option_data/top100_liquidity_research_20260426/phase42_dense_download_replay_20260428182000/data_shards/",
+    "rollup": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/rollups/phase42_dense_download_replay_20260428232000/output/",
+    "promotion_review_packet": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/rollups/phase42_dense_download_replay_20260428232000/output/promotion_review_packet/"
   },
-  "interim_result": {
-    "visible_portfolio_report_count": 9,
-    "visible_symbols": [
-      "AAPL",
-      "AMZN",
-      "IWM",
-      "META",
-      "MU",
-      "NVDA",
-      "QQQ",
-      "SPY",
-      "TSLA"
-    ],
-    "remaining_symbol": "MSFT",
-    "candidate_count_scanned": 165,
+  "rollup_result": {
+    "decision": "research_only_blocked",
+    "promotion_allowed": false,
+    "source_report_count": 10,
+    "candidate_count": 183,
     "eligible_for_promotion_review_count": 0,
-    "dominant_blocker": "fill_coverage_below_0.90",
+    "fill_coverage_gate": 0.9,
+    "min_option_trades": 20,
     "blocker_counts": {
-      "fill_coverage_below_0.90": 165,
-      "option_trades_below_20": 113,
-      "test_net_pnl_not_above_0": 79,
-      "min_net_pnl_not_positive": 17
+      "fill_coverage_below_0.90": 183,
+      "min_net_pnl_not_positive": 17,
+      "option_trades_below_20": 120,
+      "test_net_pnl_not_above_0": 89
     },
-    "dominant_fill_failure_reason": "exit_bar_gap_or_exit_policy_mismatch",
-    "interim_conclusion": "dense selected-contract coverage is repaired, but current strategy exits still fail promotion fill gates"
+    "fill_failure_counts": {
+      "exit_bar_gap_or_exit_policy_mismatch": 183
+    },
+    "capital_plan_count": 8,
+    "best_min_fill_coverage_observed": 0.8594,
+    "highest_min_fill_candidate": {
+      "symbol": "MU",
+      "candidate_variant_id": "b150__mu__long_call__tight_reward__exit_210__liq_baseline",
+      "min_fill_coverage": 0.8594,
+      "max_fill_coverage": 0.9062,
+      "min_net_pnl": 2469.63,
+      "min_test_net_pnl": -849.8375,
+      "min_option_trade_count": 55,
+      "promotion_blockers": [
+        "fill_coverage_below_0.90",
+        "test_net_pnl_not_above_0"
+      ],
+      "fill_failure_reason": "exit_bar_gap_or_exit_policy_mismatch",
+      "research_score": 1370.462
+    }
   },
-  "promotion_gate_effect": "research_governed_validation_review_only",
-  "next_safe_step": "monitor Phase42 completion, then aggregate shard portfolio reports into a wave-level promotion review",
+  "conclusion": "dense selected-contract coverage is repaired, but current option strategy exit policies still fail the 0.90 fill gate",
+  "next_safe_step": "run research-only exit-policy redesign/repair diagnostics on the highest-positive candidates and build the stock/ETF fallback lane in parallel; do not promote Phase42 candidates",
   "hard_rules": [
     "do_not_trade",
     "do_not_arm_window",

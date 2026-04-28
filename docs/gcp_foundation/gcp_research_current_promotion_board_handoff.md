@@ -4,41 +4,30 @@
 
 - Control packet: `docs/gcp_foundation/gcp_research_current_promotion_board.md`
 - Control JSON: `docs/gcp_foundation/gcp_research_current_promotion_board.json`
-- State: `phase41_dense_coverage_passed_phase42_download_replay_running`
-- Active research Batch job: `phase42-dense-download-replay-20260428182000` (`RUNNING`, `9` succeeded / `1` running)
+- State: `phase42_dense_download_replay_complete_promotion_blocked_exit_policy_redesign_required`
+- Active research Batch jobs: `none` from this monitor
 - Broker-facing status: `not_started`
+- Latest Phase42 rollup: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/rollups/phase42_dense_download_replay_20260428232000/output/`
 
 ## Canonical Candidate State
 
-`AAPL` exit-360 is the only current bounded-validation candidate. It is not live-promoted and has not yet produced broker-audited paper evidence.
+`AAPL` exit-360 remains the only current bounded-validation candidate. It is not live-promoted and has not produced broker-audited paper evidence in this lane.
 
-`NVDA` exit-300 looked promising in Phase28 but failed Phase30 governance stress, so it is research-only.
+Phase42 scanned `183` candidates across ten dense top-liquid symbols and found `0` eligible for governed promotion review. The result is `research_only_blocked`.
 
-The `AMZN`/`AVGO`/`MSFT`/`MU` wide-lag cluster failed Phase31 economics and should not be replayed unchanged.
+The fill-foundation repair worked:
 
-Phase32, Phase32b, and Phase36 have completed and are included in the wave-level rollup. The completed rollup scanned `45` source reports and `640` candidates; `0` are eligible for governed promotion review.
+- Phase40 active+inactive contract inventory reached `17/17` requested weekday coverage for all ten symbols.
+- Phase41 dense selected-contract coverage reached `16/17` selected weekdays (`0.941176`).
+- Phase42 then downloaded/replayed option bars and trades against that repaired foundation.
 
-Phase37 top-10 ATM completed and blocked all `183` candidates with `selected_contract_universe_gap`; max min-fill was only `0.1111`.
-
-Phase39 completed and confirmed the dense fill bottleneck is option contract inventory, not stock reference coverage. Stock references were usable at `16/17` weekdays, while dense selected-contract coverage was only `4/17` weekdays for most symbols and `0/17` for `MU`.
-
-Runner commit `91d75fb36c7c` adds the active+inactive historical contract inventory downloader. Phase40 rebuilt top-10 contract inventory using that pattern and existing Secret Manager credentials.
-
-Phase40 fixed the inventory coverage gate: all ten symbols reached `17/17` requested weekday coverage for the `0-7` DTE inventory window.
-
-Phase41 passed dense selected-contract coverage for all ten symbols: `16/17` selected weekdays (`0.941176`), with the remaining weekday being the market holiday gap.
-
-Phase42 is now running option bar/trade download and strategy replay against the repaired dense selected-contract roots.
-
-Phase42 interim scan has `9/10` shard reports visible and `0/165` candidates eligible so far. The current blocker is no longer selected-contract universe coverage; it is exit-bar/exit-policy mismatch under the unchanged `0.90` fill gate.
-
-Phase38 was deleted as a superseded older baseline lane because it used the incomplete old inventory.
+The remaining blocker is strategy design/execution timing, not missing selected-contract inventory. Phase42 blocker counts are `{'fill_coverage_below_0.90': 183, 'min_net_pnl_not_positive': 17, 'option_trades_below_20': 120, 'test_net_pnl_not_above_0': 89}`, and all `183` candidates were classified as `exit_bar_gap_or_exit_policy_mismatch`.
 
 ## Next Safe Research Step
 
-Monitor final Phase42 completion. If clean, aggregate shard portfolio reports into a wave-level promotion review. Do not promote from individual shard packets.
+Run research-only exit-policy redesign/repair against the highest-positive Phase42 candidates. Use the dense top-10 data to test exits that can actually find bars under realistic lag/cost assumptions. In parallel, build the stock/ETF fallback portfolio lane so the project can pursue daily PnL while option candidates continue to require the `0.90` fill gate.
 
-Do not broaden broker-facing paper validation beyond the current AAPL candidate without a new governed packet.
+Do not promote from individual shard packets or from the Phase42 research-only capital plan.
 
 ## Next Safe Execution Step
 

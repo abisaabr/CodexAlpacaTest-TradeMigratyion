@@ -2,15 +2,16 @@
 
 ## State
 
-- State: `phase41_dense_coverage_passed_phase42_download_replay_running`
+- State: `phase42_dense_download_replay_complete_promotion_blocked_exit_policy_redesign_required`
 - Broker-facing: `false`
 - Live manifest effect: `none`
 - Risk policy effect: `none`
-- Active Batch job: `phase42-dense-download-replay-20260428182000` (`RUNNING`, `9` succeeded / `1` running). Phase38 was deleted as a superseded older baseline lane after Phase39-41 repaired the fill foundation.
+- Active Batch jobs: `none` in `codexalpaca/us-central1` from this research monitor
+- Latest durable rollup: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/rollups/phase42_dense_download_replay_20260428232000/output/`
 
 ## Bounded-Validation Candidates
 
-One candidate is ready for a bounded paper-validation operator decision:
+One pre-existing candidate remains ready for a bounded paper-validation operator decision. It is unchanged by Phase42 and is not live-promoted:
 
 - `AAPL` `b150__aapl__long_call__wide_reward__exit_360__liq_baseline`
 - Source: `phase27_aapl_governance_stress_20260428141000`
@@ -19,45 +20,42 @@ One candidate is ready for a bounded paper-validation operator decision:
 - Fill coverage: `0.9474-1.0`
 - Minimum option trades: `36`
 - Worst drawdown: `$-4167.955`
-- Current required next step: explicit exclusive-window operator decision before any broker-facing validation.
+- Required next step: explicit exclusive-window operator decision before any broker-facing validation.
 
-## Research-Only Blocked
+## Phase42 Final
 
-- `NVDA` exit-300 tight-reward tight-liquidity passed Phase28 but failed Phase30 governance stress with `min_net_pnl_not_positive`.
-- `AAPL` exit-210 wide-reward tight-liquidity remains blocked by `fill_coverage_below_0.90`.
-- `NVDA` exit-360 tight-reward tight-liquidity remains blocked by `test_net_pnl_not_above_0`.
-- The Phase31 `AMZN`/`AVGO`/`MSFT`/`MU` wide-lag cluster is blocked and should be quarantined or redesigned, not replayed unchanged.
-- Phase32 is actively expanding unexplored top100 coverage across `AMD`, `PLTR`, `GOOG`, `ORCL`, `XOM`, `XLE`, `JPM`, `UNH`, `V`, `BAC`, `CRM`, `XLI`, `GE`, `AMAT`, and `TQQQ`.
-- Phase32b completed candidate-rich unexplored coverage across `NOW`, `BKNG`, `MA`, `CSCO`, `JNJ`, `CVX`, `WMT`, `HOOD`, `KRE`, `CAT`, `GS`, `IBM`, `SLV`, `XLK`, and `BA`.
-- Interim Phase32 `XLE` result is research-only blocked: `0/9` eligible, zero download failures, best two variants have positive economics but only about `0.60` fill coverage.
-- Interim scan across 32 completed output packets has `0` new governed-validation candidates. The dominant blocker remains `fill_coverage_below_0.90`; Phase36 has now completed and is awaiting aggregation.
-- Best research-only fill-repair leads so far: `UNH` tight exit-360, `AMD` balanced exit-360, `GE` tight put exit-360, `ORCL` balanced exit-360, `PLTR` balanced put exit-300, `AMAT` tight exit-210, `KRE` wide exit-360, and `TQQQ` wide exit-300.
-- Phase34 completed and blocked all four tested top leads (`AMD`, `GE`, `ORCL`, `PLTR`) because none reached `0.90` fill coverage under tested exit lags.
-- Phase35 completed and blocked `UNH`; max fill was `0.6792`, below the mandatory `0.90` gate.
-- Phase32 completed all 15 shards with no new governed-validation candidates.
-- Phase32b completed all 15 shards and is ready for wave-level aggregation; no Phase32b result can be promoted directly without the rollup and gate review.
-- Phase37 completed as a top-10 liquid-underlying weekly ATM lane using `0-7` DTE, ATM-only contracts, and `entry_liquidity_first_research_only` replay. Its rollup scanned `183` candidates, found `0` eligible, and classified all candidates as `selected_contract_universe_gap`; max min-fill was only `0.1111`.
-- The local QQQ dense cleanroom downloader succeeded for `2026-03-18` through `2026-04-17` with `2794/2794` successful contract-day requests and `96.242%` dense selected-contract-day fill. This is a data-foundation repair template, not a promotion packet.
-- Phase38 was deleted because it used the incomplete old inventory and was superseded by the Phase39-41 repair path.
-- Phase38 dense-universe packets for visible shards selected only `4` trade dates, not the full intended `2026-03-02` to `2026-04-23` window. The next engineering fix is dense-universe reference-date coverage diagnostics and repair.
-- Phase39 completed using runner commit `b6e48cddce0f` and the curated top-150 stock parquet (`2026-04-01` to `2026-04-23`). It showed stock reference coverage was usable (`16/17` weekdays) but dense selected-contract coverage failed (`4/17` weekdays for most symbols, `0/17` for `MU`), proving the current top100 option contract inventory is incomplete for historical `0-7` DTE testing.
-- Runner commit `91d75fb36c7c` adds `scripts/download_historical_option_contract_inventory.py`, a research-only active+inactive contract inventory downloader based on the proven QQQ dense cleanroom pattern.
-- Phase40 completed and fixed the top-10 option contract inventory foundation: all ten symbols reached `17/17` requested weekday coverage for the `0-7` DTE inventory window.
-- Phase41 completed and passed dense selected-contract coverage for all ten top-liquid symbols (`16/17` selected weekdays, `0.941176` coverage).
-- Phase42 is now launched to download option bars/trades and replay top-10 strategy queues against the repaired dense selected-contract roots.
-- Phase42 interim scan has `9/10` shard reports visible and `0/165` candidates eligible so far. The dominant blocker remains `fill_coverage_below_0.90`, but now the failure reason is primarily `exit_bar_gap_or_exit_policy_mismatch`, not selected-contract universe gaps.
-- Runner commit `5578a6803ae7` adds the wave-level rollup tool that aggregates shard-level portfolio reports into one capital plan, fill-failure map, data-repair queue, strategy-redesign queue, and promotion-review packet.
-- Runner commit `6dca362e41bf` hardens the rollup to infer fill-failure reasons from older shard packets.
-- Runner commit `83e2803b4aab` adds the fill-experiment comparison tool so sparse, ATM-only, dense, and future stock/ETF fallback lanes can be compared under one gate.
-- Completed Phase32/Phase32b/Phase36 rollup scanned `45` source reports and `640` candidates; `0` are eligible for governed promotion review. Fill blockers are `276` entry timing gaps, `339` exit timing gaps, and `25` mixed low-fill gaps.
-- Fill comparison between the completed event-sparse rollup and Phase37 ATM-only rollup concludes `continue_dense_or_broader_contract_universe_repair`; ATM-only is worse than sparse/event-selected fill and is not a promotion path.
+Phase42 completed all ten dense top-liquid shards over `SPY`, `NVDA`, `QQQ`, `AMZN`, `TSLA`, `MSFT`, `IWM`, `AAPL`, `META`, and `MU`.
+
+- Source reports: `10`
+- Candidates scanned: `183`
+- Eligible for governed promotion review: `0`
+- Decision: `research_only_blocked`
+- Blocker counts: `{'fill_coverage_below_0.90': 183, 'min_net_pnl_not_positive': 17, 'option_trades_below_20': 120, 'test_net_pnl_not_above_0': 89}`
+- Fill failure counts: `{'exit_bar_gap_or_exit_policy_mismatch': 183}`
+- Highest observed minimum fill across all candidates: `0.8594`
+- Best minimum-fill row: `MU` `b150__mu__long_call__tight_reward__exit_210__liq_baseline` with fill `0.8594-0.9062`, min_net `$2469.63`, min_test `$-849.8375`, blockers `fill_coverage_below_0.90, test_net_pnl_not_above_0`
+
+The dense data foundation is now materially better: Phase40 gave `17/17` inventory coverage and Phase41 gave `16/17` dense selected weekdays. Phase42 still found `0/183` eligible because every candidate failed the unchanged `0.90` fill gate, dominated by `exit_bar_gap_or_exit_policy_mismatch`.
+
+## Research-Only Leads
+
+The Phase42 research-only capital plan is useful for redesign priority, not promotion:
+
+- `TSLA` `b150__tsla__long_call__balanced_reward__exit_360__liq_baseline` weight `12.80%` min_net `$10413.765` min_test `$23910.1625` fill `0.6667` blockers `fill_coverage_below_0.90`
+- `TSLA` `b150__tsla__long_call__wide_reward__exit_300__liq_tight` weight `12.20%` min_net `$9775.3675` min_test `$21775.2375` fill `0.6897` blockers `fill_coverage_below_0.90`
+- `MSFT` `b150__msft__long_call__wide_reward__exit_210__liq_baseline` weight `13.89%` min_net `$26388.665` min_test `$5313.96` fill `0.7333` blockers `fill_coverage_below_0.90`
+- `AMZN` `b150__amzn__long_call__tight_reward__exit_210__liq_baseline` weight `14.96%` min_net `$28268.085` min_test `$2439.931` fill `0.7895` blockers `fill_coverage_below_0.90`
+- `AAPL` `b150__aapl__long_call__balanced_reward__exit_210__liq_baseline` weight `15.27%` min_net `$19272.609` min_test `$5542.945` fill `0.6897` blockers `fill_coverage_below_0.90`
+- `MSFT` `b150__msft__long_call__balanced_reward__exit_210__liq_baseline` weight `11.11%` min_net `$28901.22` min_test `$1801.825` fill `0.7812` blockers `fill_coverage_below_0.90`
+- `AAPL` `b150__aapl__long_call__tight_reward__exit_210__liq_tight` weight `9.73%` min_net `$16912.174` min_test `$6006.405` fill `0.6774` blockers `fill_coverage_below_0.90`
+- `NVDA` `b150__nvda__long_call__tight_reward__exit_210__liq_baseline` weight `10.04%` min_net `$10900.35` min_test `$641.05` fill `0.6452` blockers `fill_coverage_below_0.90`
 
 ## Current Recommendation
 
-- Paper validation: keep scope to `AAPL` exit-360 only, and only if an exclusive execution window is explicitly armed.
-- Research: monitor final Phase42 shard completion, then aggregate shard portfolio reports into a wave-level promotion review. The next engineering direction is exit-policy redesign/repair, not more contract-inventory repair.
-- Aggregation: use `scripts/build_research_wave_portfolio_rollup.py` and `scripts/build_research_fill_experiment_comparison.py` after shards are staged locally so promotion review is systematic and not manually cherry-picked from individual shard packets.
-- Promotion: do not promote any candidate to live or durable paper allocation without broker-audited bounded paper validation evidence.
+- Paper validation: keep broker-facing validation limited to the pre-existing AAPL exit-360 candidate, and only after an explicit exclusive-window operator decision.
+- Options research: stop treating broad data repair as the primary blocker for top-10 dense names; redesign exits around actually fillable exit bars and rerun candidate-specific stress.
+- Portfolio research: build the stock/ETF fallback lane in parallel so daily PnL research can proceed without depending entirely on option fill coverage.
+- Promotion: do not promote Phase42 candidates; no option candidate from Phase42 satisfies the `0.90` fill gate.
 
 ## Guardrails
 
