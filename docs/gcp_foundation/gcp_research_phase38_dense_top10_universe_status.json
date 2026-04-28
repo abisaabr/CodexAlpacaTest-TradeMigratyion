@@ -3,12 +3,13 @@
   "status": "phase38_dense_top10_universe_submitted",
   "phase_id": "phase38_dense_top10_universe_20260428203428",
   "batch_job": "phase38-dense-top10-20260428203428",
-  "latest_state": "SCHEDULED",
+  "latest_state": "RUNNING",
   "latest_task_counts": {
-    "PENDING": 2
+    "RUNNING": 1,
+    "PENDING": 9
   },
   "create_time": "2026-04-28T20:37:06.446050181Z",
-  "update_time": "2026-04-28T20:37:11.594236600Z",
+  "update_time": "2026-04-28T20:38:10.260460299Z",
   "project": "codexalpaca",
   "location": "us-central1",
   "broker_facing": false,
