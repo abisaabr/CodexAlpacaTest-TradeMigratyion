@@ -1,8 +1,8 @@
 # GCP Research Phase Live Monitor Handoff
 
-- Status: `phase23_candidate_stress_holdout_active`
+- Status: `phase23_research_only_blocked_no_promotions`
 - Phase19 batch state: `FAILED`
-- Active stage: `none_phase19_closed_phase22_complete`
+- Active stage: `none_phase23_complete`
 - Latest observed symbol family: `AMZN option contracts`
 - Latest observed download date: `2026-04-16`
 - Selected-contract files at checkpoint: `266`
@@ -39,13 +39,19 @@
 - Diagnostic blocker counts: `fill_coverage_below_0.90=5`, `test_net_pnl_not_above_0=2`
 - Diagnostic caveat: `wide_exit_lag_diagnostic_not_deployment_authorization`
 - Candidate stress job: `phase23-candidate-stress-20260428062500`
-- Candidate stress state at launch: `SCHEDULED`
+- Candidate stress state: `SUCCEEDED`
 - Candidate stress phase id: `phase23_candidate_stress_holdout_20260428062500`
 - Candidate stress launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase23_candidate_stress_holdout_20260428062500/launch/`
+- Candidate stress portfolio report: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase23_candidate_stress_holdout_20260428062500/portfolio_report/research_portfolio_report.json`
+- Candidate stress promotion packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase23_candidate_stress_holdout_20260428062500/promotion_review_packet/research_promotion_review_packet.json`
+- Candidate stress decision: `research_only_blocked`
+- Candidate stress eligible count: `0`
+- Candidate stress blocker counts: `fill_coverage_below_0.90=6`, `test_net_pnl_not_above_0=1`
 - Candidate stress scope: `six Phase22 review candidates only`
 - Candidate stress underlyings: `AAPL`, `INTC`, `NVDA`
 - Candidate stress profiles: `10/10`, `30/30`, `60/60`, `60/90`, `60/120`, `60/180 high-cost`
 - Candidate stress holdout: `test_date_count=5`
+- Candidate stress result summary: `profitable_but_not_fill_clean_under_short_lag_controls`
 
 ## Operator Rule
 
@@ -54,9 +60,13 @@
 - Phase21 succeeded but found no promotion-review eligible candidates under shorter-lag replay assumptions.
 - Phase22 succeeded and opened a research-only governed-validation review queue for six candidates, but only under wider exit-lag assumptions.
 - Treat Phase22 as a diagnostic review signal, not a production promotion or deployment authorization.
-- Phase23 is the active candidate-only stress/holdout validation for those six candidates.
+- Phase23 completed the candidate-only stress/holdout validation for those six candidates.
+- Phase23 found zero eligible promotion-review candidates. All six were blocked by fill coverage below `0.90` across the full lag/cost stack; one `INTC` wide-reward variant also failed the positive holdout PnL gate.
+- The best Phase23 read is not "bad strategy economics"; it is "not fill-clean enough under short-lag execution controls."
 - This is research-only. Do not arm windows, start trading, change live manifests, or change risk policy from this packet.
 
 ## Next Research Step
 
-Monitor Phase23 until it emits portfolio and promotion-review packets. Use the result to classify whether the Phase22 pass is robust under shorter-lag controls and five-date holdout, or only a wide-lag artifact. Keep the `0.90` fill-coverage gate intact and require clean broker-audited paper-session evidence before any activation discussion.
+Do not promote the Phase22 candidates from the current evidence. Keep the `0.90` fill-coverage gate intact and require clean broker-audited paper-session evidence before any activation discussion.
+
+The next safe research action is a no-exit-bar/exit-lag feasibility diagnostic for the five profitable blocked candidates. It should classify whether the short-lag fill gap is repairable market-data sparsity, an execution timing mismatch, or a strategy design issue that needs alternate exits.

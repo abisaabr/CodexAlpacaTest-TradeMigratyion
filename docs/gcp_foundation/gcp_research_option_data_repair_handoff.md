@@ -1,6 +1,6 @@
 # GCP Research Option Data Repair Handoff
 
-- Status: `phase23_candidate_stress_holdout_active`
+- Status: `phase23_research_only_blocked_no_promotions`
 - Runner branch: `codex/qqq-paper-portfolio`
 - Runner commit: `952aea4`
 - Tool: `scripts/build_option_data_repair_plan.py`
@@ -45,14 +45,21 @@
 - Phase22 blocker counts: `fill_coverage_below_0.90=5`, `test_net_pnl_not_above_0=2`
 - Phase22 research-only capital plan: `AAPL=25%`, `INTC=25%`, `NVDA=25%`, `unallocated=25%`
 - Phase22 caveat: `wide_exit_lag_diagnostic_not_deployment_authorization`
-- Active stress job: `phase23-candidate-stress-20260428062500`
-- Active stress state at launch: `SCHEDULED`
-- Active stress phase id: `phase23_candidate_stress_holdout_20260428062500`
-- Active stress launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase23_candidate_stress_holdout_20260428062500/launch/`
-- Active stress candidate scope: `six Phase22 review candidates only`
-- Active stress underlyings: `AAPL`, `INTC`, `NVDA`
-- Active stress profiles: `10/10`, `30/30`, `60/60`, `60/90`, `60/120`, `60/180 high-cost`
-- Active stress holdout: `test_date_count=5`
+- Completed stress job: `phase23-candidate-stress-20260428062500`
+- Completed stress state: `SUCCEEDED`
+- Completed stress phase id: `phase23_candidate_stress_holdout_20260428062500`
+- Completed stress launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase23_candidate_stress_holdout_20260428062500/launch/`
+- Phase23 portfolio report: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase23_candidate_stress_holdout_20260428062500/portfolio_report/research_portfolio_report.json`
+- Phase23 promotion packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase23_candidate_stress_holdout_20260428062500/promotion_review_packet/research_promotion_review_packet.json`
+- Phase23 decision: `research_only_blocked`
+- Phase23 candidate count: `6`
+- Phase23 eligible for promotion review: `0`
+- Phase23 blocker counts: `fill_coverage_below_0.90=6`, `test_net_pnl_not_above_0=1`
+- Phase23 candidate scope: `six Phase22 review candidates only`
+- Phase23 underlyings: `AAPL`, `INTC`, `NVDA`
+- Phase23 profiles: `10/10`, `30/30`, `60/60`, `60/90`, `60/120`, `60/180 high-cost`
+- Phase23 holdout: `test_date_count=5`
+- Phase23 result summary: `profitable_but_not_fill_clean_under_short_lag_controls`
 
 ## Why This Exists
 
@@ -66,7 +73,9 @@ Phase22 completed as a research-only wide-exit-lag diagnostic using the same rep
 
 Phase22 does not authorize live manifest, strategy-selection, or risk-policy changes. The pass is a governed-validation review signal only and must be reviewed against strategy governance, paper-session execution evidence, and stricter stress/holdout checks before any activation discussion.
 
-Phase23 was launched as the candidate-only stress/holdout step for the six Phase22 review candidates. It deliberately narrows compute to `AAPL`, `INTC`, and `NVDA`, reruns the same option-aware research path with shorter-lag controls and wider-lag stress, and increases the holdout split to five most-recent filled trade dates. Its output should decide whether Phase22 is a robust review signal or only a lag-sensitive artifact.
+Phase23 completed as the candidate-only stress/holdout step for the six Phase22 review candidates. It deliberately narrowed compute to `AAPL`, `INTC`, and `NVDA`, reran the same option-aware research path with shorter-lag controls and wider-lag stress, and increased the holdout split to five most-recent filled trade dates.
+
+Phase23 did not promote any candidate to governed-validation review. All six candidates were blocked by minimum fill coverage below `0.90` when the stress stack includes the tight `10/10` and `30/30` lag controls. One `INTC` wide-reward variant also failed the positive holdout PnL gate. The important institutional read is that the best candidates remain economically positive across the stress stack, but the current evidence does not prove they are fill-clean enough for promotion under tighter execution timing.
 
 ## Safe Use
 
@@ -79,7 +88,15 @@ Phase22 is complete. Use the Phase22 promotion packet as the current research-on
 - `b150__nvda__long_call__tight_reward__exit_360__liq_tight`
 - `b150__intc__long_call__wide_reward__exit_210__liq_baseline`
 
-Treat these as research/governed-validation review only. Phase23 is now running candidate-only stress and holdout validation that explicitly compares Phase21 shorter-lag failures against Phase22 wider-lag passes.
+Treat these as research/governed-validation review only. Phase23 has now shown that none of the six should advance while the promotion rule requires the full stress stack to clear the `0.90` fill-coverage gate.
+
+Best blocked candidates from Phase23:
+
+- `NVDA` `b150__nvda__long_call__tight_reward__exit_300__liq_tight`: min net `$4033.80`, min test `$747.93`, min fill `0.8657`.
+- `AAPL` `b150__aapl__long_call__wide_reward__exit_210__liq_tight`: min net `$2952.09`, min test `$226.67`, min fill `0.7581`.
+- `INTC` `b150__intc__long_call__tight_reward__exit_210__liq_baseline`: min net `$2778.05`, min test `$199.18`, min fill `0.8776`.
+- `NVDA` `b150__nvda__long_call__tight_reward__exit_360__liq_tight`: min net `$3357.40`, min test `$63.00`, min fill `0.8525`.
+- `AAPL` `b150__aapl__long_call__wide_reward__exit_360__liq_baseline`: min net `$878.77`, min test `$810.01`, min fill `0.8684`.
 
 If a shard fails or times out, prefer a narrower retry for the failed underlying/date ranges, not another broad monolithic rerun. If a completed shard still has fill gaps, copy or expose that shard's downloader manifest and selected-contract root, then run:
 
@@ -112,4 +129,6 @@ Then run the recommended command in the plan. It should use `--no-include-option
 
 ## Next Operator Decision
 
-Monitor Phase23 until it emits portfolio and promotion-review packets. Keep the `0.90` fill-coverage gate intact, preserve the non-broker-facing posture, and require clean broker-audited paper-session evidence before any live manifest or strategy-selection change.
+Do not promote the Phase22 candidates from the current evidence. Keep the `0.90` fill-coverage gate intact, preserve the non-broker-facing posture, and require clean broker-audited paper-session evidence before any live manifest or strategy-selection change.
+
+The next safe research action is a no-exit-bar/exit-lag feasibility diagnostic for the five profitable blocked candidates. It should classify whether the short-lag fill gap is repairable market-data sparsity, an execution timing mismatch, or a strategy design issue that needs alternate exits. Do not relax promotion gates just because the 60-minute-plus lag profiles look profitable.
