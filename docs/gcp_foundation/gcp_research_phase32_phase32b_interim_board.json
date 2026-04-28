@@ -1,0 +1,168 @@
+{
+  "packet": "gcp_research_phase32_phase32b_interim_board",
+  "generated_at_utc": "2026-04-28T17:20:33Z",
+  "broker_facing": false,
+  "trading_effect": "none",
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "promotion_allowed_from_this_packet": false,
+  "active_jobs": [
+    {
+      "job_id": "phase32-unexplored-top100-tranche1-20260428120500",
+      "state": "RUNNING",
+      "counts": {
+        "SUCCEEDED": 9,
+        "RUNNING": 5,
+        "PENDING": 1
+      }
+    },
+    {
+      "job_id": "phase32b-unexplored-top100-tranche2-20260428122500",
+      "state": "RUNNING",
+      "counts": {
+        "SUCCEEDED": 2,
+        "RUNNING": 2,
+        "PENDING": 11
+      }
+    }
+  ],
+  "completed_shards_scanned": 11,
+  "new_governed_validation_candidates": 0,
+  "dominant_blocker": "fill_coverage_below_0.90",
+  "completed_shard_decisions": [
+    {
+      "phase": "phase32",
+      "symbol": "AMD",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible": 0,
+      "best_candidate": "b150__amd__long_call__balanced_reward__exit_360__liq_tight",
+      "best_min_net_pnl": 5834.6425,
+      "best_min_test_net_pnl": 2713.1575,
+      "best_min_fill_coverage": 0.6923,
+      "best_worst_drawdown": -1435.7275
+    },
+    {
+      "phase": "phase32",
+      "symbol": "GE",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible": 0,
+      "best_candidate": "b150__ge__long_put__tight_reward__exit_360__liq_tight",
+      "best_min_net_pnl": 4128.955,
+      "best_min_test_net_pnl": 2747.52,
+      "best_min_fill_coverage": 0.2703,
+      "best_worst_drawdown": -1331.36
+    },
+    {
+      "phase": "phase32",
+      "symbol": "ORCL",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible": 0,
+      "best_candidate": "b150__orcl__long_call__balanced_reward__exit_360__liq_tight",
+      "best_min_net_pnl": 3584.26,
+      "best_min_test_net_pnl": 4254.38,
+      "best_min_fill_coverage": 0.4865,
+      "best_worst_drawdown": -5076.86
+    },
+    {
+      "phase": "phase32",
+      "symbol": "PLTR",
+      "decision": "research_only_blocked",
+      "candidate_count": 31,
+      "eligible": 0,
+      "best_candidate": "b150__pltr__long_put__balanced_reward__exit_300__liq_tight",
+      "best_min_net_pnl": 2860.17,
+      "best_min_test_net_pnl": 2353.3925,
+      "best_min_fill_coverage": 0.625,
+      "best_worst_drawdown": -1832.59
+    },
+    {
+      "phase": "phase32",
+      "symbol": "JPM",
+      "decision": "research_only_blocked",
+      "candidate_count": 12,
+      "eligible": 0,
+      "best_candidate": "b150__jpm__long_call__tight_reward__exit_300__liq_tight",
+      "best_min_net_pnl": 1780.5725,
+      "best_min_test_net_pnl": 1193.055,
+      "best_min_fill_coverage": 0.3704,
+      "best_worst_drawdown": -1322.0975
+    },
+    {
+      "phase": "phase32",
+      "symbol": "XOM",
+      "decision": "research_only_blocked",
+      "candidate_count": 12,
+      "eligible": 0,
+      "best_candidate": "b150__xom__long_call__wide_reward__exit_300__liq_tight",
+      "best_min_net_pnl": 1588.35,
+      "best_min_test_net_pnl": 2788.5925,
+      "best_min_fill_coverage": 0.5294,
+      "best_worst_drawdown": -4311.6975
+    },
+    {
+      "phase": "phase32",
+      "symbol": "GOOG",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible": 0,
+      "best_candidate": "b150__goog__long_call__wide_reward__exit_360__liq_baseline",
+      "best_min_net_pnl": 1165.495,
+      "best_min_test_net_pnl": 4.71,
+      "best_min_fill_coverage": 0.575,
+      "best_worst_drawdown": -3020.005
+    },
+    {
+      "phase": "phase32",
+      "symbol": "XLE",
+      "decision": "research_only_blocked",
+      "candidate_count": 9,
+      "eligible": 0,
+      "best_candidate": "b150__xle__long_call__balanced_reward__exit_210__liq_tight",
+      "best_min_net_pnl": 880.62,
+      "best_min_test_net_pnl": 1492.55,
+      "best_min_fill_coverage": 0.5968,
+      "best_worst_drawdown": -2067.7525
+    },
+    {
+      "phase": "phase32",
+      "symbol": "BAC",
+      "decision": "research_only_blocked",
+      "candidate_count": 11,
+      "eligible": 0,
+      "best_candidate": null
+    },
+    {
+      "phase": "phase32b",
+      "symbol": "BKNG",
+      "decision": "research_only_blocked",
+      "candidate_count": 17,
+      "eligible": 0,
+      "best_candidate": null
+    },
+    {
+      "phase": "phase32b",
+      "symbol": "NOW",
+      "decision": "research_only_blocked",
+      "candidate_count": 19,
+      "eligible": 0,
+      "best_candidate": null
+    }
+  ],
+  "next_safe_steps": [
+    "wait for remaining Phase32 and Phase32b shards to complete",
+    "build Phase33 portfolio-level aggregation only from completed shard packets",
+    "treat positive but fill-blocked candidates as repair leads, not promotion candidates",
+    "do not modify live manifests or risk policy"
+  ],
+  "hard_rules": [
+    "do_not_trade",
+    "do_not_arm_window",
+    "do_not_start_broker_facing_session",
+    "do_not_modify_live_manifests",
+    "do_not_change_risk_policy",
+    "do_not_relax_0_90_fill_gate"
+  ]
+}

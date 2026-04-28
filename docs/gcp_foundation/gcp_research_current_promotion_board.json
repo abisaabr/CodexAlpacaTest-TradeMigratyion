@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T16:33:02Z",
+  "generated_at_utc": "2026-04-28T17:20:33Z",
   "state": "phase32_and_phase32b_unexplored_top100_running",
   "broker_facing": false,
   "live_manifest_effect": "none",
@@ -13,8 +13,8 @@
       "latest_state": "RUNNING",
       "latest_task_counts": {
         "RUNNING": 5,
-        "PENDING": 9,
-        "SUCCEEDED": 1
+        "PENDING": 1,
+        "SUCCEEDED": 9
       },
       "location": "us-central1",
       "task_count": 15,
@@ -46,7 +46,9 @@
       "phase_id": "phase32b_unexplored_top100_tranche2_20260428122500",
       "latest_state": "SCHEDULED",
       "latest_task_counts": {
-        "PENDING": 3
+        "RUNNING": 2,
+        "PENDING": 11,
+        "SUCCEEDED": 2
       },
       "location": "us-central1",
       "task_count": 15,
@@ -74,6 +76,49 @@
       "objective": "expand candidate-rich unexplored top-100 option-aware coverage after Phase32 shard path validated with zero failed AMD data chunks"
     }
   ],
+  "current_interim_summary": {
+    "completed_shards_scanned": 11,
+    "new_governed_validation_candidates": 0,
+    "dominant_blocker": "fill_coverage_below_0.90",
+    "best_research_only_leads": [
+      {
+        "symbol": "AMD",
+        "candidate_variant_id": "b150__amd__long_call__balanced_reward__exit_360__liq_tight",
+        "min_net_pnl": 5834.6425,
+        "min_test_net_pnl": 2713.1575,
+        "min_fill_coverage": 0.6923,
+        "worst_drawdown": -1435.7275,
+        "decision": "research_only_blocked_fill_repair_lead"
+      },
+      {
+        "symbol": "GE",
+        "candidate_variant_id": "b150__ge__long_put__tight_reward__exit_360__liq_tight",
+        "min_net_pnl": 4128.955,
+        "min_test_net_pnl": 2747.52,
+        "min_fill_coverage": 0.2703,
+        "worst_drawdown": -1331.36,
+        "decision": "research_only_blocked_fill_repair_lead"
+      },
+      {
+        "symbol": "ORCL",
+        "candidate_variant_id": "b150__orcl__long_call__balanced_reward__exit_360__liq_tight",
+        "min_net_pnl": 3584.26,
+        "min_test_net_pnl": 4254.38,
+        "min_fill_coverage": 0.4865,
+        "worst_drawdown": -5076.86,
+        "decision": "research_only_blocked_fill_repair_lead"
+      },
+      {
+        "symbol": "PLTR",
+        "candidate_variant_id": "b150__pltr__long_put__balanced_reward__exit_300__liq_tight",
+        "min_net_pnl": 2860.17,
+        "min_test_net_pnl": 2353.3925,
+        "min_fill_coverage": 0.625,
+        "worst_drawdown": -1832.59,
+        "decision": "research_only_blocked_fill_repair_lead"
+      }
+    ]
+  },
   "bounded_validation_candidates": [
     {
       "symbol": "AAPL",

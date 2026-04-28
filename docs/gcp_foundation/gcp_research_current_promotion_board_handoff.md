@@ -5,7 +5,7 @@
 - Control packet: `docs/gcp_foundation/gcp_research_current_promotion_board.md`
 - Control JSON: `docs/gcp_foundation/gcp_research_current_promotion_board.json`
 - State: `phase32_and_phase32b_unexplored_top100_running`
-- Active research Batch jobs: `phase32-unexplored-top100-tranche1-20260428120500` (`RUNNING`, 5 running / 9 pending / 1 succeeded at last check) and `phase32b-unexplored-top100-tranche2-20260428122500` (`RUNNING`, 2 running / 13 pending at last check)
+- Active research Batch jobs: `phase32-unexplored-top100-tranche1-20260428120500` (`RUNNING`, 5 running / 1 pending / 9 succeeded at last check) and `phase32b-unexplored-top100-tranche2-20260428122500` (`RUNNING`, 2 running / 11 pending / 2 succeeded at last check)
 - Broker-facing status: `not_started`
 
 ## Canonical Candidate State
@@ -21,6 +21,8 @@ Phase32 is currently using GCP Batch to expand option-aware research coverage ac
 Phase32b is currently using GCP Batch to expand candidate-rich unexplored coverage across `NOW`, `BKNG`, `MA`, `CSCO`, `JNJ`, `CVX`, `WMT`, `HOOD`, `KRE`, `CAT`, `GS`, `IBM`, `SLV`, `XLK`, and `BA`.
 
 Interim `XLE` completed cleanly but is research-only blocked: `0/9` candidates eligible, zero download failures, and the best positive-economics variants are blocked by fill coverage around `0.60`.
+
+Interim scan across 11 completed shards has `0` new governed-validation candidates. The best research-only fill-repair leads so far are `AMD`, `GE`, `ORCL`, and `PLTR`; all remain blocked by fill coverage below `0.90`.
 
 ## Next Safe Research Step
 
