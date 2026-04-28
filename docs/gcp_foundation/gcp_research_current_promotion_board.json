@@ -1,7 +1,7 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T18:00:35Z",
-  "state": "phase32b_running_phase34_phase35_completed",
+  "generated_at_utc": "2026-04-28T18:09:39Z",
+  "state": "phase32b_and_phase36_running_phase34_phase35_completed",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -45,8 +45,8 @@
       "latest_state": "RUNNING",
       "latest_task_counts": {
         "RUNNING": 3,
-        "PENDING": 8,
-        "SUCCEEDED": 4
+        "PENDING": 6,
+        "SUCCEEDED": 6
       },
       "location": "us-central1",
       "task_count": 15,
@@ -111,10 +111,43 @@
         "UNH"
       ],
       "objective": "candidate-only exit-lag feasibility diagnostic for the new highest-economic Phase32 lead"
+    },
+    {
+      "job_id": "phase36-core-liq-20260428180637",
+      "phase_id": "phase36_core_liquidity_tranche_20260428180637",
+      "latest_state": "RUNNING",
+      "latest_task_counts": {
+        "RUNNING": 4,
+        "PENDING": 11
+      },
+      "location": "us-central1",
+      "task_count": 15,
+      "parallelism": 4,
+      "broker_facing": false,
+      "live_manifest_effect": "none",
+      "risk_policy_effect": "none",
+      "symbol_tranche": [
+        "SPY",
+        "QQQ",
+        "IWM",
+        "TSLA",
+        "TSM",
+        "EFA",
+        "EEM",
+        "XLF",
+        "XLV",
+        "EWZ",
+        "WFC",
+        "GLD",
+        "NKE",
+        "XLP",
+        "XBI"
+      ],
+      "objective": "research-only core-liquidity tranche to search for fill-feasible option-aware candidates without replaying quarantined severe-loser clusters"
     }
   ],
   "current_interim_summary": {
-    "completed_shards_scanned": 19,
+    "completed_shards_scanned": 21,
     "new_governed_validation_candidates": 0,
     "dominant_blocker": "fill_coverage_below_0.90",
     "best_research_only_leads": [
@@ -307,7 +340,7 @@
   ],
   "current_recommendation": {
     "paper_validation": "AAPL_exit360_only_if_operator_explicitly_arms_exclusive_window",
-    "research": "Phase32 completed with no new governed-validation candidate; monitor Phase32b to completion, then build portfolio-level aggregation and prioritize liquidity-gated candidate discovery rather than economic stress on low-fill names",
+    "research": "Phase32 completed with no new governed-validation candidate; monitor Phase32b and Phase36 to completion, then build portfolio-level aggregation and prioritize liquidity-gated candidate discovery rather than economic stress on low-fill names",
     "promotion_policy": "do_not_promote_any_candidate_without_broker_audited_bounded_paper_validation"
   },
   "hard_rules": [

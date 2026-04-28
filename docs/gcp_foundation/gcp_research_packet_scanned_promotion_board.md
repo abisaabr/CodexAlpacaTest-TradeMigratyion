@@ -2,9 +2,9 @@
 
 ## State
 
-- Generated at UTC: `2026-04-28T18:00:35Z`
-- Packet count: `19`
-- Candidate count: `303`
+- Generated at UTC: `2026-04-28T18:09:39Z`
+- Packet count: `21`
+- Candidate count: `339`
 - Eligible for promotion review: `0`
 - New governed-validation candidates: `0`
 - Dominant blocker: `fill_coverage_below_0.90`
@@ -24,8 +24,8 @@
 - `JPM` `b150__jpm__long_call__tight_reward__exit_300__liq_tight`: min net `$1780.5725`, min test `$1193.055`, fill `0.3704`, trades `20`, blockers `fill_coverage_below_0.90`.
 - `NOW` `b150__now__long_put__tight_reward__exit_360__liq_baseline`: min net `$1641.445`, min test `$-1088.665`, fill `0.37`, trades `37`, blockers `fill_coverage_below_0.90, test_net_pnl_not_above_0`.
 - `XOM` `b150__xom__long_call__wide_reward__exit_300__liq_tight`: min net `$1588.35`, min test `$2788.5925`, fill `0.5294`, trades `27`, blockers `fill_coverage_below_0.90`.
-- `GOOG` `b150__goog__long_call__wide_reward__exit_360__liq_baseline`: min net `$1165.495`, min test `$4.71`, fill `0.575`, trades `23`, blockers `fill_coverage_below_0.90`.
-- `TQQQ` `b150__tqqq__long_call__wide_reward__exit_300__liq_tight`: min net `$1146.865`, min test `$190.505`, fill `0.3158`, trades `24`, blockers `fill_coverage_below_0.90`.
+- `IBM` `b150__ibm__long_call__tight_reward__exit_360__liq_baseline`: min net `$1530.045`, min test `$1171.755`, fill `0.3077`, trades `20`, blockers `fill_coverage_below_0.90`.
+- `JNJ` `b150__jnj__long_put__balanced_reward__exit_300__liq_baseline`: min net `$1416.23`, min test `$2221.6`, fill `0.275`, trades `11`, blockers `fill_coverage_below_0.90, option_trades_below_20`.
 
 ## Review Candidates
 

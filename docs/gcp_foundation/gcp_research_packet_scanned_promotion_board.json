@@ -1,21 +1,21 @@
 {
   "packet": "gcp_research_promotion_board_from_packets",
-  "generated_at_utc": "2026-04-28T18:00:35Z",
+  "generated_at_utc": "2026-04-28T18:09:39Z",
   "broker_facing": false,
   "trading_effect": "none",
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
   "promotion_allowed_from_this_packet": false,
-  "packet_count": 19,
-  "candidate_count": 303,
+  "packet_count": 21,
+  "candidate_count": 339,
   "eligible_for_promotion_review_count": 0,
   "new_governed_validation_candidates": 0,
   "dominant_blocker": "fill_coverage_below_0.90",
   "aggregate_blocker_counts": {
-    "fill_coverage_below_0.90": 303,
-    "option_trades_below_20": 100,
-    "test_net_pnl_not_above_0": 149,
-    "min_net_pnl_not_positive": 121
+    "fill_coverage_below_0.90": 339,
+    "option_trades_below_20": 133,
+    "test_net_pnl_not_above_0": 155,
+    "min_net_pnl_not_positive": 134
   },
   "best_research_only_leads": [
     {
@@ -175,33 +175,35 @@
       ]
     },
     {
-      "candidate_variant_id": "b150__goog__long_call__wide_reward__exit_360__liq_baseline",
-      "symbol": "GOOG",
-      "source_strategy_id": "goog__broad150__trend_long_call_research",
+      "candidate_variant_id": "b150__ibm__long_call__tight_reward__exit_360__liq_baseline",
+      "symbol": "IBM",
+      "source_strategy_id": "ibm__broad150__trend_long_call_research",
       "directional_option_type": "call",
-      "min_net_pnl": 1165.495,
-      "min_test_net_pnl": 4.71,
-      "min_fill_coverage": 0.575,
-      "min_option_trade_count": 23,
-      "worst_drawdown": -3020.005,
+      "min_net_pnl": 1530.045,
+      "min_test_net_pnl": 1171.755,
+      "min_fill_coverage": 0.3077,
+      "min_option_trade_count": 20,
+      "worst_drawdown": -1682.6675,
       "promotion_status": "research_only_blocked",
       "promotion_blockers": [
         "fill_coverage_below_0.90"
       ]
     },
     {
-      "candidate_variant_id": "b150__tqqq__long_call__wide_reward__exit_300__liq_tight",
-      "symbol": "TQQQ",
-      "source_strategy_id": "tqqq__broad150__trend_long_call_research",
-      "directional_option_type": "call",
-      "min_net_pnl": 1146.865,
-      "min_test_net_pnl": 190.505,
-      "min_fill_coverage": 0.3158,
-      "min_option_trade_count": 24,
-      "worst_drawdown": -2667.58,
+      "candidate_variant_id": "b150__jnj__long_put__balanced_reward__exit_300__liq_baseline",
+      "symbol": "JNJ",
+      "source_strategy_id": "jnj__broad150__trend_long_put_research",
+      "directional_option_type": "put",
+      "min_net_pnl": 1416.23,
+      "min_test_net_pnl": 2221.6,
+      "min_fill_coverage": 0.275,
+      "max_fill_coverage": 0.6,
+      "min_option_trade_count": 11,
+      "worst_drawdown": -1495.4025,
       "promotion_status": "research_only_blocked",
       "promotion_blockers": [
-        "fill_coverage_below_0.90"
+        "fill_coverage_below_0.90",
+        "option_trades_below_20"
       ]
     }
   ],
@@ -681,6 +683,67 @@
         "max_fill_coverage": 0.4375,
         "min_option_trade_count": 4,
         "worst_drawdown": -656.61,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90",
+          "option_trades_below_20"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32b_unexplored_top100_tranche2_20260428122500/data_shards/IBM/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32b_unexplored_top100_tranche2_20260428122500",
+      "symbol": "IBM",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 18,
+        "min_net_pnl_not_positive": 3,
+        "option_trades_below_20": 15
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__ibm__long_call__tight_reward__exit_360__liq_baseline",
+        "symbol": "IBM",
+        "source_strategy_id": "ibm__broad150__trend_long_call_research",
+        "directional_option_type": "call",
+        "min_net_pnl": 1530.045,
+        "min_test_net_pnl": 1171.755,
+        "min_fill_coverage": 0.3077,
+        "min_option_trade_count": 20,
+        "worst_drawdown": -1682.6675,
+        "promotion_status": "research_only_blocked",
+        "promotion_blockers": [
+          "fill_coverage_below_0.90"
+        ]
+      }
+    },
+    {
+      "source": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32b_unexplored_top100_tranche2_20260428122500/data_shards/JNJ/promotion_review_packet/research_promotion_review_packet.json",
+      "phase_id": "phase32b_unexplored_top100_tranche2_20260428122500",
+      "symbol": "JNJ",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible_for_promotion_review_count": 0,
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 18,
+        "min_net_pnl_not_positive": 10,
+        "option_trades_below_20": 18,
+        "test_net_pnl_not_above_0": 6
+      },
+      "review_candidates": [],
+      "best_research_candidate": {
+        "candidate_variant_id": "b150__jnj__long_put__balanced_reward__exit_300__liq_baseline",
+        "symbol": "JNJ",
+        "source_strategy_id": "jnj__broad150__trend_long_put_research",
+        "directional_option_type": "put",
+        "min_net_pnl": 1416.23,
+        "min_test_net_pnl": 2221.6,
+        "min_fill_coverage": 0.275,
+        "max_fill_coverage": 0.6,
+        "min_option_trade_count": 11,
+        "worst_drawdown": -1495.4025,
         "promotion_status": "research_only_blocked",
         "promotion_blockers": [
           "fill_coverage_below_0.90",

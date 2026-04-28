@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_phase32_phase32b_interim_board",
-  "generated_at_utc": "2026-04-28T18:00:35Z",
+  "generated_at_utc": "2026-04-28T18:09:39Z",
   "broker_facing": false,
   "trading_effect": "none",
   "live_manifest_effect": "none",
@@ -18,13 +18,13 @@
       "job_id": "phase32b-unexplored-top100-tranche2-20260428122500",
       "state": "RUNNING",
       "counts": {
-        "SUCCEEDED": 4,
+        "SUCCEEDED": 6,
         "RUNNING": 3,
-        "PENDING": 8
+        "PENDING": 6
       }
     }
   ],
-  "completed_shards_scanned": 19,
+  "completed_shards_scanned": 21,
   "new_governed_validation_candidates": 0,
   "dominant_blocker": "fill_coverage_below_0.90",
   "completed_shard_decisions": [
@@ -211,6 +211,30 @@
       "candidate_count": 17,
       "eligible": 0,
       "best_candidate": null
+    },
+    {
+      "phase": "phase32b",
+      "symbol": "IBM",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible": 0,
+      "best_candidate": "b150__ibm__long_call__tight_reward__exit_360__liq_baseline",
+      "best_min_net_pnl": 1530.045,
+      "best_min_test_net_pnl": 1171.755,
+      "best_min_fill_coverage": 0.3077,
+      "best_worst_drawdown": -1682.6675
+    },
+    {
+      "phase": "phase32b",
+      "symbol": "JNJ",
+      "decision": "research_only_blocked",
+      "candidate_count": 18,
+      "eligible": 0,
+      "best_candidate": "b150__jnj__long_put__balanced_reward__exit_300__liq_baseline",
+      "best_min_net_pnl": 1416.23,
+      "best_min_test_net_pnl": 2221.6,
+      "best_min_fill_coverage": 0.275,
+      "best_worst_drawdown": -1495.4025
     },
     {
       "phase": "phase32b",
