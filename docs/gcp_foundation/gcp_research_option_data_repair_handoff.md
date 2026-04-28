@@ -1,6 +1,6 @@
 # GCP Research Option Data Repair Handoff
 
-- Status: `phase20_succeeded_phase21_replay_launched`
+- Status: `phase21_blocked_phase22_wide_lag_diagnostic_launched`
 - Runner branch: `codex/qqq-paper-portfolio`
 - Runner commit: `952aea4`
 - Tool: `scripts/build_option_data_repair_plan.py`
@@ -22,9 +22,19 @@
 - Repair failed chunks: `0`
 - Repair option bar rows: `1002599`
 - Repair option trade rows: `2317496`
-- Active replay job: `phase21-replay-from-phase20-20260428034200`
-- Active replay state at launch: `SCHEDULED`
-- Active replay launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase21_replay_from_phase20_20260428034200/launch/`
+- Completed replay job: `phase21-replay-from-phase20-20260428034200`
+- Completed replay state: `SUCCEEDED`
+- Completed replay launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase21_replay_from_phase20_20260428034200/launch/`
+- Phase21 portfolio report: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase21_replay_from_phase20_20260428034200/portfolio_report/research_portfolio_report.json`
+- Phase21 promotion packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase21_replay_from_phase20_20260428034200/promotion_review_packet/research_promotion_review_packet.json`
+- Phase21 decision: `research_only_blocked`
+- Phase21 candidate count: `13`
+- Phase21 eligible for promotion review: `0`
+- Phase21 blocker counts: `fill_coverage_below_0.90=13`, `test_net_pnl_not_above_0=3`
+- Phase21 best research-only symbols: `AAPL`, `MU`, `NVDA`, `AVGO`, `INTC`, `MSFT`
+- Active diagnostic job: `phase22-wide-lag-diagnostic-20260428045000`
+- Active diagnostic state at launch: `QUEUED`
+- Active diagnostic launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase22_wide_lag_diagnostic_20260428045000/launch/`
 
 ## Why This Exists
 
@@ -32,11 +42,13 @@ Phase19 failed after reaching the 24-hour GCP Batch runtime cap before replay, p
 
 Phase20 was launched as a sharded repair using the checkpoint selected contracts directly. The job ran one task per underlying for `AAPL`, `AMZN`, `AVGO`, `INTC`, `MSFT`, `MU`, and `NVDA`, with max parallelism `4`, `option_batch_size=20`, and no broker-facing behavior. All seven shards succeeded with zero failed chunks.
 
-Phase21 is now launched to combine the Phase20 shard roots, run option-aware replay, produce a portfolio report, and emit a promotion-review packet.
+Phase21 combined the Phase20 shard roots, ran option-aware replay, produced a portfolio report, and emitted a promotion-review packet. It found 13 research-only positive candidates in the capital plan, but zero candidates passed promotion-review gates because all 13 were still blocked by minimum fill coverage below `0.90`; three were also blocked by non-positive test net PnL.
+
+Phase22 is launched as a research-only wide-exit-lag diagnostic using the same repaired data roots. Its purpose is to classify whether the remaining fill gap is data availability or a fill-lag/modeling assumption problem. It does not authorize live manifest, strategy-selection, or risk-policy changes.
 
 ## Safe Use
 
-Phase21 should be allowed to finish before any new repair or promotion decision. Inspect the replay manifests, portfolio report, and promotion-review packet after the job exits.
+Phase22 should be allowed to finish before any further repair or promotion decision. Inspect whether wider exit lag improves fill coverage without destroying out-of-sample economics. Treat any result as research/governed-validation review only.
 
 If a shard fails or times out, prefer a narrower retry for the failed underlying/date ranges, not another broad monolithic rerun. If a completed shard still has fill gaps, copy or expose that shard's downloader manifest and selected-contract root, then run:
 
@@ -61,11 +73,11 @@ Then run the recommended command in the plan. It should use `--no-include-option
 
 ## Guardrails
 
-- Do not launch another broad monolithic downloader for this campaign while Phase21 is active.
+- Do not launch another broad monolithic downloader for this campaign while Phase22 is active.
 - Do not use this as a broker-facing process.
 - Do not change live manifests, live strategy selection, or risk policy from this packet.
 - Treat any candidate promoted by repaired data as research/governed-validation review only until execution evidence clears.
 
 ## Next Operator Decision
 
-Monitor Phase21 replay state and output artifacts. Require at least `0.90` fill coverage before any research candidate can move to governed-validation review.
+Monitor Phase22 diagnostic state and output artifacts. Require at least `0.90` fill coverage before any research candidate can move to governed-validation review, and do not relax this gate just because PnL is attractive.

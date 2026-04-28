@@ -1,6 +1,6 @@
 # GCP Research Phase Live Monitor Handoff
 
-- Status: `phase20_repair_succeeded_phase21_replay_launched`
+- Status: `phase21_blocked_phase22_wide_lag_diagnostic_active`
 - Batch state: `FAILED`
 - Active stage: `none_phase19_closed`
 - Latest observed symbol family: `AMZN option contracts`
@@ -20,12 +20,19 @@
 - Repair option bar rows: `1002599`
 - Repair option trade rows: `2317496`
 - Replay job: `phase21-replay-from-phase20-20260428034200`
-- Replay launch state: `SCHEDULED`
+- Replay state: `SUCCEEDED`
 - Replay launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase21_replay_from_phase20_20260428034200/launch/`
+- Replay decision: `research_only_blocked`
+- Replay candidate count: `13`
+- Replay eligible count: `0`
+- Replay blocker counts: `fill_coverage_below_0.90=13`, `test_net_pnl_not_above_0=3`
+- Diagnostic job: `phase22-wide-lag-diagnostic-20260428045000`
+- Diagnostic launch state: `QUEUED`
+- Diagnostic launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase22_wide_lag_diagnostic_20260428045000/launch/`
 
 ## Operator Rule
 
 - Do not relaunch or terminate a running phase while the active stage is producing files or fresh logs.
 - Phase19 is no longer running; it failed at the Batch runtime cap before final artifacts were produced.
-- Phase20 succeeded and Phase21 is the active replay/promotion-review path to monitor.
+- Phase21 succeeded but found no promotion-review eligible candidates; Phase22 is the active fill-lag diagnostic to monitor.
 - This is research-only. Do not arm windows, start trading, change live manifests, or change risk policy from this packet.
