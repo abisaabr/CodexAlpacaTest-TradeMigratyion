@@ -1,6 +1,6 @@
 # GCP Research Option Data Repair Handoff
 
-- Status: `phase24_exit_lag_feasibility_active`
+- Status: `phase24_exit_lag_feasibility_complete_research_only`
 - Runner branch: `codex/qqq-paper-portfolio`
 - Runner commit: `95379e4`
 - Tool: `scripts/build_option_data_repair_plan.py`
@@ -61,14 +61,20 @@
 - Phase23 profiles: `10/10`, `30/30`, `60/60`, `60/90`, `60/120`, `60/180 high-cost`
 - Phase23 holdout: `test_date_count=5`
 - Phase23 result summary: `profitable_but_not_fill_clean_under_short_lag_controls`
-- Active exit-lag feasibility job: `phase24-exit-lag-feas-20260428073500`
-- Active exit-lag feasibility state at launch: `SCHEDULED`
-- Active exit-lag feasibility phase id: `phase24_exit_lag_feasibility_20260428073500`
-- Active exit-lag feasibility runner source: `gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_95379e4166b4.zip`
-- Active exit-lag feasibility launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase24_exit_lag_feasibility_20260428073500/launch/`
-- Active exit-lag feasibility candidate scope: `five profitable Phase23 blocked candidates`
-- Active exit-lag feasibility underlyings: `AAPL`, `INTC`, `NVDA`
-- Active exit-lag feasibility purpose: `classify no-exit-bar gaps as data sparsity, execution timing mismatch, or strategy design issue`
+- Completed exit-lag feasibility job: `phase24-exit-lag-feas-20260428073500`
+- Completed exit-lag feasibility state: `SUCCEEDED`
+- Completed exit-lag feasibility phase id: `phase24_exit_lag_feasibility_20260428073500`
+- Completed exit-lag feasibility runner source: `gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_95379e4166b4.zip`
+- Completed exit-lag feasibility launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase24_exit_lag_feasibility_20260428073500/launch/`
+- Phase24 feasibility packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase24_exit_lag_feasibility_20260428073500/exit_lag_feasibility/exit_lag_feasibility_packet.json`
+- Phase24 decision: `fill_feasible_under_full_stack`
+- Phase24 promotion effect: `none_research_only`
+- Phase24 candidate count: `5`
+- Phase24 full-stack fill pass count: `1`
+- Phase24 wide-lag-only candidate count: `4`
+- Phase24 candidate scope: `five profitable Phase23 blocked candidates`
+- Phase24 underlyings: `AAPL`, `INTC`, `NVDA`
+- Phase24 aggregate missing-exit classes: `illiquid_or_missing_exit_data=56`, `short_lag_execution_timing_mismatch=54`, `late_exit_liquidity_window=19`
 
 ## Why This Exists
 
@@ -86,7 +92,17 @@ Phase23 completed as the candidate-only stress/holdout step for the six Phase22 
 
 Phase23 did not promote any candidate to governed-validation review. All six candidates were blocked by minimum fill coverage below `0.90` when the stress stack includes the tight `10/10` and `30/30` lag controls. One `INTC` wide-reward variant also failed the positive holdout PnL gate. The important institutional read is that the best candidates remain economically positive across the stress stack, but the current evidence does not prove they are fill-clean enough for promotion under tighter execution timing.
 
-Phase24 is active as a non-broker-facing exit-lag feasibility diagnostic for the five profitable blocked candidates. It uses runner commit `95379e4`, which added `scripts/build_option_exit_lag_feasibility.py` and targeted tests. The diagnostic should explain whether the missing short-lag exits are repairable data gaps, execution timing mismatches, or strategy-design problems that require alternate exits.
+Phase24 completed as a non-broker-facing exit-lag feasibility diagnostic for the five profitable blocked candidates. It used runner commit `95379e4`, which added `scripts/build_option_exit_lag_feasibility.py` and targeted tests. The diagnostic explains whether the missing short-lag exits are repairable data gaps, execution timing mismatches, or strategy-design problems that require alternate exits.
+
+Phase24 found one full-stack fill-feasible candidate and four wide-lag-only candidates:
+
+- `INTC` `b150__intc__long_call__tight_reward__exit_210__liq_baseline`: full-stack fill pass, shortest passing lag `10` minutes, fill curve `10=0.932`, `30=0.9524`, `60=0.966`, `90+=1.0`.
+- `AAPL` `b150__aapl__long_call__wide_reward__exit_360__liq_baseline`: short-lag review candidate but not full-stack, shortest passing lag `30` minutes, fill curve `10=0.8684`, `30=0.9211`, `60=0.9737`, `90+=1.0`.
+- `NVDA` `b150__nvda__long_call__tight_reward__exit_300__liq_tight`: wide-lag only, shortest passing lag `60` minutes, fill curve `10=0.8806`, `30=0.8955`, `60=0.9403`, `90+=0.9851`.
+- `NVDA` `b150__nvda__long_call__tight_reward__exit_360__liq_tight`: wide-lag only, shortest passing lag `60` minutes, fill curve `10=0.8525`, `30=0.8852`, `60=0.9344`, `90+=0.9836`.
+- `AAPL` `b150__aapl__long_call__wide_reward__exit_210__liq_tight`: wide-lag only, shortest passing lag `60` minutes, fill curve `10=0.7903`, `30=0.871`, `60+=0.9032`.
+
+This does not authorize promotion. Phase24 is a feasibility classification packet; it does not rerun economic stress, does not include broker-audited execution evidence, and does not change the Phase23 conclusion that no candidate should be promoted from the current full evidence stack.
 
 ## Safe Use
 
@@ -142,4 +158,10 @@ Then run the recommended command in the plan. It should use `--no-include-option
 
 Do not promote the Phase22 candidates from the current evidence. Keep the `0.90` fill-coverage gate intact, preserve the non-broker-facing posture, and require clean broker-audited paper-session evidence before any live manifest or strategy-selection change.
 
-Monitor Phase24 until it emits the exit-lag feasibility packet. Do not promote candidates, relax gates, or change strategy/risk policy from Phase23 or Phase24 alone. Use Phase24 only to decide the next research repair path.
+Do not promote candidates, relax gates, or change strategy/risk policy from Phase23 or Phase24 alone. Use Phase24 only to choose the next research repair path.
+
+The next safest research path is candidate-specific:
+
+- `INTC` tight-reward 210 can move to a governed validation-review packet candidate lane, but only after re-running the economic stress packet with the candidate isolated and preserving the `0.90` fill gate.
+- `AAPL` wide-reward 360 should be tested under a `30`-minute minimum operational exit-lag policy before any promotion discussion.
+- `NVDA` and `AAPL` 210 are exit-policy research candidates only; they need alternate exit design or explicit 60-minute-plus operational assumptions before promotion review.

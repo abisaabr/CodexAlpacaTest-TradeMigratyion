@@ -1,8 +1,8 @@
 # GCP Research Phase Live Monitor Handoff
 
-- Status: `phase24_exit_lag_feasibility_active`
+- Status: `phase24_exit_lag_feasibility_complete_research_only`
 - Phase19 batch state: `FAILED`
-- Active stage: `phase24_exit_lag_feasibility`
+- Active stage: `none_phase24_complete`
 - Latest observed symbol family: `AMZN option contracts`
 - Latest observed download date: `2026-04-16`
 - Selected-contract files at checkpoint: `266`
@@ -53,11 +53,17 @@
 - Candidate stress holdout: `test_date_count=5`
 - Candidate stress result summary: `profitable_but_not_fill_clean_under_short_lag_controls`
 - Exit-lag feasibility job: `phase24-exit-lag-feas-20260428073500`
-- Exit-lag feasibility state at launch: `SCHEDULED`
+- Exit-lag feasibility state: `SUCCEEDED`
 - Exit-lag feasibility phase id: `phase24_exit_lag_feasibility_20260428073500`
 - Exit-lag feasibility runner commit: `95379e4`
 - Exit-lag feasibility runner source: `gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_95379e4166b4.zip`
 - Exit-lag feasibility launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase24_exit_lag_feasibility_20260428073500/launch/`
+- Exit-lag feasibility packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase24_exit_lag_feasibility_20260428073500/exit_lag_feasibility/exit_lag_feasibility_packet.json`
+- Exit-lag feasibility decision: `fill_feasible_under_full_stack`
+- Exit-lag feasibility promotion effect: `none_research_only`
+- Exit-lag feasibility candidate count: `5`
+- Exit-lag feasibility full-stack pass count: `1`
+- Exit-lag feasibility wide-lag-only count: `4`
 - Exit-lag feasibility candidate scope: `five profitable Phase23 blocked candidates`
 - Exit-lag feasibility purpose: `classify no-exit-bar gaps as data sparsity, execution timing mismatch, or strategy design issue`
 
@@ -71,9 +77,14 @@
 - Phase23 completed the candidate-only stress/holdout validation for those six candidates.
 - Phase23 found zero eligible promotion-review candidates. All six were blocked by fill coverage below `0.90` across the full lag/cost stack; one `INTC` wide-reward variant also failed the positive holdout PnL gate.
 - The best Phase23 read is not "bad strategy economics"; it is "not fill-clean enough under short-lag execution controls."
-- Phase24 is active as the non-broker-facing no-exit-bar/exit-lag feasibility diagnostic for the five profitable blocked candidates.
+- Phase24 completed as the non-broker-facing no-exit-bar/exit-lag feasibility diagnostic for the five profitable blocked candidates.
+- Phase24 found one full-stack fill-feasible candidate: `INTC` `b150__intc__long_call__tight_reward__exit_210__liq_baseline`.
+- Phase24 found four wide-lag-only or short-lag-conditional candidates: `AAPL` wide-reward 360 passes at `30` minutes, while `NVDA` 300, `NVDA` 360, and `AAPL` 210 require `60` minutes or more.
+- Phase24 is a feasibility classification packet, not a promotion packet.
 - This is research-only. Do not arm windows, start trading, change live manifests, or change risk policy from this packet.
 
 ## Next Research Step
 
-Monitor Phase24 until it emits the exit-lag feasibility packet. Do not promote the Phase22/Phase23 candidates from the current evidence. Keep the `0.90` fill-coverage gate intact and require clean broker-audited paper-session evidence before any activation discussion.
+Do not promote the Phase22/Phase23 candidates from the current evidence. Keep the `0.90` fill-coverage gate intact and require clean broker-audited paper-session evidence before any activation discussion.
+
+The next safe research step is an isolated economic stress packet for the `INTC` tight-reward 210 candidate and an exit-policy design packet for the AAPL/NVDA wide-lag-only candidates. Do not relax gates or modify live strategy selection from Phase24 alone.
