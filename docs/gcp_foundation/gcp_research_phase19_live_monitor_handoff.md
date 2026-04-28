@@ -1,8 +1,8 @@
 # GCP Research Phase Live Monitor Handoff
 
-- Status: `phase24_exit_lag_feasibility_complete_research_only`
+- Status: `phase25_intc_isolated_stress_active`
 - Phase19 batch state: `FAILED`
-- Active stage: `none_phase24_complete`
+- Active stage: `phase25_intc_isolated_stress`
 - Latest observed symbol family: `AMZN option contracts`
 - Latest observed download date: `2026-04-16`
 - Selected-contract files at checkpoint: `266`
@@ -66,6 +66,12 @@
 - Exit-lag feasibility wide-lag-only count: `4`
 - Exit-lag feasibility candidate scope: `five profitable Phase23 blocked candidates`
 - Exit-lag feasibility purpose: `classify no-exit-bar gaps as data sparsity, execution timing mismatch, or strategy design issue`
+- Isolated stress job: `phase25-intc-stress-20260428085000`
+- Isolated stress state at launch: `SCHEDULED`
+- Isolated stress phase id: `phase25_intc_isolated_stress_20260428085000`
+- Isolated stress launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase25_intc_isolated_stress_20260428085000/launch/`
+- Isolated stress candidate: `INTC` `b150__intc__long_call__tight_reward__exit_210__liq_baseline`
+- Isolated stress purpose: `single-candidate economic stress after full-stack fill feasibility`
 
 ## Operator Rule
 
@@ -81,10 +87,11 @@
 - Phase24 found one full-stack fill-feasible candidate: `INTC` `b150__intc__long_call__tight_reward__exit_210__liq_baseline`.
 - Phase24 found four wide-lag-only or short-lag-conditional candidates: `AAPL` wide-reward 360 passes at `30` minutes, while `NVDA` 300, `NVDA` 360, and `AAPL` 210 require `60` minutes or more.
 - Phase24 is a feasibility classification packet, not a promotion packet.
+- Phase25 is active as the isolated economic stress packet for the single full-stack fill-feasible INTC candidate.
 - This is research-only. Do not arm windows, start trading, change live manifests, or change risk policy from this packet.
 
 ## Next Research Step
 
 Do not promote the Phase22/Phase23 candidates from the current evidence. Keep the `0.90` fill-coverage gate intact and require clean broker-audited paper-session evidence before any activation discussion.
 
-The next safe research step is an isolated economic stress packet for the `INTC` tight-reward 210 candidate and an exit-policy design packet for the AAPL/NVDA wide-lag-only candidates. Do not relax gates or modify live strategy selection from Phase24 alone.
+Monitor Phase25 until it emits portfolio and promotion-review packets. Passing Phase25 would be a governed validation-review candidate signal only, not a live manifest authorization. Do not relax gates or modify live strategy selection from Phase24 or Phase25 alone.

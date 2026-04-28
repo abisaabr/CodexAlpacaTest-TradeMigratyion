@@ -1,6 +1,6 @@
 # GCP Research Option Data Repair Handoff
 
-- Status: `phase24_exit_lag_feasibility_complete_research_only`
+- Status: `phase25_intc_isolated_stress_active`
 - Runner branch: `codex/qqq-paper-portfolio`
 - Runner commit: `95379e4`
 - Tool: `scripts/build_option_data_repair_plan.py`
@@ -75,6 +75,13 @@
 - Phase24 candidate scope: `five profitable Phase23 blocked candidates`
 - Phase24 underlyings: `AAPL`, `INTC`, `NVDA`
 - Phase24 aggregate missing-exit classes: `illiquid_or_missing_exit_data=56`, `short_lag_execution_timing_mismatch=54`, `late_exit_liquidity_window=19`
+- Active isolated stress job: `phase25-intc-stress-20260428085000`
+- Active isolated stress state at launch: `SCHEDULED`
+- Active isolated stress phase id: `phase25_intc_isolated_stress_20260428085000`
+- Active isolated stress launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase25_intc_isolated_stress_20260428085000/launch/`
+- Active isolated stress candidate: `INTC` `b150__intc__long_call__tight_reward__exit_210__liq_baseline`
+- Active isolated stress purpose: `single-candidate economic stress after full-stack fill feasibility`
+- Active isolated stress profiles: `10/10 slip10 fee0.65`, `10/10 slip25 fee1.00`, `10/10 slip50 fee1.50`, `30/30 slip25 fee1.00`, `60/60 slip25 fee1.00`, `10/10 slip75 fee2.00`
 
 ## Why This Exists
 
@@ -103,6 +110,8 @@ Phase24 found one full-stack fill-feasible candidate and four wide-lag-only cand
 - `AAPL` `b150__aapl__long_call__wide_reward__exit_210__liq_tight`: wide-lag only, shortest passing lag `60` minutes, fill curve `10=0.7903`, `30=0.871`, `60+=0.9032`.
 
 This does not authorize promotion. Phase24 is a feasibility classification packet; it does not rerun economic stress, does not include broker-audited execution evidence, and does not change the Phase23 conclusion that no candidate should be promoted from the current full evidence stack.
+
+Phase25 is active as the isolated economic stress packet for the only Phase24 full-stack fill-feasible candidate: `INTC` `b150__intc__long_call__tight_reward__exit_210__liq_baseline`. It is intentionally single-candidate and research-only. Its purpose is to test whether the candidate survives tighter cost assumptions while preserving the `0.90` fill-coverage gate and five-date holdout posture.
 
 ## Safe Use
 
@@ -160,8 +169,4 @@ Do not promote the Phase22 candidates from the current evidence. Keep the `0.90`
 
 Do not promote candidates, relax gates, or change strategy/risk policy from Phase23 or Phase24 alone. Use Phase24 only to choose the next research repair path.
 
-The next safest research path is candidate-specific:
-
-- `INTC` tight-reward 210 can move to a governed validation-review packet candidate lane, but only after re-running the economic stress packet with the candidate isolated and preserving the `0.90` fill gate.
-- `AAPL` wide-reward 360 should be tested under a `30`-minute minimum operational exit-lag policy before any promotion discussion.
-- `NVDA` and `AAPL` 210 are exit-policy research candidates only; they need alternate exit design or explicit 60-minute-plus operational assumptions before promotion review.
+Monitor Phase25 until it emits portfolio and promotion-review packets. If it passes, the output is still only a governed validation-review candidate signal; it does not authorize manifest changes. If it fails, keep INTC in research-only hold and move to exit-policy design work for the AAPL/NVDA wide-lag candidates.
