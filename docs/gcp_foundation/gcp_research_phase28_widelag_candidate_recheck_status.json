@@ -1,7 +1,7 @@
 {
   "packet": "gcp_research_phase28_widelag_candidate_recheck_status",
-  "generated_at_utc": "2026-04-28T15:03:00Z",
-  "state": "scheduled",
+  "generated_at_utc": "2026-04-28T15:20:00Z",
+  "state": "succeeded",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -10,6 +10,7 @@
   "batch_location": "us-central1",
   "batch_job": "phase28-widelag-recheck-20260428110100",
   "batch_state_at_launch": "SCHEDULED",
+  "batch_state_latest": "SUCCEEDED",
   "wave_id": "top100_liquidity_research_20260426",
   "phase_id": "phase28_widelag_candidate_recheck_20260428110100",
   "source_runner_commit": "95379e4166b4",
@@ -78,7 +79,63 @@
     "max_strategies_per_symbol": 2,
     "max_symbol_weight": 0.25
   },
-  "expected_decision": "promote_to_research_review_or_quarantine_profitable_fill_blocked_candidates",
+  "decision": "ready_for_governed_validation_review",
+  "gate_summary": {
+    "candidate_count": 3,
+    "eligible_for_promotion_review_count": 1,
+    "fill_coverage_gate": 0.9,
+    "min_option_trades": 20,
+    "min_test_net_pnl": 0,
+    "capital_plan_allocated_weight": 0.25,
+    "capital_plan_unallocated_weight": 0.75,
+    "capital_plan_unallocated_dollars": 18750
+  },
+  "review_candidates": [
+    {
+      "symbol": "NVDA",
+      "candidate_variant_id": "b150__nvda__long_call__tight_reward__exit_300__liq_tight",
+      "min_net_pnl": 1593.1625,
+      "median_net_pnl": 3308.97,
+      "min_test_net_pnl": 484.1825,
+      "median_test_net_pnl": 685.28,
+      "min_fill_coverage": 0.9254,
+      "max_fill_coverage": 0.9701,
+      "min_option_trade_count": 62,
+      "worst_drawdown": -4769.23,
+      "positive_net_profile_count": 6,
+      "positive_test_profile_count": 6,
+      "promotion_blockers": []
+    }
+  ],
+  "blocked_candidates": [
+    {
+      "symbol": "AAPL",
+      "candidate_variant_id": "b150__aapl__long_call__wide_reward__exit_210__liq_tight",
+      "blockers": [
+        "fill_coverage_below_0.90"
+      ],
+      "min_net_pnl": 2513.73,
+      "min_test_net_pnl": 2654.1575,
+      "min_fill_coverage": 0.8871,
+      "max_fill_coverage": 0.9032
+    },
+    {
+      "symbol": "NVDA",
+      "candidate_variant_id": "b150__nvda__long_call__tight_reward__exit_360__liq_tight",
+      "blockers": [
+        "test_net_pnl_not_above_0"
+      ],
+      "min_net_pnl": 1413.11,
+      "min_test_net_pnl": -161.3525,
+      "min_fill_coverage": 0.918,
+      "max_fill_coverage": 0.9672
+    }
+  ],
+  "blocker_counts": {
+    "fill_coverage_below_0.90": 1,
+    "test_net_pnl_not_above_0": 1
+  },
+  "next_safe_step": "run_isolated_nvda_governance_stress_before_any_bounded_validation_discussion",
   "hard_rules": [
     "do_not_trade",
     "do_not_arm_window",
