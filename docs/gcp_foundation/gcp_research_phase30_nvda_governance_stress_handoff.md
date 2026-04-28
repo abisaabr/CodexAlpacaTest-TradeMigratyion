@@ -2,7 +2,7 @@
 
 ## Current State
 
-- State: `queued`
+- State: `succeeded`
 - Job: `phase30-nvda-governance-20260428112200`
 - Phase id: `phase30_nvda_governance_stress_20260428112200`
 - Project/location: `codexalpaca/us-central1`
@@ -14,16 +14,21 @@
 
 Phase28 found one new non-broker-facing research-review candidate: `NVDA` exit-300 tight-reward tight-liquidity. Phase30 applies isolated, harsher governance stress before the candidate can be discussed for any bounded paper validation packet.
 
+## Result
+
+- Decision: `research_only_blocked`
+- Eligible candidates: `0/1`
+- Blocker: `min_net_pnl_not_positive`
+- Minimum net PnL: `$-782.9625`
+- Minimum holdout/test net PnL: `$393.2`
+- Fill coverage: `0.9254-0.9701`
+- Worst drawdown: `$-6083.3875`
+
+The candidate remains research-only. Do not include it in bounded paper validation without redesign and a new governance stress pass.
+
 ## Next Review Step
 
-When the Batch job reaches `SUCCEEDED`, inspect:
-
-- `portfolio_report/research_portfolio_report.json`
-- `promotion_review_packet/research_promotion_review_packet.json`
-- `logs/run.err.log`
-- `logs/run.out.log`
-
-If the candidate clears all profiles with fill coverage at least `0.90` and positive holdout/test economics, create an NVDA governed-validation review packet. If not, keep it research-only and record the blocker.
+Keep NVDA exit-300 in research-only status unless a redesigned, cost-sensitive variant passes a new governance stress pass.
 
 ## Hard Rules
 

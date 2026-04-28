@@ -1,7 +1,7 @@
 {
   "packet": "gcp_research_phase30_nvda_governance_stress_status",
-  "generated_at_utc": "2026-04-28T15:24:00Z",
-  "state": "queued",
+  "generated_at_utc": "2026-04-28T15:34:00Z",
+  "state": "succeeded",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -10,6 +10,7 @@
   "batch_location": "us-central1",
   "batch_job": "phase30-nvda-governance-20260428112200",
   "batch_state_at_launch": "QUEUED",
+  "batch_state_latest": "SUCCEEDED",
   "wave_id": "top100_liquidity_research_20260426",
   "phase_id": "phase30_nvda_governance_stress_20260428112200",
   "source_runner_commit": "95379e4166b4",
@@ -74,7 +75,22 @@
     "phase28_candidate_min_test_net_pnl": 484.1825,
     "phase28_candidate_fill_coverage": "0.9254-0.9701"
   },
-  "expected_decision": "ready_for_governed_validation_review_or_research_only_blocked_under_governance_stress",
+  "decision": "research_only_blocked",
+  "result_summary": {
+    "candidate_count": 1,
+    "eligible_for_promotion_review_count": 0,
+    "blocker_counts": {
+      "min_net_pnl_not_positive": 1
+    },
+    "min_net_pnl": -782.9625,
+    "min_test_net_pnl": 393.2,
+    "min_fill_coverage": 0.9254,
+    "max_fill_coverage": 0.9701,
+    "min_option_trade_count": 62,
+    "worst_drawdown": -6083.3875,
+    "next_safe_step": "keep_nvda_exit300_research_only_or_redesign_cost_sensitive_variant"
+  },
+  "expected_decision": "blocked_until_strategy_redesign_or_cost_sensitivity_improves",
   "hard_rules": [
     "do_not_trade",
     "do_not_arm_window",
