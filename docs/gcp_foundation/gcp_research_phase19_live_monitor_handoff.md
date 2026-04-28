@@ -81,6 +81,14 @@
 - Isolated stress min test PnL: `$-305.9375`
 - Isolated stress min fill coverage: `0.8776`
 - Isolated stress max fill coverage: `0.966`
+- Wide-lag exit-policy job: `phase26-widelag-policy-20260428100000`
+- Wide-lag exit-policy state: `SCHEDULED`
+- Wide-lag exit-policy phase id: `phase26_widelag_exit_policy_20260428100000`
+- Wide-lag exit-policy launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase26_widelag_exit_policy_20260428100000/launch/`
+- Wide-lag exit-policy result root: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase26_widelag_exit_policy_20260428100000/`
+- Wide-lag exit-policy scope: four Phase24 AAPL/NVDA wide-lag candidates only
+- Wide-lag exit-policy purpose: `exit_policy_cost_sensitivity_for_wide_lag_candidates`
+- Wide-lag exit-policy promotion effect: `none_research_only`
 
 ## Operator Rule
 
@@ -99,6 +107,7 @@
 - Phase25 completed as the isolated economic stress packet for the single full-stack fill-feasible INTC candidate.
 - Phase25 blocked INTC from promotion review. The candidate remains positive under lighter cost assumptions, but harsher `10/10` cost stress turns net and holdout PnL negative, and `30/30 slip25 fee1.00` has negative holdout PnL.
 - The current research read is `cost_sensitive_research_lead`, not a governed validation candidate.
+- Phase26 is active as the non-broker-facing exit-policy and cost-sensitivity diagnostic for the AAPL/NVDA wide-lag candidates.
 - This is research-only. Do not arm windows, start trading, change live manifests, or change risk policy from this packet.
 
 ## Next Research Step
@@ -106,3 +115,5 @@
 Do not promote the Phase22/Phase23 candidates from the current evidence. Keep the `0.90` fill-coverage gate intact and require clean broker-audited paper-session evidence before any activation discussion.
 
 Keep INTC in research-only hold. The next safe research step is execution-cost sensitivity work and exit-policy design across the AAPL/NVDA wide-lag candidates, with explicit spread/slippage assumptions. Do not relax gates or modify live strategy selection from Phase24 or Phase25 alone.
+
+Phase26 is now executing that next safe research step. Monitor the Batch job and GCS result root above. Do not promote candidates, relax gates, or modify live strategy selection from Phase26 launch alone.

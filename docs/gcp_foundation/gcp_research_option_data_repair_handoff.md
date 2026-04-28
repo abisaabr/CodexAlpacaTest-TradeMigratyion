@@ -131,6 +131,19 @@ Phase25 blocked the INTC candidate. The baseline `10/10` profile remained positi
 
 The institutional read is that INTC is not a promotion candidate today. It is a cost-sensitive research lead requiring better execution assumptions, spread modeling, or strategy redesign before any governed validation discussion.
 
+Phase26 has been launched as the next non-broker-facing research step for the remaining AAPL/NVDA wide-lag candidates. This is an exit-policy and cost-sensitivity diagnostic, not a promotion packet and not a live-manifest change.
+
+- Job: `phase26-widelag-policy-20260428100000`
+- Initial state: `SCHEDULED`
+- Phase id: `phase26_widelag_exit_policy_20260428100000`
+- Scope: four Phase24 wide-lag-only or short-lag-conditional candidates across `AAPL` and `NVDA`
+- Profiles: `30/30 slip25 fee1.00`, `30/30 slip50 fee1.50`, `60/60 slip25 fee1.00`, `60/60 slip50 fee1.50`, `60/90 slip25 fee1.00`, `60/120 slip50 fee1.50`
+- Launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase26_widelag_exit_policy_20260428100000/launch/`
+- Result root: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase26_widelag_exit_policy_20260428100000/`
+- Promotion effect: `none_research_only`
+
+Phase26 should answer whether the AAPL/NVDA leads are merely short-exit-lag mismatches or whether their economics break under realistic wider-lag and higher-cost assumptions.
+
 ## Safe Use
 
 Phase22 is complete. Use the Phase22 promotion packet as the current research-only review queue, not as a deployment packet. The current eligible review candidates are:
@@ -188,3 +201,5 @@ Do not promote the Phase22 candidates from the current evidence. Keep the `0.90`
 Do not promote candidates, relax gates, or change strategy/risk policy from Phase23 or Phase24 alone. Use Phase24 only to choose the next research repair path.
 
 Keep INTC in research-only hold. Do not promote candidates, relax gates, or change strategy/risk policy from Phase24 or Phase25 alone. The next safest research step is not more promotion review; it is execution-cost sensitivity work and exit-policy design across the AAPL/NVDA wide-lag candidates, with explicit spread/slippage assumptions.
+
+Phase26 is now the active diagnostic for that next step. Do not promote candidates, relax gates, or change strategy/risk policy from Phase26 launch alone.
