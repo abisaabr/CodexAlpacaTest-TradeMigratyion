@@ -6,8 +6,8 @@ Phase35 is active as a non-broker-facing research Batch diagnostic:
 
 - Job: `phase35-unh-exitlag-20260428174200`
 - Phase: `phase35_unh_exit_lag_feasibility_20260428174200`
-- Latest status: `SCHEDULED`
-- Latest task counts: `1` pending
+- Latest status: `SUCCEEDED`
+- Latest task counts: `1` succeeded
 - Candidate: `UNH` `b150__unh__long_call__tight_reward__exit_360__liq_baseline`
 
 ## Why This Exists
@@ -23,6 +23,8 @@ gcloud storage ls gs://codexalpaca-control-us/research_results/top100_liquidity_
 
 ## Completion Handling
 
-If UNH passes the `0.90` fill gate under practical lags, run isolated economic stress before any governed-validation recommendation. If it does not pass, treat UNH as a research-only lead requiring data/strategy redesign.
+UNH did not pass the `0.90` fill gate under any tested exit lag. Maximum fill coverage was `0.6792`, so UNH remains research-only blocked.
+
+Treat UNH as a research-only lead requiring liquidity/data/strategy redesign. Do not run economic stress or governed-validation promotion from this result.
 
 No Phase35 result is allowed to alter live manifests, risk policy, or broker-facing execution without a separate governed packet.

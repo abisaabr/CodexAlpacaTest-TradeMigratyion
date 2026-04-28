@@ -213,7 +213,8 @@
   "next_safe_steps": [
     "wait for remaining Phase32 and Phase32b shards to complete",
     "build Phase33 portfolio-level aggregation only from completed shard packets",
-    "treat positive but fill-blocked candidates as repair leads, not promotion candidates",
+    "treat positive but fill-blocked candidates as redesign leads, not promotion candidates",
+    "prioritize liquidity-gated candidate discovery because Phase34 and Phase35 did not repair the top fill-blocked leads through exit-lag changes",
     "do not modify live manifests or risk policy"
   ],
   "hard_rules": [

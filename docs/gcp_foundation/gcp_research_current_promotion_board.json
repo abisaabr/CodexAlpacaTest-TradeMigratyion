@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T17:42:56Z",
+  "generated_at_utc": "2026-04-28T17:47:12Z",
   "state": "phase32_phase32b_and_phase34_running",
   "broker_facing": false,
   "live_manifest_effect": "none",
@@ -98,9 +98,9 @@
     {
       "job_id": "phase35-unh-exitlag-20260428174200",
       "phase_id": "phase35_unh_exit_lag_feasibility_20260428174200",
-      "latest_state": "SCHEDULED",
+      "latest_state": "SUCCEEDED",
       "latest_task_counts": {
-        "PENDING": 1
+        "SUCCEEDED": 1
       },
       "location": "us-central1",
       "task_count": 1,
@@ -126,7 +126,7 @@
         "min_test_net_pnl": 3885.025,
         "min_fill_coverage": 0.5472,
         "worst_drawdown": -899.7375,
-        "decision": "research_only_blocked_fill_repair_lead_phase35_launched"
+        "decision": "research_only_blocked_exit_lag_not_fill_feasible"
       },
       {
         "symbol": "AMD",
@@ -308,7 +308,7 @@
   ],
   "current_recommendation": {
     "paper_validation": "AAPL_exit360_only_if_operator_explicitly_arms_exclusive_window",
-    "research": "monitor Phase32, Phase32b, and Phase35; Phase34 blocked all four tested top leads, and Phase35 is checking whether the new UNH lead is exit-lag fill-feasible before any isolated stress",
+    "research": "monitor Phase32 and Phase32b to completion; Phase34 and Phase35 blocked the current top fill-repair leads, so the next research step is liquidity-gated candidate discovery rather than economic stress on low-fill names",
     "promotion_policy": "do_not_promote_any_candidate_without_broker_audited_bounded_paper_validation"
   },
   "hard_rules": [

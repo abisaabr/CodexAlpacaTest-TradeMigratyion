@@ -30,7 +30,7 @@
 
 No new candidate is eligible for governed validation from the completed shards. Positive-economics names are fill-repair research leads only.
 
-Phase34 completed its top-lead exit-lag feasibility diagnostic and did not find a fill-feasible path for `AMD`, `GE`, `ORCL`, or `PLTR`. Phase35 is now queued for the new top `UNH` lead.
+Phase34 completed its top-lead exit-lag feasibility diagnostic and did not find a fill-feasible path for `AMD`, `GE`, `ORCL`, or `PLTR`. Phase35 also completed and blocked the new top `UNH` lead, with max fill `0.6792`.
 
 ## Next Safe Step
 
