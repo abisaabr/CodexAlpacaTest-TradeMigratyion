@@ -11,6 +11,7 @@
 - Runner-compatible runtime config: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_runtime_config.yaml`
 - Operator checklist: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_operator_checklist.md`
 - Latest startup preflight: `passed` in `docs/gcp_foundation/gcp_research_aapl_bounded_validation_preflight_status.md`
+- Launch gate: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_launch_gate.md`
 
 ## Candidate
 
@@ -71,4 +72,4 @@ The no-order VM startup preflight passed on `2026-04-28` using the runner-compat
 
 ## Next Safe Step
 
-The non-live bounded validation governance manifest, runner-compatible runtime config, startup preflight status, and operator checklist are prepared. The next safe action is still not trading: arm an explicit exclusive execution window only if the operator decides to run the bounded paper validation, then run the broker-facing command from the checklist. Do not run broker-facing paper validation until the exclusive execution window is armed and the operator explicitly authorizes the session.
+The non-live bounded validation governance manifest, runner-compatible runtime config, startup preflight status, launch gate, and operator checklist are prepared. The next safe action is still not trading: arm an explicit exclusive execution window only if the operator decides to run the bounded paper validation, then run the broker-facing command from the checklist. Do not run broker-facing paper validation until the exclusive execution window is armed and the operator explicitly authorizes the session.

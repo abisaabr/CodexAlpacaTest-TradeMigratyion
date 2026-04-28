@@ -1,0 +1,60 @@
+{
+  "packet_id": "gcp_research_aapl_bounded_validation_launch_gate_20260428",
+  "generated_at": "2026-04-28T14:45:00Z",
+  "state": "ready_for_exclusive_window_operator_decision",
+  "broker_facing_session_started": false,
+  "exclusive_window_armed": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "sanctioned_execution_path": "vm-execution-paper-01",
+  "candidate": {
+    "symbol": "AAPL",
+    "candidate_variant_id": "b150__aapl__long_call__wide_reward__exit_360__liq_baseline",
+    "runtime_config_control_plane_path": "docs/gcp_foundation/gcp_research_aapl_bounded_validation_runtime_config.yaml",
+    "runtime_config_vm_path": "/opt/codexalpaca/codexalpaca_repo/config/aapl_bounded_validation_candidate.yaml",
+    "runtime_config_sha256": "d5fefd9540b8a0483f443b368fa7a1569653624c353d040c57d3d907ed3bc5fd",
+    "loaded_strategy_name": "aapl__governed_validation__trend_long_call_next_expiry_wide_reward_exit360"
+  },
+  "gates": {
+    "phase26_research_review": "passed",
+    "phase27_adversarial_stress": "passed",
+    "runner_runtime_config_schema": "passed",
+    "vm_startup_preflight": "passed",
+    "broker_positions_at_preflight": 0,
+    "open_orders_at_preflight": 0,
+    "post_session_assimilation_path": "prepared",
+    "exclusive_window": "not_armed",
+    "broker_facing_authorization": "not_authorized"
+  },
+  "runner_output_roots": {
+    "vm_aapl_run_root": "/opt/codexalpaca/codexalpaca_repo/reports/multi_ticker_portfolio/aapl_bounded_validation/runs",
+    "vm_aapl_state_root": "/opt/codexalpaca/codexalpaca_repo/reports/multi_ticker_portfolio/aapl_bounded_validation/state",
+    "local_aapl_runtime_root": "C:\\Users\\abisa\\Downloads\\codexalpaca_runtime\\aapl_bounded_validation",
+    "local_aapl_runtime_runs": "C:\\Users\\abisa\\Downloads\\codexalpaca_runtime\\aapl_bounded_validation\\runs",
+    "local_aapl_runtime_state": "C:\\Users\\abisa\\Downloads\\codexalpaca_runtime\\aapl_bounded_validation\\state"
+  },
+  "command_templates": {
+    "rerun_no_order_preflight": "gcloud compute ssh vm-execution-paper-01 --project codexalpaca --zone us-east1-b --tunnel-through-iap --command \"cd /opt/codexalpaca/codexalpaca_repo && ./.venv/bin/python scripts/run_multi_ticker_portfolio_paper_trader.py --portfolio-config config/aapl_bounded_validation_candidate.yaml --no-submit-paper-orders --startup-preflight\"",
+    "broker_facing_bounded_session_after_window_only": "gcloud compute ssh vm-execution-paper-01 --project codexalpaca --zone us-east1-b --tunnel-through-iap --command \"cd /opt/codexalpaca/codexalpaca_repo && ./.venv/bin/python scripts/run_multi_ticker_portfolio_paper_trader.py --portfolio-config config/aapl_bounded_validation_candidate.yaml --submit-paper-orders\"",
+    "copy_vm_evidence_to_local_runtime": "powershell -NoProfile -Command \"$root='C:\\Users\\abisa\\Downloads\\codexalpaca_runtime\\aapl_bounded_validation'; New-Item -ItemType Directory -Force $root | Out-Null; gcloud compute scp --recurse vm-execution-paper-01:/opt/codexalpaca/codexalpaca_repo/reports/multi_ticker_portfolio/aapl_bounded_validation/runs $root --project codexalpaca --zone us-east1-b --tunnel-through-iap; gcloud compute scp --recurse vm-execution-paper-01:/opt/codexalpaca/codexalpaca_repo/reports/multi_ticker_portfolio/aapl_bounded_validation/state $root --project codexalpaca --zone us-east1-b --tunnel-through-iap\"",
+    "post_session_assimilation": "powershell -NoProfile -ExecutionPolicy Bypass -File \"<control-plane-root>\\cleanroom\\code\\qqq_options_30d_cleanroom\\launch_post_session_assimilation.ps1\" -ControlPlaneRoot \"<control-plane-root>\" -RunnerRepoRoot \"C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed\" -RuntimeRoot \"C:\\Users\\abisa\\Downloads\\codexalpaca_runtime\\aapl_bounded_validation\" -MirrorToGcs"
+  },
+  "required_session_artifacts": [
+    "multi_ticker_portfolio_session_summary.json",
+    "multi_ticker_portfolio_session_summary_completed_trades.csv",
+    "multi_ticker_portfolio_session_summary_trade_reconciliation.csv",
+    "multi_ticker_portfolio_session_summary_trade_reconciliation_events.csv",
+    "multi_ticker_portfolio_session_summary_broker_order_audit.csv",
+    "multi_ticker_portfolio_session_summary_broker_account_activities.csv",
+    "multi_ticker_portfolio_session_summary_ending_broker_positions.csv"
+  ],
+  "do_not_do": [
+    "do_not_run_broker_facing_session_until_exclusive_window_is_explicitly_armed",
+    "do_not_overwrite_live_manifest",
+    "do_not_change_risk_policy",
+    "do_not_relax_fill_gate",
+    "do_not_count_preflight_as_a_trusted_validation_session",
+    "do_not_commit_raw_session_outputs"
+  ],
+  "next_safe_action": "operator may decide whether to arm a bounded exclusive execution window; otherwise continue research-only candidate discovery"
+}

@@ -30,6 +30,7 @@
     "runner_compatible_runtime_config": "docs/gcp_foundation/gcp_research_aapl_bounded_validation_runtime_config.yaml",
     "operator_checklist": "docs/gcp_foundation/gcp_research_aapl_bounded_validation_operator_checklist.md",
     "latest_startup_preflight_status": "docs/gcp_foundation/gcp_research_aapl_bounded_validation_preflight_status.json",
+    "launch_gate": "docs/gcp_foundation/gcp_research_aapl_bounded_validation_launch_gate.json",
     "runner_scope": "single_candidate_aapl_only",
     "account_scope": "paper_only",
     "execution_path": "vm-execution-paper-01",

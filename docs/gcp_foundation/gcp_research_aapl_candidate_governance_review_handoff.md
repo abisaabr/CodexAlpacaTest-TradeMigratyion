@@ -13,6 +13,7 @@
 - Non-live manifest candidate: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_manifest_candidate.yaml`
 - Runner-compatible runtime config: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_runtime_config.yaml`
 - Latest startup preflight: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_preflight_status.md`
+- Launch gate: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_launch_gate.md`
 - Operator checklist: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_operator_checklist.md`
 
 ## Why This Candidate Matters
@@ -46,4 +47,4 @@ Classify the AAPL candidate against `docs/STRATEGY_PROMOTION_POLICY.md` as a pos
 
 Do not activate the strategy until an explicit governance packet says the candidate is allowed into a bounded paper validation run and an exclusive execution window is armed.
 
-A bounded paper-validation plan, non-live governance manifest, runner-compatible runtime config, passed startup preflight, and operator checklist now exist. The next implementation step is not another research run for this candidate; it is an operator decision whether to arm an exclusive execution window for bounded broker-facing paper validation. Do not run broker-facing paper validation until an exclusive execution window is armed and explicitly authorized.
+A bounded paper-validation plan, non-live governance manifest, runner-compatible runtime config, passed startup preflight, launch gate, and operator checklist now exist. The next implementation step is not another research run for this candidate; it is an operator decision whether to arm an exclusive execution window for bounded broker-facing paper validation. Do not run broker-facing paper validation until an exclusive execution window is armed and explicitly authorized.

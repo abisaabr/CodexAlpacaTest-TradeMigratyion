@@ -9,6 +9,7 @@
 - Candidate manifest: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_manifest_candidate.yaml`
 - Runner-compatible runtime config: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_runtime_config.yaml`
 - Latest startup preflight: `passed` in `docs/gcp_foundation/gcp_research_aapl_bounded_validation_preflight_status.md`
+- Launch gate: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_launch_gate.md`
 - Candidate: `AAPL` `b150__aapl__long_call__wide_reward__exit_360__liq_baseline`
 - Sanctioned execution path: `vm-execution-paper-01`
 
