@@ -1,0 +1,51 @@
+{
+  "packet_id": "gcp_research_aapl_bounded_validation_preflight_status_20260428",
+  "generated_at": "2026-04-28T14:34:20Z",
+  "state": "startup_preflight_passed",
+  "broker_facing_session_started": false,
+  "submit_paper_orders": false,
+  "broker_cleanup_allowed": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "sanctioned_execution_path": "vm-execution-paper-01",
+  "runner_source": {
+    "runner_branch": "codex/qqq-paper-portfolio",
+    "runner_commit": "a3b5e926d9bfec0ec83603770a778e7974e38398",
+    "deployment_reason": "startup_preflight_open_order_count_overlay"
+  },
+  "runtime_config": {
+    "control_plane_path": "docs/gcp_foundation/gcp_research_aapl_bounded_validation_runtime_config.yaml",
+    "vm_path": "/opt/codexalpaca/codexalpaca_repo/config/aapl_bounded_validation_candidate.yaml",
+    "sha256": "d5fefd9540b8a0483f443b368fa7a1569653624c353d040c57d3d907ed3bc5fd",
+    "runtime_schema_validated": true
+  },
+  "preflight_result": {
+    "trade_date": "2026-04-28",
+    "startup_check_status": "passed",
+    "would_allow_trading_if_explicitly_authorized": true,
+    "underlyings": ["AAPL"],
+    "loaded_strategy_count": 1,
+    "loaded_strategy_names": [
+      "aapl__governed_validation__trend_long_call_next_expiry_wide_reward_exit360"
+    ],
+    "stock_freshness_within_limit": true,
+    "required_option_inventory_available": true,
+    "broker_position_count": 0,
+    "open_order_count": 0,
+    "buying_power_above_required": true
+  },
+  "still_required_before_broker_facing_paper_validation": [
+    "explicit exclusive execution window arm",
+    "explicit operator authorization",
+    "no other shared-account runtime active",
+    "post-session assimilation path ready",
+    "broker-facing command run only with bounded runtime config"
+  ],
+  "do_not_do": [
+    "do_not_start_trading_from_this_packet",
+    "do_not_change_live_manifest_from_this_packet",
+    "do_not_relax_fill_gate",
+    "do_not_increase_risk_policy",
+    "do_not_count_preflight_as_broker_audited_strategy_validation"
+  ]
+}

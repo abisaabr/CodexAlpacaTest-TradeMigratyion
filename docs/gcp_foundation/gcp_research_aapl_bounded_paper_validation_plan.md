@@ -8,7 +8,9 @@
 - Live manifest effect: `none`
 - Risk policy effect: `none`
 - Non-live manifest candidate: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_manifest_candidate.yaml`
+- Runner-compatible runtime config: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_runtime_config.yaml`
 - Operator checklist: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_operator_checklist.md`
+- Latest startup preflight: `passed` in `docs/gcp_foundation/gcp_research_aapl_bounded_validation_preflight_status.md`
 
 ## Candidate
 
@@ -48,12 +50,16 @@ This packet does not arm a session and does not change live manifests. It define
 ## Hard Blocks Before Any Run
 
 - Exclusive execution window must be armed.
-- Strategy must be wired into a bounded validation manifest without changing live production selection.
+- Strategy must be wired into the runner-compatible bounded validation runtime config without changing live production selection.
 - Risk cap must be explicitly reviewed.
 - Paper runner must produce broker-order audit.
 - Paper runner must produce account-activity audit.
 - Paper runner must end flat or reconcile positions.
 - Post-session assimilation must run immediately.
+
+## Startup Preflight
+
+The no-order VM startup preflight passed on `2026-04-28` using the runner-compatible runtime config staged at `/opt/codexalpaca/codexalpaca_repo/config/aapl_bounded_validation_candidate.yaml`. It loaded one AAPL strategy, found required next-expiry call inventory, found zero broker positions, found zero open orders, and kept `submit_paper_orders=false`.
 
 ## Do Not Do
 
@@ -65,4 +71,4 @@ This packet does not arm a session and does not change live manifests. It define
 
 ## Next Safe Step
 
-The non-live bounded validation manifest candidate and operator checklist are prepared. The next safe action is a dry-run startup preflight only after the candidate config is copied into the sanctioned VM runner checkout. Do not run broker-facing paper validation until the exclusive execution window is armed and the operator explicitly authorizes the session.
+The non-live bounded validation governance manifest, runner-compatible runtime config, startup preflight status, and operator checklist are prepared. The next safe action is still not trading: arm an explicit exclusive execution window only if the operator decides to run the bounded paper validation, then run the broker-facing command from the checklist. Do not run broker-facing paper validation until the exclusive execution window is armed and the operator explicitly authorizes the session.

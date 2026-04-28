@@ -7,6 +7,8 @@
 - Live manifest effect: `none`
 - Risk policy effect: `none`
 - Candidate manifest: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_manifest_candidate.yaml`
+- Runner-compatible runtime config: `docs/gcp_foundation/gcp_research_aapl_bounded_validation_runtime_config.yaml`
+- Latest startup preflight: `passed` in `docs/gcp_foundation/gcp_research_aapl_bounded_validation_preflight_status.md`
 - Candidate: `AAPL` `b150__aapl__long_call__wide_reward__exit_360__liq_baseline`
 - Sanctioned execution path: `vm-execution-paper-01`
 
@@ -24,7 +26,9 @@ Do not run broker-facing paper validation unless all items are true:
 
 ## Candidate Config Handling
 
-The control-plane manifest candidate is intentionally stored under `docs/gcp_foundation/`, not under the runner's live `config/` tree. If a bounded session is explicitly authorized later, copy it into the sanctioned VM runner checkout as a temporary validation config such as:
+The control-plane governance manifest candidate is intentionally stored under `docs/gcp_foundation/`, not under the runner's live `config/` tree. It contains governance metadata and is not copied directly into the runner.
+
+Use the separate runner-compatible runtime config for preflight and any later explicitly authorized bounded paper validation. Copy it into the sanctioned VM runner checkout as a temporary validation config such as:
 
 ```bash
 /opt/codexalpaca/codexalpaca_repo/config/aapl_bounded_validation_candidate.yaml
@@ -44,6 +48,7 @@ Use preflight first. This command is non-broker-facing:
 cd /opt/codexalpaca/codexalpaca_repo
 ./.venv/bin/python scripts/run_multi_ticker_portfolio_paper_trader.py \
   --portfolio-config config/aapl_bounded_validation_candidate.yaml \
+  --no-submit-paper-orders \
   --startup-preflight
 ```
 

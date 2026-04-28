@@ -32,6 +32,15 @@
     "not_validated_in_sanctioned_vm_paper_session",
     "not_approved_for_live_manifest_or_risk_policy_change"
   ],
+  "bounded_validation_preparation": {
+    "governance_manifest_candidate": "docs/gcp_foundation/gcp_research_aapl_bounded_validation_manifest_candidate.yaml",
+    "runner_compatible_runtime_config": "docs/gcp_foundation/gcp_research_aapl_bounded_validation_runtime_config.yaml",
+    "latest_startup_preflight_status": "docs/gcp_foundation/gcp_research_aapl_bounded_validation_preflight_status.json",
+    "latest_startup_preflight_state": "startup_preflight_passed",
+    "broker_facing_session_started": false,
+    "live_manifest_effect": "none",
+    "risk_policy_effect": "none"
+  },
   "phase27_adversarial_stress": {
     "job": "phase27-aapl-governance-stress-20260428141000",
     "state": "SUCCEEDED",
