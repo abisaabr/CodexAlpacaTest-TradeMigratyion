@@ -1,0 +1,68 @@
+{
+  "packet": "gcp_research_phase29_repair_target_exit_feasibility_status",
+  "generated_at_utc": "2026-04-28T15:11:00Z",
+  "state": "scheduled",
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "exclusive_window_effect": "none",
+  "gcp_project": "codexalpaca",
+  "batch_location": "us-central1",
+  "batch_job": "phase29-repair-exit-feas-20260428110900",
+  "batch_state_at_launch": "SCHEDULED",
+  "wave_id": "top100_liquidity_research_20260426",
+  "phase_id": "phase29_repair_target_exit_feasibility_20260428110900",
+  "source_runner_commit": "95379e4166b4",
+  "source_uri": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_95379e4166b4.zip",
+  "result_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase29_repair_target_exit_feasibility_20260428110900/",
+  "launch_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase29_repair_target_exit_feasibility_20260428110900/launch/",
+  "candidate_scope": [
+    "b150__amzn__long_call__wide_reward__exit_360__liq_baseline",
+    "b150__amzn__long_call__wide_reward__exit_360__liq_tight",
+    "b150__avgo__long_call__tight_reward__exit_360__liq_baseline",
+    "b150__avgo__long_call__wide_reward__exit_300__liq_baseline",
+    "b150__msft__long_call__wide_reward__exit_360__liq_baseline",
+    "b150__mu__long_call__balanced_reward__exit_300__liq_tight",
+    "b150__mu__long_call__tight_reward__exit_360__liq_tight"
+  ],
+  "underlyings": [
+    "AMZN",
+    "AVGO",
+    "MSFT",
+    "MU"
+  ],
+  "diagnostic": {
+    "type": "exit_lag_feasibility",
+    "entry_lag_minutes": 60,
+    "exit_lags_minutes": [
+      10,
+      30,
+      60,
+      90,
+      120,
+      180,
+      240
+    ],
+    "max_probe_lag_minutes": 240,
+    "fill_coverage_gate": 0.9,
+    "initial_cash": 25000,
+    "allocation_fraction": 0.1
+  },
+  "expected_decision": "classify_remaining_phase22_repair_targets_as_fill_feasible_wide_lag_or_quarantine",
+  "parallel_jobs_at_launch": [
+    {
+      "batch_job": "phase28-widelag-recheck-20260428110100",
+      "phase_id": "phase28_widelag_candidate_recheck_20260428110100",
+      "state": "RUNNING",
+      "scope": "AAPL_NVDA_profitable_fill_blocked_candidates"
+    }
+  ],
+  "hard_rules": [
+    "do_not_trade",
+    "do_not_arm_window",
+    "do_not_start_broker_facing_session",
+    "do_not_modify_live_manifests",
+    "do_not_change_risk_policy",
+    "do_not_relax_0_90_fill_gate"
+  ]
+}
