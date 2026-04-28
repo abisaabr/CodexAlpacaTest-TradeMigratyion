@@ -1,0 +1,105 @@
+{
+  "packet": "gcp_research_current_promotion_board",
+  "generated_at_utc": "2026-04-28T15:55:00Z",
+  "state": "current_after_phase31",
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "exclusive_window_effect": "none",
+  "active_batch_jobs": [],
+  "bounded_validation_candidates": [
+    {
+      "symbol": "AAPL",
+      "candidate_variant_id": "b150__aapl__long_call__wide_reward__exit_360__liq_baseline",
+      "status": "ready_for_bounded_paper_validation_operator_decision",
+      "source_phase": "phase27_aapl_governance_stress_20260428141000",
+      "minimum_net_pnl": 1715.93,
+      "minimum_test_net_pnl": 341.155,
+      "fill_coverage": "0.9474-1.0",
+      "minimum_option_trades": 36,
+      "worst_drawdown": -4167.955,
+      "promotion_blockers": [],
+      "required_next_step": "exclusive_window_operator_decision_before_any_broker_facing_validation"
+    }
+  ],
+  "research_only_blocked_candidates": [
+    {
+      "symbol": "NVDA",
+      "candidate_variant_id": "b150__nvda__long_call__tight_reward__exit_300__liq_tight",
+      "status": "blocked_after_governance_stress",
+      "source_phase": "phase30_nvda_governance_stress_20260428112200",
+      "blockers": [
+        "min_net_pnl_not_positive"
+      ],
+      "minimum_net_pnl": -782.9625,
+      "minimum_test_net_pnl": 393.2,
+      "fill_coverage": "0.9254-0.9701",
+      "worst_drawdown": -6083.3875
+    },
+    {
+      "symbol": "AAPL",
+      "candidate_variant_id": "b150__aapl__long_call__wide_reward__exit_210__liq_tight",
+      "status": "blocked_after_phase28",
+      "source_phase": "phase28_widelag_candidate_recheck_20260428110100",
+      "blockers": [
+        "fill_coverage_below_0.90"
+      ],
+      "minimum_net_pnl": 2513.73,
+      "minimum_test_net_pnl": 2654.1575,
+      "fill_coverage": "0.8871-0.9032"
+    },
+    {
+      "symbol": "NVDA",
+      "candidate_variant_id": "b150__nvda__long_call__tight_reward__exit_360__liq_tight",
+      "status": "blocked_after_phase28",
+      "source_phase": "phase28_widelag_candidate_recheck_20260428110100",
+      "blockers": [
+        "test_net_pnl_not_above_0"
+      ],
+      "minimum_net_pnl": 1413.11,
+      "minimum_test_net_pnl": -161.3525,
+      "fill_coverage": "0.918-0.9672"
+    }
+  ],
+  "quarantine_or_redesign_clusters": [
+    {
+      "cluster": "phase31_wide_lag_repair_targets",
+      "symbols": [
+        "AMZN",
+        "AVGO",
+        "MSFT",
+        "MU"
+      ],
+      "status": "research_only_blocked",
+      "blocker_counts": {
+        "fill_coverage_below_0.90": 5,
+        "min_net_pnl_not_positive": 2,
+        "test_net_pnl_not_above_0": 3
+      },
+      "next_safe_step": "strategy_redesign_or_new_candidate_search_not_replay"
+    },
+    {
+      "cluster": "nflx_meta_gogl_severe_losers_from_phase18b",
+      "symbols": [
+        "NFLX",
+        "META",
+        "GOOGL"
+      ],
+      "status": "avoid_for_promotion_without_loser_redesign",
+      "reason": "severe_loser_rows_in_phase18b"
+    }
+  ],
+  "current_recommendation": {
+    "paper_validation": "AAPL_exit360_only_if_operator_explicitly_arms_exclusive_window",
+    "research": "stop_replaying_failed_wide_lag_cluster_and_expand_new_candidate_search_or_strategy_redesign",
+    "promotion_policy": "do_not_promote_any_candidate_without_broker_audited_bounded_paper_validation"
+  },
+  "hard_rules": [
+    "do_not_trade",
+    "do_not_arm_window",
+    "do_not_start_broker_facing_session",
+    "do_not_modify_live_manifests",
+    "do_not_change_risk_policy",
+    "do_not_relax_0_90_fill_gate"
+  ]
+}
