@@ -1,8 +1,8 @@
 # GCP Research Phase Live Monitor Handoff
 
-- Status: `phase23_research_only_blocked_no_promotions`
+- Status: `phase24_exit_lag_feasibility_active`
 - Phase19 batch state: `FAILED`
-- Active stage: `none_phase23_complete`
+- Active stage: `phase24_exit_lag_feasibility`
 - Latest observed symbol family: `AMZN option contracts`
 - Latest observed download date: `2026-04-16`
 - Selected-contract files at checkpoint: `266`
@@ -52,6 +52,14 @@
 - Candidate stress profiles: `10/10`, `30/30`, `60/60`, `60/90`, `60/120`, `60/180 high-cost`
 - Candidate stress holdout: `test_date_count=5`
 - Candidate stress result summary: `profitable_but_not_fill_clean_under_short_lag_controls`
+- Exit-lag feasibility job: `phase24-exit-lag-feas-20260428073500`
+- Exit-lag feasibility state at launch: `SCHEDULED`
+- Exit-lag feasibility phase id: `phase24_exit_lag_feasibility_20260428073500`
+- Exit-lag feasibility runner commit: `95379e4`
+- Exit-lag feasibility runner source: `gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_95379e4166b4.zip`
+- Exit-lag feasibility launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase24_exit_lag_feasibility_20260428073500/launch/`
+- Exit-lag feasibility candidate scope: `five profitable Phase23 blocked candidates`
+- Exit-lag feasibility purpose: `classify no-exit-bar gaps as data sparsity, execution timing mismatch, or strategy design issue`
 
 ## Operator Rule
 
@@ -63,10 +71,9 @@
 - Phase23 completed the candidate-only stress/holdout validation for those six candidates.
 - Phase23 found zero eligible promotion-review candidates. All six were blocked by fill coverage below `0.90` across the full lag/cost stack; one `INTC` wide-reward variant also failed the positive holdout PnL gate.
 - The best Phase23 read is not "bad strategy economics"; it is "not fill-clean enough under short-lag execution controls."
+- Phase24 is active as the non-broker-facing no-exit-bar/exit-lag feasibility diagnostic for the five profitable blocked candidates.
 - This is research-only. Do not arm windows, start trading, change live manifests, or change risk policy from this packet.
 
 ## Next Research Step
 
-Do not promote the Phase22 candidates from the current evidence. Keep the `0.90` fill-coverage gate intact and require clean broker-audited paper-session evidence before any activation discussion.
-
-The next safe research action is a no-exit-bar/exit-lag feasibility diagnostic for the five profitable blocked candidates. It should classify whether the short-lag fill gap is repairable market-data sparsity, an execution timing mismatch, or a strategy design issue that needs alternate exits.
+Monitor Phase24 until it emits the exit-lag feasibility packet. Do not promote the Phase22/Phase23 candidates from the current evidence. Keep the `0.90` fill-coverage gate intact and require clean broker-audited paper-session evidence before any activation discussion.

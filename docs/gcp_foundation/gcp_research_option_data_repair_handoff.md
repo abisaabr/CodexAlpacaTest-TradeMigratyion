@@ -1,9 +1,10 @@
 # GCP Research Option Data Repair Handoff
 
-- Status: `phase23_research_only_blocked_no_promotions`
+- Status: `phase24_exit_lag_feasibility_active`
 - Runner branch: `codex/qqq-paper-portfolio`
-- Runner commit: `952aea4`
+- Runner commit: `95379e4`
 - Tool: `scripts/build_option_data_repair_plan.py`
+- Exit-lag tool: `scripts/build_option_exit_lag_feasibility.py`
 - Failed downloader: `phase19-targeted-fill-diagnostic-20260427022000`
 - Failed downloader state: `FAILED`
 - Failure reason: `24h Batch maxRunDuration exceeded before replay/promotion`
@@ -60,6 +61,14 @@
 - Phase23 profiles: `10/10`, `30/30`, `60/60`, `60/90`, `60/120`, `60/180 high-cost`
 - Phase23 holdout: `test_date_count=5`
 - Phase23 result summary: `profitable_but_not_fill_clean_under_short_lag_controls`
+- Active exit-lag feasibility job: `phase24-exit-lag-feas-20260428073500`
+- Active exit-lag feasibility state at launch: `SCHEDULED`
+- Active exit-lag feasibility phase id: `phase24_exit_lag_feasibility_20260428073500`
+- Active exit-lag feasibility runner source: `gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_95379e4166b4.zip`
+- Active exit-lag feasibility launch packet: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase24_exit_lag_feasibility_20260428073500/launch/`
+- Active exit-lag feasibility candidate scope: `five profitable Phase23 blocked candidates`
+- Active exit-lag feasibility underlyings: `AAPL`, `INTC`, `NVDA`
+- Active exit-lag feasibility purpose: `classify no-exit-bar gaps as data sparsity, execution timing mismatch, or strategy design issue`
 
 ## Why This Exists
 
@@ -76,6 +85,8 @@ Phase22 does not authorize live manifest, strategy-selection, or risk-policy cha
 Phase23 completed as the candidate-only stress/holdout step for the six Phase22 review candidates. It deliberately narrowed compute to `AAPL`, `INTC`, and `NVDA`, reran the same option-aware research path with shorter-lag controls and wider-lag stress, and increased the holdout split to five most-recent filled trade dates.
 
 Phase23 did not promote any candidate to governed-validation review. All six candidates were blocked by minimum fill coverage below `0.90` when the stress stack includes the tight `10/10` and `30/30` lag controls. One `INTC` wide-reward variant also failed the positive holdout PnL gate. The important institutional read is that the best candidates remain economically positive across the stress stack, but the current evidence does not prove they are fill-clean enough for promotion under tighter execution timing.
+
+Phase24 is active as a non-broker-facing exit-lag feasibility diagnostic for the five profitable blocked candidates. It uses runner commit `95379e4`, which added `scripts/build_option_exit_lag_feasibility.py` and targeted tests. The diagnostic should explain whether the missing short-lag exits are repairable data gaps, execution timing mismatches, or strategy-design problems that require alternate exits.
 
 ## Safe Use
 
@@ -131,4 +142,4 @@ Then run the recommended command in the plan. It should use `--no-include-option
 
 Do not promote the Phase22 candidates from the current evidence. Keep the `0.90` fill-coverage gate intact, preserve the non-broker-facing posture, and require clean broker-audited paper-session evidence before any live manifest or strategy-selection change.
 
-The next safe research action is a no-exit-bar/exit-lag feasibility diagnostic for the five profitable blocked candidates. It should classify whether the short-lag fill gap is repairable market-data sparsity, an execution timing mismatch, or a strategy design issue that needs alternate exits. Do not relax promotion gates just because the 60-minute-plus lag profiles look profitable.
+Monitor Phase24 until it emits the exit-lag feasibility packet. Do not promote candidates, relax gates, or change strategy/risk policy from Phase23 or Phase24 alone. Use Phase24 only to decide the next research repair path.
