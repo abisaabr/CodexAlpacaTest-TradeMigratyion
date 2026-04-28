@@ -1,0 +1,58 @@
+{
+  "generated_at_utc": "2026-04-28T21:37:20Z",
+  "status": "phase39_dense_coverage_preflight_scheduled",
+  "phase_id": "phase39_dense_coverage_preflight_20260428214000",
+  "batch_job": "phase39-dense-coverage-20260428214000",
+  "latest_state": "SCHEDULED",
+  "latest_task_counts": {
+    "PENDING": 4
+  },
+  "project": "codexalpaca",
+  "location": "us-central1",
+  "task_count": 10,
+  "parallelism": 4,
+  "machine_type": "e2-standard-4",
+  "boot_disk_gb": 80,
+  "broker_facing": false,
+  "trading_effect": "none",
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "source_runner_commit": "b6e48cddce0f7c8f2d801caf35388b9bbfaeb9b8",
+  "source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_b6e48cddce0f.zip",
+  "stock_reference_source": "gs://codexalpaca-data-us/curated/stocks/research_150_1min_20260401_20260423_stock_only.parquet",
+  "symbols": [
+    "SPY",
+    "NVDA",
+    "QQQ",
+    "AMZN",
+    "TSLA",
+    "MSFT",
+    "IWM",
+    "AAPL",
+    "META",
+    "MU"
+  ],
+  "dense_universe": {
+    "start_date": "2026-04-01",
+    "end_date": "2026-04-23",
+    "min_dte": 0,
+    "max_dte": 7,
+    "strike_steps": 5,
+    "reference_bar": "first"
+  },
+  "expected_outputs": {
+    "launch_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase39_dense_coverage_preflight_20260428214000/launch/",
+    "shard_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase39_dense_coverage_preflight_20260428214000/data_shards/",
+    "packet_name": "dense_option_universe_packet.json"
+  },
+  "promotion_gate_effect": "none_coverage_preflight_only",
+  "next_safe_step": "if coverage diagnostics are ok, launch corrected dense option download/replay using the complete stock reference source; otherwise repair stock/reference inputs",
+  "hard_rules": [
+    "do_not_trade",
+    "do_not_arm_window",
+    "do_not_start_broker_facing_session",
+    "do_not_modify_live_manifests",
+    "do_not_change_risk_policy",
+    "do_not_relax_0_90_fill_gate"
+  ]
+}

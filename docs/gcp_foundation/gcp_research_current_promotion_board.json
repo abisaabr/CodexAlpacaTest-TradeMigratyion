@@ -1,7 +1,7 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T21:30:38Z",
-  "state": "phase37_complete_atm_blocked_phase38_running_coverage_gap_identified",
+  "generated_at_utc": "2026-04-28T21:37:20Z",
+  "state": "phase37_complete_phase38_running_phase39_coverage_preflight_scheduled",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -262,6 +262,42 @@
         "observed_dense_universe_trade_date_count": 4,
         "next_safe_fix": "instrument and repair dense-universe reference-date coverage before judging strategy economics"
       }
+    },
+    {
+      "job_id": "phase39-dense-coverage-20260428214000",
+      "phase_id": "phase39_dense_coverage_preflight_20260428214000",
+      "latest_state": "SCHEDULED",
+      "latest_task_counts": {
+        "PENDING": 4
+      },
+      "location": "us-central1",
+      "task_count": 10,
+      "parallelism": 4,
+      "broker_facing": false,
+      "live_manifest_effect": "none",
+      "risk_policy_effect": "none",
+      "symbol_tranche": [
+        "SPY",
+        "NVDA",
+        "QQQ",
+        "AMZN",
+        "TSLA",
+        "MSFT",
+        "IWM",
+        "AAPL",
+        "META",
+        "MU"
+      ],
+      "source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_b6e48cddce0f.zip",
+      "stock_reference_source": "gs://codexalpaca-data-us/curated/stocks/research_150_1min_20260401_20260423_stock_only.parquet",
+      "contract_scope": {
+        "min_dte": 0,
+        "max_dte": 7,
+        "strike_steps": 5,
+        "reference_bar": "first",
+        "mode": "coverage_preflight_only"
+      },
+      "objective": "research-only dense-universe coverage preflight using complete curated stock reference bars before any new option download/replay"
     }
   ],
   "current_interim_summary": {
@@ -470,7 +506,7 @@
   ],
   "current_recommendation": {
     "paper_validation": "AAPL_exit360_only_if_operator_explicitly_arms_exclusive_window",
-    "research": "Phase37 ATM-only completed and is blocked; continue Phase38 monitoring, but patch dense-universe coverage diagnostics now because visible dense shards selected only four trade dates",
+    "research": "Phase39 coverage-only preflight is scheduled; if coverage diagnostics are ok, launch corrected dense option download/replay from the complete stock reference source, otherwise repair stock/reference inputs before further brute force",
     "promotion_policy": "do_not_promote_any_candidate_without_broker_audited_bounded_paper_validation"
   },
   "hard_rules": [
