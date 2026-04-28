@@ -1,7 +1,7 @@
 {
   "packet": "gcp_research_phase31_repair_target_widelag_economics_status",
-  "generated_at_utc": "2026-04-28T15:29:00Z",
-  "state": "queued",
+  "generated_at_utc": "2026-04-28T15:52:00Z",
+  "state": "succeeded",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -10,6 +10,7 @@
   "batch_location": "us-central1",
   "batch_job": "phase31-widelag-econ-20260428112900",
   "batch_state_at_launch": "QUEUED",
+  "batch_state_latest": "SUCCEEDED",
   "wave_id": "top100_liquidity_research_20260426",
   "phase_id": "phase31_repair_target_widelag_economics_20260428112900",
   "source_runner_commit": "95379e4166b4",
@@ -76,7 +77,93 @@
     "phase29_wide_lag_only_candidate_count": 7,
     "phase29_shortest_passing_exit_lag_range_minutes": "60-90"
   },
-  "expected_decision": "ready_for_governed_validation_review_or_quarantine_wide_lag_candidates",
+  "decision": "research_only_blocked",
+  "result_summary": {
+    "candidate_count": 7,
+    "eligible_for_promotion_review_count": 0,
+    "blocker_counts": {
+      "fill_coverage_below_0.90": 5,
+      "min_net_pnl_not_positive": 2,
+      "test_net_pnl_not_above_0": 3
+    },
+    "capital_plan_allocated_weight": 0.5,
+    "capital_plan_unallocated_weight": 0.5,
+    "capital_plan_unallocated_dollars": 12500,
+    "next_safe_step": "quarantine_wide_lag_cluster_and_move_to_strategy_redesign_or_new_candidate_search"
+  },
+  "candidate_results": [
+    {
+      "symbol": "MU",
+      "candidate_variant_id": "b150__mu__long_call__tight_reward__exit_360__liq_tight",
+      "min_net_pnl": 1946.23,
+      "min_test_net_pnl": 612.57,
+      "min_fill_coverage": 0.437,
+      "max_fill_coverage": 0.4538,
+      "worst_drawdown": -921.37,
+      "status": "research_only_blocked"
+    },
+    {
+      "symbol": "MU",
+      "candidate_variant_id": "b150__mu__long_call__balanced_reward__exit_300__liq_tight",
+      "min_net_pnl": 1851.93,
+      "min_test_net_pnl": 315.02,
+      "min_fill_coverage": 0.4231,
+      "max_fill_coverage": 0.4327,
+      "worst_drawdown": -1315.88,
+      "status": "research_only_blocked"
+    },
+    {
+      "symbol": "AVGO",
+      "candidate_variant_id": "b150__avgo__long_call__wide_reward__exit_300__liq_baseline",
+      "min_net_pnl": 1912.245,
+      "min_test_net_pnl": 517.35,
+      "min_fill_coverage": 0.7812,
+      "max_fill_coverage": 0.7969,
+      "worst_drawdown": -4085.08,
+      "status": "research_only_blocked"
+    },
+    {
+      "symbol": "AVGO",
+      "candidate_variant_id": "b150__avgo__long_call__tight_reward__exit_360__liq_baseline",
+      "min_net_pnl": -259.92,
+      "min_test_net_pnl": 713.98,
+      "min_fill_coverage": 0.7662,
+      "max_fill_coverage": 0.8052,
+      "worst_drawdown": -3228.62,
+      "status": "research_only_blocked"
+    },
+    {
+      "symbol": "MSFT",
+      "candidate_variant_id": "b150__msft__long_call__wide_reward__exit_360__liq_baseline",
+      "min_net_pnl": -208.13,
+      "min_test_net_pnl": -1739.33,
+      "min_fill_coverage": 0.8511,
+      "max_fill_coverage": 0.9362,
+      "worst_drawdown": -3657.54,
+      "status": "research_only_blocked"
+    },
+    {
+      "symbol": "AMZN",
+      "candidate_variant_id": "b150__amzn__long_call__wide_reward__exit_360__liq_baseline",
+      "min_net_pnl": 3829.825,
+      "min_test_net_pnl": -539.72,
+      "min_fill_coverage": 0.9333,
+      "max_fill_coverage": 0.9333,
+      "worst_drawdown": -1317.58,
+      "status": "research_only_blocked"
+    },
+    {
+      "symbol": "AMZN",
+      "candidate_variant_id": "b150__amzn__long_call__wide_reward__exit_360__liq_tight",
+      "min_net_pnl": 3792.985,
+      "min_test_net_pnl": -549.215,
+      "min_fill_coverage": 0.9783,
+      "max_fill_coverage": 0.9783,
+      "worst_drawdown": -1550.19,
+      "status": "research_only_blocked"
+    }
+  ],
+  "expected_decision": "cluster_quarantine_or_strategy_redesign",
   "hard_rules": [
     "do_not_trade",
     "do_not_arm_window",
