@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_phase37_top10_weekly_atm_status",
-  "generated_at_utc": "2026-04-28T18:40:17Z",
+  "generated_at_utc": "2026-04-28T19:16:57Z",
   "phase_id": "phase37_top10_weekly_atm_20260428183723",
   "gcp_batch_job": "phase37-top10-atm-20260428183723",
   "gcp_project": "codexalpaca",

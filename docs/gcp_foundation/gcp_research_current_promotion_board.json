@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T18:40:17Z",
+  "generated_at_utc": "2026-04-28T19:16:57Z",
   "state": "phase32b_phase36_phase37_running_phase34_phase35_completed",
   "broker_facing": false,
   "live_manifest_effect": "none",
@@ -45,8 +45,9 @@
       "latest_state": "RUNNING",
       "latest_task_counts": {
         "RUNNING": 3,
-        "PENDING": 4,
-        "SUCCEEDED": 8
+        "PENDING": 1,
+        "RUNNING": 3,
+        "SUCCEEDED": 11
       },
       "location": "us-central1",
       "task_count": 15,
@@ -117,8 +118,9 @@
       "phase_id": "phase36_core_liquidity_tranche_20260428180637",
       "latest_state": "RUNNING",
       "latest_task_counts": {
+        "SUCCEEDED": 5,
         "RUNNING": 4,
-        "PENDING": 11
+        "PENDING": 6
       },
       "location": "us-central1",
       "task_count": 15,
@@ -180,7 +182,7 @@
     }
   ],
   "current_interim_summary": {
-    "completed_shards_scanned": 23,
+    "completed_shards_scanned": 32,
     "new_governed_validation_candidates": 0,
     "dominant_blocker": "fill_coverage_below_0.90",
     "best_research_only_leads": [

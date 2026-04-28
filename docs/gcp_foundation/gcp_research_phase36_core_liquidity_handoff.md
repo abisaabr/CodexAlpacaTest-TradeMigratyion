@@ -7,10 +7,11 @@ Phase36 is active as a non-broker-facing research Batch job:
 - Job: `phase36-core-liq-20260428180637`
 - Phase: `phase36_core_liquidity_tranche_20260428180637`
 - Latest status: `RUNNING`
-- Latest task counts: `4` running / `11` pending
+- Latest task counts: `5` succeeded / `4` running / `6` pending
 - Task count: `15`
 - Parallelism: `4`
 - Symbols: `SPY`, `QQQ`, `IWM`, `TSLA`, `TSM`, `EFA`, `EEM`, `XLF`, `XLV`, `EWZ`, `WFC`, `GLD`, `NKE`, `XLP`, `XBI`
+- Visible completed shards: `GLD`, `IWM`, `QQQ`, `SPY`, `TSLA`, `WFC`
 
 ## Monitor Commands
 

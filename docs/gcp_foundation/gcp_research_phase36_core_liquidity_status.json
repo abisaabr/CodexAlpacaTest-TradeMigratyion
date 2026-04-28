@@ -1,15 +1,24 @@
 {
   "packet": "gcp_research_phase36_core_liquidity_status",
-  "generated_at_utc": "2026-04-28T18:09:39Z",
+  "generated_at_utc": "2026-04-28T19:16:57Z",
   "phase_id": "phase36_core_liquidity_tranche_20260428180637",
   "gcp_batch_job": "phase36-core-liq-20260428180637",
   "gcp_project": "codexalpaca",
   "gcp_location": "us-central1",
   "latest_state": "RUNNING",
   "latest_task_counts": {
+    "SUCCEEDED": 5,
     "RUNNING": 4,
-    "PENDING": 11
+    "PENDING": 6
   },
+  "completed_visible_shards": [
+    "GLD",
+    "IWM",
+    "QQQ",
+    "SPY",
+    "TSLA",
+    "WFC"
+  ],
   "broker_facing": false,
   "trading_effect": "none",
   "live_manifest_effect": "none",

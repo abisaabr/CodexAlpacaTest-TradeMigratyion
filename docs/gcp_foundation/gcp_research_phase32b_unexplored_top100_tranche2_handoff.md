@@ -7,11 +7,11 @@ Phase32b is active as a non-broker-facing research Batch job:
 - Job: `phase32b-unexplored-top100-tranche2-20260428122500`
 - Phase: `phase32b_unexplored_top100_tranche2_20260428122500`
 - Latest status: `RUNNING`
-- Latest task counts: `8` succeeded / `3` running / `4` pending
+- Latest task counts: `11` succeeded / `3` running / `1` pending
 - Task count: `15`
 - Parallelism: `3`
 - Symbols: `NOW`, `BKNG`, `MA`, `CSCO`, `JNJ`, `CVX`, `WMT`, `HOOD`, `KRE`, `CAT`, `GS`, `IBM`, `SLV`, `XLK`, `BA`
-- Visible completed shards: `BKNG`, `GS`, `IBM`, `JNJ`, `KRE`, `MA`, `NOW`, `WMT`
+- Visible completed shards: `BA`, `BKNG`, `CSCO`, `CVX`, `GS`, `IBM`, `JNJ`, `KRE`, `MA`, `NOW`, `WMT`
 
 ## Monitor Commands
 

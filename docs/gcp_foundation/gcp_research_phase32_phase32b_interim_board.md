@@ -2,8 +2,8 @@
 
 ## State
 
-- Generated at: `2026-04-28T18:40:17Z`
-- Completed output packets scanned: `23`
+- Generated at: `2026-04-28T19:16:57Z`
+- Completed output packets scanned: `32`
 - New governed-validation candidates: `0`
 - Dominant blocker: `fill_coverage_below_0.90`
 - Broker-facing: `false`
@@ -13,7 +13,7 @@
 ## Active Jobs
 
 - `phase32-unexplored-top100-tranche1-20260428120500`: `SUCCEEDED`, `15` succeeded.
-- `phase32b-unexplored-top100-tranche2-20260428122500`: `RUNNING`, `8` succeeded / `3` running / `4` pending.
+- `phase32b-unexplored-top100-tranche2-20260428122500`: `RUNNING`, `11` succeeded / `3` running / `1` pending.
 
 ## Best Research-Only Leads
 

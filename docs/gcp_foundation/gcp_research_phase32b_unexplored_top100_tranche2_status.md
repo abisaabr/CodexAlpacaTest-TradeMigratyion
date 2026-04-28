@@ -5,7 +5,7 @@
 - Phase ID: `phase32b_unexplored_top100_tranche2_20260428122500`
 - Batch job: `phase32b-unexplored-top100-tranche2-20260428122500`
 - Latest state: `RUNNING`
-- Latest task counts: `8` succeeded / `3` running / `4` pending
+- Latest task counts: `11` succeeded / `3` running / `1` pending
 - Location: `codexalpaca/us-central1`
 - Tasks: `15`
 - Parallelism: `3`
@@ -22,7 +22,7 @@ Phase32b expands candidate-rich unexplored top100 coverage across:
 
 It was launched after direct inspection showed the Phase32 `AMD` shard had completed selected-contract construction and Alpaca historical option-data download with zero failed chunks.
 
-Visible completed shards at this checkpoint: `BKNG`, `GS`, `IBM`, `JNJ`, `KRE`, `MA`, `NOW`, and `WMT`.
+Visible completed shards at this checkpoint: `BA`, `BKNG`, `CSCO`, `CVX`, `GS`, `IBM`, `JNJ`, `KRE`, `MA`, `NOW`, and `WMT`.
 
 ## Gate
 

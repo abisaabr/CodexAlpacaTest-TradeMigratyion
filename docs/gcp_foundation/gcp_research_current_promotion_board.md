@@ -6,7 +6,7 @@
 - Broker-facing: `false`
 - Live manifest effect: `none`
 - Risk policy effect: `none`
-- Active Batch jobs: `phase32b-unexplored-top100-tranche2-20260428122500` (`RUNNING`, 8 succeeded / 3 running / 4 pending at last check), `phase36-core-liq-20260428180637` (`RUNNING`, 4 running / 11 pending at last check), and `phase37-top10-atm-20260428183723` (`SCHEDULED`, 6 pending at last check)
+- Active Batch jobs: `phase32b-unexplored-top100-tranche2-20260428122500` (`RUNNING`, 11 succeeded / 3 running / 1 pending at last check), `phase36-core-liq-20260428180637` (`RUNNING`, 5 succeeded / 4 running / 6 pending at last check), and `phase37-top10-atm-20260428183723` (`SCHEDULED`, 6 pending at last check)
 
 ## Bounded-Validation Candidates
 
@@ -30,7 +30,7 @@ One candidate is ready for a bounded paper-validation operator decision:
 - Phase32 is actively expanding unexplored top100 coverage across `AMD`, `PLTR`, `GOOG`, `ORCL`, `XOM`, `XLE`, `JPM`, `UNH`, `V`, `BAC`, `CRM`, `XLI`, `GE`, `AMAT`, and `TQQQ`.
 - Phase32b is actively expanding candidate-rich unexplored coverage across `NOW`, `BKNG`, `MA`, `CSCO`, `JNJ`, `CVX`, `WMT`, `HOOD`, `KRE`, `CAT`, `GS`, `IBM`, `SLV`, `XLK`, and `BA`.
 - Interim Phase32 `XLE` result is research-only blocked: `0/9` eligible, zero download failures, best two variants have positive economics but only about `0.60` fill coverage.
-- Interim scan across 23 completed output packets has `0` new governed-validation candidates. The dominant blocker remains `fill_coverage_below_0.90`; the newly scanned `GS` and `MA` packets are also research-only blocked.
+- Interim scan across 32 completed output packets has `0` new governed-validation candidates. The dominant blocker remains `fill_coverage_below_0.90`; the newly scanned Phase36 liquid names are also research-only blocked.
 - Best research-only fill-repair leads so far: `UNH` tight exit-360, `AMD` balanced exit-360, `GE` tight put exit-360, `ORCL` balanced exit-360, `PLTR` balanced put exit-300, `AMAT` tight exit-210, `KRE` wide exit-360, and `TQQQ` wide exit-300.
 - Phase34 completed and blocked all four tested top leads (`AMD`, `GE`, `ORCL`, `PLTR`) because none reached `0.90` fill coverage under tested exit lags.
 - Phase35 completed and blocked `UNH`; max fill was `0.6792`, below the mandatory `0.90` gate.
