@@ -4,7 +4,7 @@
 
 - Phase ID: `phase38_dense_top10_universe_20260428203428`
 - Batch job: `phase38-dense-top10-20260428203428`
-- Latest state: `DELETION_IN_PROGRESS`
+- Latest state: `DELETED`
 - Latest task counts at stop request: `6` succeeded / `1` running / `3` pending
 - Created: `2026-04-28T20:37:06.446050181Z`
 - Updated: `2026-04-28T21:30:38Z`
@@ -46,7 +46,7 @@ The first visible dense shards (`MSFT`, `NVDA`, and `QQQ`) remain blocked by `se
 
 ## Disposition
 
-Phase38 was superseded by Phase39, Phase40, and Phase41. Phase39 proved the blocker was incomplete option contract inventory, Phase40 repaired inventory with active+inactive contract discovery, and Phase41 passed dense selected-contract coverage. Phase38 was stopped to free Batch capacity for Phase42.
+Phase38 was superseded by Phase39, Phase40, and Phase41. Phase39 proved the blocker was incomplete option contract inventory, Phase40 repaired inventory with active+inactive contract discovery, and Phase41 passed dense selected-contract coverage. Phase38 was deleted to free Batch capacity for Phase42.
 
 ## Gate
 

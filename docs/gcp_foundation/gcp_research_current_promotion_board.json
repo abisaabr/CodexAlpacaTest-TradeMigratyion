@@ -219,7 +219,7 @@
     {
       "job_id": "phase38-dense-top10-20260428203428",
       "phase_id": "phase38_dense_top10_universe_20260428203428",
-      "latest_state": "DELETION_IN_PROGRESS",
+      "latest_state": "DELETED",
       "latest_task_counts": {
         "SUCCEEDED": 6,
         "RUNNING": 1,
@@ -263,7 +263,7 @@
         "next_safe_fix": "instrument and repair dense-universe reference-date coverage before judging strategy economics"
       },
       "disposition": {
-        "action": "delete_requested_to_free_batch_capacity",
+        "action": "deleted_to_free_batch_capacity",
         "reason": "superseded_by_phase39_inventory_gap_diagnosis_phase40_active_inactive_inventory_repair_and_phase41_dense_coverage_pass",
         "successor_phase": "phase42_dense_download_replay_20260428182000"
       }

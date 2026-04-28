@@ -30,7 +30,7 @@ Phase41 passed dense selected-contract coverage for all ten symbols: `16/17` sel
 
 Phase42 is now running option bar/trade download and strategy replay against the repaired dense selected-contract roots.
 
-Phase38 was stopped as a superseded older baseline lane because it used the incomplete old inventory.
+Phase38 was deleted as a superseded older baseline lane because it used the incomplete old inventory.
 
 ## Next Safe Research Step
 

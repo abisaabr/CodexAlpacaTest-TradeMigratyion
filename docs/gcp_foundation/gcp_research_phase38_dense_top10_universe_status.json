@@ -3,7 +3,7 @@
   "status": "phase38_dense_top10_universe_stopped_superseded_by_phase40_phase41",
   "phase_id": "phase38_dense_top10_universe_20260428203428",
   "batch_job": "phase38-dense-top10-20260428203428",
-  "latest_state": "DELETION_IN_PROGRESS",
+  "latest_state": "DELETED",
   "latest_task_counts": {
     "SUCCEEDED": 6,
     "RUNNING": 1,
@@ -74,7 +74,7 @@
     "diagnosis": "dense universe construction is only selecting four reference trade dates for completed symbols; repair or instrument reference-date coverage before judging strategy economics"
   },
   "disposition": {
-    "action": "delete_requested_to_free_batch_capacity",
+    "action": "deleted_to_free_batch_capacity",
     "reason": "superseded_by_phase39_inventory_gap_diagnosis_phase40_active_inactive_inventory_repair_and_phase41_dense_coverage_pass",
     "successor_phase": "phase42_dense_download_replay_20260428182000"
   },
