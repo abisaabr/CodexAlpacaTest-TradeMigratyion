@@ -1,0 +1,55 @@
+{
+  "packet_id": "gcp_research_aapl_candidate_governance_review_20260428",
+  "generated_at": "2026-04-28T14:12:00Z",
+  "state": "research_review_open_pending_phase27_adversarial_stress",
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "promotion_scope": "research_governed_validation_review_only",
+  "candidate": {
+    "symbol": "AAPL",
+    "candidate_variant_id": "b150__aapl__long_call__wide_reward__exit_360__liq_baseline",
+    "source_strategy_id": "aapl__broad150__trend_long_call_research",
+    "strategy_class": "Class A liquid single-leg directional",
+    "directional_option_type": "call",
+    "research_only_weight": 0.25,
+    "research_only_dollars_on_25000_account": 6250.0
+  },
+  "phase26_evidence": {
+    "job": "phase26-widelag-policy-20260428100000",
+    "phase_id": "phase26_widelag_exit_policy_20260428100000",
+    "decision": "ready_for_governed_validation_review",
+    "min_net_pnl": 1715.93,
+    "min_test_net_pnl": 591.28,
+    "min_fill_coverage": 0.9474,
+    "max_fill_coverage": 1.0,
+    "min_option_trade_count": 36,
+    "worst_drawdown": -3330.115,
+    "promotion_blockers": []
+  },
+  "current_blockers": [
+    "not_broker_audited",
+    "not_validated_in_sanctioned_vm_paper_session",
+    "pending_phase27_adversarial_cost_and_lag_stress",
+    "not_approved_for_live_manifest_or_risk_policy_change"
+  ],
+  "phase27_adversarial_stress": {
+    "job": "phase27-aapl-governance-stress-20260428141000",
+    "initial_state": "SCHEDULED",
+    "phase_id": "phase27_aapl_governance_stress_20260428141000",
+    "purpose": "test the AAPL candidate under harsher slippage, fee, entry-lag, and exit-lag assumptions before any activation discussion",
+    "result_root": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase27_aapl_governance_stress_20260428141000/"
+  },
+  "required_next_evidence": [
+    "Phase27 adversarial stress result",
+    "governance review against strategy promotion policy",
+    "bounded broker-audited VM paper session only after explicit exclusive execution window",
+    "broker order audit",
+    "broker account activity audit",
+    "ending broker-position snapshot",
+    "shutdown reconciliation",
+    "completed trade table with broker/local cashflow comparison",
+    "loser-trade classification coverage"
+  ],
+  "decision_rule": "hold unless Phase27 and broker-audited paper evidence remain clean"
+}

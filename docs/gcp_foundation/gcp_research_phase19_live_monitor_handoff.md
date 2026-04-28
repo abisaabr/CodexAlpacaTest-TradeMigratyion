@@ -95,6 +95,12 @@
 - Wide-lag exit-policy review candidate metrics: min net `$1715.93`, min test `$591.28`, fill `0.9474-1.0`, worst drawdown `$-3330.115`
 - Wide-lag exit-policy blocker counts: `fill_coverage_below_0.90=3`, `test_net_pnl_not_above_0=1`
 - Wide-lag exit-policy blocked leads: `NVDA exit_300`, `AAPL exit_210`, `NVDA exit_360`
+- AAPL governance packet: `docs/gcp_foundation/gcp_research_aapl_candidate_governance_review_packet.md`
+- AAPL governance state: `research_review_open_pending_phase27_adversarial_stress`
+- AAPL adversarial stress job: `phase27-aapl-governance-stress-20260428141000`
+- AAPL adversarial stress initial state: `SCHEDULED`
+- AAPL adversarial stress phase id: `phase27_aapl_governance_stress_20260428141000`
+- AAPL adversarial stress result root: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase27_aapl_governance_stress_20260428141000/`
 
 ## Operator Rule
 
@@ -116,6 +122,7 @@
 - Phase26 completed as the non-broker-facing exit-policy and cost-sensitivity diagnostic for the AAPL/NVDA wide-lag candidates.
 - Phase26 opened one research/governed-validation review candidate: `AAPL` `b150__aapl__long_call__wide_reward__exit_360__liq_baseline`.
 - Phase26 did not authorize deployment. The candidate remains research review only and still requires governance review plus clean broker-audited paper-session evidence before any activation discussion.
+- Phase27 is active as a non-broker-facing adversarial cost and lag stress test for that single AAPL candidate.
 - This is research-only. Do not arm windows, start trading, change live manifests, or change risk policy from this packet.
 
 ## Next Research Step
@@ -125,3 +132,5 @@ Do not promote the Phase22/Phase23 candidates from the current evidence. Keep th
 Keep INTC in research-only hold. The next safe research step is execution-cost sensitivity work and exit-policy design across the AAPL/NVDA wide-lag candidates, with explicit spread/slippage assumptions. Do not relax gates or modify live strategy selection from Phase24 or Phase25 alone.
 
 Phase26 completed that next safe research step. Do not promote candidates, relax gates, or modify live strategy selection from Phase26 alone. The next safe step is to publish a governance review packet for the AAPL research candidate and keep the blocked NVDA/AAPL leads in data-repair or strategy-design review.
+
+The AAPL governance review packet is now published, and Phase27 is the active confirmation job. Monitor Phase27 before any paper-session activation discussion.

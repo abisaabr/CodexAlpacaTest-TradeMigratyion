@@ -153,6 +153,15 @@ Phase26 opened one research/governed-validation review candidate and kept three 
 
 The Phase26 capital plan allocates only `25%` research weight to the AAPL review candidate and leaves `$18750` unallocated. This is intentionally conservative. It is not an instruction to update live strategy selection or risk policy.
 
+An AAPL governance review packet has been published:
+
+- Packet: `docs/gcp_foundation/gcp_research_aapl_candidate_governance_review_packet.md`
+- Handoff: `docs/gcp_foundation/gcp_research_aapl_candidate_governance_review_handoff.md`
+- State: `research_review_open_pending_phase27_adversarial_stress`
+- Active confirmation job: `phase27-aapl-governance-stress-20260428141000`
+- Confirmation phase id: `phase27_aapl_governance_stress_20260428141000`
+- Result root: `gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase27_aapl_governance_stress_20260428141000/`
+
 ## Safe Use
 
 Phase22 is complete. Use the Phase22 promotion packet as the current research-only review queue, not as a deployment packet. The current eligible review candidates are:
@@ -212,3 +221,5 @@ Do not promote candidates, relax gates, or change strategy/risk policy from Phas
 Keep INTC in research-only hold. Do not promote candidates, relax gates, or change strategy/risk policy from Phase24 or Phase25 alone. The next safest research step is not more promotion review; it is execution-cost sensitivity work and exit-policy design across the AAPL/NVDA wide-lag candidates, with explicit spread/slippage assumptions.
 
 Phase26 completed the active diagnostic for that next step. Do not promote candidates, relax gates, or change strategy/risk policy from Phase26 alone. The next safe step is a governance review packet for the AAPL research candidate plus a separate fill-repair or strategy-design decision for the blocked NVDA/AAPL leads.
+
+The AAPL governance review packet is now published, and Phase27 is active. Wait for Phase27 before any activation discussion. Keep the blocked NVDA/AAPL leads in data-repair or strategy-design review.
