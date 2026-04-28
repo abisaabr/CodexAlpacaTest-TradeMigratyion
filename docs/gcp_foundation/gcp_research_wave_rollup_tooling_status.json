@@ -1,0 +1,28 @@
+{
+  "generated_at_utc": "2026-04-28T20:43:00Z",
+  "status": "research_wave_rollup_tooling_ready",
+  "runner_commit": "5578a6803ae7",
+  "runner_branch": "codex/qqq-paper-portfolio",
+  "source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_5578a6803ae7.zip",
+  "added_tool": "scripts/build_research_wave_portfolio_rollup.py",
+  "added_tests": [
+    "tests/test_build_research_wave_portfolio_rollup.py"
+  ],
+  "validation": {
+    "command": ".\\.venv\\Scripts\\python.exe -m pytest -q tests/test_build_research_wave_portfolio_rollup.py tests/test_build_research_portfolio_report.py tests/test_build_research_promotion_review_packet.py tests/test_build_dense_option_universe.py tests/test_run_option_aware_research_backtest.py",
+    "result": "12 passed"
+  },
+  "purpose": "Aggregate shard-level research_portfolio_report.json files into one wave-level capital plan, fill-failure map, data-repair queue, strategy-redesign queue, and promotion-review packet.",
+  "broker_facing": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "promotion_scope": "research_governed_validation_review_only",
+  "hard_rules": [
+    "do_not_trade",
+    "do_not_arm_window",
+    "do_not_start_broker_facing_session",
+    "do_not_modify_live_manifests",
+    "do_not_change_risk_policy",
+    "do_not_relax_0_90_fill_gate"
+  ]
+}

@@ -38,11 +38,13 @@ One candidate is ready for a bounded paper-validation operator decision:
 - Phase37 is active as a top-10 liquid-underlying weekly ATM lane using `0-7` DTE, ATM-only contracts, and `entry_liquidity_first_research_only` replay; `MSFT` and `NVDA` shards are visible as completed at this checkpoint.
 - The local QQQ dense cleanroom downloader succeeded for `2026-03-18` through `2026-04-17` with `2794/2794` successful contract-day requests and `96.242%` dense selected-contract-day fill. This is a data-foundation repair template, not a promotion packet.
 - Phase38 is active as the direct dense-universe fill diagnostic for `SPY`, `NVDA`, `QQQ`, `AMZN`, `TSLA`, `MSFT`, `IWM`, `AAPL`, `META`, and `MU`; it builds a daily `0-7` DTE ATM +/- 5 strike universe before download/replay to determine whether sparse selected-contract construction is the dominant fill-rate bottleneck.
+- Runner commit `5578a6803ae7` adds the wave-level rollup tool that aggregates shard-level portfolio reports into one capital plan, fill-failure map, data-repair queue, strategy-redesign queue, and promotion-review packet.
 
 ## Current Recommendation
 
 - Paper validation: keep scope to `AAPL` exit-360 only, and only if an exclusive execution window is explicitly armed.
 - Research: monitor Phase32b, Phase36, Phase37, and Phase38 to completion; build portfolio-level aggregation from completed packets, then compare Phase37 ATM-only fill against Phase38 dense-universe fill before deciding whether candidates need data repair or strategy/exit redesign.
+- Aggregation: use `scripts/build_research_wave_portfolio_rollup.py` after shards are staged locally so promotion review is systematic and not manually cherry-picked from individual shard packets.
 - Promotion: do not promote any candidate to live or durable paper allocation without broker-audited bounded paper validation evidence.
 
 ## Guardrails

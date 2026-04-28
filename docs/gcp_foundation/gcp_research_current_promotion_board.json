@@ -6,6 +6,13 @@
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
   "exclusive_window_effect": "none",
+  "rollup_tooling": {
+    "status": "ready",
+    "runner_commit": "5578a6803ae7",
+    "source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_5578a6803ae7.zip",
+    "tool": "scripts/build_research_wave_portfolio_rollup.py",
+    "purpose": "aggregate shard-level portfolio reports into one research-only capital plan, fill-failure map, data-repair queue, strategy-redesign queue, and promotion-review packet"
+  },
   "active_batch_jobs": [
     {
       "job_id": "phase32-unexplored-top100-tranche1-20260428120500",
