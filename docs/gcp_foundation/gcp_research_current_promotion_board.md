@@ -6,7 +6,7 @@
 - Broker-facing: `false`
 - Live manifest effect: `none`
 - Risk policy effect: `none`
-- Active Batch jobs: `phase32-unexplored-top100-tranche1-20260428120500` (`RUNNING`, 5 running / 10 pending at last check) and `phase32b-unexplored-top100-tranche2-20260428122500` (`SCHEDULED`, 3 pending at last check)
+- Active Batch jobs: `phase32-unexplored-top100-tranche1-20260428120500` (`RUNNING`, 5 running / 9 pending / 1 succeeded at last check) and `phase32b-unexplored-top100-tranche2-20260428122500` (`RUNNING`, 2 running / 13 pending at last check)
 
 ## Bounded-Validation Candidates
 
@@ -29,6 +29,7 @@ One candidate is ready for a bounded paper-validation operator decision:
 - The Phase31 `AMZN`/`AVGO`/`MSFT`/`MU` wide-lag cluster is blocked and should be quarantined or redesigned, not replayed unchanged.
 - Phase32 is actively expanding unexplored top100 coverage across `AMD`, `PLTR`, `GOOG`, `ORCL`, `XOM`, `XLE`, `JPM`, `UNH`, `V`, `BAC`, `CRM`, `XLI`, `GE`, `AMAT`, and `TQQQ`.
 - Phase32b is actively expanding candidate-rich unexplored coverage across `NOW`, `BKNG`, `MA`, `CSCO`, `JNJ`, `CVX`, `WMT`, `HOOD`, `KRE`, `CAT`, `GS`, `IBM`, `SLV`, `XLK`, and `BA`.
+- Interim Phase32 `XLE` result is research-only blocked: `0/9` eligible, zero download failures, best two variants have positive economics but only about `0.60` fill coverage.
 
 ## Current Recommendation
 

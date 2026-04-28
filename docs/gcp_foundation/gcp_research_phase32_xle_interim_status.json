@@ -1,0 +1,58 @@
+{
+  "packet": "gcp_research_phase32_xle_interim_status",
+  "generated_at_utc": "2026-04-28T16:33:02Z",
+  "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+  "symbol": "XLE",
+  "broker_facing": false,
+  "trading_effect": "none",
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "promotion_allowed": false,
+  "decision": "research_only_blocked",
+  "download_packet": {
+    "failed_chunk_count": 0,
+    "selected_contract_count": 2889,
+    "option_bar_rows": 23791,
+    "option_trade_rows": 48499
+  },
+  "promotion_packet": {
+    "candidate_count": 9,
+    "eligible_for_promotion_review_count": 0,
+    "blocker_counts": {
+      "fill_coverage_below_0.90": 9,
+      "min_net_pnl_not_positive": 7,
+      "option_trades_below_20": 1,
+      "test_net_pnl_not_above_0": 1
+    }
+  },
+  "top_positive_research_leads": [
+    {
+      "candidate_variant_id": "b150__xle__long_call__balanced_reward__exit_210__liq_tight",
+      "min_net_pnl": 880.62,
+      "min_test_net_pnl": 1492.55,
+      "min_fill_coverage": 0.5968,
+      "min_option_trade_count": 37,
+      "worst_drawdown": -2067.7525,
+      "promotion_blockers": [
+        "fill_coverage_below_0.90"
+      ]
+    },
+    {
+      "candidate_variant_id": "b150__xle__long_call__wide_reward__exit_210__liq_tight",
+      "min_net_pnl": 537.65,
+      "min_test_net_pnl": 1492.55,
+      "min_fill_coverage": 0.6066,
+      "min_option_trade_count": 37,
+      "worst_drawdown": -2247.395,
+      "promotion_blockers": [
+        "fill_coverage_below_0.90"
+      ]
+    }
+  ],
+  "artifact_roots": {
+    "portfolio_report": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/XLE/portfolio_report/",
+    "promotion_review_packet": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/XLE/promotion_review_packet/",
+    "download_report": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase32_unexplored_top100_tranche1_20260428120500/data_shards/XLE/download_report/"
+  },
+  "next_safe_step": "include XLE in Phase33 aggregate as blocked fill-repair research lead only; do not promote"
+}

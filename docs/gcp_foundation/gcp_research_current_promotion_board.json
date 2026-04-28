@@ -1,6 +1,6 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T16:24:18Z",
+  "generated_at_utc": "2026-04-28T16:33:02Z",
   "state": "phase32_and_phase32b_unexplored_top100_running",
   "broker_facing": false,
   "live_manifest_effect": "none",
@@ -13,7 +13,8 @@
       "latest_state": "RUNNING",
       "latest_task_counts": {
         "RUNNING": 5,
-        "PENDING": 10
+        "PENDING": 9,
+        "SUCCEEDED": 1
       },
       "location": "us-central1",
       "task_count": 15,
@@ -153,6 +154,37 @@
       ],
       "status": "avoid_for_promotion_without_loser_redesign",
       "reason": "severe_loser_rows_in_phase18b"
+    }
+  ],
+  "interim_research_results": [
+    {
+      "phase_id": "phase32_unexplored_top100_tranche1_20260428120500",
+      "symbol": "XLE",
+      "status": "research_only_blocked",
+      "candidate_count": 9,
+      "eligible_for_promotion_review_count": 0,
+      "download_failed_chunk_count": 0,
+      "top_positive_research_leads": [
+        {
+          "candidate_variant_id": "b150__xle__long_call__balanced_reward__exit_210__liq_tight",
+          "min_net_pnl": 880.62,
+          "min_test_net_pnl": 1492.55,
+          "min_fill_coverage": 0.5968,
+          "promotion_blockers": [
+            "fill_coverage_below_0.90"
+          ]
+        },
+        {
+          "candidate_variant_id": "b150__xle__long_call__wide_reward__exit_210__liq_tight",
+          "min_net_pnl": 537.65,
+          "min_test_net_pnl": 1492.55,
+          "min_fill_coverage": 0.6066,
+          "promotion_blockers": [
+            "fill_coverage_below_0.90"
+          ]
+        }
+      ],
+      "decision": "do_not_promote; treat as fill-repair research leads only"
     }
   ],
   "current_recommendation": {
