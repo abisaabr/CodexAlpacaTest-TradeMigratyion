@@ -1,0 +1,59 @@
+taskGroups:
+  - taskCount: 10
+    parallelism: 2
+    taskSpec:
+      computeResource:
+        cpuMilli: 4000
+        memoryMib: 16384
+      maxRunDuration: 43200s
+      runnables:
+        - container:
+            imageUri: python:3.11-slim-bookworm
+            commands:
+              - /bin/sh
+              - -c
+              - |
+                set -eu
+                python3 -m pip install --upgrade pip
+                python3 -m pip install google-cloud-storage
+                cat > /tmp/download_phase38_worker.py <<'PY'
+                from __future__ import annotations
+
+                import pathlib
+
+                from google.cloud import storage
+
+                source_uri = "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase38_dense_top10_universe_20260428203428/launch/phase38_worker.sh"
+                bucket_name, _, blob_name = source_uri[5:].partition("/")
+                target = pathlib.Path("/tmp/phase38_worker.sh")
+                storage.Client(project="codexalpaca").bucket(bucket_name).blob(blob_name).download_to_filename(str(target))
+                target.chmod(0o755)
+                PY
+                python3 /tmp/download_phase38_worker.py
+                /bin/sh /tmp/phase38_worker.sh
+allocationPolicy:
+  instances:
+    - policy:
+        machineType: e2-standard-4
+        provisioningModel: STANDARD
+        bootDisk:
+          type: pd-standard
+          sizeGb: 200
+  location:
+    allowedLocations:
+      - regions/us-central1
+      - zones/us-central1-a
+      - zones/us-central1-b
+      - zones/us-central1-c
+      - zones/us-central1-f
+  serviceAccount:
+    email: 922745393036-compute@developer.gserviceaccount.com
+  labels:
+    app: codexalpaca
+    plane: research
+    broker: "false"
+    wave: top100
+    phase: phase38
+    tranche: dense-top10
+logsPolicy:
+  destination: CLOUD_LOGGING

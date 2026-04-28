@@ -1,7 +1,7 @@
 {
   "packet": "gcp_research_current_promotion_board",
-  "generated_at_utc": "2026-04-28T20:21:08Z",
-  "state": "phase32b_phase37_running_phase36_completed",
+  "generated_at_utc": "2026-04-28T20:37:11Z",
+  "state": "phase32b_phase37_phase38_running_phase36_completed",
   "broker_facing": false,
   "live_manifest_effect": "none",
   "risk_policy_effect": "none",
@@ -148,9 +148,9 @@
       "phase_id": "phase37_top10_weekly_atm_20260428183723",
       "latest_state": "RUNNING",
       "latest_task_counts": {
-        "SUCCEEDED": 2,
+        "SUCCEEDED": 4,
         "RUNNING": 5,
-        "PENDING": 3
+        "PENDING": 1
       },
       "location": "us-central1",
       "task_count": 10,
@@ -177,6 +177,40 @@
         "replay_contract_selection_method": "entry_liquidity_first_research_only"
       },
       "objective": "research-only top-10 liquid underlying sweep over ATM 0-7 DTE contracts to test whether tight weekly liquidity-first contract design can satisfy the 0.90 fill gate"
+    },
+    {
+      "job_id": "phase38-dense-top10-20260428203428",
+      "phase_id": "phase38_dense_top10_universe_20260428203428",
+      "latest_state": "SCHEDULED",
+      "latest_task_counts": {
+        "PENDING": 2
+      },
+      "location": "us-central1",
+      "task_count": 10,
+      "parallelism": 2,
+      "broker_facing": false,
+      "live_manifest_effect": "none",
+      "risk_policy_effect": "none",
+      "symbol_tranche": [
+        "SPY",
+        "NVDA",
+        "QQQ",
+        "AMZN",
+        "TSLA",
+        "MSFT",
+        "IWM",
+        "AAPL",
+        "META",
+        "MU"
+      ],
+      "contract_scope": {
+        "min_dte": 0,
+        "max_dte": 7,
+        "strike_steps": 5,
+        "reference_bar": "first",
+        "replay_contract_selection_method": "entry_liquidity_first_research_only"
+      },
+      "objective": "research-only dense top-10 liquid-underlying fill diagnosis using the proven QQQ-style dense daily option-universe pattern before download and replay"
     }
   ],
   "current_interim_summary": {
