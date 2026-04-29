@@ -2,7 +2,7 @@
 
 ## Current Read
 
-- Status: `third_replay_fix_launched`
+- Status: `gcs_downloader_fix_replays_running`
 - Mode: `research_only_overnight_365d_bruteforce`
 - Broker-facing: `false`
 - Trading effect: `none`
@@ -11,10 +11,10 @@
 
 ## Incident
 
-- Failed jobs: `overnight-top10-365d-replay-20260429023003`, `overnight-top10-365d-replay-fix-20260429023400`, `overnight-top10-365d-replay-fix2-20260429024200`
+- Failed jobs: `overnight-top10-365d-replay-20260429023003`, `overnight-top10-365d-replay-fix-20260429023400`, `overnight-top10-365d-replay-fix2-20260429024200`, `overnight-top10-365d-replay-fix3-20260429025100`
 - Failure class: `research_loader_partition_column_loss`
 - Symptom: top-10 replay tasks failed with `KeyError: 'symbol'`
-- Root cause: the replay loader first lost `key=value` partition columns from parquet paths. After that was fixed, single-symbol GCS download shards still exposed stock-bar frames without a stable symbol column, so stock bars required a safe single-symbol fallback from `--symbol-filter` and the stock-trade path required a symbolless single-symbol fallback
+- Root cause: the replay loader first lost `key=value` partition columns from parquet paths. After that was fixed, single-symbol GCS download shards still exposed stock-bar frames without a stable symbol column. The final replay blocker was the embedded Batch GCS helper stripping the trailing slash from directory prefixes; relative object paths began with `/`, so downloads were written outside the intended input tree and replays ran against empty local inputs
 - Operational effect: diagnosis-only; no trading, broker-facing, manifest, or risk-policy effect
 
 ## Fix
@@ -28,11 +28,11 @@
 
 ## Replacement Replay
 
-- Job: `overnight-top10-365d-replay-fix3-20260429025100`
+- Job: `overnight-top10-365d-replay-fix4-20260429030000`
 - Region: `us-central1`
-- State at fix packet: `SCHEDULED`
+- State at fix packet: `RUNNING`
 - Dataset source: `option_fill_ladder_20260429/365d_5x5`
-- Output root: `gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/top10_replay_fixed_03bfc25/`
+- Output root: `gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/top10_replay_gcsfix_03bfc25/`
 
 Profiles:
 
@@ -43,9 +43,22 @@ Profiles:
 ## Parallel Lane
 
 - Next-10 data job: `overnight-next10-365d-data-20260429023003`
-- State at fix packet: `RUNNING`
+- State: `SUCCEEDED`
 - Symbols: `QQQ`, `MU`, `AVGO`, `GOOGL`, `NFLX`, `TSM`, `PLTR`, `XLE`, `ORCL`, `XOM`
-- Progress at fix packet: `6` tasks succeeded, `3` running
+- Fill coverage: `10/10` passed, min `0.947224`, average `0.9829024`
+
+## Next-10 Replay
+
+- Job: `overnight-next10-365d-replay-fix2-20260429030000`
+- Region: `us-central1`
+- State at fix packet: `RUNNING`
+- Dataset source: `option_fill_ladder_next10_20260429/365d_5x5`
+- Output root: `gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/next10_replay_gcsfix_03bfc25/`
+
+## Invalidated Output
+
+- Root: `gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/top10_replay_fixed_03bfc25/`
+- Reason: replay completed against empty local stock/option inputs and all candidates showed `no_source_stock_trades`
 
 ## Guardrails
 
@@ -59,4 +72,4 @@ Profiles:
 
 ## Next Safe Step
 
-Monitor the third fixed top-10 replay and next-10 data jobs. If the fixed replay succeeds, aggregate portfolio reports into a promotion-review packet. If next-10 data succeeds, aggregate fill coverage and launch the next-10 replay for fill-gate-passing symbols.
+Monitor the GCS-helper-fixed top-10 and next-10 replay jobs. If either succeeds, aggregate portfolio reports into promotion-review packets and continue until five or more research-governed candidates are available or a new blocker is proven.

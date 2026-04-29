@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-04-29T02:48:30.0000000Z",
-  "status": "third_replay_fix_launched",
+  "generated_at": "2026-04-29T03:00:30.0000000Z",
+  "status": "gcs_downloader_fix_replays_running",
   "mode": "research_only_overnight_365d_bruteforce",
   "broker_facing": false,
   "trading_effect": "none",
@@ -11,12 +11,13 @@
     "failed_job_ids": [
       "overnight-top10-365d-replay-20260429023003",
       "overnight-top10-365d-replay-fix-20260429023400",
-      "overnight-top10-365d-replay-fix2-20260429024200"
+      "overnight-top10-365d-replay-fix2-20260429024200",
+      "overnight-top10-365d-replay-fix3-20260429025100"
     ],
     "failed_job_region": "us-central1",
     "failure_class": "research_loader_partition_column_loss",
     "symptom": "Top-10 replay tasks failed with KeyError: 'symbol' while loading partitioned stock-bar parquet data.",
-    "root_cause": "The research replay loader first lost key=value partition columns from parquet paths. After that was fixed, single-symbol GCS download shards still exposed stock-bar frames without a stable symbol column, so stock bars required a safe single-symbol fallback from --symbol-filter and the stock-trade path required a symbolless single-symbol fallback.",
+    "root_cause": "The research replay loader first lost key=value partition columns from parquet paths. After that was fixed, single-symbol GCS download shards still exposed stock-bar frames without a stable symbol column. The final replay blocker was the embedded Batch GCS helper stripping the trailing slash from directory prefixes; relative object paths began with '/', so downloads were written outside the intended input tree and replays ran against empty local inputs.",
     "operational_effect": "No trading, broker-facing, live-manifest, or risk-policy effect. The failed replay output is diagnosis-only."
   },
   "runner_fix": {
@@ -40,19 +41,38 @@
     "gcs_source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_03bfc25.zip",
     "validation": "Targeted runner tests passed: 11 passed across option replay loader, option-aware replay, fill ladder dataset, and fill ladder aggregation tests."
   },
+  "embedded_batch_helper_fix": {
+    "change": "Preserve trailing slash in split_uri by using lstrip instead of strip, and defensively lstrip the computed relative object path before joining under the destination input directory.",
+    "invalidated_output_root": "gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/top10_replay_fixed_03bfc25/",
+    "invalidated_reason": "Replay completed against empty local stock/option inputs and all candidates showed no_source_stock_trades."
+  },
   "replacement_replay": {
-    "job_id": "overnight-top10-365d-replay-fix3-20260429025100",
+    "job_id": "overnight-top10-365d-replay-fix4-20260429030000",
     "region": "us-central1",
-    "state_at_fix_packet": "SCHEDULED",
+    "state_at_fix_packet": "RUNNING",
     "task_count": 10,
     "symbols_per_task": "one symbol per task from SPY,IWM,NVDA,AAPL,META,TSLA,AMD,INTC,AMZN,MSFT",
     "dataset_source": "option_fill_ladder_20260429/365d_5x5",
-    "output_root": "gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/top10_replay_fixed_03bfc25/",
+    "output_root": "gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/top10_replay_gcsfix_03bfc25/",
     "profile_stack": [
       "liq_lag10_slip10_fee065",
       "liq_lag30_slip25_fee100",
       "nearest_lag10_slip10_fee065"
     ]
+  },
+  "next10_replay": {
+    "job_id": "overnight-next10-365d-replay-fix2-20260429030000",
+    "region": "us-central1",
+    "state_at_fix_packet": "RUNNING",
+    "symbols_per_task": "one symbol per task from QQQ,MU,AVGO,GOOGL,NFLX,TSM,PLTR,XLE,ORCL,XOM",
+    "dataset_source": "option_fill_ladder_next10_20260429/365d_5x5",
+    "output_root": "gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/next10_replay_gcsfix_03bfc25/",
+    "fill_coverage": {
+      "pass_count": 10,
+      "fail_count": 0,
+      "min_coverage": 0.947224,
+      "avg_coverage": 0.9829024
+    }
   },
   "parallel_lane": {
     "job_id": "overnight-next10-365d-data-20260429023003",
@@ -79,5 +99,5 @@
     "Do not relax the 0.90 fill gate for promotion review.",
     "Tomorrow's paper-session use requires a separate operator/control-plane decision after promotion-review packets are clean."
   ],
-  "next_safe_step": "Monitor the third fixed top-10 replay and next-10 data jobs. If the fixed replay succeeds, aggregate portfolio reports into a promotion-review packet. If next-10 data succeeds, aggregate fill coverage and launch the next-10 replay for fill-gate-passing symbols."
+  "next_safe_step": "Monitor the GCS-helper-fixed top-10 and next-10 replay jobs. If either succeeds, aggregate portfolio reports into promotion-review packets and continue until five or more research-governed candidates are available or a new blocker is proven."
 }
