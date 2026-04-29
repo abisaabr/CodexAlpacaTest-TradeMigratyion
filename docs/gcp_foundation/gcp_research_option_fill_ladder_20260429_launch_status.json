@@ -1,0 +1,147 @@
+{
+  "generated_at": "2026-04-29T01:44:46.0922632Z",
+  "status": "launched",
+  "mode": "research_only_option_fill_ladder",
+  "broker_facing": false,
+  "trading_effect": "none",
+  "promotion_allowed_from_raw_download": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "campaign_id": "option_fill_ladder_20260429",
+  "purpose": "Diagnose where option minute-bar fill coverage fails by ticker and dataset scope before further strategy replay or promotion review.",
+  "latest_complete_market_session": "2026-04-28",
+  "runner_source": {
+    "repo": "CodexAlpacaTest-Trade",
+    "branch": "codex/qqq-paper-portfolio",
+    "commit": "d1ac3b6",
+    "gcs_source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_d1ac3b6.zip"
+  },
+  "symbols": [
+    "SPY",
+    "IWM",
+    "NVDA",
+    "AAPL",
+    "META",
+    "TSLA",
+    "AMD",
+    "INTC",
+    "AMZN",
+    "MSFT"
+  ],
+  "stage_definitions": {
+    "7d_atm": {
+      "start_date": "2026-04-22",
+      "end_date": "2026-04-28",
+      "expiration_selection": "nearest_listed_expiration_after_trade_date",
+      "dte_search_window_calendar_days": {
+        "min": 1,
+        "max": 7
+      },
+      "strike_steps_each_side": 0,
+      "option_types": [
+        "call",
+        "put"
+      ]
+    },
+    "30d_atm": {
+      "start_date": "2026-03-30",
+      "end_date": "2026-04-28",
+      "expiration_selection": "nearest_listed_expiration_after_trade_date",
+      "dte_search_window_calendar_days": {
+        "min": 1,
+        "max": 7
+      },
+      "strike_steps_each_side": 0,
+      "option_types": [
+        "call",
+        "put"
+      ]
+    },
+    "30d_5x5": {
+      "start_date": "2026-03-30",
+      "end_date": "2026-04-28",
+      "expiration_selection": "nearest_listed_expiration_after_trade_date",
+      "dte_search_window_calendar_days": {
+        "min": 1,
+        "max": 7
+      },
+      "strike_steps_each_side": 5,
+      "option_types": [
+        "call",
+        "put"
+      ]
+    },
+    "365d_5x5": {
+      "start_date": "2025-04-29",
+      "end_date": "2026-04-28",
+      "expiration_selection": "nearest_listed_expiration_after_trade_date",
+      "dte_search_window_calendar_days": {
+        "min": 1,
+        "max": 7
+      },
+      "strike_steps_each_side": 5,
+      "option_types": [
+        "call",
+        "put"
+      ]
+    }
+  },
+  "gcp_batch_jobs": [
+    {
+      "job_id": "fill-ladder-7d-atm-20260429014336",
+      "region": "us-central1",
+      "state_at_launch_check": "SCHEDULED",
+      "task_count": 10,
+      "parallelism": 10,
+      "machine_type": "e2-standard-4",
+      "boot_disk_gb": 100,
+      "stage": "7d_atm"
+    },
+    {
+      "job_id": "fill-ladder-30d-atm-20260429014336",
+      "region": "us-central1",
+      "state_at_launch_check": "SCHEDULED",
+      "task_count": 10,
+      "parallelism": 8,
+      "machine_type": "e2-standard-4",
+      "boot_disk_gb": 100,
+      "stage": "30d_atm"
+    },
+    {
+      "job_id": "fill-ladder-30d-5x5-20260429014336",
+      "region": "us-central1",
+      "state_at_launch_check": "SCHEDULED",
+      "task_count": 10,
+      "parallelism": 6,
+      "machine_type": "e2-standard-4",
+      "boot_disk_gb": 150,
+      "stage": "30d_5x5"
+    },
+    {
+      "job_id": "fill-ladder-365d-5x5-20260429014336",
+      "region": "us-central1",
+      "state_at_launch_check": "SCHEDULED",
+      "task_count": 10,
+      "parallelism": 4,
+      "machine_type": "e2-standard-4",
+      "boot_disk_gb": 250,
+      "stage": "365d_5x5"
+    }
+  ],
+  "gcs_roots": {
+    "control_results": "gs://codexalpaca-control-us/research_results/option_fill_ladder_20260429/",
+    "option_data": "gs://codexalpaca-data-us/research_option_data/option_fill_ladder_20260429/",
+    "stock_data": "gs://codexalpaca-data-us/research_stock_data/option_fill_ladder_20260429/",
+    "batch_logs": "gs://codexalpaca-control-us/research_results/option_fill_ladder_20260429/logs/"
+  },
+  "local_batch_configs": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed\\reports\\research_wave\\option_fill_ladder_20260429\\gcp_batch\\",
+  "guardrails": [
+    "Research-only data download and fill diagnostic.",
+    "Do not trade from this packet.",
+    "Do not arm an execution window from this packet.",
+    "Do not start a broker-facing paper or live session from this packet.",
+    "Do not modify live manifests, strategy selection, or risk policy from this packet.",
+    "Do not relax the 0.90 fill gate for promotion review."
+  ],
+  "next_safe_step": "Monitor Batch completion, aggregate per-symbol/per-stage fill_ladder_status packets, then decide whether to run strategy replay only on datasets meeting the 0.90 fill gate."
+}

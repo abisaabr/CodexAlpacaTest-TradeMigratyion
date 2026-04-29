@@ -5,6 +5,7 @@
 - The execution plane is close to the first sanctioned VM trusted validation session.
 - The main bottleneck is still trusted broker-audited execution evidence, not missing research entrypoints.
 - Research should expand breadth carefully, but not at the expense of evidence quality or strategy-governance discipline.
+- `2026-04-29`: the top-10 liquid-symbol option fill ladder is launched as a research-only GCP Batch campaign, `option_fill_ladder_20260429`, to isolate whether coverage failures come from symbol scope, lookback length, strike breadth, or sparse option bars.
 
 ## New Canonical Packets
 
@@ -12,6 +13,7 @@
 - [Loser-Trade Learning Policy](../LOSER_TRADE_LEARNING_POLICY.md)
 - [Strategy Promotion Policy](../STRATEGY_PROMOTION_POLICY.md)
 - [Strategy Repo Operating Model](../STRATEGY_REPO_OPERATING_MODEL.md)
+- [GCP Research Option Fill Ladder 20260429 Launch Status](gcp_research_option_fill_ladder_20260429_launch_status.md)
 
 ## Immediate Research-Plane Recommendation
 
@@ -43,7 +45,7 @@ Rationale:
 
 ## Next Safest Step
 
-1. Arm a bounded exclusive execution window.
-2. Run one sanctioned trusted VM paper session.
-3. Assimilate the broker-audited evidence immediately.
-4. Use the loser-trade and promotion packets to decide what deserves more research scale next.
+1. Monitor `option_fill_ladder_20260429` Batch jobs to completion.
+2. Aggregate per-symbol/per-stage fill coverage before any strategy replay.
+3. Only replay/promote against datasets that meet the `0.90` fill gate.
+4. Keep execution-plane actions separate from this research-only campaign.
