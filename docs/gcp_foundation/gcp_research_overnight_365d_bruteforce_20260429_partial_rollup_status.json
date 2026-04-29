@@ -1,0 +1,105 @@
+{
+  "generated_at": "2026-04-29T18:10:45Z",
+  "status": "partial_replay_rollup_complete_with_spy_repair_launched",
+  "mode": "research_only_overnight_365d_bruteforce",
+  "broker_facing": false,
+  "trading_effect": "none",
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "campaign_id": "overnight_365d_bruteforce_20260429",
+  "runner_commit": "03bfc25",
+  "valid_output_roots": {
+    "top10": "gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/top10_replay_gcsfix_03bfc25/",
+    "next10": "gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/next10_replay_gcsfix_03bfc25/"
+  },
+  "invalid_output_roots": [
+    {
+      "root": "gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/top10_replay_fixed_03bfc25/",
+      "reason": "Embedded GCS downloader wrote inputs outside the intended local tree, yielding no_source_stock_trades. Do not use for promotion."
+    }
+  ],
+  "job_state": {
+    "top10_job_id": "overnight-top10-365d-replay-fix4-20260429030000",
+    "top10_state": "RUNNING",
+    "top10_counts": {
+      "succeeded": 2,
+      "running": 3,
+      "pending": 4,
+      "failed": 1
+    },
+    "top10_succeeded_symbols": ["IWM", "NVDA"],
+    "top10_running_symbols": ["AMD", "AMZN", "MSFT"],
+    "top10_pending_symbols": ["AAPL", "META", "TSLA", "INTC"],
+    "top10_failed_symbols": [
+      {
+        "symbol": "SPY",
+        "failure": "Task exceeded the Batch maximum runtime and exited with code 50005."
+      }
+    ],
+    "next10_job_id": "overnight-next10-365d-replay-fix2-20260429030000",
+    "next10_state": "RUNNING",
+    "next10_counts": {
+      "succeeded": 4,
+      "running": 4,
+      "pending": 2,
+      "failed": 0
+    },
+    "next10_succeeded_symbols": ["QQQ", "MU", "AVGO", "GOOGL"],
+    "next10_running_symbols": ["NFLX", "TSM", "PLTR", "ORCL"],
+    "next10_pending_symbols": ["XLE", "XOM"]
+  },
+  "partial_rollup": {
+    "source_report_count": 6,
+    "source_symbols": ["AVGO", "GOOGL", "IWM", "MU", "NVDA", "QQQ"],
+    "candidate_count": 216,
+    "eligible_for_promotion_review_count": 0,
+    "decision": "research_only_blocked",
+    "promotion_allowed": false,
+    "gcs_output": "gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/partial_wave_rollup_gcsfix_03bfc25_20260429T1806Z/wave_rollup/",
+    "dominant_blocker": "fill_coverage_below_0.90",
+    "top_blocked_research_leads": [
+      {
+        "candidate_variant_id": "b150__googl__long_call__balanced_reward__exit_210__liq_baseline",
+        "symbol": "GOOGL",
+        "min_net_pnl": 19641.9975,
+        "min_test_net_pnl": 11389.78,
+        "min_fill_coverage": 0.3359,
+        "promotion_blockers": ["fill_coverage_below_0.90"]
+      },
+      {
+        "candidate_variant_id": "b150__googl__long_call__tight_reward__exit_210__liq_tight",
+        "symbol": "GOOGL",
+        "min_net_pnl": 14591.376,
+        "min_test_net_pnl": 12941.824,
+        "min_fill_coverage": 0.378,
+        "promotion_blockers": ["fill_coverage_below_0.90"]
+      },
+      {
+        "candidate_variant_id": "b150__iwm__long_put__wide_reward__exit_360__liq_tight",
+        "symbol": "IWM",
+        "min_net_pnl": 9677.6475,
+        "min_test_net_pnl": 8178.935,
+        "min_fill_coverage": 0.0753,
+        "promotion_blockers": ["fill_coverage_below_0.90"]
+      }
+    ]
+  },
+  "repair_jobs": [
+    {
+      "job_id": "overnight-spy-365d-replay-rerun-20260429181000",
+      "region": "us-central1",
+      "state_at_launch": "QUEUED",
+      "reason": "Original SPY task exceeded the 43200s Batch max runtime.",
+      "repair_scope": "SPY only, research-only, same queue and same strategy/risk gates, maxRunDuration raised to 86400s.",
+      "output_root": "gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/top10_replay_gcsfix_spy_rerun_03bfc25_20260429T1810Z/"
+    }
+  ],
+  "guardrails": [
+    "Research-only status packet.",
+    "No trading was started.",
+    "No broker-facing paper or live session was started.",
+    "No live manifest, strategy selection, or risk policy was changed.",
+    "The 0.90 fill gate remains unchanged."
+  ],
+  "next_safe_step": "Continue monitoring remaining valid replay tasks; diagnose and relaunch the failed SPY research-only shard with a bounded runtime-aware profile split if needed; aggregate the full valid report set when additional reports land."
+}
