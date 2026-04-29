@@ -21,6 +21,7 @@
 - Trusted validation operator packet is now on canonical `main`
 - The next operator boundary is the bounded exclusive-window arm step, not a missing control-plane merge
 - `2026-04-29`: research-only option fill ladder `option_fill_ladder_20260429` is launched on GCP Batch for `SPY`, `IWM`, `NVDA`, `AAPL`, `META`, `TSLA`, `AMD`, `INTC`, `AMZN`, and `MSFT`. See `docs/gcp_foundation/gcp_research_option_fill_ladder_20260429_launch_status.md`.
+- `2026-04-29`: initial fill-ladder launch hit `SSD_TOTAL_GB` quota on `pd-balanced`; completed outputs were preserved and repair jobs were launched on `pd-standard`. See `docs/gcp_foundation/gcp_research_option_fill_ladder_20260429_repair_status.md`.
 
 ## Immediate Safe Next Steps
 

@@ -14,6 +14,7 @@
 - [Strategy Promotion Policy](../STRATEGY_PROMOTION_POLICY.md)
 - [Strategy Repo Operating Model](../STRATEGY_REPO_OPERATING_MODEL.md)
 - [GCP Research Option Fill Ladder 20260429 Launch Status](gcp_research_option_fill_ladder_20260429_launch_status.md)
+- [GCP Research Option Fill Ladder 20260429 Repair Status](gcp_research_option_fill_ladder_20260429_repair_status.md)
 
 ## Immediate Research-Plane Recommendation
 

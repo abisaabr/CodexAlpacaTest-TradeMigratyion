@@ -1,0 +1,130 @@
+{
+  "generated_at": "2026-04-29T01:57:30Z",
+  "status": "repair_launched",
+  "mode": "research_only_option_fill_ladder_quota_repair",
+  "broker_facing": false,
+  "trading_effect": "none",
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "campaign_id": "option_fill_ladder_20260429",
+  "reason_for_repair": "Initial multi-stage launch exceeded the us-central1 SSD_TOTAL_GB quota because several Batch jobs requested pd-balanced boot disks concurrently.",
+  "quota_event": {
+    "quota": "SSD_TOTAL_GB",
+    "limit_gb": 500,
+    "region": "us-central1",
+    "batch_error_code": "CODE_GCE_QUOTA_EXCEEDED"
+  },
+  "preserved_completed_outputs": {
+    "7d_atm": {
+      "packet_count": 10,
+      "fill_gate_pass_count": 9,
+      "fill_gate_blocked": [
+        {
+          "symbol": "AMZN",
+          "coverage": 0.8
+        }
+      ]
+    },
+    "30d_atm": {
+      "packet_count_before_repair": 4,
+      "completed_symbols": [
+        "AAPL",
+        "AMZN",
+        "META",
+        "TSLA"
+      ]
+    },
+    "30d_5x5": {
+      "packet_count_before_repair": 9,
+      "completed_symbols": [
+        "AAPL",
+        "AMD",
+        "AMZN",
+        "INTC",
+        "IWM",
+        "META",
+        "MSFT",
+        "NVDA",
+        "SPY"
+      ]
+    }
+  },
+  "cancelled_or_deleting_jobs": [
+    "fill-ladder-30d-atm-20260429014336",
+    "fill-ladder-30d-5x5-20260429014336",
+    "fill-ladder-365d-5x5-20260429014336"
+  ],
+  "repair_jobs": [
+    {
+      "job_id": "fill-ladder-repair-30d-atm-20260429015546",
+      "region": "us-central1",
+      "state_at_repair_launch": "SCHEDULED",
+      "stage": "30d_atm",
+      "symbols": [
+        "SPY",
+        "IWM",
+        "NVDA",
+        "AMD",
+        "INTC",
+        "MSFT"
+      ],
+      "task_count": 6,
+      "parallelism": 3,
+      "boot_disk_type": "pd-standard",
+      "boot_disk_gb": 30
+    },
+    {
+      "job_id": "fill-ladder-repair-30d-5x5-20260429015546",
+      "region": "us-central1",
+      "state_at_repair_launch": "SCHEDULED",
+      "stage": "30d_5x5",
+      "symbols": [
+        "TSLA"
+      ],
+      "task_count": 1,
+      "parallelism": 1,
+      "boot_disk_type": "pd-standard",
+      "boot_disk_gb": 50
+    },
+    {
+      "job_id": "fill-ladder-repair-365d-5x5-20260429015546",
+      "region": "us-central1",
+      "state_at_repair_launch": "SCHEDULED",
+      "stage": "365d_5x5",
+      "symbols": [
+        "SPY",
+        "IWM",
+        "NVDA",
+        "AAPL",
+        "META",
+        "TSLA",
+        "AMD",
+        "INTC",
+        "AMZN",
+        "MSFT"
+      ],
+      "task_count": 10,
+      "parallelism": 3,
+      "boot_disk_type": "pd-standard",
+      "boot_disk_gb": 100
+    }
+  ],
+  "runner_commits": {
+    "dataset_runner_used_by_batch": "d1ac3b6",
+    "local_aggregation_tool_latest": "5f71eb6"
+  },
+  "gcs_roots": {
+    "control_results": "gs://codexalpaca-control-us/research_results/option_fill_ladder_20260429/",
+    "repair_batch_configs": "gs://codexalpaca-control-us/research_results/option_fill_ladder_20260429/gcp_batch_repair/",
+    "aggregate_summary": "gs://codexalpaca-control-us/research_results/option_fill_ladder_20260429/summary/fill_ladder_aggregate_summary.md"
+  },
+  "guardrails": [
+    "Research-only data download and fill diagnostic.",
+    "Do not trade from this packet.",
+    "Do not arm an execution window from this packet.",
+    "Do not start a broker-facing paper or live session from this packet.",
+    "Do not modify live manifests, strategy selection, or risk policy from this packet.",
+    "Do not relax the 0.90 fill gate for promotion review."
+  ],
+  "next_safe_step": "Monitor the repair jobs to completion, refresh the aggregate fill matrix, then replay strategies only on symbol-stage datasets that pass the 0.90 fill gate."
+}
