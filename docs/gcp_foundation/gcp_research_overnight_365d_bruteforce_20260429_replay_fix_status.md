@@ -2,7 +2,7 @@
 
 ## Current Read
 
-- Status: `second_replay_fix_launched`
+- Status: `third_replay_fix_launched`
 - Mode: `research_only_overnight_365d_bruteforce`
 - Broker-facing: `false`
 - Trading effect: `none`
@@ -11,28 +11,28 @@
 
 ## Incident
 
-- Failed jobs: `overnight-top10-365d-replay-20260429023003`, `overnight-top10-365d-replay-fix-20260429023400`
+- Failed jobs: `overnight-top10-365d-replay-20260429023003`, `overnight-top10-365d-replay-fix-20260429023400`, `overnight-top10-365d-replay-fix2-20260429024200`
 - Failure class: `research_loader_partition_column_loss`
 - Symptom: top-10 replay tasks failed with `KeyError: 'symbol'`
-- Root cause: the replay loader first lost `key=value` partition columns from parquet paths. After that was fixed, single-symbol GCS download shards still lacked a `symbol=...` path segment, so stock bars required a safe single-symbol fallback from `--symbol-filter`
+- Root cause: the replay loader first lost `key=value` partition columns from parquet paths. After that was fixed, single-symbol GCS download shards still exposed stock-bar frames without a stable symbol column, so stock bars required a safe single-symbol fallback from `--symbol-filter` and the stock-trade path required a symbolless single-symbol fallback
 - Operational effect: diagnosis-only; no trading, broker-facing, manifest, or risk-policy effect
 
 ## Fix
 
 - Runner branch: `codex/qqq-paper-portfolio`
-- Runner commits: `de58f1a`, `3b86443`
-- Active runner commit: `3b86443`
-- Changes: restore parquet partition columns, then synthesize the stock-bar symbol from `--symbol-filter` for single-symbol replay shards
-- Source archive: `gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_3b86443.zip`
-- Validation: targeted runner tests passed, `10 passed`
+- Runner commits: `de58f1a`, `3b86443`, `03bfc25`
+- Active runner commit: `03bfc25`
+- Changes: restore parquet partition columns, synthesize the stock-bar symbol from `--symbol-filter`, and tolerate symbolless single-symbol stock bars in the stock-trade path
+- Source archive: `gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_03bfc25.zip`
+- Validation: targeted runner tests passed, `11 passed`
 
 ## Replacement Replay
 
-- Job: `overnight-top10-365d-replay-fix2-20260429024200`
+- Job: `overnight-top10-365d-replay-fix3-20260429025100`
 - Region: `us-central1`
 - State at fix packet: `SCHEDULED`
 - Dataset source: `option_fill_ladder_20260429/365d_5x5`
-- Output root: `gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/top10_replay_fixed_3b86443/`
+- Output root: `gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/top10_replay_fixed_03bfc25/`
 
 Profiles:
 
@@ -59,4 +59,4 @@ Profiles:
 
 ## Next Safe Step
 
-Monitor the second fixed top-10 replay and next-10 data jobs. If the fixed replay succeeds, aggregate portfolio reports into a promotion-review packet. If next-10 data succeeds, aggregate fill coverage and launch the next-10 replay for fill-gate-passing symbols.
+Monitor the third fixed top-10 replay and next-10 data jobs. If the fixed replay succeeds, aggregate portfolio reports into a promotion-review packet. If next-10 data succeeds, aggregate fill coverage and launch the next-10 replay for fill-gate-passing symbols.

@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-04-29T02:43:30.0000000Z",
-  "status": "second_replay_fix_launched",
+  "generated_at": "2026-04-29T02:48:30.0000000Z",
+  "status": "third_replay_fix_launched",
   "mode": "research_only_overnight_365d_bruteforce",
   "broker_facing": false,
   "trading_effect": "none",
@@ -10,12 +10,13 @@
   "incident": {
     "failed_job_ids": [
       "overnight-top10-365d-replay-20260429023003",
-      "overnight-top10-365d-replay-fix-20260429023400"
+      "overnight-top10-365d-replay-fix-20260429023400",
+      "overnight-top10-365d-replay-fix2-20260429024200"
     ],
     "failed_job_region": "us-central1",
     "failure_class": "research_loader_partition_column_loss",
     "symptom": "Top-10 replay tasks failed with KeyError: 'symbol' while loading partitioned stock-bar parquet data.",
-    "root_cause": "The research replay loader first lost key=value partition columns from parquet paths. After that was fixed, single-symbol GCS download shards still lacked a symbol partition segment, so stock bars required a safe single-symbol fallback from --symbol-filter.",
+    "root_cause": "The research replay loader first lost key=value partition columns from parquet paths. After that was fixed, single-symbol GCS download shards still exposed stock-bar frames without a stable symbol column, so stock bars required a safe single-symbol fallback from --symbol-filter and the stock-trade path required a symbolless single-symbol fallback.",
     "operational_effect": "No trading, broker-facing, live-manifest, or risk-policy effect. The failed replay output is diagnosis-only."
   },
   "runner_fix": {
@@ -29,20 +30,24 @@
       {
         "commit": "3b86443",
         "change": "Harden single-symbol option replay loading."
+      },
+      {
+        "commit": "03bfc25",
+        "change": "Tolerate symbolless single-symbol stock bars."
       }
     ],
-    "active_commit": "3b86443",
-    "gcs_source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_3b86443.zip",
-    "validation": "Targeted runner tests passed: 10 passed across option replay loader, option-aware replay, fill ladder dataset, and fill ladder aggregation tests."
+    "active_commit": "03bfc25",
+    "gcs_source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_03bfc25.zip",
+    "validation": "Targeted runner tests passed: 11 passed across option replay loader, option-aware replay, fill ladder dataset, and fill ladder aggregation tests."
   },
   "replacement_replay": {
-    "job_id": "overnight-top10-365d-replay-fix2-20260429024200",
+    "job_id": "overnight-top10-365d-replay-fix3-20260429025100",
     "region": "us-central1",
     "state_at_fix_packet": "SCHEDULED",
     "task_count": 10,
     "symbols_per_task": "one symbol per task from SPY,IWM,NVDA,AAPL,META,TSLA,AMD,INTC,AMZN,MSFT",
     "dataset_source": "option_fill_ladder_20260429/365d_5x5",
-    "output_root": "gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/top10_replay_fixed_3b86443/",
+    "output_root": "gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/top10_replay_fixed_03bfc25/",
     "profile_stack": [
       "liq_lag10_slip10_fee065",
       "liq_lag30_slip25_fee100",
@@ -74,5 +79,5 @@
     "Do not relax the 0.90 fill gate for promotion review.",
     "Tomorrow's paper-session use requires a separate operator/control-plane decision after promotion-review packets are clean."
   ],
-  "next_safe_step": "Monitor the second fixed top-10 replay and next-10 data jobs. If the fixed replay succeeds, aggregate portfolio reports into a promotion-review packet. If next-10 data succeeds, aggregate fill coverage and launch the next-10 replay for fill-gate-passing symbols."
+  "next_safe_step": "Monitor the third fixed top-10 replay and next-10 data jobs. If the fixed replay succeeds, aggregate portfolio reports into a promotion-review packet. If next-10 data succeeds, aggregate fill coverage and launch the next-10 replay for fill-gate-passing symbols."
 }
