@@ -1,0 +1,97 @@
+{
+  "generated_at": "2026-04-29T02:17:13.626730Z",
+  "status": "complete",
+  "mode": "research_only_option_fill_ladder_closeout",
+  "broker_facing": false,
+  "trading_effect": "none",
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "campaign_id": "option_fill_ladder_20260429",
+  "packet_count": 40,
+  "symbols": [
+    "AAPL",
+    "AMD",
+    "AMZN",
+    "INTC",
+    "IWM",
+    "META",
+    "MSFT",
+    "NVDA",
+    "SPY",
+    "TSLA"
+  ],
+  "stage_summary": {
+    "7d_atm": {
+      "packet_count": 10,
+      "pass_count": 9,
+      "fail_count": 1,
+      "min_coverage": 0.8,
+      "avg_coverage": 0.98,
+      "failing_symbols": [
+        "AMZN"
+      ]
+    },
+    "30d_atm": {
+      "packet_count": 10,
+      "pass_count": 10,
+      "fail_count": 0,
+      "min_coverage": 0.904762,
+      "avg_coverage": 0.985714,
+      "failing_symbols": []
+    },
+    "30d_5x5": {
+      "packet_count": 10,
+      "pass_count": 10,
+      "fail_count": 0,
+      "min_coverage": 0.926407,
+      "avg_coverage": 0.983098,
+      "failing_symbols": []
+    },
+    "365d_5x5": {
+      "packet_count": 10,
+      "pass_count": 10,
+      "fail_count": 0,
+      "min_coverage": 0.986545,
+      "avg_coverage": 0.994541,
+      "failing_symbols": []
+    }
+  },
+  "important_findings": [
+    "The broad fill problem is not inherent to these top-10 liquid symbols when using active+inactive contract inventory and nearest listed expiration after trade date.",
+    "The full 365-day 5x5 next-trading-expiry dataset passes the 0.90 fill gate for every tested symbol.",
+    "AMZN 7d ATM is the only blocked narrow-scope dataset at 0.80 coverage; AMZN passes the 30-day ATM, 30-day 5x5, and 365-day 5x5 gates."
+  ],
+  "jobs": {
+    "successful": [
+      "fill-ladder-7d-atm-20260429014336",
+      "fill-ladder-repair-30d-atm-20260429015546",
+      "fill-ladder-repair-30d-5x5-20260429015546",
+      "fill-ladder-repair-365d-5x5-20260429015546"
+    ],
+    "cancelled_or_deleted_after_preserving_outputs": [
+      "fill-ladder-30d-atm-20260429014336",
+      "fill-ladder-30d-5x5-20260429014336",
+      "fill-ladder-365d-5x5-20260429014336"
+    ]
+  },
+  "runner_commits": {
+    "dataset_runner_used_by_batch": "d1ac3b6",
+    "aggregation_tool_latest": "5f71eb6"
+  },
+  "gcs_outputs": {
+    "aggregate_summary_md": "gs://codexalpaca-control-us/research_results/option_fill_ladder_20260429/summary/fill_ladder_aggregate_summary.md",
+    "aggregate_summary_json": "gs://codexalpaca-control-us/research_results/option_fill_ladder_20260429/summary/fill_ladder_aggregate_summary.json",
+    "aggregate_rows_csv": "gs://codexalpaca-control-us/research_results/option_fill_ladder_20260429/summary/fill_ladder_aggregate_rows.csv",
+    "option_data_root": "gs://codexalpaca-data-us/research_option_data/option_fill_ladder_20260429/",
+    "stock_data_root": "gs://codexalpaca-data-us/research_stock_data/option_fill_ladder_20260429/"
+  },
+  "guardrails": [
+    "Research-only data artifact and fill diagnostic.",
+    "Do not trade from this packet.",
+    "Do not arm an execution window from this packet.",
+    "Do not start a broker-facing paper or live session from this packet.",
+    "Do not modify live manifests, strategy selection, or risk policy from this packet.",
+    "Do not relax the 0.90 fill gate for promotion review."
+  ],
+  "next_safe_step": "Use the 30-day and 365-day passing datasets for research-only strategy replay and liquidity-first promotion review; keep AMZN 7d ATM blocked unless repaired or excluded."
+}
