@@ -1,0 +1,83 @@
+{
+  "generated_at": "2026-04-29T02:31:00.9551425Z",
+  "status": "launched",
+  "mode": "research_only_overnight_365d_bruteforce",
+  "broker_facing": false,
+  "trading_effect": "none",
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "promotion_scope": "research_governed_validation_review_only",
+  "campaign_id": "overnight_365d_bruteforce_20260429",
+  "objective": "Brute-force all existing option strategy variants against fill-gated 365-day next-expiry 5x5 data, then expand the same 365-day data foundation to the next 10 liquid symbols.",
+  "runner_source": {
+    "repo": "CodexAlpacaTest-Trade",
+    "branch": "codex/qqq-paper-portfolio",
+    "commit": "5f71eb6",
+    "gcs_source_archive": "gs://codexalpaca-control-us/research_source/codexalpaca_runner_source_5f71eb6.zip"
+  },
+  "top10_replay": {
+    "symbols": ["SPY", "IWM", "NVDA", "AAPL", "META", "TSLA", "AMD", "INTC", "AMZN", "MSFT"],
+    "dataset_source": "option_fill_ladder_20260429/365d_5x5",
+    "strategy_variants_per_symbol": 36,
+    "candidate_count": 360,
+    "batch_job": {
+      "job_id": "overnight-top10-365d-replay-20260429023003",
+      "region": "us-central1",
+      "state_at_launch_check": "SCHEDULED",
+      "task_count": 10,
+      "parallelism": 4,
+      "machine_type": "e2-standard-4",
+      "boot_disk_type": "pd-standard",
+      "boot_disk_gb": 120
+    }
+  },
+  "next10_data": {
+    "symbols": ["QQQ", "MU", "AVGO", "GOOGL", "NFLX", "TSM", "PLTR", "XLE", "ORCL", "XOM"],
+    "selection_rule": "Next 10 by existing top100 liquidity rank after excluding the current 10-symbol set.",
+    "dataset_campaign": "option_fill_ladder_next10_20260429",
+    "stage": "365d_5x5",
+    "date_window": {"start": "2025-04-29", "end": "2026-04-28"},
+    "expiration_selection": "nearest_listed_expiration_after_trade_date",
+    "dte_search_window_calendar_days": {"min": 1, "max": 7},
+    "strike_steps_each_side": 5,
+    "option_types": ["call", "put"],
+    "batch_job": {
+      "job_id": "overnight-next10-365d-data-20260429023003",
+      "region": "us-central1",
+      "state_at_launch_check": "SCHEDULED",
+      "task_count": 10,
+      "parallelism": 3,
+      "machine_type": "e2-standard-4",
+      "boot_disk_type": "pd-standard",
+      "boot_disk_gb": 100
+    }
+  },
+  "profile_stack": [
+    "liq_lag10_slip10_fee065",
+    "liq_lag30_slip25_fee100",
+    "nearest_lag10_slip10_fee065"
+  ],
+  "gcs_roots": {
+    "research_waves": "gs://codexalpaca-control-us/research_waves/overnight_365d_bruteforce_20260429/",
+    "bruteforce_results": "gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/",
+    "next10_data_results": "gs://codexalpaca-control-us/research_results/option_fill_ladder_next10_20260429/",
+    "next10_option_data": "gs://codexalpaca-data-us/research_option_data/option_fill_ladder_next10_20260429/",
+    "next10_stock_data": "gs://codexalpaca-data-us/research_stock_data/option_fill_ladder_next10_20260429/"
+  },
+  "promotion_gate": {
+    "fill_coverage_gate": 0.9,
+    "min_option_trades": 20,
+    "min_test_net_pnl": 0,
+    "test_date_count": 20,
+    "paper_validation_required_before_activation": true
+  },
+  "guardrails": [
+    "Research-only jobs.",
+    "Do not trade from raw research output.",
+    "Do not arm an execution window from this packet.",
+    "Do not modify live manifests, strategy selection, or risk policy from this packet.",
+    "Do not relax the 0.90 fill gate for promotion review.",
+    "Tomorrow's paper-session use requires a separate operator/control-plane decision after promotion-review packets are clean."
+  ],
+  "next_safe_step": "Monitor top10 replay and next10 data jobs; when next10 data passes fill gates, launch next10 replay with the same profile stack, then aggregate promotion-review candidates."
+}

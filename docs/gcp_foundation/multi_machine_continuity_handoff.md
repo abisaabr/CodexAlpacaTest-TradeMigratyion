@@ -23,12 +23,13 @@
 - `2026-04-29`: research-only option fill ladder `option_fill_ladder_20260429` is launched on GCP Batch for `SPY`, `IWM`, `NVDA`, `AAPL`, `META`, `TSLA`, `AMD`, `INTC`, `AMZN`, and `MSFT`. See `docs/gcp_foundation/gcp_research_option_fill_ladder_20260429_launch_status.md`.
 - `2026-04-29`: initial fill-ladder launch hit `SSD_TOTAL_GB` quota on `pd-balanced`; completed outputs were preserved and repair jobs were launched on `pd-standard`. See `docs/gcp_foundation/gcp_research_option_fill_ladder_20260429_repair_status.md`.
 - `2026-04-29`: option fill ladder is complete. All `30d_atm`, `30d_5x5`, and `365d_5x5` datasets pass the `0.90` fill gate; only `AMZN` `7d_atm` is blocked at `0.80`. See `docs/gcp_foundation/gcp_research_option_fill_ladder_20260429_closeout_status.md`.
+- `2026-04-29`: overnight research campaign `overnight_365d_bruteforce_20260429` is launched. Top-10 365-day replay and next-10 365-day data jobs are scheduled. See `docs/gcp_foundation/gcp_research_overnight_365d_bruteforce_20260429_launch_status.md`.
 
 ## Immediate Safe Next Steps
 
 1. Confirm canonical `main` is current.
-2. Use the completed fill ladder to drive research-only strategy replay on datasets passing the `0.90` fill gate.
-3. Keep the `0.90` fill gate for promotion review.
+2. Monitor `overnight_365d_bruteforce_20260429` and record material state changes in GitHub/GCS.
+3. Use only datasets passing the `0.90` fill gate for replay and promotion review.
 4. When the paper account is truly available, arm a bounded exclusive execution window using the execution packets, not the research campaign.
 5. Run post-session assimilation immediately.
 6. Close the window and mirror refreshed packets.
