@@ -1,0 +1,132 @@
+{
+  "generated_at": "2026-04-29T01:00:38Z",
+  "status": "complete",
+  "mode": "research_only_market_data_download",
+  "broker_facing": false,
+  "trading_effect": "none",
+  "promotion_allowed": false,
+  "live_manifest_effect": "none",
+  "risk_policy_effect": "none",
+  "dataset_id": "qqq_365d_next_trading_day_5x5_20260428",
+  "symbol": "QQQ",
+  "date_window": {
+    "start": "2025-04-29",
+    "end": "2026-04-28"
+  },
+  "expiration_selection": "nearest_listed_expiration_after_trade_date",
+  "dte_search_window_calendar_days": {
+    "min": 1,
+    "max": 7
+  },
+  "strike_steps_each_side": 5,
+  "option_types": [
+    "call",
+    "put"
+  ],
+  "reference_bar": "first",
+  "runner_commit": "d3bbdbb",
+  "execution_lane": {
+    "lane_used": "local_machine",
+    "parallel_cloud_machines_used": false,
+    "reason": "The QQQ 365-day selected-contract workload was request-limited and completed faster locally than a GCP Batch fanout setup would have completed."
+  },
+  "stock_reference": {
+    "build_name": "qqq_365d_stock_ref_20250429_20260428",
+    "stock_bar_chunks": 73,
+    "failed_stock_bar_chunks": 0,
+    "stock_bar_rows": 200994
+  },
+  "inventory": {
+    "build_name": "qqq_365d_next_trading_day_inventory_20250429_20260428",
+    "contract_count": 69376,
+    "chunk_count": 27,
+    "failed_chunk_count": 0,
+    "requested_weekday_trade_date_count": 261,
+    "covered_trade_date_count": 261,
+    "coverage_ratio": 1.0,
+    "first_expiration_date": "2025-04-29",
+    "last_expiration_date": "2026-05-05"
+  },
+  "selection": {
+    "selected_contract_count": 5522,
+    "selected_contract_day_count": 5522,
+    "selected_trade_date_count": 251,
+    "unique_selected_contract_count": 5522,
+    "requested_weekday_trade_date_count": 261,
+    "missing_selected_trade_date_count": 10,
+    "missing_selected_trade_date_reason": "market holidays with no stock reference session"
+  },
+  "download": {
+    "build_name": "qqq_365d_next_trading_day_5x5_option_bars_20250429_20260428",
+    "dataset_count": 1,
+    "chunk_count": 251,
+    "failed_chunk_count": 0,
+    "option_bar_row_count": 1593974
+  },
+  "coverage": {
+    "option_bar_trade_date_count": 251,
+    "contracts_with_any_bar": 5515,
+    "contract_days_with_any_bar": 5515,
+    "contract_day_coverage": 0.998732,
+    "missing_contract_day_count": 7,
+    "bar_rows_per_selected_contract_day": {
+      "min": 0,
+      "median": 336.0,
+      "max": 391
+    },
+    "missing_contract_days_sample": [
+      {
+        "trade_date": "2025-07-31",
+        "contract": "QQQ250801P00595000"
+      },
+      {
+        "trade_date": "2025-09-10",
+        "contract": "QQQ250911P00577000"
+      },
+      {
+        "trade_date": "2025-11-14",
+        "contract": "QQQ251117C00601000"
+      },
+      {
+        "trade_date": "2025-11-14",
+        "contract": "QQQ251117C00602000"
+      },
+      {
+        "trade_date": "2025-11-14",
+        "contract": "QQQ251117P00601000"
+      },
+      {
+        "trade_date": "2025-11-14",
+        "contract": "QQQ251117P00602000"
+      },
+      {
+        "trade_date": "2026-03-23",
+        "contract": "QQQ260324C00571000"
+      }
+    ]
+  },
+  "local_roots": {
+    "runner_repo": "C:\\Users\\abisa\\Downloads\\codexalpaca_repo_gcp_lease_lane_refreshed",
+    "control_repo": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane",
+    "stock_bars": "data\\silver\\historical\\qqq_365d_stock_ref_20250429_20260428\\stock_bars",
+    "contract_inventory": "data\\silver\\historical\\qqq_365d_next_trading_day_inventory_20250429_20260428\\option_contract_inventory",
+    "selected_contracts": "reports\\research_wave\\qqq_365d_next_trading_day_5x5_20260428\\dense_universe\\selected_option_contracts",
+    "option_bars": "data\\silver\\historical\\qqq_365d_next_trading_day_5x5_option_bars_20250429_20260428\\option_bars",
+    "coverage_report": "reports\\research_wave\\qqq_365d_next_trading_day_5x5_20260428\\coverage"
+  },
+  "gcs_roots": {
+    "stock_bars": "gs://codexalpaca-data-us/research_stock_data/qqq_365d_next_trading_day_5x5_20260428/stock_ref_silver/",
+    "contract_inventory": "gs://codexalpaca-data-us/research_option_data/qqq_365d_next_trading_day_5x5_20260428/contract_inventory_silver/",
+    "option_bars": "gs://codexalpaca-data-us/research_option_data/qqq_365d_next_trading_day_5x5_20260428/option_bars_silver/",
+    "research_wave": "gs://codexalpaca-control-us/research_results/qqq_365d_next_trading_day_5x5_20260428/research_wave/",
+    "download_report": "gs://codexalpaca-control-us/research_results/qqq_365d_next_trading_day_5x5_20260428/download_report/"
+  },
+  "guardrails": [
+    "Research-only market data artifact.",
+    "Do not trade from this packet.",
+    "Do not arm an execution window from this packet.",
+    "Do not modify live manifests, strategy selection, or risk policy from this packet.",
+    "Keep the 0.90 fill gate for promotion review."
+  ],
+  "next_safe_step": "Use this 0.998732 contract-day coverage QQQ 365-day next-trading-day dataset for QQQ-only research replay, edge search, and promotion diagnostics before any governed validation review."
+}
