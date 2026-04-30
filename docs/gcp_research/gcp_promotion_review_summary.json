@@ -1,0 +1,145 @@
+{
+  "generated_at": "2026-04-30T14:15:00-04:00",
+  "scope": "non_broker_facing_gcp_research_backtest_promotion_review_diagnostic",
+  "hard_rules": {
+    "trading_started": false,
+    "broker_facing_session_started": false,
+    "live_manifest_changed": false,
+    "risk_policy_changed": false,
+    "fill_gate_relaxed": false,
+    "promotion_means_live_activation": false
+  },
+  "canonical_runner": {
+    "branch": "origin/codex/qqq-paper-portfolio",
+    "confirmed_commit": "91ce125adb33003a1d999ccd74958eec60b9556d",
+    "beta_manifest": "config/promotion_manifests/multi_ticker_portfolio_beta_promotions.yaml",
+    "live_manifest": "config/strategy_manifests/multi_ticker_portfolio_live.yaml",
+    "exact_live_strategy_count": 94,
+    "promoted_family_count": 6,
+    "retest_gap_underlying_count": 29
+  },
+  "control_plane": {
+    "checkout": "C:\\Users\\abisa\\Downloads\\CodexAlpacaTest-TradeMigratyion_gcp_lease_lane",
+    "start_commit": "c72ff43a78e4cacc2b4909ec40354aa36e639952",
+    "target_docs": [
+      "docs/gcp_research/gcp_fill_coverage_diagnostic.md",
+      "docs/gcp_research/gcp_strategy_repo_backtest_plan.md",
+      "docs/gcp_research/gcp_promotion_review_handoff.md",
+      "docs/gcp_research/gcp_promotion_review_summary.json"
+    ]
+  },
+  "gcs_prefixes": {
+    "qqq_365d_stock_bars": "gs://codexalpaca-data-us/research_stock_data/qqq_365d_next_trading_day_5x5_20260428/",
+    "qqq_365d_contract_inventory": "gs://codexalpaca-data-us/research_option_data/qqq_365d_next_trading_day_5x5_20260428/contract_inventory_silver/option_contract_inventory/underlying=QQQ/",
+    "qqq_365d_selected_contracts": "gs://codexalpaca-control-us/research_results/qqq_365d_next_trading_day_5x5_20260428/research_wave/qqq_365d_next_trading_day_5x5_20260428/dense_universe/selected_option_contracts/",
+    "qqq_365d_option_bars": "gs://codexalpaca-data-us/research_option_data/qqq_365d_next_trading_day_5x5_20260428/option_bars_silver/option_bars/underlying=QQQ/",
+    "top10_ladder_stock_bars": "gs://codexalpaca-data-us/research_stock_data/option_fill_ladder_20260429/",
+    "top10_ladder_option_data": "gs://codexalpaca-data-us/research_option_data/option_fill_ladder_20260429/",
+    "next10_ladder_stock_bars": "gs://codexalpaca-data-us/research_stock_data/option_fill_ladder_next10_20260429/",
+    "next10_ladder_option_data": "gs://codexalpaca-data-us/research_option_data/option_fill_ladder_next10_20260429/",
+    "phase42_dense_shards": "gs://codexalpaca-control-us/research_results/top100_liquidity_research_20260426/portfolio_event_driven_data/phase42_dense_download_replay_20260428182000/data_shards/",
+    "overnight_partial_rollup": "gs://codexalpaca-control-us/research_results/overnight_365d_bruteforce_20260429/partial_wave_rollup_gcsfix_03bfc25_20260429T1806Z/wave_rollup/"
+  },
+  "qqq_365d_data_foundation": {
+    "selected_trade_date_count": 251,
+    "selected_contract_day_count": 5522,
+    "option_bar_row_count": 1593974,
+    "contracts_with_any_bar": 5515,
+    "contract_day_coverage": 0.998732,
+    "missing_contract_day_count": 7,
+    "downloader_failed_chunk_count": 0,
+    "option_bar_repair_plan_status": "no_repair_needed",
+    "option_bar_repair_chunk_count": 0
+  },
+  "promotion_review_results": [
+    {
+      "name": "qqq_next10_gcsfix_365d_replay",
+      "decision": "research_only_blocked",
+      "candidate_count": 36,
+      "eligible_for_promotion_review_count": 0,
+      "blockers": {
+        "fill_coverage_below_0.90": 36,
+        "min_net_pnl_not_positive": 35,
+        "test_net_pnl_not_above_0": 31
+      },
+      "dominant_fill_failure": "entry_bar_gap_or_entry_timing_mismatch",
+      "state": "quarantine_current_parameterizations"
+    },
+    {
+      "name": "spy_365d_rerun",
+      "decision": "research_only_blocked",
+      "candidate_count": 36,
+      "eligible_for_promotion_review_count": 0,
+      "blockers": {
+        "fill_coverage_below_0.90": 36,
+        "min_net_pnl_not_positive": 30,
+        "test_net_pnl_not_above_0": 33
+      },
+      "dominant_fill_failure": "entry_bar_gap_or_entry_timing_mismatch",
+      "state": "quarantine_current_parameterizations"
+    },
+    {
+      "name": "overnight_partial_wave_rollup_gcsfix",
+      "decision": "research_only_blocked",
+      "candidate_count": 216,
+      "eligible_for_promotion_review_count": 0,
+      "rollup_blockers": {
+        "fill_coverage_below_0.90": 216,
+        "min_net_pnl_not_positive": 199,
+        "test_net_pnl_not_above_0": 159
+      },
+      "fill_failure_counts": {
+        "entry_bar_gap_or_entry_timing_mismatch": 196,
+        "exit_bar_gap_or_exit_policy_mismatch": 18,
+        "mixed_low_fill_gap": 2
+      },
+      "state": "research_only_blocked"
+    },
+    {
+      "name": "phase23_candidate_stress",
+      "decision": "research_only_blocked",
+      "candidate_count": 6,
+      "eligible_for_promotion_review_count": 0,
+      "blockers": {
+        "fill_coverage_below_0.90": 6,
+        "test_net_pnl_not_above_0": 1
+      },
+      "state": "superseded_by_exit_lag_feasibility"
+    },
+    {
+      "name": "phase24_exit_lag_feasibility",
+      "decision": "fill_feasible_under_full_stack",
+      "candidate_count": 5,
+      "full_stack_fill_gate_pass_count": 1,
+      "wide_lag_only_candidate_count": 4,
+      "state": "hold_for_exit_policy_design_not_promotion"
+    },
+    {
+      "name": "phase25_intc_isolated_stress",
+      "decision": "research_only_blocked",
+      "candidate_count": 1,
+      "eligible_for_promotion_review_count": 0,
+      "blockers": {
+        "fill_coverage_below_0.90": 1,
+        "min_net_pnl_not_positive": 1,
+        "test_net_pnl_not_above_0": 1
+      },
+      "state": "quarantine_current_intc_candidate"
+    }
+  ],
+  "final_promotion_review_state": {
+    "promote_to_governed_validation_review": [],
+    "hold_for_more_data": [
+      "beta symbols not yet proven covered by inspected 365d dense roots"
+    ],
+    "repair_data_then_retest": [
+      "only candidates whose exact selected-contract root produces nonzero repair chunks"
+    ],
+    "quarantine": [
+      "current QQQ 365d parameterizations",
+      "current SPY 365d parameterizations",
+      "phase25 INTC isolated candidate"
+    ],
+    "kill": []
+  }
+}
